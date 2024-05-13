@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using AWSIM;
 using ROS2;
-using Unity.Mathematics;
 using UnityEngine;
 using v2x_msgs.msg;
 using ObjectClassification = autoware_auto_perception_msgs.msg.ObjectClassification;
@@ -149,7 +148,7 @@ public class DetectedObjectsAutoware : MonoBehaviour
                         dimensions = ROS2Utility.UnityToRosPosition(dimensions);
                         
                         DetectedObject.Shape.Dimensions.X = dimensions.x;
-                        DetectedObject.Shape.Dimensions.Y = math.abs( dimensions.y); // dimension no need to be minus when convert to autoware coordination
+                        DetectedObject.Shape.Dimensions.Y = Math.Abs( dimensions.y); // dimension no need to be minus when convert to autoware coordination
                         DetectedObject.Shape.Dimensions.Z = dimensions.z;
                         
                         // this line of code allign center of mass 

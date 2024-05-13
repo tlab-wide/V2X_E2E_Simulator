@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using autoware_auto_perception_msgs.msg;
 using AWSIM;
 using ROS2;
-using Unity.Mathematics;
 using UnityEngine;
 using v2x_msgs.msg;
 using Environment = AWSIM.Environment;
@@ -137,7 +136,7 @@ public class PredictedObjectsAutoware : MonoBehaviour
                         dimensions = ROS2Utility.UnityToRosPosition(dimensions);
                         
                         predictedObject.Shape.Dimensions.X = dimensions.x;
-                        predictedObject.Shape.Dimensions.Y = math.abs( dimensions.y); // dimension no need to be minus when convert to autoware coordination
+                        predictedObject.Shape.Dimensions.Y = Math.Abs( dimensions.y); // dimension no need to be minus when convert to autoware coordination
                         predictedObject.Shape.Dimensions.Z = dimensions.z;
 
                         predictedObject.Kinematics.Initial_pose_with_covariance.Pose.Position.Z = pos.z + dimensions.z;
