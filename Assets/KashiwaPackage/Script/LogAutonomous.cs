@@ -6,8 +6,6 @@ using System.Linq;
 using AWSIM;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
-using Environment = System.Environment;
 using Random = UnityEngine.Random;
 
 public class LogAutonomous : MonoBehaviour

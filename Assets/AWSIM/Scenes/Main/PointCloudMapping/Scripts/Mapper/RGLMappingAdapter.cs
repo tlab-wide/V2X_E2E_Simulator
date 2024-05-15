@@ -45,6 +45,8 @@ namespace AWSIM.PointCloudMapping
 
         private string outputPcdFilePath;
 
+        private Matrix4x4 worldTransform;
+        
         public void Awake()
         {
             lidarSensor = GetComponent<LidarSensor>();
@@ -56,6 +58,7 @@ namespace AWSIM.PointCloudMapping
         // Empty function to make enable checkbox appear in the Inspector
         public void Start() {}
 
+        
         public void Initialize(Vector3 worldOriginROS, string outputPcdFilePath)
         {
             if (isInitialized)
@@ -66,7 +69,7 @@ namespace AWSIM.PointCloudMapping
             this.outputPcdFilePath = outputPcdFilePath;
 
             // Create and connect subgraph
-            Matrix4x4 worldTransform = ROS2.Transformations.Unity2RosMatrix4x4();
+            worldTransform = ROS2.Transformations.Unity2RosMatrix4x4();
             worldTransform.SetColumn(3, worldTransform.GetColumn(3) + (Vector4) worldOriginROS);
             rglSubgraphMapping = new RGLNodeSequence()
                 .AddNodePointsTransform(rosWorldTransformNodeId, worldTransform)
@@ -130,6 +133,60 @@ namespace AWSIM.PointCloudMapping
                     Debug.LogWarning($"Downsampling had no effect for '{name}'. If you see this message often, consider increasing leafSize.");
                 }
             }
+        }
+
+        
+        public void CaptureStepByStep()
+        {
+            rglSubgraphMapping.Clear();
+            rglSubgraphMapping = new RGLNodeSequence()
+                .AddNodePointsTransform(rosWorldTransformNodeId, worldTransform)
+                .AddNodePointsDownsample(downsampleNodeId, new Vector3(leafSize, leafSize, leafSize))
+                .AddNodePointsTemporalMerge(temporalMergeNodeId, new RGLField[1] {RGLField.XYZ_F32});
+
+            rglSubgraphMapping.SetActive(downsampleNodeId, enableDownsampling);
+
+            lidarSensor.ConnectToWorldFrame(rglSubgraphMapping);
+
+            isInitialized = true;
+
+            
+            if (!isInitialized)
+            {
+                throw new Exception("Attempted to run RGLMappingAdapter without initialization!");
+            }
+
+            if (!enabled)
+            {
+                return;
+            }
+
+            lidarSensor.Capture();
+
+            if (enableDownsampling)
+            {
+                int countBeforeDownsample = rglSubgraphMapping.GetPointCloudCount(rosWorldTransformNodeId);
+                int countAfterDownsample = rglSubgraphMapping.GetPointCloudCount(downsampleNodeId);
+                bool pointCloudReduced = countAfterDownsample < countBeforeDownsample;
+                if (!pointCloudReduced)
+                {
+                    Debug.LogWarning($"Downsampling had no effect for '{name}'. If you see this message often, consider increasing leafSize.");
+                }
+            }
+            
+            
+        }
+
+        private int counter = 1;
+        public void SavePcdStepByStep()
+        {
+            if (rglSubgraphMapping == null)
+            {
+                Debug.LogWarning("RGLMappingAdapter: skipped saving PCD file - empty point cloud");
+                return;
+            }
+            rglSubgraphMapping.SavePcdFile($"{outputPcdFilePath}_{counter}.pcd");
+            counter++;
         }
 
         // Called in PointCloudMapper.OnDestroy()
