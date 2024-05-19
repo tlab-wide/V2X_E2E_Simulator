@@ -1,8 +1,12 @@
-# AWSIM
+# V2X_E2E_Simulator
 
-![](/README_img/AWSIM.png)
 
-AWSIM is the best scene simulator for [Autoware](https://github.com/autowarefoundation/autoware).
+
+![image](https://github.com/hoosh-ir/V2X_E2E_Simulator/assets/32614364/2e273eb2-89f0-47f3-9e6f-81648e3cd807)
+
+
+AWSIM is the best scene simulator for [Autoware](https://github.com/autowarefoundation/autoware) and V2X_E2E_Simulator
+is based on AWSIM.
 
 ## Features
 
@@ -11,26 +15,23 @@ AWSIM is the best scene simulator for [Autoware](https://github.com/autowarefoun
 - ROS2 native communication
 - Open source software
 - Made with Unity Game Engine
+- Traffic anaylitics features
 
 ## Tutorial
 
 First, try the tutorial !  
 [AWSIM Document - Quick Start Demo](https://tier4.github.io/AWSIM/GettingStarted/QuickStartDemo/)
 
+## Quick Installation 
+- Install Awsim and depencies [Awsim installation]
+- Switch to kashiwa branch of  V2X_E2E_Simulator project (to recieve essential codes)
+- [Install latest Kashiwa package](https://drive.google.com/file/d/1BDRqKoSWoFUZLmhaKN0ip7HBFcUHueAH/view?usp=sharing) (to recieve large files such as 3d Models) 
+
+
 ## Documentation
 
 https://tier4.github.io/AWSIM/
 
-## How to Contribute
-
-Everyone is welcome !
-1. Create a derived branch `feature/***` from the `main` branch.
-2. Create a pull request for the `main` branch.
-
-see also [AWSIM document - Git branch](https://tier4.github.io/AWSIM/ProjectGuide/GitBranch/)
-
-We recommend [microsoft's C# coding convention](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions?redirectedfrom=MSDN).  
-However, if the logic of the code is good, it does not matter if coding conventions are not followed.
 
 ## License
 
@@ -42,12 +43,5 @@ Applies to `tier4/AWSIM` repositories and all content contained in the [Releases
 
 See also [LICENSE](./LICENSE)
 
-## Contact
-
-日本語/English OK
-
-e-mail : takatoki.makino@tier4.jp 
-discord : mackie#6141
-twitter : https&#58;//twitter.com/mackierx111
 
 (c) 2022 TIER IV, inc
