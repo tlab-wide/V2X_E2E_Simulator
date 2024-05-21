@@ -79,7 +79,7 @@ public class LogAutonomous : MonoBehaviour
             rowLog += $"{time.Sec},{time.Nanosec} \n";
             
             
-            AppendStringToFile(logPathCars,rowLog);
+            CsvEditorUtils.AppendStringToFile(logPathCars,rowLog);
             yield return new WaitForSeconds(waitTime);
             // yield return WaitForNFrame(waitFrames);
         }
@@ -103,27 +103,8 @@ public class LogAutonomous : MonoBehaviour
         return result;
 
     }
-    
-    private static void AppendStringToFile(string filePath, List<string> contents)
-    {
-        using (StreamWriter writer = new StreamWriter(filePath, true))
-        {
-            foreach (var content in contents)
-            {
-                writer.Write(content);
-            }
-        }
-    }
-    
-    private static void AppendStringToFile(string filePath, string content)
-    {
-        using (StreamWriter writer = new StreamWriter(filePath, true))
-        {
-            writer.Write(content);
-        }
-    }
 
-    
+
     public IEnumerator  WaitForNFrame(int n)
     {
         for (int i = 0; i < n; i++)
@@ -138,11 +119,11 @@ public class LogAutonomous : MonoBehaviour
     }
     
     
-    private IEnumerator HandleCsvHeaderBus()
+    private IEnumerator HandleCsvHeaderBus() //todo can be remove and use CsvEditorUtils
     {
         if (logPathCars != "" && !File.Exists(logPathCars))
         {
-            AppendStringToFile(logPathCars, "X,Y,Z,W rotation,X rotation,Y rotation,Z rotation, X velocity ,Y velocity, Z velocity,X acceleration,Y acceleration, Z acceleration, list of car collisions, list of human collisions , time ,nano \n");
+            CsvEditorUtils.AppendStringToFile(logPathCars, "X,Y,Z,W rotation,X rotation,Y rotation,Z rotation, X velocity ,Y velocity, Z velocity,X acceleration,Y acceleration, Z acceleration, list of car collisions, list of human collisions , time ,nano \n");
         }
         yield return null;
     }
