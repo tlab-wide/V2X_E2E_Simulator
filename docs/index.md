@@ -1,20 +1,29 @@
-# Welcome to AWSIM
+# Welcome to V2X E2E simulator
 
-![](E2ESim.png)
+For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
-AWSIM is the best scene for [Autoware](https://github.com/autowarefoundation/autoware).
-
-**Features**
-
-- Many predefined components included (Vehicle dynamic models, Sensor models, Environment configuration, ROS2 communication, etc)
-- Support for Ubuntu 22.04 and windows10/11
-- ROS2 native communication (humble)
-- [Open sourced](https://github.com/tier4/AWSIM)
-- Made with [Unity](https://unity.com/)
-
-## Try the simulation demo yourself!
-
-[Download AWSIM Demo for Ubuntu](https://github.com/tier4/AWSIM/releases/download/v1.1.0/AWSIM_v1.1.0.zip){.md-button .md-button--primary}
+## Some pictures
 
 
-To test the AWSIM demo with Autoware please refer to the [Quick start demo](./GettingStarted/QuickStartDemo/index.md) section.
+![](home.png)
+
+
+## Some video
+
+<video width="1920" controls autoplay muted loop>
+<source src="video.mp4" type="video/mp4">
+</video>
+
+## Some notes
+
+* `mkdocs new [dir-name]` - Create a new project.
+* `mkdocs serve` - Start the live-reloading docs server.
+* `mkdocs build` - Build the documentation site.
+* `mkdocs -h` - Print help message and exit.
+
+## Project layout
+
+    mkdocs.yml    # The configuration file.
+    docs/
+        index.md  # The documentation homepage.
+        ...       # Other markdown pages, images and other files.
