@@ -110,19 +110,25 @@ namespace AWSIM.PointCloudMapping
             vehicleGameObject.transform.rotation = currentPose.rotation;
 
             string rowLog = $"{counter},";
+
+            for (int i = 0; i < mappingSensors.Length; i++)
+            {
+                string sensorName = mappingSensors[i].name;
+                //set position
+                var pos = ROS2Utility.UnityToRosPosition(mappingSensors[i].transform.position);
+                pos = pos + worldOriginROS;
+                rowLog += $"{pos.x},{pos.y},{pos.z}";
             
-            //set position
-            var pos = ROS2Utility.UnityToRosPosition(transform.position);
-            pos = pos + worldOriginROS;
-            rowLog += $"{pos.x},{pos.y},{pos.z}";
+                //set rotation
             
-            //set rotation
+                //rotation base on bus todo check correctness
+                Quaternion r = ROS2Utility.UnityToRosRotation(mappingSensors[i].transform.rotation);
+                rowLog += $",{r.w},{r.x},{r.y},{r.z} \n";
             
-            //rotation base on bus todo check correctness
-            Quaternion r = ROS2Utility.UnityToRosRotation(transform.rotation);
-            rowLog += $",{r.w},{r.x},{r.y},{r.z} \n";
+                CsvEditorUtils.AppendStringToFile(csvPath,rowLog);
+
+            }
             
-            CsvEditorUtils.AppendStringToFile(csvPath,rowLog);
             
             
             
