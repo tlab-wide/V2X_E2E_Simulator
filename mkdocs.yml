@@ -89,6 +89,7 @@ nav:
     - PCD Scanner: Components/PCDScanner/index.md
     - Logger: Components/Logger/index.md
   
+  - Simple-AV: Simple-AV/index.md
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
   - License: License/index.md
