@@ -89,7 +89,11 @@ nav:
     - PCD Scanner: Components/PCDScanner/index.md
     - Logger: Components/Logger/index.md
   
-  - Simple-AV: Simple-AV/index.md
+  - Simple-AV: 
+    - Description: Simple-AV/Description/index.md
+    - SystemSetup: Simple-AV/SystemSetup/index.md
+    - CommunicatingWithAWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
+    - CSV_Definition: Simple-AV/CSV_Definition/index.md
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
   - License: License/index.md
