@@ -106,6 +106,7 @@ nav:
       - Installing ROS2: Simple-AV/SystemSetup/InstallingROS2/index.md
       - Running AWSIM on Windows: Simple-AV/SystemSetup/AWSIM_on_Windows/index.md
       - Windows and WSL Connection: Simple-AV/SystemSetup/Windows_WSL_Connection/index.md
+      - Building AWSIM Messages: Simple-AV/SystemSetup/BuildingMessages/index.md
     - CommunicatingWithAWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
     - CSV_Definition: Simple-AV/CSV_Definition/index.md
   - NetSim: NetSim/index.md

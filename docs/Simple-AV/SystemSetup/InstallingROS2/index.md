@@ -1,7 +1,7 @@
 
 # Installing ROS2 Humble on Ubuntu 22.04 on WSL2 
 
-First, ensure your system is up to date.
+First, ensure your Ubuntu system is up to date.
 
 ```bash
 sudo apt update
