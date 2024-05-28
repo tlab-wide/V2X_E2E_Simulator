@@ -8,10 +8,10 @@ Given the crucial need for seamless communication between simple-AV and AWSIM, w
 
 More specifically, this document goes through the installation process of
 
-* Installing WSL2 on Windows 10.
-* Installing ROS2 Humble on Ubuntu 22.04 on WSL2 
-* Setting up AWSIM on Window 10
-* Setting up Awsim and WSL2 connection
+* [Installing WSL2 on Windows 10](../WSL/index.md)
+* [Installing ROS2 Humble on Ubuntu 22.04 on WSL2](../InstallingROS2/index.md)
+* [Setting up AWSIM on Window 10](../AWSIM_on_Windows/index.md)
+* [Setting up Awsim and WSL2 connection](../Windows_WSL_Connection/index.md)
 
 <b>For running AWSIM on Windows and get the topics in WSL, you don’t need to actually install ROS2 for Windows.</b>
 
