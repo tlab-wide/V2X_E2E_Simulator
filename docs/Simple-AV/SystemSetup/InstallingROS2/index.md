@@ -8,7 +8,9 @@ sudo apt update
 sudo apt upgrade
 ```
 
-Install [Ros2 Humble distibution](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html). Follow all the steps and install ros-humble-desktop. Make sure the installations is complete by using the commands bellow.
+The full description on how to install ROS2 Humble is provided in [ROS2 Documentation](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html). Please Refer to the website and follow all the steps. It is recommended to  install `ros-humble-desktop` version. 
+
+At the end make sure the installations is complete by using the commands bellow:
 
 In one terminal, source the setup file and then run a C++ talker:
 
