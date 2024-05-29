@@ -168,12 +168,21 @@ Now, run the node.
 
 In this Phase we aim to subscribe to Awsim Topics. we try to subscibe to 2 topics from Awsim.
 
-1. `/sensing/gnss/pose` Topic
-2. `/vehicle/status/velocity_status` Topic
+### 1. `/sensing/gnss/pose` Topic
 
-### /sensing/gnss/pose topic
+<b>Step 1: Finding the topic informations</b>
 
-<b>Step 1: ROS</b>
+Use the command bellow to get the information of desiered topic
+
+```bash
+ros2 topic info </topic_name>
+```
+
+![alt text](image-4.png)
+
+As we can see the type of the `/sensing/gnss/pose` topic is `geometry_msgs/msg/PoseStamped`.
+
+<b>Step 2: Creating ROS node</b>
 
 Python code:
 
@@ -183,14 +192,14 @@ Python code:
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import PoseStamped
 
 class GnssPoseSubscriber(Node):
     def __init__(self):
         super().__init__('gnss_pose_subscriber')
         self.get_logger().info("GnssPoseSubscriber Cunstructed")
         self.subscription = self.create_subscription(
-            Pose,
+            PoseStamped,
             '/sensing/gnss/pose',
             self.listener_callback,
             10
@@ -198,7 +207,9 @@ class GnssPoseSubscriber(Node):
         self.subscription
     
     def listener_callback(self, msg):
-        self.get_logger().info(f'Received GNSS Pose: Position - x: {msg.position.x}, y: {msg.position.y}, z: {msg.position.z}, Orientation - x: {msg.orientation.x}, y: {msg.orientation.y}, z: {msg.orientation.z}, w: {msg.orientation.w}')
+        self.get_logger().info(f'Position - x: {msg.pose.position.x}, y = {msg.pose.position.y}, z = {msg.pose.position.z}')
+        self.get_logger().info(f'orientation- x: {msg.pose.orientation.x}, y = {msg.pose.orientation.y}, z = {msg.pose.orientation.z}, w = {msg.pose.orientation.w}')
+        self.get_logger().info("-------------------------------------------------------------------------------------")
 
 
 def main(args=None):
@@ -238,6 +249,13 @@ ros2 run my_package ConnectionControllerNode
 ![alt text](image-2.png)
 
 <b>Step2: Run Awsim</b>
+
+If you have not set up the [windows/WSL connection](../SystemSetup/Windows_WSL_Connection/index.md) you may not see the results below. 
+
+![alt text](image-5.png)
+
+
+### 2. `/vehicle/status/velocity_status` Topic
 
 
 
