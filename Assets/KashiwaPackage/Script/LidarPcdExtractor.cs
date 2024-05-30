@@ -1,6 +1,7 @@
 ﻿using System;
 using AWSIM.Lanelet;
 using System.Collections.Generic;
+using System.Linq;
 using AWSIM.PointCloudMapping.Geometry;
 using UnityEngine;
 
@@ -25,6 +26,9 @@ namespace AWSIM.PointCloudMapping
 
         [SerializeField] [Tooltip("Result PCD file name. On Editor/Windows, it will be saved in Assets/")]
         private string outputPcdFilePath = "output_pcd";
+
+        [SerializeField] private GameObject rootStaticSensors;
+        // [SerializeField] private RGLScanAdapter[] rglStaticScanAdapters; 
 
         
         [SerializeField] [Tooltip("Result csv file name. On Editor/Windows, it will be saved in Assets/")]
@@ -53,9 +57,12 @@ namespace AWSIM.PointCloudMapping
         {
             // Initiate csv file with headers 
             csvPath = $"{Application.dataPath}/{outputCsvFilePath}";
-            CsvEditorUtils.HandleCsvHeader(csvPath,"ID,X,Y,Z,W_rotation,X_rotation,Y_rotation,Z_rotation");
+            CsvEditorUtils.HandleCsvHeader(csvPath,"ID,X,Y,Z,W_rotation,X_rotation,Y_rotation,Z_rotation\n");
             
             mappingSensors = vehicleGameObject.GetComponentsInChildren<RGLScanAdapter>();
+            mappingSensors = mappingSensors.Concat(rootStaticSensors.GetComponentsInChildren<RGLScanAdapter>()).ToArray();   
+            
+            
             if (mappingSensors == null)
             {
                 Debug.LogError(
@@ -109,10 +116,11 @@ namespace AWSIM.PointCloudMapping
             vehicleGameObject.transform.position = currentPose.position;
             vehicleGameObject.transform.rotation = currentPose.rotation;
 
-            string rowLog = $"{counter},";
+            
 
             for (int i = 0; i < mappingSensors.Length; i++)
             {
+                string rowLog = $"{counter},";
                 string sensorName = mappingSensors[i].name;
                 //set position
                 var pos = ROS2Utility.UnityToRosPosition(mappingSensors[i].transform.position);

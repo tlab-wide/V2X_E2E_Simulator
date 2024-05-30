@@ -114,9 +114,9 @@ namespace AWSIM
                         }
                         else
                         {
-                            predictedObject.Shape.Dimensions.X = 1;
-                            predictedObject.Shape.Dimensions.Y = 1;
-                            predictedObject.Shape.Dimensions.Z = 1;
+                            predictedObject.Shape.Dimensions.X = 0.7f;
+                            predictedObject.Shape.Dimensions.Y = 1.7;
+                            predictedObject.Shape.Dimensions.Z = 0.7f;
                         }
                         
                         
