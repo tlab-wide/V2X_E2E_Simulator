@@ -1,10 +1,12 @@
-# Building AWSIM Messages on ROS2 on WSL
+# Build AWSIM Messages
 
-### Run The Build Awsim Scene
+## Awsim Topics
+
+<b>Run The Awsim Scene</b>
 
 ![alt text](image.png)
 
-### Run the WSL2
+<b>Run WSL</b>
 
 Run the WSL and source the ROS2 init using the command below:
 
@@ -16,7 +18,7 @@ After sourcing the ROS2 you can get a topic list and see the all the topics that
 
 ![alt text](image-1.png)
 
-### AWSIM Topics
+<b>Topics</b>
 
 The list of Topics above shows all the topics related to Awsim. But, which one of them are being published by Awsim and which ones do the Awsim subscives to. Generally Awsim publishes all of the topics instead the Control command ones. You can see the full relation and published/subscribed topics using the command below. Also, you can visit [Awsim ROS2 topic lists](https://tier4.github.io/AWSIM/Components/ROS2/ROS2TopicList/) from the Awsim Documentation.
 
@@ -54,5 +56,9 @@ When working with ROS, you may encounter scenarios where some topics are easily 
 <b>Inaccessible Topics</b>: For the topics that produce errors when you attempt to echo them, the issue usually lies in the message types not being built or not recognized by the current ROS 2 environment. These errors indicate that ROS 2 cannot find the message type definitions required to interpret the messages published on those topics.
 
 So, to resolve this issue and have access to all the Messages from AWSIM we need to build messages. 
+
+## Build Awsim Messages.
+
+As discussed above, a few Awsim topics are accessible by the default ROS 2 configuration using the std_msgs library. To read/write on other topics, we must define the message type of Awsim in our working package.
 
 
