@@ -61,4 +61,148 @@ So, to resolve this issue and have access to all the Messages from AWSIM we need
 
 As discussed above, a few Awsim topics are accessible by the default ROS 2 configuration using the std_msgs library. To read/write on other topics, we must define the message type of Awsim in our working package.
 
+### Create Custom ROS2 msg
 
+```bash
+source /opt/ros/humble/setup.bash
+cd ros_ws
+source install/setup.bash
+cd src
+```
+
+Create a new Package
+
+```bash
+ros2 pkg create --build-type ament_cmake custom_interface
+```
+
+Navigate to the `custom_interface` package:
+
+```bash
+cd custom_interface
+ls
+```
+
+```bash
+CMakeLists.txt
+include/
+package.xml
+src/
+```
+
+```bash
+rmdir src
+mkdir msg
+```
+In the `custom_interface/msg` directory you just created, make a new file called custom_msg_test.msg with one line of code declaring its data structure:
+
+```bash
+cd msg
+touch CustomMsgTest.msg
+```
+
+```bash
+int64 num1
+int64 num2
+float64 f1
+```
+
+Modify CMakeList.txt
+
+```bash
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/CustomMsgTest.msg"
+)
+```
+
+Modify package.xml
+
+```bash
+<buildtool_depend>rosidl_default_generators</buildtool_depend>
+<exec_depend>rosidl_default_runtime</exec_depend>
+<member_of_group>rosidl_interface_packages</member_of_group>
+```
+
+Build the `cusotm_interface` package:
+```bash
+cd ~/ros_ws
+colcon build --packages-select cusotm_interface
+```
+
+Now the interfaces will be discoverable by other ROS 2 packages. Now you can confirm that your interface creation worked by using the `ros2 interface show` command:
+
+![alt text](image-5.png)
+
+<b>Create a simple publisher</b>
+
+```bash
+cd ~/ros_ws/src/inspector/inspector
+touch CustoMsgTester.py
+chmod +x CustomMsgTester.py
+```
+
+```python
+#!/usr/bin/env python3
+
+import rclpy
+from rclpy.node import Node
+from custom_interface.msg import CustomMsgTest
+
+class CustomMsgPublisher(Node):
+    def __init__(self):
+        super().__init__('MsgPublisher')
+        self.publisher_ = self.create_publisher(CustomMsgTest, 'DummyMsg', 10)
+        timer_period = 1
+        self.timer = self.create_timer(timer_period, self.callback)
+    
+    def callback(self):
+        msg = CustomMsgTest()
+        msg.num1 = 1
+        msg.num2 = 2
+        msg.f1 = 1.5
+        self.publisher_.publish(msg)
+    
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = CustomMsgPublisher()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+    pass
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Add the following to `setup.py`
+
+```python
+entry_points={
+        'console_scripts': [
+            'ConnectionControlNode = inspector.ConnectionController:main',
+            'CustomMsgTesterNode = inspector.CustomMsgTester:main',
+        ],
+    },
+```
+
+Add the following to `package.xml`:
+
+```python
+<exec_depend>custom_interfaces</exec_depend>
+```
+
+```bash
+cd ~/ros_ws
+colcon build
+ros2 run inspector CustomMsgTesterNode
+```
+
+![alt text](image-6.png)
+
+
+### Build Awsim msgs
