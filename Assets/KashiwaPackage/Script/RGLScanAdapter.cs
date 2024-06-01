@@ -94,35 +94,35 @@ namespace AWSIM.PointCloudMapping
             rglSubgraphMapping.SavePcdFile(outputPcdFilePath);
         }
 
-        public void Capture()
-        {
-            if (!isInitialized)
-            {
-                throw new Exception("Attempted to run RGLMappingAdapter without initialization!");
-            }
+        // public void Capture()
+        // {
+        //     if (!isInitialized)
+        //     {
+        //         throw new Exception("Attempted to run RGLMappingAdapter without initialization!");
+        //     }
+        //
+        //     if (!enabled)
+        //     {
+        //         return;
+        //     }
+        //
+        //     lidarSensor.Capture();
+        //
+        //     if (enableDownsampling)
+        //     {
+        //         int countBeforeDownsample = rglSubgraphMapping.GetPointCloudCount(rosWorldTransformNodeId);
+        //         int countAfterDownsample = rglSubgraphMapping.GetPointCloudCount(downsampleNodeId);
+        //         bool pointCloudReduced = countAfterDownsample < countBeforeDownsample;
+        //         if (!pointCloudReduced)
+        //         {
+        //             Debug.LogWarning(
+        //                 $"Downsampling had no effect for '{name}'. If you see this message often, consider increasing leafSize.");
+        //         }
+        //     }
+        // }
 
-            if (!enabled)
-            {
-                return;
-            }
 
-            lidarSensor.Capture();
-
-            if (enableDownsampling)
-            {
-                int countBeforeDownsample = rglSubgraphMapping.GetPointCloudCount(rosWorldTransformNodeId);
-                int countAfterDownsample = rglSubgraphMapping.GetPointCloudCount(downsampleNodeId);
-                bool pointCloudReduced = countAfterDownsample < countBeforeDownsample;
-                if (!pointCloudReduced)
-                {
-                    Debug.LogWarning(
-                        $"Downsampling had no effect for '{name}'. If you see this message often, consider increasing leafSize.");
-                }
-            }
-        }
-
-
-        public void CaptureStepByStep()
+        public void CaptureStepByStep(bool useCarPos)
         {
             rglSubgraphMapping.Clear();
             rglSubgraphMapping = new RGLNodeSequence()
@@ -147,8 +147,10 @@ namespace AWSIM.PointCloudMapping
                 return;
             }
 
-            lidarSensor.Capture();
+            lidarSensor.Capture(useCarPos);
 
+            
+            
             if (enableDownsampling)
             {
                 int countBeforeDownsample = rglSubgraphMapping.GetPointCloudCount(rosWorldTransformNodeId);

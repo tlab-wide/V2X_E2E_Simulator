@@ -30,9 +30,12 @@ namespace AWSIM.PointCloudMapping
         [SerializeField] private GameObject rootStaticSensors;
         // [SerializeField] private RGLScanAdapter[] rglStaticScanAdapters; 
 
-        
+
         [SerializeField] [Tooltip("Result csv file name. On Editor/Windows, it will be saved in Assets/")]
         private string outputCsvFilePath = "result.csv";
+
+        [SerializeField] private bool useCarPos =false;
+        [SerializeField] private float waitTime;
 
         [SerializeField] [Tooltip("Distance in meters between consecutive warps along the centerline of a lanelet.")]
         private float captureLocationInterval = 6f;
@@ -42,27 +45,29 @@ namespace AWSIM.PointCloudMapping
 
 
         [SerializeField] private bool LaneletVisualizerIsActive = true;
-        
+
         [SerializeField] [Tooltip("Configurable visualization of the loaded lanelet map")]
         private LaneletVisualizer laneletVisualizer;
 
         private RGLScanAdapter[] mappingSensors;
         private Queue<Pose> capturePoseQueue;
         private string csvPath;
+        private float startTime;
 
-        
-        
-        
+
         private void Start()
         {
+            startTime = Time.time;
+
             // Initiate csv file with headers 
             csvPath = $"{Application.dataPath}/{outputCsvFilePath}";
-            CsvEditorUtils.HandleCsvHeader(csvPath,"ID,X,Y,Z,W_rotation,X_rotation,Y_rotation,Z_rotation\n");
-            
+            CsvEditorUtils.HandleCsvHeader(csvPath, "ID,X,Y,Z,W_rotation,X_rotation,Y_rotation,Z_rotation\n");
+
             mappingSensors = vehicleGameObject.GetComponentsInChildren<RGLScanAdapter>();
-            mappingSensors = mappingSensors.Concat(rootStaticSensors.GetComponentsInChildren<RGLScanAdapter>()).ToArray();   
-            
-            
+            mappingSensors = mappingSensors.Concat(rootStaticSensors.GetComponentsInChildren<RGLScanAdapter>())
+                .ToArray();
+
+
             if (mappingSensors == null)
             {
                 Debug.LogError(
@@ -91,7 +96,6 @@ namespace AWSIM.PointCloudMapping
                 laneletVisualizer.Initialize(laneletMap);
                 laneletVisualizer.CreateCenterline(transform);
             }
-            
         }
 
 
@@ -99,6 +103,12 @@ namespace AWSIM.PointCloudMapping
 
         private void Update()
         {
+            //wait time mechanism 
+            if (Time.time - startTime < waitTime)
+            {
+                return;
+            }
+
             Debug.Log($"PointCloudMapper: {capturePoseQueue.Count} captures left");
             if (capturePoseQueue.Count == 0)
             {
@@ -109,14 +119,12 @@ namespace AWSIM.PointCloudMapping
             }
 
             var currentPose = capturePoseQueue.Dequeue();
-            
-            
-            
+
+
             //save car data
             vehicleGameObject.transform.position = currentPose.position;
             vehicleGameObject.transform.rotation = currentPose.rotation;
 
-            
 
             for (int i = 0; i < mappingSensors.Length; i++)
             {
@@ -126,25 +134,23 @@ namespace AWSIM.PointCloudMapping
                 var pos = ROS2Utility.UnityToRosPosition(mappingSensors[i].transform.position);
                 pos = pos + worldOriginROS;
                 rowLog += $"{pos.x},{pos.y},{pos.z}";
-            
+
                 //set rotation
-            
+
                 //rotation base on bus todo check correctness
                 Quaternion r = ROS2Utility.UnityToRosRotation(mappingSensors[i].transform.rotation);
                 rowLog += $",{r.w},{r.x},{r.y},{r.z} \n";
-            
-                CsvEditorUtils.AppendStringToFile(csvPath,rowLog);
 
+                CsvEditorUtils.AppendStringToFile(csvPath, rowLog);
             }
-            
-            
-            
-            
+
+
             foreach (var mappingSensor in mappingSensors)
             {
-                mappingSensor.CaptureStepByStep();
+                mappingSensor.CaptureStepByStep(useCarPos);
                 mappingSensor.SavePcdStepByStep(counter);
             }
+
             counter++;
         }
 
@@ -157,9 +163,8 @@ namespace AWSIM.PointCloudMapping
 
             foreach (var mappingSensor in mappingSensors)
             {
-                mappingSensor.Destroy();    
+                mappingSensor.Destroy();
             }
-            
         }
 
         private void SavePcd()

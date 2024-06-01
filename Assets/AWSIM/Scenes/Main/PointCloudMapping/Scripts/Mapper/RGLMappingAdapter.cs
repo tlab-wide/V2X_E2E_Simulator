@@ -24,13 +24,10 @@ namespace AWSIM.PointCloudMapping
     [RequireComponent(typeof(LidarSensor))]
     public class RGLMappingAdapter : MonoBehaviour
     {
-        [SerializeField]
-        [Tooltip("Enable/disable point cloud data downsampling")]
+        [SerializeField] [Tooltip("Enable/disable point cloud data downsampling")]
         private bool enableDownsampling;
 
-        [SerializeField]
-        [Tooltip("Resolution of point cloud data downsampling")]
-        [Min(0.000001f)]
+        [SerializeField] [Tooltip("Resolution of point cloud data downsampling")] [Min(0.000001f)]
         private float leafSize;
 
         private bool isInitialized = false;
@@ -46,7 +43,7 @@ namespace AWSIM.PointCloudMapping
         private string outputPcdFilePath;
 
         private Matrix4x4 worldTransform;
-        
+
         public void Awake()
         {
             lidarSensor = GetComponent<LidarSensor>();
@@ -56,9 +53,11 @@ namespace AWSIM.PointCloudMapping
         }
 
         // Empty function to make enable checkbox appear in the Inspector
-        public void Start() {}
+        public void Start()
+        {
+        }
 
-        
+
         public void Initialize(Vector3 worldOriginROS, string outputPcdFilePath)
         {
             if (isInitialized)
@@ -70,11 +69,11 @@ namespace AWSIM.PointCloudMapping
 
             // Create and connect subgraph
             worldTransform = ROS2.Transformations.Unity2RosMatrix4x4();
-            worldTransform.SetColumn(3, worldTransform.GetColumn(3) + (Vector4) worldOriginROS);
+            worldTransform.SetColumn(3, worldTransform.GetColumn(3) + (Vector4)worldOriginROS);
             rglSubgraphMapping = new RGLNodeSequence()
                 .AddNodePointsTransform(rosWorldTransformNodeId, worldTransform)
                 .AddNodePointsDownsample(downsampleNodeId, new Vector3(leafSize, leafSize, leafSize))
-                .AddNodePointsTemporalMerge(temporalMergeNodeId, new RGLField[1] {RGLField.XYZ_F32});
+                .AddNodePointsTemporalMerge(temporalMergeNodeId, new RGLField[1] { RGLField.XYZ_F32 });
 
             rglSubgraphMapping.SetActive(downsampleNodeId, enableDownsampling);
 
@@ -106,6 +105,7 @@ namespace AWSIM.PointCloudMapping
                 Debug.LogWarning("RGLMappingAdapter: skipped saving PCD file - empty point cloud");
                 return;
             }
+
             rglSubgraphMapping.SavePcdFile(outputPcdFilePath);
         }
 
@@ -130,19 +130,20 @@ namespace AWSIM.PointCloudMapping
                 bool pointCloudReduced = countAfterDownsample < countBeforeDownsample;
                 if (!pointCloudReduced)
                 {
-                    Debug.LogWarning($"Downsampling had no effect for '{name}'. If you see this message often, consider increasing leafSize.");
+                    Debug.LogWarning(
+                        $"Downsampling had no effect for '{name}'. If you see this message often, consider increasing leafSize.");
                 }
             }
         }
 
-        
+
         public void CaptureStepByStep()
         {
             rglSubgraphMapping.Clear();
             rglSubgraphMapping = new RGLNodeSequence()
                 .AddNodePointsTransform(rosWorldTransformNodeId, worldTransform)
                 .AddNodePointsDownsample(downsampleNodeId, new Vector3(leafSize, leafSize, leafSize))
-                .AddNodePointsTemporalMerge(temporalMergeNodeId, new RGLField[1] {RGLField.XYZ_F32});
+                .AddNodePointsTemporalMerge(temporalMergeNodeId, new RGLField[1] { RGLField.XYZ_F32 });
 
             rglSubgraphMapping.SetActive(downsampleNodeId, enableDownsampling);
 
@@ -150,7 +151,7 @@ namespace AWSIM.PointCloudMapping
 
             isInitialized = true;
 
-            
+
             if (!isInitialized)
             {
                 throw new Exception("Attempted to run RGLMappingAdapter without initialization!");
@@ -170,23 +171,22 @@ namespace AWSIM.PointCloudMapping
                 bool pointCloudReduced = countAfterDownsample < countBeforeDownsample;
                 if (!pointCloudReduced)
                 {
-                    Debug.LogWarning($"Downsampling had no effect for '{name}'. If you see this message often, consider increasing leafSize.");
+                    Debug.LogWarning(
+                        $"Downsampling had no effect for '{name}'. If you see this message often, consider increasing leafSize.");
                 }
             }
-            
-            
         }
 
-        private int counter = 1;
-        public void SavePcdStepByStep()
+
+        public void SavePcdStepByStep(int counter)
         {
             if (rglSubgraphMapping == null)
             {
                 Debug.LogWarning("RGLMappingAdapter: skipped saving PCD file - empty point cloud");
                 return;
             }
-            rglSubgraphMapping.SavePcdFile($"{outputPcdFilePath}_{counter}.pcd");
-            counter++;
+
+            rglSubgraphMapping.SavePcdFile($"{outputPcdFilePath}_{GetSensorName()}_{counter}.pcd");
         }
 
         // Called in PointCloudMapper.OnDestroy()
