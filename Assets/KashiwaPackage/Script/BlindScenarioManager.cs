@@ -10,20 +10,17 @@ using UnityEngine.UI;
 
 public class BlindScenarioManager : Singleton<BlindScenarioManager>
 {
-    public Color rsuLineColor = Color.green;
-    public Color lidarLineColor = Color.blue;
-    public Color cameraLineColor = Color.cyan;
-    public Color cameraRsuLineColor = Color.green;
+    
 
 
     // Start is called before the first frame update
 
     [SerializeField] private List<Scenario> scenarios;
 
-    [SerializeField] private Transform mainCamera;
+    // [SerializeField] private Transform mainCamera;
 
 
-    [SerializeField] private Transform busLidar;
+    // [SerializeField] private Transform busLidar;
 
     [SerializeField] private Scenario currentScenario;
     // [SerializeField] private Transform currentRSU;
@@ -36,20 +33,20 @@ public class BlindScenarioManager : Singleton<BlindScenarioManager>
     [SerializeField] private float checkFrequency = 2;
 
 
-    [SerializeField] private FreeCamera freeCamera;
 
-    [SerializeField] private GameObject linePoolParent;
 
-    [SerializeField] private Toggle cameraLinesToggle;
-    [SerializeField] private Toggle rsuLinesToggle;
-    [SerializeField] private Toggle lidarLinesToggle;
+    
+    //to use this feature you must add serialize field for them to attach them to something but additional lines approximately are deprecated from this project and use gizmos only 
+    private Toggle cameraLinesToggle;
+    private Toggle rsuLinesToggle;
+    private Toggle lidarLinesToggle;
 
 
     //serializeField is just for test remove it in future
-    [SerializeField] private bool showCameraLine = false;
-    [SerializeField] private bool showLidarLine = false;
-    [SerializeField] private bool showRsuLine = false;
-    [SerializeField] private bool showRsuCameraLine = false;
+    private bool showCameraLine = false;
+    private bool showLidarLine = false;
+    private bool showRsuLine = false;
+    private bool showRsuCameraLine = false;
 
 
     private LineRenderer[] lineRenderersPool;
@@ -116,7 +113,6 @@ public class BlindScenarioManager : Singleton<BlindScenarioManager>
     
     private void Awake()
     {
-        lineRenderersPool = linePoolParent.GetComponentsInChildren<LineRenderer>();
 
         //check active scenario
         currentScenario = null;
@@ -154,13 +150,13 @@ public class BlindScenarioManager : Singleton<BlindScenarioManager>
         currentScenario.transform.gameObject.SetActive(false);
     }
 
-    public void SwapCamera()
-    {
-        //toggle cameras
-        bool cameraState = mainCamera.gameObject.activeSelf;
-        mainCamera.gameObject.SetActive(!cameraState);
-        currentScenario.setCameraActivation(cameraState);
-    }
+    // public void SwapCamera()
+    // {
+    //     //toggle cameras
+    //     bool cameraState = mainCamera.gameObject.activeSelf;
+    //     mainCamera.gameObject.SetActive(!cameraState);
+    //     currentScenario.setCameraActivation(cameraState);
+    // }
 
 
     public Scenario getCurrentScenario()
@@ -169,20 +165,20 @@ public class BlindScenarioManager : Singleton<BlindScenarioManager>
     }
 
 
-    public Transform getBusLidar()
-    {
-        return busLidar;
-    }
+    // public Transform getBusLidar()
+    // {
+    //     return busLidar;
+    // }
 
     // public Transform getRSUsensor()
     // {
     //     return currentRSU;
     // }
 
-    public bool CheckIsBusLidar(Transform transform)
-    {
-        return transform == busLidar;
-    }
+    // public bool CheckIsBusLidar(Transform transform)
+    // {
+    //     return transform == busLidar;
+    // }
 
     // public bool CheckIsCrossRoadLidar(Transform transform)
     // {
@@ -245,8 +241,8 @@ public class BlindScenarioManager : Singleton<BlindScenarioManager>
         currentScenario.transform.gameObject.SetActive(true);
 
 
-        // if main camera is active bus camera must be off, on the other hand if main camera is off the bus camera will turn on  
-        currentScenario.setCameraActivation(!mainCamera.gameObject.activeSelf);
+        // // if main camera is active bus camera must be off, on the other hand if main camera is off the bus camera will turn on  
+        // currentScenario.setCameraActivation(!mainCamera.gameObject.activeSelf);
     }
 
 
@@ -260,13 +256,5 @@ public class BlindScenarioManager : Singleton<BlindScenarioManager>
     {
         SceneManager.LoadScene(0);
     }
-
-
-    private void Update()
-    {
-        if (Input.GetMouseButton(1))
-        {
-            freeCamera.enabled = !freeCamera.enabled;
-        }
-    }
+    
 }

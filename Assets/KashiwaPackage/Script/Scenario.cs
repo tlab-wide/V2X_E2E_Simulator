@@ -8,6 +8,12 @@ using YamlDotNet.Core.Tokens;
 
 public class Scenario : MonoBehaviour
 {
+    private static Color rsuLineColor = Color.green;
+    private static Color lidarLineColor = Color.blue;
+    private static Color cameraLineColor = Color.cyan;
+    private static Color cameraRsuLineColor = Color.green;
+
+
     [SerializeField] private List<MockSensor> busCameras;
     [SerializeField] private List<MockSensor> lidars;
 
@@ -57,7 +63,10 @@ public class Scenario : MonoBehaviour
 
     private void Start()
     {
-        lineRenderersPool = linePoolParent.GetComponentsInChildren<LineRenderer>();
+        if (linePoolParent != null)
+        {
+            lineRenderersPool = linePoolParent.GetComponentsInChildren<LineRenderer>();
+        }
     }
 
 
@@ -126,92 +135,89 @@ public class Scenario : MonoBehaviour
         // draw lines and config line renderers
 
 
-        if (lineRenderersPool == null)
+        if (linePoolParent.activeSelf && lineRenderersPool != null && lineRenderersPool.Length != 0)
         {
-            lineRenderersPool = linePoolParent.GetComponentsInChildren<LineRenderer>();
-        }
-
-
-        int lineIndex = 0;
-        foreach (KeyValuePair<MockSensor, List<Transform>> line in lines)
-        {
-            for (int i = 0; i < line.Value.Count; i++)
+            int lineIndex = 0;
+            foreach (KeyValuePair<MockSensor, List<Transform>> line in lines)
             {
-                Transform target = line.Value[i];
-                lineRenderersPool[lineIndex].enabled = true;
-                try
+                for (int i = 0; i < line.Value.Count; i++)
                 {
-                    lineRenderersPool[lineIndex].SetPosition(0, line.Key.transform.position);
-                    lineRenderersPool[lineIndex].SetPosition(1, target.position);
+                    Transform target = line.Value[i];
+                    lineRenderersPool[lineIndex].enabled = true;
+                    try
+                    {
+                        lineRenderersPool[lineIndex].SetPosition(0, line.Key.transform.position);
+                        lineRenderersPool[lineIndex].SetPosition(1, target.position);
+                    }
+                    catch (Exception e)
+                    {
+                        // this try catch remove the objects that have been remove because they reach at the end. 
+                        line.Value.Remove(target);
+                        continue;
+                    }
+
+
+                    //chose color of line
+                    Material material = lineRenderersPool[lineIndex].material;
+                    switch (line.Key.getMockSensorType())
+                    {
+                        case MockSensor.MockSensorType.OBU_LIDAR:
+                            if (BlindScenarioManager.Instance.GetShowLidarLine())
+                            {
+                                material.SetColor("_BaseColor", lidarLineColor);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+                            break;
+                        case MockSensor.MockSensorType.RSU_RSU:
+                            if (BlindScenarioManager.Instance.GetShowRsuLine())
+                            {
+                                material.SetColor("_BaseColor", rsuLineColor);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+                            break;
+                        case MockSensor.MockSensorType.OBU_CAMERA:
+                            if (BlindScenarioManager.Instance.GetShowCameraLine())
+                            {
+                                material.SetColor("_BaseColor", cameraLineColor);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+                            break;
+                        case MockSensor.MockSensorType.RSU_CAMERA:
+                            if (BlindScenarioManager.Instance.GetShowRsuCameraLine())
+                            {
+                                material.SetColor("_BaseColor", cameraRsuLineColor);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+                            break;
+                    }
+
+                    lineRenderersPool[lineIndex].material = material;
+
+                    lineIndex++;
                 }
-                catch (Exception e)
-                {
-                    // this try catch remove the objects that have been remove because they reach at the end. 
-                    line.Value.Remove(target);
-                    continue;
-                }
+            }
 
-
-                //chose color of line
-                Material material = lineRenderersPool[lineIndex].material;
-                switch (line.Key.getMockSensorType())
-                {
-                    case MockSensor.MockSensorType.OBU_LIDAR:
-                        if (BlindScenarioManager.Instance.GetShowLidarLine())
-                        {
-                            material.SetColor("_BaseColor", BlindScenarioManager.Instance.lidarLineColor);
-                        }
-                        else
-                        {
-                            continue;
-                        }
-
-                        break;
-                    case MockSensor.MockSensorType.RSU_RSU:
-                        if (BlindScenarioManager.Instance.GetShowRsuLine())
-                        {
-                            material.SetColor("_BaseColor", BlindScenarioManager.Instance.rsuLineColor);
-                        }
-                        else
-                        {
-                            continue;
-                        }
-
-                        break;
-                    case MockSensor.MockSensorType.OBU_CAMERA:
-                        if (BlindScenarioManager.Instance.GetShowCameraLine())
-                        {
-                            material.SetColor("_BaseColor", BlindScenarioManager.Instance.cameraLineColor);
-                        }
-                        else
-                        {
-                            continue;
-                        }
-
-                        break;
-                    case MockSensor.MockSensorType.RSU_CAMERA:
-                        if (BlindScenarioManager.Instance.GetShowRsuCameraLine())
-                        {
-                            material.SetColor("_BaseColor", BlindScenarioManager.Instance.cameraRsuLineColor);
-                        }
-                        else
-                        {
-                            continue;
-                        }
-
-                        break;
-                }
-
-                lineRenderersPool[lineIndex].material = material;
-
+            while (lineIndex < lineRenderersPool.Length)
+            {
+                lineRenderersPool[lineIndex].enabled = false;
                 lineIndex++;
             }
-        }
-
-        while (lineIndex < lineRenderersPool.Length)
-        {
-            lineRenderersPool[lineIndex].enabled = false;
-            lineIndex++;
         }
     }
 }
