@@ -147,7 +147,7 @@ namespace AWSIM.PointCloudMapping
                 return;
             }
 
-            lidarSensor.Capture(useCarPos);
+            lidarSensor.Capture();
 
             
             
