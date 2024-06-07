@@ -172,7 +172,7 @@ In this Phase we aim to subscribe to Awsim Topics. we try to subscibe to 2 topic
 
 <b>Step 1: Finding the topic informations</b>
 
-Use the command bellow to get the information of desiered topic
+Run the Awsim scene and use the command bellow to get the information of the desiered topic.
 
 ```bash
 ros2 topic info </topic_name>
@@ -180,9 +180,9 @@ ros2 topic info </topic_name>
 
 ![alt text](image-4.png)
 
-As we can see the type of the `/sensing/gnss/pose` topic is `geometry_msgs/msg/PoseStamped`.
+As we can see the message type of the `/sensing/gnss/pose` topic is `geometry_msgs/msg/PoseStamped`.
 
-<b>Step 2: Creating ROS node</b>
+<b>Step 2: Creating ROS subscriber node</b>
 
 Python code:
 
@@ -257,5 +257,228 @@ If you have not set up the [windows/WSL connection](../SystemSetup/Windows_WSL_C
 
 ### 2. `/vehicle/status/velocity_status` Topic
 
+<b>Step 1: Finding the topic informations</b>
+
+Run the Awsim scene and use the command bellow to get the information of the desiered topic.
+
+```bash
+ros2 topic info </topic_name>
+```
+
+![alt text](image-7.png)
+
+
+As you can see the message type of the `/vehicle/status/velocity_status` topic is `autoware_auto_vehicle_msgs/msg/VelocityReport`.
+
+<b>Step 2: Creating ROS subscriber node</b>
+
+```python
+#!/usr/bin/env python3
+
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+from geometry_msgs.msg import PoseStamped
+from autoware_auto_vehicle_msgs.msg import VelocityReport
+
+class GnssPoseSubscriber(Node):
+    def __init__(self):
+        super().__init__('Connection_Controller_sub')
+        self.get_logger().info("Node Cunstructed")
+        self.subscription = self.create_subscription(
+            VelocityReport,
+            '/vehicle/status/velocity_status',
+            self.listener_callback,
+            10
+        )
+        self.subscription
+    
+    def listener_callback(self, msg):
+        self.get_logger().info(
+            f'Received Velocity Report:\n'
+            f'Header:\n'
+            f'  Stamp:\n'
+            f'    sec: {msg.header.stamp.sec}\n'
+            f'    nanosec: {msg.header.stamp.nanosec}\n'
+            f'  Frame ID: {msg.header.frame_id}\n'
+            f'Longitudinal Velocity: {msg.longitudinal_velocity}\n'
+            f'Lateral Velocity: {msg.lateral_velocity}\n'
+            f'Heading Rate: {msg.heading_rate}\n'
+        )
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    _node = GnssPoseSubscriber()
+    rclpy.spin(_node)
+    _node.destroy_node()
+    rclpy.shutdown()
+
+    
+
+if __name__ == '__main__':
+    main()
+```
+
+setup.py:
+```python
+entry_points={
+        'console_scripts': [
+            'ConnectionControlNode = inspector.ConnectionController:main',
+        ],
+    },
+```
+
+package.xml:
+```python
+  <build_depend>autoware_auto_vehicle_msgs</build_depend>
+  <exec_depend>autoware_auto_vehicle_msgs</exec_depend>
+```
+
+After applying the mentioned modification, source the workplace and run the `colcon build` in workspace root. Then, run the node
+```bash
+ros2 run my_package ConnectionControllerNode
+```
+
+![alt text](image-6.png)
+
+
+## Phase No.3 - Publishing to Awsim Topics
+
+In this phase we are going to move the vehicle in Awsim. To do this, we have to publish into atleast to topics.
+1. `/control/command/control_cmd`: For controlling the vehicle speed.
+2. `/control/command/gear_cmd`: For changing the gear to Drive mode.
+
+### List of Subscribers of Awsim
+
+| Category | Topic                                 | Message type                                      |
+|----------|---------------------------------------|--------------------------------------------------|
+| Control  | /control/command/control_cmd          | autoware_auto_control_msgs/AckermannControlCommand|
+| Control  | /control/command/gear_cmd             | autoware_auto_vehicle_msgs/GearCommand            |
+| Control  | /control/command/turn_indicators_cmd  | autoware_auto_vehicle_msgs/TurnIndicatorsCommand  |
+| Control  | /control/command/hazard_lights_cmd    | autoware_auto_vehicle_msgs/HazardLightsCommand    |
+| Control  | /control/command/emergency_cmd        | tier4_vehicle_msgs/msg/VehicleEmergencyStamped    |
+
+![alt text](image-8.png)
+
+### ROS2 Node
+
+Use the code below to move the vehicle.
+
+```python
+import rclpy
+from rclpy.node import Node
+from autoware_auto_control_msgs.msg import AckermannControlCommand, AckermannLateralCommand, LongitudinalCommand
+from builtin_interfaces.msg import Time
+from rclpy.qos import QoSProfile, DurabilityPolicy, HistoryPolicy, ReliabilityPolicy  # Import necessary modules
+from autoware_auto_vehicle_msgs.msg import GearCommand
+
+class AckermannControlPublisher(Node):
+
+    def __init__(self):
+        super().__init__('ackermann_control_publisher')
+
+        # Create a QoS profile with all required settings
+        qos_profile = QoSProfile(
+            reliability=ReliabilityPolicy.RELIABLE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL
+        )
+
+       # Create publishers for control and gear commands
+        self.control_publisher = self.create_publisher(AckermannControlCommand, '/control/command/control_cmd', qos_profile)
+        self.gear_publisher = self.create_publisher(GearCommand, '/control/command/gear_cmd', qos_profile)
+
+        # Create a timer for publishing commands
+        self.timer = self.create_timer(0.5, self.callback)
+
+    def callback(self):
+        # Create and publish control command
+        control_msg = AckermannControlCommand()
+        control_msg.stamp = self.get_clock().now().to_msg()
+        control_msg.lateral = self.get_lateral_command()
+        control_msg.longitudinal = self.get_longitudinal_command()
+        self.control_publisher.publish(control_msg)
+
+        # Create and publish gear command
+        gear_msg = GearCommand()
+        gear_msg.stamp = self.get_clock().now().to_msg()
+        gear_msg.command = GearCommand.DRIVE
+        self.gear_publisher.publish(gear_msg)
+    
+        self.get_logger().info("Publishing")
+
+    def get_lateral_command(self):
+        lateral_command = AckermannLateralCommand()
+        lateral_command.steering_tire_angle = 0.0  # example value
+        lateral_command.steering_tire_rotation_rate = 0.0  # example value
+        return lateral_command
+
+    def get_longitudinal_command(self):
+        longitudinal_command = LongitudinalCommand()
+        longitudinal_command.speed = 2.0  # example value
+        longitudinal_command.acceleration = 0.5  # example value
+        return longitudinal_command
+    
+    def get_gear_command(self):
+        gear = GearCommand()
+        gear.stamp=self.get_clock().now().to_msg()
+        gear.command=GearCommand.DRIVE
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = AckermannControlPublisher()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+
+```
+
+Make sure to define the QoS like the code above. [Quallity of service setting](https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Quality-of-Service-Settings.html)
+
+setup.py
+```python
+entry_points={
+        'console_scripts': [
+            'ackermann_control_publisher = your_package.control_publisher:main',
+        ],
+    },
+```
+
+package.xml
+```python
+<build_depend>rclpy</build_depend>
+<build_depend>std_msgs</build_depend>
+<build_depend>geometry_msgs</build_depend>
+<build_depend>autoware_auto_vehicle_msgs</build_depend>
+<build_depend>autoware_auto_control_msgs</build_depend>
+<build_depend>builtin_interfaces</build_depend>
+
+<exec_depend>autoware_auto_control_msgs</exec_depend>
+<exec_depend>builtin_interfaces</exec_depend>
+<exec_depend>autoware_auto_vehicle_msgs</exec_depend>
+
+<test_depend>ament_copyright</test_depend>
+<test_depend>ament_flake8</test_depend>
+<test_depend>ament_pep257</test_depend>
+<test_depend>python3-pytest</test_depend>
+<exec_depend>custom_interfaces</exec_depend>
+```
+
+Now run the Awsim scene and then run the node.
+
+```bash
+cd ~/ros_ws
+colcon build --packages-select your_package
+ros2 run inspector ackermann_control_publisher
+```
+
+<video width="1920" controls autoplay muted loop>
+<source src="awsim_control_command.mp4" type="video/mp4">
+</video>
 
 
