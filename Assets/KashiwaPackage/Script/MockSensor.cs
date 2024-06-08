@@ -14,13 +14,15 @@ public class MockSensor : MonoBehaviour
     [SerializeField] private MockSensorType mockSensorType = MockSensorType.OBU_LIDAR;
 
     [SerializeField] private float Hfov = 180;
-    [FormerlySerializedAs("observableAngleY")] [SerializeField] private float Vfov = 180;
+
+    [FormerlySerializedAs("observableAngleY")] [SerializeField]
+    private float Vfov = 180;
 
     [SerializeField] private List<Transform> seenObjects = new List<Transform>();
     [SerializeField] private float maxDistance = 50;
 
     private Viewcone myCone;
-    
+
 
     public MockSensorType getMockSensorType()
     {
@@ -30,46 +32,41 @@ public class MockSensor : MonoBehaviour
     private void OnEnable()
     {
         BlindScenarioManager.Instance.getCurrentScenario().addSensorsList(this, seenObjects);
-        
     }
 
     public string getName()
     {
         return this.name;
     }
+
     private void Start()
     {
         ConfigFile.Instance.AddToConfig(this);
         CheckConfigExist();
-        
+
         //setupCone
-        myCone= GetComponentInChildren<Viewcone>();
+        myCone = GetComponentInChildren<Viewcone>();
         if (myCone != null)
         {
             if (ConfigFile.Instance.IsConeActive(mockSensorType))
             {
-
                 myCone.Length = maxDistance;
                 myCone.Rebuild();
 
                 // TO reduce 
                 float Xangle = Hfov >= 70 ? 70 : Hfov;
                 Xangle = Xangle * Mathf.Deg2Rad;
-                
+
                 float Yangle = Vfov >= 70 ? 70 : Vfov;
                 Yangle = Yangle * Mathf.Deg2Rad;
 
                 myCone.transform.localScale = new Vector3((float)(Mathf.Tan(Xangle) * myCone.Length),
-                    (float)(Mathf.Tan(Yangle) * myCone.Length),1);
-                
-                
+                    (float)(Mathf.Tan(Yangle) * myCone.Length), 1);
             }
             else
             {
                 myCone.gameObject.SetActive(false);
             }
-
-
         }
     }
 
@@ -101,7 +98,7 @@ public class MockSensor : MonoBehaviour
         {
             return false;
         }
-        
+
         Vector3 targetInXY = Vector3.ProjectOnPlane(targetVector, this.transform.right);
         float angleY = Vector3.Angle(this.transform.forward, targetInXY);
         if (angleY > 90)
@@ -177,7 +174,25 @@ public class MockSensor : MonoBehaviour
 
     public List<Transform> GetSeenObjects()
     {
+        RemoveDeletedObjects();
         return seenObjects;
+    }
+
+    private void RemoveDeletedObjects()
+    {
+        int i = 0;
+
+        while (i<seenObjects.Count)
+        {
+            if (seenObjects[i] == null)
+            {
+                seenObjects.RemoveAt(i);
+            }
+            else
+            {
+                i++;
+            }
+        }
     }
 
     //this function returns feature of sensor as class that can store in config file
@@ -218,7 +233,7 @@ public class MockSensor : MonoBehaviour
         category = configSensor.category;
 
         maxDistance = configSensor.maxDistance;
-        
+
         // cone setup
         ConfigFile.SensorCategory sensorCategory = ConfigFile.Instance.GetMyCategoryConfig(category);
 
@@ -227,20 +242,17 @@ public class MockSensor : MonoBehaviour
             Debug.Log("category is null");
             return;
         }
-        
+
         Hfov = sensorCategory.HFOV;
         Vfov = sensorCategory.VFOV;
-        
-        
-        
     }
 
-    
+
     [Serializable]
     public enum MockSensorType
     {
-        OBU_LIDAR = 1 ,
-        RSU_RSU  = 2,
+        OBU_LIDAR = 1,
+        RSU_RSU = 2,
         OBU_CAMERA = 3,
         RSU_CAMERA = 4,
     }

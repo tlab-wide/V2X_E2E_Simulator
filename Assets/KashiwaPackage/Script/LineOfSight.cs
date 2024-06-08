@@ -337,13 +337,13 @@ public class LineOfSight : MonoBehaviour
         
         if (carName.IndexOf(truck) >= 0)
         {
-            Debug.Log("Truck catched");
+            // Debug.Log("Truck catched");
             return ObjectClassification.TRUCK;
         }
 
         if (carName.IndexOf(bus) >= 0)
         {
-            Debug.Log("Bus catched");
+            // Debug.Log("Bus catched");
             return ObjectClassification.BUS;
         }
 

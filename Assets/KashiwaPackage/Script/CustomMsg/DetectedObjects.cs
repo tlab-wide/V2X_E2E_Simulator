@@ -43,7 +43,7 @@ namespace AWSIM
         private CooperativeObjectsMessage msg;
 
         // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
             msg = new CooperativeObjectsMessage();
 
@@ -57,14 +57,11 @@ namespace AWSIM
             var qos = QosSettings.GetQoSProfile();
             poseStampedPublisher = SimulatorROS2Node.CreatePublisher<CooperativeObjectsMessage>(Topic, qos);
 
-            StartCoroutine(CheckMockSensors());
         }
 
-        IEnumerator CheckMockSensors()
+        private void CheckMockSensors()
         {
-            while (true)
-            {
-                List<PredictedObject> predictedObjects = new List<PredictedObject>();
+            List<PredictedObject> predictedObjects = new List<PredictedObject>();
                 List<Transform> haveSeen = new List<Transform>();
                 for (int i = 0; i < sensors.Count; i++)
                 {
@@ -165,9 +162,25 @@ namespace AWSIM
                 poseStampedPublisher.Publish(msg);
 
                 //todo prediction for RSU 
+                
+        }
+        
+        
+        private float timer;
 
-                yield return new WaitForSeconds(1 / Hz);
-            }
+        public void FixedUpdate()
+        {
+            timer += Time.deltaTime;
+            // timer += Time.fixedDeltaTime;
+
+
+            var interval = 1.0f / (Hz*2);
+            if (timer + 0.00001f < interval)
+                return;
+
+            timer = 0;
+
+            CheckMockSensors();
         }
     }
 }

@@ -48,15 +48,15 @@ public class Scenario : MonoBehaviour
         if (preferredPositionForMainCamera != null)
         {
             Camera camera = Camera.main;
-            Debug.Log("khast taghir beder");
-            Debug.Log(camera.gameObject.name);
+            // Debug.Log("khast taghir beder");
+            // Debug.Log(camera.gameObject.name);
 
             camera.transform.position = preferredPositionForMainCamera.position;
             camera.transform.rotation = preferredPositionForMainCamera.rotation;
         }
         else
         {
-            Debug.Log("vard entekhab nashodesh");
+            // Debug.Log("vard entekhab nashodesh");
         }
     }
 
