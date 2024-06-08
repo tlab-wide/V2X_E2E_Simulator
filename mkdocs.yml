@@ -26,9 +26,18 @@ theme:
     - content.tabs.link
     - search.suggest
     # - search.highlight
+    - content.code.copy
   icon:
     repo: fontawesome/brands/github    
 
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
 
 markdown_extensions:
   - tables
@@ -74,6 +83,7 @@ nav:
     - Pseudo Sensor:
       - Pseudo Sensor: Components/PseudoSensors/PseudoSensors/index.md
       - Add new Pseudo Sensor: Components/PseudoSensors/AddNewPseudoSensors/index.md
+      - Noise Setting: Components/PseudoSensors/NoiseSetting/index.md
     - Vehicle: 
       - URDF And Sensors: Components/Vehicle/URDFAndSensors/index.md
       - Add New Vehicle:
@@ -89,6 +99,17 @@ nav:
     - PCD Scanner: Components/PCDScanner/index.md
     - Logger: Components/Logger/index.md
   
+  - Simple-AV: 
+    - Introduction: Simple-AV/Description/index.md
+    - Setting up the System: 
+      - Introduction: Simple-AV/SystemSetup/intro/index.md
+      - WSL2 Installation: Simple-AV/SystemSetup/WSL/index.md
+      - ROS2 Installation: Simple-AV/SystemSetup/InstallingROS2/index.md
+      - AWSIM on Windows: Simple-AV/SystemSetup/AWSIM_on_Windows/index.md
+      - Windows/WSL Connection: Simple-AV/SystemSetup/Windows_WSL_Connection/index.md
+    - Add Awsim msg: Simple-AV/Add Awsim msg/index.md
+    - CommunicatingWithAWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
+    - CSV_Definition: Simple-AV/CSV_Definition/index.md
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
   - License: License/index.md
