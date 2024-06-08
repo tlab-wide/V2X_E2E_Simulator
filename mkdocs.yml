@@ -83,6 +83,7 @@ nav:
     - Pseudo Sensor:
       - Pseudo Sensor: Components/PseudoSensors/PseudoSensors/index.md
       - Add new Pseudo Sensor: Components/PseudoSensors/AddNewPseudoSensors/index.md
+      - Noise Setting: Components/PseudoSensors/NoiseSetting/index.md
     - Vehicle: 
       - URDF And Sensors: Components/Vehicle/URDFAndSensors/index.md
       - Add New Vehicle:

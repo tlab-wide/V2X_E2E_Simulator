@@ -480,5 +480,3 @@ ros2 run inspector ackermann_control_publisher
 <video width="1920" controls autoplay muted loop>
 <source src="awsim_control_command.mp4" type="video/mp4">
 </video>
-
-
