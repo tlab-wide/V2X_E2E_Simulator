@@ -41,5 +41,14 @@ public class MapSettingEditor : Editor
             myScript.ReadCSVAndInstantiate();
         }
         
+        if(GUILayout.Button("Rename sequential"))
+        {
+            myScript.RenameChildrenSequential();
+        }
+        
+        if(GUILayout.Button("csv from lanelet"))
+        {
+            myScript.MakeCsvFromLaneLet();
+        }
     }
 }

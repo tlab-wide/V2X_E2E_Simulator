@@ -115,9 +115,9 @@ public class SensorsMessage : MonoBehaviour
                     }
                     else
                     {
-                        DetectedObject.Shape.Dimensions.X = 1;
-                        DetectedObject.Shape.Dimensions.Y = 1;
-                        DetectedObject.Shape.Dimensions.Z = 1;
+                        DetectedObject.Shape.Dimensions.X = 0.7f;
+                        DetectedObject.Shape.Dimensions.Y = 0.7f;
+                        DetectedObject.Shape.Dimensions.Z = 1.7f;
                     }
 
                     //handling type

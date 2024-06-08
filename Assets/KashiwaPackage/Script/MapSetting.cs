@@ -1,12 +1,25 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using AWSIM;
 using AWSIM.TrafficSimulation;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class MapSetting : MonoBehaviour
 {
+    [Header("Lanelet To CSV ")] [SerializeField]
+    private GameObject parentOfLanelet;
+
+
+    [Header("Rename Tool")] [SerializeField]
+    private string baseName = "lanelet";
+
+    [SerializeField] private GameObject parentOfRename;
+
+
     [Header("Replacer")] [SerializeField] private Transform replaceParent;
 
     [FormerlySerializedAs("newParentToReplace")] [SerializeField]
@@ -53,11 +66,11 @@ public class MapSetting : MonoBehaviour
             {
                 // Split each line into x, y, z valuesa
                 string[] values = line.Split(',');
-                if (values.Length <3)
+                if (values.Length < 3)
                 {
                     values = line.Split(' ');
                 }
-                
+
                 if (values.Length == 3)
                 {
                     // Parse the position values
@@ -257,6 +270,121 @@ public class MapSetting : MonoBehaviour
             {
                 Destroy(meshColliders[i]);
             }
+        }
+    }
+
+
+    public void RenameChildrenSequential()
+    {
+        TrafficLane[] trafficLanes = parentOfRename.GetComponentsInChildren<TrafficLane>();
+        int counter = 1;
+
+        foreach (TrafficLane lane in trafficLanes)
+        {
+            lane.transform.gameObject.name = baseName + counter;
+            counter++;
+        }
+    }
+
+    public void MakeCsvFromLaneLet()
+    {
+        TrafficLane[] trafficLanes = parentOfLanelet.GetComponentsInChildren<TrafficLane>();
+        LaneLets laneLets = new LaneLets();
+
+        for (int i = 0; i < trafficLanes.Length; i++)
+        {
+            Lane lane = new Lane(trafficLanes[i].name);
+            lane.waypoints = lane.ConvertVector3ArrayToFloatList(trafficLanes[i].Waypoints);
+            lane.prevLanes = lane.ExtractNameOfLanesFromList(trafficLanes[i].PrevLanes);
+            lane.nextLanes = lane.ExtractNameOfLanesFromList(trafficLanes[i].NextLanes);
+
+            if (trafficLanes[i].StopLine != null)
+            {
+                StopLine stopLine = trafficLanes[i].StopLine;
+                lane.stopLinePoseP1 = new List<float>()
+                    { stopLine.Points[0][0], stopLine.Points[0][1], stopLine.Points[0][2] };
+                lane.stopLinePoseP2 = new List<float>()
+                    { stopLine.Points[1][0], stopLine.Points[1][1], stopLine.Points[1][2] };
+
+                if (stopLine.TrafficLight != null)
+                {
+                    TrafficLight trafficLight = stopLine.TrafficLight;
+
+                    TrafficLightLaneletID laneletID = trafficLight.GetComponent<TrafficLightLaneletID>();
+
+
+                    if (laneletID != null)
+                    {
+                        lane.trafficlightsWayIDs.Add(laneletID.wayID);
+                    }
+                }
+            }
+            
+            laneLets.LaneLetsArray.Add(lane);
+        }
+
+        string save = JsonUtility.ToJson(laneLets);
+        CsvEditorUtils.AppendStringToFile("laneletJson.csv",save);
+        Debug.Log($"Done {laneLets.LaneLetsArray.Count}");
+    }
+
+    [Serializable]
+    public class LaneLets
+    {
+        public List<Lane> LaneLetsArray;
+
+        public LaneLets()
+        {
+            LaneLetsArray = new List<Lane>();
+        }
+    }
+
+
+    [Serializable]
+    public class Lane
+    {
+        public string name;
+        public List<List<float>> waypoints;
+        public List<string> prevLanes;
+        public List<string> nextLanes;
+        public List<long> trafficlightsWayIDs;
+        public List<float> stopLinePoseP1;
+        public List<float> stopLinePoseP2;
+
+        public Lane(string name)
+        {
+            this.name = name;
+            this.waypoints = new List<List<float>>();
+            this.prevLanes = new List<string>();
+            this.nextLanes = new List<string>();
+            this.stopLinePoseP1 = new List<float>();
+            this.stopLinePoseP2 = new List<float>();
+            this.trafficlightsWayIDs = new List<long>();
+        }
+
+        public List<List<float>> ConvertVector3ArrayToFloatList(Vector3[] vector3List)
+        {
+            List<List<float>> floatList = new List<List<float>>();
+
+            foreach (Vector3 vector in vector3List)
+            {
+                List<float> floatVector = new List<float> { vector.x, vector.y, vector.z };
+                floatList.Add(floatVector);
+            }
+
+            return floatList;
+        }
+
+        public List<string> ExtractNameOfLanesFromList(List<TrafficLane> trafficLanes)
+        {
+            List<string> names = new List<string>();
+
+            foreach (TrafficLane trafficLane in trafficLanes)
+            {
+                names.Add(trafficLane.name);
+            }
+
+            return names;
         }
     }
 }

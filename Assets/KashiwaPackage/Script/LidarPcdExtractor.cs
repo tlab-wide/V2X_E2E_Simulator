@@ -80,7 +80,7 @@ namespace AWSIM.PointCloudMapping
 
             for (int i = 0; i < mappingSensors.Length; i++) //TODO can be removed
             {
-                mappingSensors[i].Initialize(worldOriginROS, $"{Application.dataPath}/{outputPcdFilePath}");
+                mappingSensors[i].Initialize(mappingSensors[i].transform.position, $"{Application.dataPath}/{outputPcdFilePath}");
             }
             // mappingSensor.Initialize(worldOriginROS, $"{Application.dataPath}/{outputPcdFilePath}");
 
@@ -147,7 +147,7 @@ namespace AWSIM.PointCloudMapping
 
             foreach (var mappingSensor in mappingSensors)
             {
-                mappingSensor.CaptureStepByStep(useCarPos);
+                mappingSensor.CaptureStepByStep(useCarPos,worldOriginROS - mappingSensor.transform.position);
                 mappingSensor.SavePcdStepByStep(counter);
             }
 
