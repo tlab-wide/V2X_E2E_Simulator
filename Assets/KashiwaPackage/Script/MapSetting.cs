@@ -319,12 +319,12 @@ public class MapSetting : MonoBehaviour
                     }
                 }
             }
-            
+
             laneLets.LaneLetsArray.Add(lane);
         }
 
         string save = JsonUtility.ToJson(laneLets);
-        CsvEditorUtils.AppendStringToFile("laneletJson.csv",save);
+        CsvEditorUtils.AppendStringToFile("laneletJson.csv", save);
         Debug.Log($"Done {laneLets.LaneLetsArray.Count}");
     }
 
@@ -339,12 +339,27 @@ public class MapSetting : MonoBehaviour
         }
     }
 
+    [Serializable]
+    public class Vector3Custom
+    {
+        public float x;
+        public float y;
+        public float z;
+
+        public Vector3Custom(float x, float y, float z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
 
     [Serializable]
     public class Lane
     {
         public string name;
-        public List<List<float>> waypoints;
+        public List<Vector3Custom> waypoints;
         public List<string> prevLanes;
         public List<string> nextLanes;
         public List<long> trafficlightsWayIDs;
@@ -354,7 +369,7 @@ public class MapSetting : MonoBehaviour
         public Lane(string name)
         {
             this.name = name;
-            this.waypoints = new List<List<float>>();
+            this.waypoints = new List<Vector3Custom>();
             this.prevLanes = new List<string>();
             this.nextLanes = new List<string>();
             this.stopLinePoseP1 = new List<float>();
@@ -362,13 +377,13 @@ public class MapSetting : MonoBehaviour
             this.trafficlightsWayIDs = new List<long>();
         }
 
-        public List<List<float>> ConvertVector3ArrayToFloatList(Vector3[] vector3List)
+        public List<Vector3Custom> ConvertVector3ArrayToFloatList(Vector3[] vector3List)
         {
-            List<List<float>> floatList = new List<List<float>>();
+            List<Vector3Custom> floatList = new List<Vector3Custom>();
 
             foreach (Vector3 vector in vector3List)
             {
-                List<float> floatVector = new List<float> { vector.x, vector.y, vector.z };
+                Vector3Custom floatVector = new Vector3Custom(vector.x, vector.y, vector.z);
                 floatList.Add(floatVector);
             }
 

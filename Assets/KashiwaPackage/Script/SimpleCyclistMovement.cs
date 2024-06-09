@@ -6,12 +6,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class SimpleCyclistMovement : MonoBehaviour
 {
-    [SerializeField] float duration =7;
+    [SerializeField] float duration = 7;
     [SerializeField] float speed = 3;
     [SerializeField] TrafficLight trafficLight;
     [SerializeField] private float CheckTrafficLightTime = 1.0f;
-
-    
 
 
     private Rigidbody npcCyclist;
@@ -20,9 +18,8 @@ public class SimpleCyclistMovement : MonoBehaviour
     Vector3 currentPosition;
     Quaternion currentRotation;
     private Animator animator;
-    
-    
-    
+
+
     void Awake()
     {
         npcCyclist = GetComponent<Rigidbody>();
@@ -31,7 +28,6 @@ public class SimpleCyclistMovement : MonoBehaviour
         currentPosition = transform.position;
         currentRotation = transform.rotation;
         animator = this.transform.GetComponent<Animator>();
-        
     }
 
     void Start()
@@ -45,10 +41,10 @@ public class SimpleCyclistMovement : MonoBehaviour
         {
             yield return WaitForTrafficLight(CheckTrafficLightTime);
             yield return MoveForwardRoutine(duration, -speed);
-            yield return RotateRoutine(0.5f, 360f);
+            yield return RotateRoutine(180, 50);
             yield return WaitForTrafficLight(CheckTrafficLightTime);
-            yield return MoveForwardRoutine(duration, -speed);
-            yield return RotateRoutine(0.5f, 360f);
+            yield return MoveForwardRoutine(duration, +speed);
+            yield return RotateRoutine(180, 50);
             // var npcTransformPos = npcPedestrian.transform.position;
 
             // reset
@@ -70,18 +66,53 @@ public class SimpleCyclistMovement : MonoBehaviour
         }
     }
 
-    IEnumerator RotateRoutine(float duration, float angularSpeed)
+    // IEnumerator RotateRoutine(float duration, float angularSpeed)
+    // {
+    //     var startTime = Time.fixedTime;
+    //     while (Time.fixedTime - startTime < duration)
+    //     {
+    //         yield return new WaitForFixedUpdate();
+    //         currentRotation *= Quaternion.AngleAxis(angularSpeed * Time.fixedDeltaTime, Vector3.up);
+    //         npcCyclist.MoveRotation(currentRotation);
+    //     }
+    // }
+
+    IEnumerator RotateRoutine(float angle, float angularSpeed)
     {
-        var startTime = Time.fixedTime;
-        while (Time.fixedTime - startTime < duration)
+        float currentAngle = transform.rotation.eulerAngles.y;
+        float targetAngle = (currentAngle + angle) % 360;
+
+        if (targetAngle > currentAngle)
         {
-            yield return new WaitForFixedUpdate();
-            currentRotation *= Quaternion.AngleAxis(angularSpeed * Time.fixedDeltaTime, Vector3.up);
-            npcCyclist.MoveRotation(currentRotation);
+            while (transform.eulerAngles.y < targetAngle)
+            {
+                yield return new WaitForFixedUpdate();
+                Debug.Log(transform.eulerAngles.y);
+                transform.eulerAngles += Vector3.up * angularSpeed * Time.fixedDeltaTime;
+            }
+        }
+        else
+        {
+            while ((currentAngle <= transform.eulerAngles.y) ||
+                   (transform.eulerAngles.y < targetAngle))
+            {
+                yield return new WaitForFixedUpdate();
+                Debug.Log("--" + transform.eulerAngles.y + "__" + targetAngle);
+                transform.eulerAngles += Vector3.up * angularSpeed * Time.fixedDeltaTime;
+            }
         }
     }
-    
-    
+
+    public float NormalizeEulerAngles(float eulerAngles)
+    {
+        eulerAngles = Mathf.Repeat(eulerAngles, 360f);
+
+        // Optional: Restrict to a specific range like -180 to 180 degrees
+        eulerAngles = Mathf.Clamp(eulerAngles, -180f, 180f);
+
+        return eulerAngles;
+    }
+
     IEnumerator WaitForTrafficLight(float waitTime)
     {
         while (!CheckTrafficLight())
@@ -90,7 +121,7 @@ public class SimpleCyclistMovement : MonoBehaviour
             yield return new WaitForSeconds(waitTime);
         }
 
-        
+
         animator.enabled = true;
     }
 
@@ -100,7 +131,7 @@ public class SimpleCyclistMovement : MonoBehaviour
         {
             return true;
         }
-            
+
         var trafficLightBulbData = trafficLight.GetBulbData();
         //Fill TrafficSignal with bulbData
         byte color = 0;
@@ -122,7 +153,7 @@ public class SimpleCyclistMovement : MonoBehaviour
             return false;
         }
     }
-        
+
     private bool isBulbTurnOn(TrafficLight.BulbStatus bulbStatus)
     {
         return bulbStatus == TrafficLight.BulbStatus.SOLID_ON || bulbStatus == TrafficLight.BulbStatus.FLASHING;

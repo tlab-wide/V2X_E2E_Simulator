@@ -12,7 +12,7 @@ public class LogAutonomous : MonoBehaviour
 {
     [SerializeField] private string logPathCars;
 
-    public int waitFrames = 30;
+    // public int waitFrames = 30;
     public float waitTime = 0.005f;
 
 
@@ -113,10 +113,10 @@ public class LogAutonomous : MonoBehaviour
         }
     }
 
-    public int getWaitFrames()
-    {
-        return waitFrames;
-    }
+    // public int getWaitFrames()
+    // {
+    //     return waitFrames;
+    // }
     
     
     private IEnumerator HandleCsvHeaderBus() //todo can be remove and use CsvEditorUtils
