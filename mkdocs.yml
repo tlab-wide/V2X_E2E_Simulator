@@ -86,11 +86,7 @@ nav:
       - Noise Setting: Components/PseudoSensors/NoiseSetting/index.md
     - Vehicle: 
       - URDF And Sensors: Components/Vehicle/URDFAndSensors/index.md
-      - Add New Vehicle:
-        - Add Vehicle: Components/Vehicle/AddNewVehicle/AddAVehicle/index.md
-        - Add Colliders: Components/Vehicle/AddNewVehicle/AddColliders/index.md
-        - Add Sensors: Components/Vehicle/AddNewVehicle/AddSensors/index.md
-        - Add Visual Elements: Components/Vehicle/AddNewVehicle/AddVisualElements/index.md
+      - Add New Vehicle: Components/Vehicle/AddNewVehicle/index.md
     - RSU: 
       - RSU: Components/RSU/RSU/index.md
       - Add new RSU: Components/RSU/AddNewRSU/index.md
