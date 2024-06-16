@@ -34,7 +34,6 @@ After running the command above a new window will appear. In this window unchek 
 Now, if you uncheck the `dead sinks`, rqt-graph shows the topics that Awsim publishes.
 
 ![alt text](image-4.png)
-
 ------------------------------------------------------------
 
 currently we are unable to access all of the topics and we must define message types of the topics. From the list of topics there are only 5 of the topics that are accessible and we can read them right now.
