@@ -94,6 +94,7 @@ nav:
     - Traffic: Components/Traffic/index.md
     - PCD Scanner: Components/PCDScanner/index.md
     - Logger: Components/Logger/index.md
+    - Pedestrian & Cyclist: Components/Pedestrian/index.md
   
   - Simple-AV: 
     - Introduction: Simple-AV/Description/index.md
