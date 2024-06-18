@@ -1,14 +1,21 @@
 # Build AWSIM Messages
 
+
+## TODOs    
+- [1] Add the `V2X Messages Link`.
+- [2] remove the list of topics at the end of the file.
+
 ## Awsim Topics
 
-<b>Run The Awsim Scene</b>
+AWSIM uses topics to send and receive data. It publishes data like position, lidar sensing, vehicle status, and even user-defined data using ROS topics. It also subscribes to topics containing control command data to move the vehicle.
 
-![alt text](image.png)
+A few of these topics, such as `gnss/sensing/pose` which determines the exact position of the vehicle, use messages that are already defined in ROS. However, other topics use custom messages that need to be defined to read and use them.
 
-<b>Run WSL</b>
+[Awsim ROS2 topic lists](https://tier4.github.io/AWSIM/Components/ROS2/ROS2TopicList/) Shows the full information on these topics and their relation. These topics can be shown on your system using the following process.
 
-Run the WSL and source the ROS2 init using the command below:
+<b>Run Awsim and WSL</b>
+
+First, run the Awsim or the built scene of it. You can use [this scene](TODO: link of the awsim scene). Secondly, Run the WSL and source the ROS2 init using the command below:
 
 ```bash
 source /opt/ros/humble/setup.bash
@@ -20,7 +27,7 @@ After sourcing the ROS2 you can get a topic list and see the all the topics that
 
 <b>Topics</b>
 
-The list of Topics above shows all the topics related to Awsim. But, which one of them are being published by Awsim and which ones do the Awsim subscives to. Generally Awsim publishes all of the topics instead the Control command ones. You can see the full relation and published/subscribed topics using the command below. Also, you can visit [Awsim ROS2 topic lists](https://tier4.github.io/AWSIM/Components/ROS2/ROS2TopicList/) from the Awsim Documentation.
+The list of Topics above shows all the topics related to Awsim. But, which one of them are being published by Awsim and which ones do the Awsim subscives to. Generally Awsim publishes all of the topics instead the Control command ones. You can see the full relation and published/subscribed topics using the command below.
 
 ```bash
 rqt_graph
