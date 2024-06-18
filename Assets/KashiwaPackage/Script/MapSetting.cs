@@ -6,11 +6,12 @@ using AWSIM.TrafficSimulation;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Environment = AWSIM.Environment;
 using Random = UnityEngine.Random;
 
 public class MapSetting : MonoBehaviour
 {
-    [Header("Lanelet To CSV ")] [SerializeField]
+    [Header("Lanelet To Json ")] [SerializeField]
     private GameObject parentOfLanelet;
 
 
@@ -294,6 +295,7 @@ public class MapSetting : MonoBehaviour
         for (int i = 0; i < trafficLanes.Length; i++)
         {
             Lane lane = new Lane(trafficLanes[i].name);
+            Debug.Log(trafficLanes[i].name);
             lane.waypoints = lane.ConvertVector3ArrayToFloatList(trafficLanes[i].Waypoints);
             lane.prevLanes = lane.ExtractNameOfLanesFromList(trafficLanes[i].PrevLanes);
             lane.nextLanes = lane.ExtractNameOfLanesFromList(trafficLanes[i].NextLanes);
@@ -301,10 +303,23 @@ public class MapSetting : MonoBehaviour
             if (trafficLanes[i].StopLine != null)
             {
                 StopLine stopLine = trafficLanes[i].StopLine;
+
+                Vector3 stopLinePoseP1 = ROS2Utility.UnityToRosPosition(
+                                             new Vector3(stopLine.Points[0][0], stopLine.Points[0][1],
+                                                 stopLine.Points[0][2])) +
+                                         Environment.Instance.MgrsOffsetPosition;
+
+
+                Vector3 stopLinePoseP2 = ROS2Utility.UnityToRosPosition(
+                                             new Vector3(stopLine.Points[1][0], stopLine.Points[1][1],
+                                                 stopLine.Points[1][2])) +
+                                         Environment.Instance.MgrsOffsetPosition;
+
+
                 lane.stopLinePoseP1 = new List<float>()
-                    { stopLine.Points[0][0], stopLine.Points[0][1], stopLine.Points[0][2] };
+                    { stopLinePoseP1.x, stopLinePoseP1.y, stopLinePoseP1.z };
                 lane.stopLinePoseP2 = new List<float>()
-                    { stopLine.Points[1][0], stopLine.Points[1][1], stopLine.Points[1][2] };
+                    { stopLinePoseP2.x, stopLinePoseP2.y, stopLinePoseP2.z };
 
                 if (stopLine.TrafficLight != null)
                 {
@@ -323,8 +338,8 @@ public class MapSetting : MonoBehaviour
             laneLets.LaneLetsArray.Add(lane);
         }
 
-        string save = JsonUtility.ToJson(laneLets);
-        CsvEditorUtils.AppendStringToFile("laneletJson.csv", save);
+        string save = JsonUtility.ToJson(laneLets, true);
+        CsvEditorUtils.AppendStringToFile("laneletToJson.json", save);
         Debug.Log($"Done {laneLets.LaneLetsArray.Count}");
     }
 
@@ -383,7 +398,10 @@ public class MapSetting : MonoBehaviour
 
             foreach (Vector3 vector in vector3List)
             {
-                Vector3Custom floatVector = new Vector3Custom(vector.x, vector.y, vector.z);
+                Vector3 converted = ROS2Utility.UnityToRosPosition(vector);
+                converted = converted + Environment.Instance.MgrsOffsetPosition;
+                Vector3Custom floatVector = new Vector3Custom(converted.x, converted.y, converted.z);
+
                 floatList.Add(floatVector);
             }
 
@@ -394,9 +412,21 @@ public class MapSetting : MonoBehaviour
         {
             List<string> names = new List<string>();
 
+            if (trafficLanes.Count == 0 || trafficLanes == null)
+            {
+                return names;
+            }
+
+
             foreach (TrafficLane trafficLane in trafficLanes)
             {
-                names.Add(trafficLane.name);
+                if (trafficLane == null)
+                {
+                    Debug.Log("skipped");
+                    continue;
+                }
+
+                names.Add(trafficLane.transform.name);
             }
 
             return names;
