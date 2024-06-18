@@ -98,7 +98,7 @@ nav:
   - Simple-AV: 
     - Introduction: Simple-AV/Description/index.md
     - Setting up the System: Simple-AV/SystemSetup/index.md
-    - Define Awsim msg: Simple-AV/Add Awsim msg/index.md
+    - Build Awsim msg: Simple-AV/Add Awsim msg/index.md
     - Communicating with AWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
     - Map (*.json): Simple-AV/JsonMap/index.md
     - Nodes:
