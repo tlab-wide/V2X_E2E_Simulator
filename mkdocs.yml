@@ -98,9 +98,14 @@ nav:
   - Simple-AV: 
     - Introduction: Simple-AV/Description/index.md
     - Setting up the System: Simple-AV/SystemSetup/index.md
-    - Add Awsim msg: Simple-AV/Add Awsim msg/index.md
-    - CommunicatingWithAWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
-    - CSV_Definition: Simple-AV/CSV_Definition/index.md
+    - Define Awsim msg: Simple-AV/Add Awsim msg/index.md
+    - Communicating with AWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
+    - Simple-Av Map definition: Simple-AV/CSV_Definition/index.md
+    - Nodes:
+      - Localization: Simple-AV/Nodes/Localization/index.md
+      - Path_planning: Simple-AV/Nodes/Path_planning/index.md
+      - Perception: Simple-AV/Nodes/Perception/index.md
+      - Control: Simple-AV/Nodes/Control/index.md
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
   - License: License/index.md
