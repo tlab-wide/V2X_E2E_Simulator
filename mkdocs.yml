@@ -100,7 +100,7 @@ nav:
     - Setting up the System: Simple-AV/SystemSetup/index.md
     - Define Awsim msg: Simple-AV/Add Awsim msg/index.md
     - Communicating with AWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
-    - Simple-Av Map definition: Simple-AV/CSV_Definition/index.md
+    - Map (*.json): Simple-AV/JsonMap/index.md
     - Nodes:
       - Localization: Simple-AV/Nodes/Localization/index.md
       - Path_planning: Simple-AV/Nodes/Path_planning/index.md
