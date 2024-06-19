@@ -97,15 +97,15 @@ nav:
   
   - Simple-AV: 
     - Introduction: Simple-AV/Description/index.md
-    - Setting up the System: 
-      - Introduction: Simple-AV/SystemSetup/intro/index.md
-      - WSL2 Installation: Simple-AV/SystemSetup/WSL/index.md
-      - ROS2 Installation: Simple-AV/SystemSetup/InstallingROS2/index.md
-      - AWSIM on Windows: Simple-AV/SystemSetup/AWSIM_on_Windows/index.md
-      - Windows/WSL Connection: Simple-AV/SystemSetup/Windows_WSL_Connection/index.md
-    - Add Awsim msg: Simple-AV/Add Awsim msg/index.md
-    - CommunicatingWithAWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
-    - CSV_Definition: Simple-AV/CSV_Definition/index.md
+    - Setting up the System: Simple-AV/SystemSetup/index.md
+    - Build Awsim msg: Simple-AV/Add Awsim msg/index.md
+    - Communicating with AWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
+    - Map (*.json): Simple-AV/JsonMap/index.md
+    - Nodes:
+      - Localization: Simple-AV/Nodes/Localization/index.md
+      - Path_planning: Simple-AV/Nodes/Path_planning/index.md
+      - Perception: Simple-AV/Nodes/Perception/index.md
+      - Control: Simple-AV/Nodes/Control/index.md
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
   - License: License/index.md
