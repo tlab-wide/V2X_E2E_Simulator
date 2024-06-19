@@ -21,17 +21,17 @@ Furthermore, simulators allow developers to replicate complex driving scenarios,
 
 In terms of architecture, simple-AV adopts a modular approach. It is composed of several independent modules that interact through ROS2. This modular design allows users to choose and integrate various modules according to their specific needs and requirements. The software stack includes several key components, such as perception, localization, planning, and control modules. Here’s a brief overview of each module:
 
-- <b>*Sensing*</b> -  Data from sensors: different sensors mounted on the autonomous vehicle such as *LiDARs*, *Pseudo Sensors* and *cameras*. It pre-processing received data in order to later extract relevant information about the surrounding environment through the *Perception* module. More details [here](../Nodes/Perception/index.md).
+- <b>*Sensing*</b> -  Data from sensors: different sensors mounted on the autonomous vehicle such as *LiDARs*, *Pseudo Sensors* and *cameras*. It pre-processing received data in order to later extract relevant information about the surrounding environment through the *Perception* module. More details [here](../Modules/Perception/index.md).
 
-- <b>*Pose*</b> - Acquires data from sensors like *GNSS* and *IMU*. These data then will be used in order to determine the vehicle location  by the *Localization* module. More details [here](../Nodes/Localization/index.md).
+- <b>*Pose*</b> - Acquires data from sensors like *GNSS* and *IMU*. These data then will be used in order to determine the vehicle location  by the *Localization* module. More details [here](../Modules/Localization/index.md).
 
-- <b>*Perception*</b> - Uses the information from [*Pseudo Sensors*](../../Components/PseudoSensors/PseudoSensors/index.md) mounted on vehicle to sense the surrounding environment. This sensor shares the information such as location, type and Bounding box of the object. Perception module then uses these information to detect other vehicles, pedestrians, lane detection, and traffic lights. More details [here](../Nodes/Perception/index.md).
+- <b>*Perception*</b> - Uses the information from [*Pseudo Sensors*](../../Components/PseudoSensors/PseudoSensors/index.md) mounted on vehicle to sense the surrounding environment. This sensor shares the information such as location, type and Bounding box of the object. Perception module then uses these information to detect other vehicles, pedestrians, lane detection, and traffic lights. More details [here](../Modules/Perception/index.md).
 
-- <b>*Localization*</b> - performs a fusion of data from *Sensing* module like *GNSS*, *IMU*, and odometry sensors to estimate the vehicle's position and orientation accurately. More details [here](../Nodes/Localization/index.md).
+- <b>*Localization*</b> - performs a fusion of data from *Sensing* module like *GNSS*, *IMU*, and odometry sensors to estimate the vehicle's position and orientation accurately. More details [here](../Modules/Localization/index.md).
 
-- <b>*Planning*</b> - generates a safe and feasible trajectory for the autonomous vehicle based on the information gathered from *Perception* and *Localization*. It also takes into account various factors from *Map* like traffic rules and road conditions. More details [here](../Nodes/Path_planning/index.md).
+- <b>*Planning*</b> - generates a safe and feasible trajectory for the autonomous vehicle based on the information gathered from *Perception* and *Localization*. It also takes into account various factors from *Map* like traffic rules and road conditions. More details [here](../Modules/Path_planning/index.md).
 
-- <b>*Control*</b> - executes the planned trajectory by sending commands to the vehicle's actuators, such as steering, throttle, and braking. It ensures that the vehicle follows the desired trajectory while maintaining safety and stability. More details [here](../Nodes/Control/index.md).
+- <b>*Control*</b> - executes the planned trajectory by sending commands to the vehicle's actuators, such as steering, throttle, and braking. It ensures that the vehicle follows the desired trajectory while maintaining safety and stability. More details [here](../Modules/Control/index.md).
 
 - <b>*Map*</b> - Simple_AV uses a .json file creted by Awsim as map. This map is a representation of the environment in which the autonomous vehicle operates. It uses data Awsim `waypoints` to generate the map (`*.json`). The map contains information about road geometries, lanes, traffic lights, rules, and other relevant features. Map serves as a crucial reference for planning and decision-making processes. More details [here](../JsonMap/index.md).
   

@@ -13,7 +13,7 @@ Each pseudo sensor requires a Mock Sensor Object and a box collider. The box col
   <img src="image-1.png" alt="alt text" width="900" >
 </div>
 
-## Fields:
+#### Fields:
 
 * **Name** : This field is used in the log system to identify which sensors have detected objects.
 * **Category** : This field categorizes sensors using a config file. If you prefer to manually set the position and features of the sensor in the Unity scene, you can ignore this field.
@@ -29,7 +29,7 @@ Each pseudo sensor requires a Mock Sensor Object and a box collider. The box col
 * **Max Distnace** : Specifies the range of the rays.
 
 
-## Other configuration:
+#### Other configuration:
 At the end the pseudo sensor must be add to scenario this enable the system to detect  which object detect by which type of sensors
 
 
@@ -38,3 +38,10 @@ At the end the pseudo sensor must be add to scenario this enable the system to d
 <div style="text-align: center;">
   <img src="image-2.png" alt="alt text" width="600" >
 </div>
+
+
+## Add New Pseudo Sensor
+
+1. Use the existing prefabs located in \Assets\KashiwaPackage\Prefabs\Pseudo Sensors.
+2. Modify the relevant fields based on your needs.
+3. Add the mock sensor to the scenario list of sensors.

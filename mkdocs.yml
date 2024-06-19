@@ -66,32 +66,28 @@ nav:
   - Getting started:
     - Quick Start Demo: GettingStarted/QuickStartDemo/index.md
     - Setup Unity Project: GettingStarted/SetupUnityProject/index.md
-    - Using OpenSCENARIO: GettingStarted/UsingOpenSCENARIO/index.md 
 
   - Introduction:
     - Autoware, Awsim and Our project : Introduction/AutowareAwsimAndV2X/index.md
     - CombinationWithAutoware: Introduction/CombinationWithAutoware/index.md
 
   - Project guide:
-    - Directory: ProjectGuide/Directory/index.md
+    # - Directory: ProjectGuide/Directory/index.md
     - Kashiwa Scenes: ProjectGuide/KashiwaScenes/index.md
     - Git Branch: ProjectGuide/GitBranch/index.md
     - External Libraries: ProjectGuide/ExternalLibraries/index.md
-    - Testing: ProjectGuide/Testing/index.md
 
   - Components:
     - Pseudo Sensor:
       - Pseudo Sensor: Components/PseudoSensors/PseudoSensors/index.md
-      - Add new Pseudo Sensor: Components/PseudoSensors/AddNewPseudoSensors/index.md
       - Noise Setting: Components/PseudoSensors/NoiseSetting/index.md
     - Vehicle: 
-      - URDF And Sensors: Components/Vehicle/URDFAndSensors/index.md
       - Add New Vehicle: Components/Vehicle/AddNewVehicle/index.md
     - RSU: 
       - RSU: Components/RSU/RSU/index.md
       - Add new RSU: Components/RSU/AddNewRSU/index.md
-    - Environment: Components/Environment/index.md
-    - Traffic: Components/Traffic/index.md
+    # - Environment: Components/Environment/index.md
+    # - Traffic: Components/Traffic/index.md
     - PCD Scanner: Components/PCDScanner/index.md
     - Logger: Components/Logger/index.md
     - Pedestrian & Cyclist: Components/Pedestrian/index.md
@@ -102,13 +98,14 @@ nav:
     - Build Awsim msg: Simple-AV/Add Awsim msg/index.md
     - Communicating with AWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
     - Map (*.json): Simple-AV/JsonMap/index.md
-    - Nodes:
-      - Localization: Simple-AV/Nodes/Localization/index.md
-      - Path_planning: Simple-AV/Nodes/Path_planning/index.md
-      - Perception: Simple-AV/Nodes/Perception/index.md
-      - Control: Simple-AV/Nodes/Control/index.md
+    - Modules:
+      - Localization: Simple-AV/Modules/Localization/index.md
+      - Path_planning: Simple-AV/Modules/Path_planning/index.md
+      - Perception: Simple-AV/Modules/Perception/index.md
+      - Control: Simple-AV/Modules/Control/index.md
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
+  - In progress: inProgressSections/index.md
   - License: License/index.md
   - Contact: Contact/index.md
 
