@@ -7,9 +7,11 @@ using dm_cooperative_msgs.msg;
 using ROS2;
 using UnityEngine;
 using v2x_msgs.msg;
+using CooperativeFreespaceInfoMessage = dm_rsu_msgs.msg.CooperativeFreespaceInfoMessage;
+using CooperativeObjectInfoMessage = dm_rsu_msgs.msg.CooperativeObjectInfoMessage;
 using Environment = AWSIM.Environment;
 
-public class PredictedObjectsNetworkSim : MonoBehaviour
+public class FreeSpaceInfo : MonoBehaviour
 {
     [SerializeField] private List<MockSensor> sensors;
 
@@ -26,8 +28,8 @@ public class PredictedObjectsNetworkSim : MonoBehaviour
     [SerializeField] private string rotationNoiseName = "default noise";
     [SerializeField] private string dimensionNoiseName = "default noise";
     [SerializeField] private string probabilityNoiseName = "default noise";
-    
-    
+
+
     private NoiseSetting.Noise positionNoise;
     private NoiseSetting.Noise rotationNoise;
     private NoiseSetting.Noise dimensionNoise;
@@ -42,10 +44,10 @@ public class PredictedObjectsNetworkSim : MonoBehaviour
         Depth = 1,
     };
 
-    IPublisher<CooperativeObjectsMessage> poseStampedPublisher;
+    IPublisher<CooperativeFreespaceInfoMessage> objectPublisher;
 
-    CooperativeObjectsMessage test;
-    private CooperativeObjectsMessage msg;
+    CooperativeFreespaceInfoMessage test;
+    private CooperativeFreespaceInfoMessage msg;
 
     // Start is called before the first frame update
     void Awake()
@@ -55,19 +57,12 @@ public class PredictedObjectsNetworkSim : MonoBehaviour
         dimensionNoise = NoiseSetting.Instance.GetNoise(dimensionNoiseName);
         probabilityNoise = NoiseSetting.Instance.GetNoise(probabilityNoiseName);
 
-        msg = new CooperativeObjectsMessage();
-
-        msg.Predicted_objects.Header = new std_msgs.msg.Header()
-        {
-            Frame_id = frameId,
-        };
+        msg = new CooperativeFreespaceInfoMessage();
 
 
         // Create publisher.
         var qos = QosSettings.GetQoSProfile();
-        poseStampedPublisher = SimulatorROS2Node.CreatePublisher<CooperativeObjectsMessage>(Topic, qos);
-        
-
+        objectPublisher = SimulatorROS2Node.CreatePublisher<CooperativeFreespaceInfoMessage>(Topic, qos);
     }
 
     private void CheckMockSensors()
@@ -92,7 +87,6 @@ public class PredictedObjectsNetworkSim : MonoBehaviour
                 PredictedObject predictedObject = new PredictedObject();
 
 
-                
                 var pos = ROS2Utility.UnityToRosPosition(seenObjects[j].transform.position);
                 pos = pos + Environment.Instance.MgrsOffsetPosition;
 
@@ -184,8 +178,6 @@ public class PredictedObjectsNetworkSim : MonoBehaviour
         }
 
 
-        msg.Predicted_objects.Objects = predictedObjects.ToArray();
-
         msg.Station_id = stationID;
         msg.Sensor_type = sensorType;
 
@@ -206,13 +198,9 @@ public class PredictedObjectsNetworkSim : MonoBehaviour
         }
 
 
-        msg.Predicted_objects.Header.Stamp = SimulatorROS2Node.GetCurrentRosTime();
-
-
-        poseStampedPublisher.Publish(msg);
+        objectPublisher.Publish(msg);
 
         //todo prediction for RSU 
-        
     }
 
     private float timer;
@@ -223,7 +211,7 @@ public class PredictedObjectsNetworkSim : MonoBehaviour
         // timer += Time.fixedDeltaTime;
 
 
-        var interval = 1.0f / (Hz*2);
+        var interval = 1.0f / (Hz * 2);
         if (timer + 0.00001f < interval)
             return;
 

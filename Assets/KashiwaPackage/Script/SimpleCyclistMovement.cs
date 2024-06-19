@@ -10,6 +10,7 @@ public class SimpleCyclistMovement : MonoBehaviour
     [SerializeField] float speed = 3;
     [SerializeField] TrafficLight trafficLight;
     [SerializeField] private float CheckTrafficLightTime = 1.0f;
+    [SerializeField] private float waitTime = 5;
 
 
     private Rigidbody npcCyclist;
@@ -39,12 +40,15 @@ public class SimpleCyclistMovement : MonoBehaviour
     {
         while (true)
         {
+            yield return new WaitForSeconds(waitTime);
             yield return WaitForTrafficLight(CheckTrafficLightTime);
             yield return MoveForwardRoutine(duration, -speed);
-            yield return RotateRoutine(180, 50);
+            yield return RotateRoutine(180, 80);
+
+            yield return new WaitForSeconds(waitTime);
             yield return WaitForTrafficLight(CheckTrafficLightTime);
             yield return MoveForwardRoutine(duration, +speed);
-            yield return RotateRoutine(180, 50);
+            yield return RotateRoutine(180, 80);
             // var npcTransformPos = npcPedestrian.transform.position;
 
             // reset

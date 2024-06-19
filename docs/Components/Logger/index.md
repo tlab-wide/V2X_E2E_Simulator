@@ -28,6 +28,7 @@ You can find sample of this log in
 
 ## Log Autonomous
 This component gets the name of the output file and the rate of logs, and it saves position, speed, acceleration, collisions with humans, and collisions with other cars in CSV format based on the ROS world origin.
+This component required to attach to autonomous vehicle to get access to the data and will log data in a csv file. The time in the csv file from ros time class which is contain sec and nanosec
 
 <div style="text-align: center;">
   <img src="image.png" alt="alt text" width="500">

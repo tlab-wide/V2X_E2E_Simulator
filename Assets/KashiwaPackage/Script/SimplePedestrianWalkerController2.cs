@@ -10,10 +10,11 @@ namespace AWSIM
     [RequireComponent(typeof(NPCPedestrian))]
     public class SimplePedestrianWalkerController2 : MonoBehaviour
     {
-       [SerializeField] float duration;
+        [SerializeField] float duration;
         [SerializeField] float speed;
         [SerializeField] TrafficLight trafficLight;
         [SerializeField] private float CheckTrafficLightTime = 1.0f;
+        [SerializeField] private float waitTime = 5;
 
         NPCPedestrian npcPedestrian;
         Vector3 startPosition;
@@ -39,9 +40,12 @@ namespace AWSIM
         {
             while (true)
             {
+                yield return new WaitForSeconds(waitTime);
                 yield return WaitForTrafficLight(CheckTrafficLightTime);
                 yield return MoveForwardRoutine(duration, speed);
                 yield return RotateRoutine(0.5f, 360f);
+                
+                yield return new WaitForSeconds(waitTime);
                 yield return WaitForTrafficLight(CheckTrafficLightTime);
                 yield return MoveForwardRoutine(duration, speed);
                 yield return RotateRoutine(0.5f, 360f);
@@ -91,7 +95,7 @@ namespace AWSIM
             {
                 return true;
             }
-            
+
             var trafficLightBulbData = trafficLight.GetBulbData();
             //Fill TrafficSignal with bulbData
             byte color = 0;
@@ -113,7 +117,7 @@ namespace AWSIM
                 return false;
             }
         }
-        
+
         private bool isBulbTurnOn(TrafficLight.BulbStatus bulbStatus)
         {
             return bulbStatus == TrafficLight.BulbStatus.SOLID_ON || bulbStatus == TrafficLight.BulbStatus.FLASHING;
