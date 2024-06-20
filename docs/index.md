@@ -1,10 +1,5 @@
 # Welcome to V2X E2E simulator
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
-
-## Some pictures
-
-
 ![](E2E_MAIN.png)
 
 
