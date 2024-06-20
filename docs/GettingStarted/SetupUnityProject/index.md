@@ -56,7 +56,7 @@ Follow the steps below to install Unity on your machine:
 To open the Unity AWSIM project in Unity Editor:
 1. Make sure you have the AWSIM repository cloned
     ```
-    git clone git@github.com:tier4/AWSIM.git
+    git clone https://github.com/tlab-wide/V2X_E2E_Simulator.git
     ```
 
 2. Launch UnityHub.
