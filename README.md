@@ -10,11 +10,11 @@ is based on AWSIM.
 
 ## Features
 
-- Simulator components included (Vehicle, Sensor, Environment, ROS2, etc.)
+- Addition of cyclist and extra paterns of movement for pedestrians
 - Support for Ubuntu 22.04 and windows10/11
 - ROS2 native communication
 - Open source software
-- Made with Unity Game Engine
+- Custome Messages
 - Traffic anaylitics features
 
 ## Tutorial
@@ -24,13 +24,15 @@ First, try the tutorial !
 
 ## Quick Installation 
 - Install Awsim and depencies [Awsim installation]
-- Switch to kashiwa branch of  V2X_E2E_Simulator project (to recieve essential codes)
+- Switch to the Kashiwa branch of the V2X_E2E_Simulator project (if you are not there by default).
 - [Install latest Kashiwa package](https://drive.google.com/file/d/1BDRqKoSWoFUZLmhaKN0ip7HBFcUHueAH/view?usp=sharing) (to recieve large files such as 3d Models) 
 
 
 ## Documentation
 
+
 https://tier4.github.io/AWSIM/
+https://tlab-wide.github.io/V2X_E2E_Simulator/
 
 
 ## License
@@ -49,4 +51,4 @@ See also [LICENSE](./LICENSE)
 
 
 
-See the official documentation (https://tlab-wide.github.io/AutowareV2X/)
+See the official documentation of AutowareV2x(https://tlab-wide.github.io/AutowareV2X/)
