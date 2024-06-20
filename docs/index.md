@@ -14,7 +14,7 @@ For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 <source src="video.mp4" type="video/mp4">
 </video>
 
-## Some notes
+<!-- ## Some notes
 
 * `mkdocs new [dir-name]` - Create a new project.
 * `mkdocs serve` - Start the live-reloading docs server.
@@ -26,4 +26,4 @@ For full documentation visit [mkdocs.org](https://www.mkdocs.org).
     mkdocs.yml    # The configuration file.
     docs/
         index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+        ...       # Other markdown pages, images and other files. -->
