@@ -39,6 +39,22 @@ At the end the pseudo sensor must be add to scenario this enable the system to d
   <img src="image-2.png" alt="alt text" width="600" >
 </div>
 
+## How it works
+Each component that must be detected by a pseudo sensor must have the Line of Sight component. Objects with this component periodically check the Scenario component to determine if they have a line of sight to the sensor within their range. The line of sight is calculated using rays in Unity from the representative to the collider of the sensor, shown in the picture by arrows. Based on the number of points that can see the sensor, the box state for the object will be determined. The configuration of the number of required points to see a sensor, to be considered as a watched point, is defined in the Blind Scenario Manager component. In our case, the AutowareSimulator contains this component.
+
+
+<div style="text-align: center;">
+  <img src="image-3.png" alt="alt text" width="800" >
+  <p>Pedestrian component</p>
+</div>
+
+<div style="text-align: center;">
+  <img src="image-4.png" alt="alt text" width="600" >
+  <p>Configuration of thresholds</p>
+</div>
+
+These thresholds indicate how many representative points of an object must see the sensor to be considered as detected.
+
 
 ## Add New Pseudo Sensor
 
