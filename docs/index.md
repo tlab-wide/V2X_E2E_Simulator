@@ -5,7 +5,7 @@ For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 ## Some pictures
 
 
-![](home.png)
+![](E2E_MAIN.png)
 
 
 ## Some video
