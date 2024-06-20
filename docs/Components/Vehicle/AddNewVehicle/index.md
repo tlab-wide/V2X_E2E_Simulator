@@ -26,7 +26,6 @@ Firstly, set up the vehicle based on the tutorial from AWSIM ([ Awsim Link ](htt
 
     1. Create them from scratch based on our documentation [ link ](./../../PseudoSensors/PseudoSensors/index.md) 
     2. Use the prefabs inside the `Assets\KashiwaPackage\Prefabs\Pseudo Sensors`
-)
 
 4. You must add a reference to your sensor in the list of sensors within the "Detected Objects Autoware" component.
 
@@ -35,7 +34,9 @@ Firstly, set up the vehicle based on the tutorial from AWSIM ([ Awsim Link ](htt
   <img src="image-3.png" alt="alt text" width="500">
 </div>
 
-5. You are also required to add a reference to your sensors in the scenario component as shown in the picture. Be careful when selecting the correct list; you must choose the appropriate list and drag and drop the sensor onto it.
+5. The Bus Transform must reference the base link of your car for autonomous data capturing to work correctly in the ROS world and for relative data to be captured precisely.
+
+6. You are also required to add a reference to your sensors in the scenario component as shown in the picture. Be careful when selecting the correct list; you must choose the appropriate list and drag and drop the sensor onto it.
 
 
 <div style="text-align: center;">
