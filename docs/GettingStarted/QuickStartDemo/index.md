@@ -1,11 +1,11 @@
 # Quick start demo
 
 ### Windows
-Current Windows build version is (v6.3.1).
+The current Windows build version is (v6.3.1).
 
 You can download the build version(For Windows) to use our build version.
 
-[Download Kashiwa Windows Build  files (unitypackage)](https://drive.google.com/drive/u/1/folders/1HkRJ5tsF3z0VHyzUvbKuv5Zhwk9BV4WI){.md-button .md-button--primary}
+[Download Kashiwa Windows Build  files (unitypackage)](https://drive.google.com/file/d/1hGW9C7maw9ai5W3z4EPt-zqZW9fSKdd9/view?usp=drive_link){.md-button .md-button--primary}
 
 Right now build version is only available for Windows system.
 
@@ -51,4 +51,10 @@ To build your project :
 3. Drag and drop your scene into the box and make sure to check the highlighted checkbox.
 4. Press **Build** and choose the location to save your project.
 
+   
+## Maps required for Autoware
+To use Autoware in Kashiwa, Lanelet2 and point cloud (PCD) maps of Kashiwa are required. Download them from the following link.
 
+[Kashiwa Lanelet2 and PCD](https://drive.google.com/drive/folders/1aklZH4lyZGqQW4MeGH41F5dYixLSlVyr?usp=drive_link){.md-button .md-button--primary}
+
+PCD of Kashiwa is made from the 3D simulation environment to match both in simulation and Autoware. 
