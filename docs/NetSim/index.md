@@ -1,4 +1,4 @@
-# net_sim
+# NetSim
 
 This package is a network simulator. It is designed to create simulated packet loss and delay in the incoming message topics and simulate the network status.
 ## Download NetSim
