@@ -105,7 +105,7 @@ To properly run and use AWSIM project in Unity it is required to download map pa
 
 
 4. Download Kashiwa package and follow steps 1 ~ 3.
-    [Download Kashiwa Scence (unitypackage 6.3)](https://drive.google.com/file/d/1BDRqKoSWoFUZLmhaKN0ip7HBFcUHueAH/view?usp=drive_link){.md-button .md-button--primary}
+    [Download Kashiwa Scence (unitypackage 6.3)](https://drive.google.com/file/d/1TeTrDKNnDH_aO3uyTTKGNHHs4j_CaPHa/view?usp=drive_link){.md-button .md-button--primary}
 
 !!! info
 
