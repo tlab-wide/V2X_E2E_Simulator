@@ -95,7 +95,7 @@ To properly run and use AWSIM project in Unity it is required to download map pa
 
 1. Download and import `Japan_Tokyo_Nishishinjuku.unitypackage`
 
-    [Download Map files (unitypackage)](https://github.com/tier4/AWSIM/releases/download/v1.1.0/Japan_Tokyo_Nishishinjuku.unitypackage){.md-button .md-button--primary}
+    [Download Nishishinjuku Scence (unitypackage)](https://github.com/tier4/AWSIM/releases/download/v1.1.0/Japan_Tokyo_Nishishinjuku.unitypackage){.md-button .md-button--primary}
 
 2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `Japan_Tokyo_Nishishinjuku.unitypackage` file.
 ![](image_10.png)
@@ -104,8 +104,8 @@ To properly run and use AWSIM project in Unity it is required to download map pa
 ![](image_12.png)
 
 
-4. Follow the same steps of 1 to 3 to download the kashiwa package
-    [Download Kashiwa Map  files (unitypackage)](https://drive.google.com/file/d/1BDRqKoSWoFUZLmhaKN0ip7HBFcUHueAH/view?usp=drive_link){.md-button .md-button--primary}
+4. Download Kashiwa package and follow steps 1 ~ 3.
+    [Download Kashiwa Scence (unitypackage 6.3)](https://drive.google.com/file/d/1BDRqKoSWoFUZLmhaKN0ip7HBFcUHueAH/view?usp=drive_link){.md-button .md-button--primary}
 
 !!! info
 
