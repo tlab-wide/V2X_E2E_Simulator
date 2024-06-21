@@ -3,11 +3,11 @@
 ![](E2E_MAIN.png)
 
 
-## Some video
+<!--## Some video
 
 <video width="1920" controls autoplay muted loop>
 <source src="video.mp4" type="video/mp4">
-</video>
+</video> -->
 
 <!-- ## Some notes
 
