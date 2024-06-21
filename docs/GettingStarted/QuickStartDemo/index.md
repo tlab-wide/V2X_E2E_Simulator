@@ -5,7 +5,8 @@ The current Windows build version is (v6.3.1).
 
 You can download the build version(For Windows) to use our build version.
 
-[Download Kashiwa Windows Build  files (unitypackage)](https://drive.google.com/file/d/1hGW9C7maw9ai5W3z4EPt-zqZW9fSKdd9/view?usp=drive_link){.md-button .md-button--primary}
+([Download Kashiwa Windows Build  files (unitypackage)](https://drive.google.com/file/d/1hGW9C7maw9ai5W3z4EPt-zqZW9fSKdd9/view?usp=drive_link) {.md-button .md-button--primary})
+
 
 Right now build version is only available for Windows system.
 
