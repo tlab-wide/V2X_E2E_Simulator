@@ -58,13 +58,16 @@ To open the Unity AWSIM project in Unity Editor:
     ```
     git clone https://github.com/tlab-wide/V2X_E2E_Simulator.git
     ```
+2. (Fore version 6.3.1 we have some issues so) remove this folder: V2X_E2E_Simulator/Assets/KashiwaPackage/Script
 
-2. Launch UnityHub.
+
+
+3. Launch UnityHub.
     ```
     ./UnityHub.AppImage
     ```
 
-3. Open the project in UnityHub
+4. Open the project in UnityHub
     - Click the `Open` button
 ![](image_6.png)
 
