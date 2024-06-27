@@ -122,3 +122,14 @@ The following steps describe how to run the demo in Unity Editor:
 3. To Use kashiwa scene check `Assets/KashiwaPackage/Scenes/` directroy
 ![](image_14.png)
 <br><br><br><br>
+
+
+
+# Bug fix
+
+It is probable that you required to check the that the read/write be enable as you can see in the picture
+
+
+"It is likely that you need to check the `\Assets\AWSIM\Models\Sensors\Velodyne VLP-16` VLP-16.fbx file to ensure that the read/write option is enabled, as shown in the picture."
+
+![alt text](image.png)
