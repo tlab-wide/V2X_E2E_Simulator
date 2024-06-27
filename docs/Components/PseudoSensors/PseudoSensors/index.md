@@ -55,6 +55,9 @@ Each component that must be detected by a pseudo sensor must have the Line of Si
 
 These thresholds indicate how many representative points of an object must see the sensor to be considered as detected.
 
+### Color states
+In our simulation, each car, pedestrian, or cyclist has three states. These states show how the autonomous car can observe these objects. The red state demonstrates that the car has no sense of the object. The purple or blue state means that RSUs (roadside units) detect the object, but the autonomous cars cannot see it. The green state indicates that the object is detected by the autonomous sensors.
+
 
 ## Add New Pseudo Sensor
 

@@ -22,7 +22,6 @@ public class ConfigFile : Singleton<ConfigFile>
     {
         configData = readFile();
         StartCoroutine(saveTemplateLogSystem(1));
-        
     }
 
     private void Start()
@@ -36,9 +35,12 @@ public class ConfigFile : Singleton<ConfigFile>
     private void SetupHintLines()
     {
         // Debug.Log("inja omad");
-        BlindScenarioManager.Instance.SetShowCameraLine(configData.isCamerasActive);
-        BlindScenarioManager.Instance.SetShowLidarLine(configData.isLidarActive);
-        BlindScenarioManager.Instance.SetShowRsuLine(configData.isRsuActive);
+        if (configData != null)
+        {
+            BlindScenarioManager.Instance.SetShowCameraLine(configData.isCamerasActive);
+            BlindScenarioManager.Instance.SetShowLidarLine(configData.isLidarActive);
+            BlindScenarioManager.Instance.SetShowRsuLine(configData.isRsuActive);
+        }
     }
 
 
@@ -100,17 +102,17 @@ public class ConfigFile : Singleton<ConfigFile>
 
         ConfigSensor sensor = mockSensor.GetConfigSensor();
 
-        
+
         // Each sensor is either in AVs or RSUs.
-        if (MockSensor.MockSensorType.OBU_LIDAR == mockSensor.getMockSensorType() || MockSensor.MockSensorType.OBU_CAMERA == mockSensor.getMockSensorType())
+        if (MockSensor.MockSensorType.OBU_LIDAR == mockSensor.getMockSensorType() ||
+            MockSensor.MockSensorType.OBU_CAMERA == mockSensor.getMockSensorType())
         {
-            configDataTemplate.AV_sensors.Add(sensor);    
+            configDataTemplate.AV_sensors.Add(sensor);
         }
         else
         {
             configDataTemplate.RSU_sonsors.Add(sensor);
         }
-        
     }
 
     // private float[] convertVectorToArray(Vector3 vector3)
@@ -143,7 +145,7 @@ public class ConfigFile : Singleton<ConfigFile>
         {
             return false;
         }
-        
+
         switch (mockSensorType)
         {
             case MockSensor.MockSensorType.RSU_RSU:
@@ -199,12 +201,11 @@ public class ConfigFile : Singleton<ConfigFile>
         public bool isRsuConeActive;
         public bool isLidarConeActive;
         public bool isRsuCameraConeActive;
-        
-        
+
+
         public List<SensorCategory> SensorCategoriesList;
         public List<ConfigSensor> AV_sensors;
         public List<ConfigSensor> RSU_sonsors;
-
 
 
         public ConfigData()
@@ -226,6 +227,7 @@ public class ConfigFile : Singleton<ConfigFile>
     public class ConfigSensor
     {
         public MockSensor.MockSensorType SensorAsType;
+
         // public string SensorTypeAsString;
         public string name;
         public string category;

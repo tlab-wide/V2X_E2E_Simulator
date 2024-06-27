@@ -233,10 +233,24 @@ public class LogArea : MonoBehaviour
 
         LineOfSight lineOfSightComponent = transform.GetComponent<LineOfSight>();
         string row;
+
+        //time
+        builtin_interfaces.msg.Time rosTime = SimulatorROS2Node.GetCurrentRosTime();
+
+
+        //set position
+        var pos = ROS2Utility.UnityToRosPosition(transform.position);
+        pos = pos + AWSIM.Environment.Instance.MgrsOffsetPosition;
+        
+        
+        //rotation base on bus todo check correctness
+        Quaternion r = ROS2Utility.UnityToRosRotation(transform.rotation);
+
+
         if (lineOfSightComponent is null)
         {
             row =
-                $"{transform.name},{transform.position.x},{transform.position.y},{transform.position.z},{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff},{Time.frameCount}\n";
+                $"{transform.name},{pos.x},{pos.y},{pos.z},{r.w},{r.x},{r.y},{r.z},{rosTime.Sec},{rosTime.Nanosec},{Time.frameCount}\n";
         }
         else
         {
@@ -249,7 +263,7 @@ public class LogArea : MonoBehaviour
 
 
             row =
-                $"{transform.name},{transform.position.x},{transform.position.y},{transform.position.z},{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} ,{Time.frameCount},{lineOfSightComponent.GetCarBoxState()},{sensorsNames}\n";
+                $"{transform.name},{pos.x},{pos.y},{pos.z},{r.w},{r.x},{r.y},{r.z},{rosTime.Sec},{rosTime.Nanosec} ,{Time.frameCount},{lineOfSightComponent.GetCarBoxState()},{sensorsNames}\n";
         }
 
 
@@ -276,12 +290,12 @@ public class LogArea : MonoBehaviour
     {
         if (checkCars && logPathCars != "" && !File.Exists(logPathCars))
         {
-            AppendStringToFile(logPathCars, "Name,X,Y,Z,Time,Frame,Box_State,Sensor Names \n");
+            AppendStringToFile(logPathCars, "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names \n");
         }
 
         if (checkHumans && logPathHumans != "" && !File.Exists(logPathHumans))
         {
-            AppendStringToFile(logPathHumans, "Name,X,Y,Z,Time,Frame,Box_State,Sensor Names\n");
+            AppendStringToFile(logPathHumans, "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names\n");
         }
 
         yield return null;

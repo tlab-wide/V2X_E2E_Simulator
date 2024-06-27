@@ -1,6 +1,12 @@
 # Welcome to V2X E2E simulator
 
+<<<<<<< Updated upstream
 ![](E2E_MAIN.png)
+=======
+<!-- For full documentation visit [mkdocs.org](https://www.mkdocs.org). -->
+
+## Some pictures
+>>>>>>> Stashed changes
 
 
 <!--## Some video

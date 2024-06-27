@@ -91,7 +91,7 @@ public class SimpleCyclistMovement : MonoBehaviour
             while (transform.eulerAngles.y < targetAngle)
             {
                 yield return new WaitForFixedUpdate();
-                Debug.Log(transform.eulerAngles.y);
+                // Debug.Log(transform.eulerAngles.y);
                 transform.eulerAngles += Vector3.up * angularSpeed * Time.fixedDeltaTime;
             }
         }
@@ -101,7 +101,7 @@ public class SimpleCyclistMovement : MonoBehaviour
                    (transform.eulerAngles.y < targetAngle))
             {
                 yield return new WaitForFixedUpdate();
-                Debug.Log("--" + transform.eulerAngles.y + "__" + targetAngle);
+                // Debug.Log("--" + transform.eulerAngles.y + "__" + targetAngle);
                 transform.eulerAngles += Vector3.up * angularSpeed * Time.fixedDeltaTime;
             }
         }
