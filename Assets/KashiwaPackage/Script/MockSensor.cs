@@ -72,7 +72,7 @@ public class MockSensor : MonoBehaviour
 
     public bool haveLineOfSight(Transform targetPoint)
     {
-        if (!this.gameObject.activeSelf)
+        if (!this.gameObject.activeSelf || !this.gameObject.activeInHierarchy)
         {
             // Debug.Log("I know its off");
             return false;
