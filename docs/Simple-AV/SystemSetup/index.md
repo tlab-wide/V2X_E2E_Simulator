@@ -1,9 +1,5 @@
 # Environment Setup for simple-AV
 
-## TODOs    
-- [1] Add the Awsim scene links.
-
-
 This guide will walk you through the steps to set up an environment in Windows 10 for launching the simple-AV, including the installation of AWSIM, ROS2 Humble, and WSL.
 
 To develop and run simple-AV, it is essential to establish communication between AWSIM and ROS2. For this project, AWSIM is installed on Windows 10, while Ubuntu 22.04 is installed on WSL (Windows Subsystem for Linux) within Windows 10. ROS2 is then installed on Ubuntu 22.04 within WSL.
@@ -136,4 +132,8 @@ After sourcing the ROS2 you can get a topic list and see the all the topics that
 ![alt text](image-1.png)
 
 This means we have successfully setup our system and create a communication between Awsim on Windows and Ros2 on WSL. However, currently we are unable to access all of the topics and we must define message types of the topics. Please refer to [Building Messages](../../BuildingMessages/index.md) page to see the full documentation.
+
+
+## TODOs    
+- [1] Add the Awsim scene links.
 

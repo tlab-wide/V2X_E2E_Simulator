@@ -57,52 +57,8 @@ The Control Module follows a feedback control strategy, constantly adjusting its
 
 The PID controller in the Control Module is used to maintain the target speed by controlling the vehicle's acceleration. It adjusts the acceleration based on the error between the observed and target speeds, using proportional, integral, and derivative gains.
 
-```python
-class PIDController:
-    def __init__(self, p_gain, i_gain, d_gain, delta_t=0.01):
-        self.kp = p_gain
-        self.ki = i_gain
-        self.kd = d_gain
-        self.delta_t = delta_t
-        self.current_time = time.time()
-        self.last_time = self.current_time
-        self.integrated_error = 0.0
-        self.slidingWindow = deque(maxlen=10)
-        self.previous_error = 0.0
-    
-    def updatePID(self, observed_vel, target_vel):
-        error = target_vel - observed_vel
-        self.current_time = time.time()
-        delta_time = self.current_time - self.last_time
-        self.slidingWindow.append(error)
-        self.integrated_error = sum(self.slidingWindow) * delta_time
-        derivative = (error - self.previous_error) / delta_time
-        P = self.kp * error
-        I = self.ki * self.integrated_error
-        D = self.kd * derivative
-        acc_cmd = P + I + D
-        self.last_time = self.current_time
-        self.previous_error = error
-        return acc_cmd
-```
-
 ### Pure Pursuit Algorithm
-
 The Pure Pursuit algorithm computes the steering angle required to follow the path. It calculates the curvature to move the vehicle from its current position to the look-ahead point.
-
-```python
-def pure_pursuit_steering_angle(self):
-    lookahead_x = self.lookAhead.look_ahead_point.x - self.pose.pose.position.x
-    lookahead_y = self.lookAhead.look_ahead_point.y - self.pose.pose.position.y
-    yaw = self.get_yaw_from_pose(self.ground_truth)
-    local_x = math.cos(yaw) * lookahead_x + math.sin(yaw) * lookahead_y
-    local_y = -math.sin(yaw) * lookahead_x + math.cos(yaw) * lookahead_y
-    ld2 = lookahead_x ** 2 + lookahead_y ** 2
-    steering_angle = math.atan2(2.0 * local_y * self.wheel_base, ld2)
-    steering_angle = self.filter(steering_angle, self.previous_steering_angle, self.steering_gain)
-    self.previous_steering_angle = steering_angle
-    return steering_angle
-```
 
 ## Summary
 The Control Module is vital for translating the planned trajectories into actual vehicle movements. By leveraging the PID controller for speed control and the Pure Pursuit algorithm for steering control, along with managing the gear state, it ensures precise and safe navigation of the autonomous vehicle.
