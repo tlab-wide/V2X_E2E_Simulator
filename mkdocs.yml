@@ -92,17 +92,6 @@ nav:
     - Logger: Components/Logger/index.md
     - Pedestrian & Cyclist: Components/Pedestrian/index.md
   
-  - Simple-AV: 
-    - Introduction: Simple-AV/Description/index.md
-    - Setting up the System: Simple-AV/SystemSetup/index.md
-    - Build Awsim msg: Simple-AV/Add Awsim msg/index.md
-    - Communicating with AWSIM: Simple-AV/CommunicatingWithAWSIM/index.md
-    - Map (*.json): Simple-AV/JsonMap/index.md
-    - Modules:
-      - Localization: Simple-AV/Modules/Localization/index.md
-      - Path_planning: Simple-AV/Modules/Path_planning/index.md
-      - Perception: Simple-AV/Modules/Perception/index.md
-      - Control: Simple-AV/Modules/Control/index.md
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
   - In progress: inProgressSections/index.md
