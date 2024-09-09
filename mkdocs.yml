@@ -66,6 +66,7 @@ nav:
   - Getting started:
     - Quick Start Demo: GettingStarted/QuickStartDemo/index.md
     - Setup Unity Project: GettingStarted/SetupUnityProject/index.md
+    - Load PCD: LoadPCD/index.md
 
   - Introduction:
     - Autoware, Awsim and Our project : Introduction/AutowareAwsimAndV2X/index.md
@@ -76,6 +77,8 @@ nav:
     - Kashiwa Scenes: ProjectGuide/KashiwaScenes/index.md
     - Git Branch: ProjectGuide/GitBranch/index.md
     - External Libraries: ProjectGuide/ExternalLibraries/index.md
+
+
 
   - Components:
     - Pseudo Sensor:
