@@ -92,7 +92,7 @@ nav:
     # - Environment: Components/Environment/index.md
     # - Traffic: Components/Traffic/index.md
     - PCD Scanner: Components/PCDScanner/index.md
-    - Logger: Components/Logger/index.md
+    - Loggers: Components/Logger/index.md
     - Pedestrian & Cyclist: Components/Pedestrian/index.md
   
   - NetSim: NetSim/index.md
