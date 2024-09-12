@@ -2,9 +2,13 @@
 
 Loading Point Cloud Data (PCD) files into Unity can be challenging and often requires a paid solution. In this project, we've utilized the Pcx repository available on [GitHub](https://tlab-wide.github.io/V2X_E2E_Simulator/Simple-AV/SystemSetup/). However, it's important to note that Pcx is primarily designed to work with `.ply` files. We recommend using CloudCompare to convert `.pcd` files to `.ply`.
 
+## Conversion Process in CloudCompare
+
+he first challenge of importing a PCD file into Unity is correcting the dimensions. You must apply the following transformation in the opening window when you import your file in CloudCompare.
+
 ![Example of PCD file in CloudCompare](image.png)
 
-## Conversion Process in CloudCompare
+<Strong> Note </Strong>: Sometimes, you may not find a similar opening. In this case, first save your model as a PLY file using CloudCompare, then load the PLY file again and continue with the steps below.
 
 When loading a PCD file into CloudCompare, pay close attention to the XYZ transformations, as illustrated below:
 
