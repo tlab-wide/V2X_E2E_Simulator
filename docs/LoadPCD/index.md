@@ -1,6 +1,6 @@
 # Loading PCD Files in Unity
 
-Loading Point Cloud Data (PCD) files into Unity can be challenging and often requires a paid solution. In this project, we've utilized the Pcx repository available on [GitHub](https://tlab-wide.github.io/V2X_E2E_Simulator/Simple-AV/SystemSetup/). However, it's important to note that Pcx is primarily designed to work with `.ply` files. We recommend using CloudCompare to convert `.pcd` files to `.ply`.
+Loading Point Cloud Data (PCD) files into Unity can be challenging and often requires a paid solution. In this project, we've utilized the Pcx repository available on [GitHub](https://github.com/keijiro/Pcx). However, it's important to note that Pcx is primarily designed to work with `.ply` files. We recommend using CloudCompare to convert `.pcd` files to `.ply`.
 
 ## Conversion Process in CloudCompare
 
