@@ -91,9 +91,9 @@ nav:
       - Add new RSU: Components/RSU/AddNewRSU/index.md
     # - Environment: Components/Environment/index.md
     # - Traffic: Components/Traffic/index.md
-    - PCD Scanner: Components/PCDScanner/index.md
-      - PCD Scanner Component : Components/PCDScanner/Component/index.md
-      - PCD Scanner Package (old) : Components/PCDScanner/Package/index.md
+    - PCD Scanner:
+      - PCD Scanner Component: Components/PCDScanner/Component/index.md
+      - PCD Scanner Package (old): Components/PCDScanner/Package/index.md
     - Loggers: Components/Logger/index.md
     - Pedestrian & Cyclist: Components/Pedestrian/index.md
   

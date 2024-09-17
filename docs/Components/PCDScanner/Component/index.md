@@ -1,4 +1,4 @@
-# Scanner Package Component
+# Lidar PCD Extractor Component
 
 ## Prefab
 
@@ -45,7 +45,7 @@ The Sensor Search component is optional. This component will explore different s
 
 ### Vehicle Game Object
 
-This is a reference to the vehicle object. Consider that this game object is just a symbol and does not need to have movement logic; the PCD Scanner component will move it in the city.
+This is a reference to the vehicle object. Consider that this game object is just a symbol and does not need to have movement logic; the lidar extractor component will move it in the city.
 
 ### Output Files Direction
 
@@ -66,7 +66,7 @@ This is the time that the entire system lets the city run its traffic before sam
 
 <div style="text-align: center;">
   <img src="image-3.png" alt="alt text" width="700">
-  <p> Sample image of log area </p>
+  <p> Lidar PCD Extractor and Sensor Search</p>
 </div>
 
 <!-- 
