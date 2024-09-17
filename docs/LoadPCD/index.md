@@ -4,7 +4,7 @@ Loading Point Cloud Data (PCD) files into Unity can be challenging and often req
 
 ## Conversion Process in CloudCompare
 
-he first challenge of importing a PCD file into Unity is correcting the dimensions. You must apply the following transformation in the opening window when you import your file in CloudCompare.
+The first challenge of importing a PCD file into Unity is correcting the dimensions. You must apply the following transformation in the opening window when you import your file in CloudCompare.
 
 ![Example of PCD file in CloudCompare](image.png)
 
@@ -25,6 +25,8 @@ After configuring the transformations, save the file in the `.ply` binary format
 To use the converted `.ply` files in Unity, you will first need to install PCX. Begin by locating the `manifest.json` file in the Unity project’s `Packages` folder.
 
 ![Location of manifest.json](image-3.png)
+
+<Strong> Note </Strong>: After importing the model into Unity, you need to set the X scale to -1, so the model aligns exactly in the correct position.
 
 Once PCX is installed, you can drag and drop the `.ply` files into your Unity environment. However, for optimal performance, it is advisable to clean up previously added project files. This practice ensures a smoother engine performance and enhances the quality and placement of 3D models prior to conducting simulation tests.
 

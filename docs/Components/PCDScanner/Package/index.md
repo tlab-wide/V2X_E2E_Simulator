@@ -1,5 +1,7 @@
 **Scanner Package**
 
+<Strong> Note </Strong>: The current separate package associated with this component is not updated, but it works well. Some parts of the description have been updated with new features. Therefore, use this documentation only if you are working with the old scanner package and not the latest complete package.
+
 This package is developed based on the \"PointCloudMapping\" system of
 Awsim, which is used to create a point cloud of a city. Our package aims
 to capture and save the point cloud of the city separately, point by

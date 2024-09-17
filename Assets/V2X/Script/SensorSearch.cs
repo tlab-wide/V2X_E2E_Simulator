@@ -130,12 +130,20 @@ public class SensorSettingController : MonoBehaviour
 
     public Vector3 GetPos(int state)
     {
+        if (this.isActiveAndEnabled == false)
+        {
+            return Vector3.zero;
+        }
         int posStateIndex = GetPosStateIndex(state);
         return finalTestPoses[posStateIndex];
     }
 
     public float GetAngle(int state)
     {
+        if (this.isActiveAndEnabled == false)
+        {
+            return 0;
+        }
         int angleStateIndex = GetAngleStateIndex(state);
         return finalTestAngles[angleStateIndex];
     }

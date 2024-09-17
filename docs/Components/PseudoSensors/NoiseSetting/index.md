@@ -1,4 +1,4 @@
-**Noise Setting**
+# Noise Setting
 
 **Noise Setting** is a singleton class responsible for creating noise
 for all the mock sensors. At the start of their operation, each sensor
