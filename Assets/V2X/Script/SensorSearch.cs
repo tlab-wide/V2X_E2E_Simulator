@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class SensorSettingController : MonoBehaviour
+public class SensorSearch : MonoBehaviour
 {
     [SerializeField] private BlindScenarioManager blindScenarioManagerReference;
 
@@ -86,7 +86,10 @@ public class SensorSettingController : MonoBehaviour
                     // finalTestPoses.Add(targetPos);
 
                     targetPos = targetPos + stepSizePos.x * k * Vector3.right;
-                    finalTestPoses.Add(targetPos);
+                    if (!finalTestPoses.Contains(targetPos))
+                    {
+                        finalTestPoses.Add(targetPos);
+                    }
                 }
             }
         }
@@ -94,7 +97,8 @@ public class SensorSettingController : MonoBehaviour
         Debug.Log("List state**");
         Debug.Log(finalTestPoses.ToList());
         Debug.Log(finalTestPoses);
-        for (int i = 0; i < finalTestPoses.Capacity; i++)
+        Debug.Log(finalTestPoses.Count);
+        for (int i = 0; i < finalTestPoses.Count; i++)
         {
             Debug.Log(finalTestPoses[i]);
         }
@@ -134,6 +138,7 @@ public class SensorSettingController : MonoBehaviour
         {
             return Vector3.zero;
         }
+
         int posStateIndex = GetPosStateIndex(state);
         return finalTestPoses[posStateIndex];
     }
@@ -144,6 +149,7 @@ public class SensorSettingController : MonoBehaviour
         {
             return 0;
         }
+
         int angleStateIndex = GetAngleStateIndex(state);
         return finalTestAngles[angleStateIndex];
     }

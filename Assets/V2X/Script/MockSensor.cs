@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using AWSIM;
 using std_msgs.msg;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
+using Environment = AWSIM.Environment;
+
 
 public class MockSensor : MonoBehaviour
 {
@@ -19,6 +22,8 @@ public class MockSensor : MonoBehaviour
     private float Vfov = 180;
 
     [SerializeField] private List<Transform> seenObjects = new List<Transform>();
+    
+
     [SerializeField] private float maxDistance = 50;
 
     private Viewcone myCone;
@@ -41,8 +46,15 @@ public class MockSensor : MonoBehaviour
 
     private void Start()
     {
+        Vector3 pos = ROS2Utility.UnityToRosPosition(this.transform.position);
+        pos = pos + Environment.Instance.MgrsOffsetPosition;
+        Debug.Log($"sensor name {this.transform.name} , pos :{pos} , angle: {(transform.rotation.eulerAngles.y + 90) % 360}");
+        
+        
+        
         ConfigFile.Instance.AddToConfig(this);
         CheckConfigExist();
+        
 
         //setupCone
         myCone = GetComponentInChildren<Viewcone>();
@@ -54,10 +66,10 @@ public class MockSensor : MonoBehaviour
                 myCone.Rebuild();
 
                 // TO reduce 
-                float Xangle = Hfov >= 70 ? 70 : Hfov;
+                float Xangle = Hfov >= 80 ? 80 : Hfov;
                 Xangle = Xangle * Mathf.Deg2Rad;
 
-                float Yangle = Vfov >= 70 ? 70 : Vfov;
+                float Yangle = Vfov >= 179 ? 179 : Vfov;
                 Yangle = Yangle * Mathf.Deg2Rad;
 
                 myCone.transform.localScale = new Vector3((float)(Mathf.Tan(Xangle) * myCone.Length),
@@ -127,8 +139,10 @@ public class MockSensor : MonoBehaviour
     }
 
 
-    public void addObjectToObserved(Transform targetPoint)
+    //todo numberOfPoints still not used here if it is required can be used in futur
+    public void addObjectToObserved(Transform targetPoint, int numberOfPoints)
     {
+
         if (!seenObjects.Contains(targetPoint))
         {
             seenObjects.Add(targetPoint);

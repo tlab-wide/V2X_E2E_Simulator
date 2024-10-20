@@ -50,5 +50,13 @@ public class MapSettingEditor : Editor
         {
             myScript.MakeCsvFromLaneLet();
         }
+        
+        if(GUILayout.Button("Remove un named objects"))
+        {
+            myScript.RemoveUnnamedObjects();
+        }
+        
+        
+        
     }
 }

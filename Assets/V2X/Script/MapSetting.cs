@@ -432,4 +432,45 @@ public class MapSetting : MonoBehaviour
             return names;
         }
     }
+
+
+    public void RemoveUnnamedObjects()
+    {
+        // Find all root GameObjects in the current scene
+        GameObject[] rootObjects = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
+        
+        // Create a list to store objects that need to be removed
+        List<GameObject> objectsToRemove = new List<GameObject>();
+
+        // Iterate through all root objects and their children
+        foreach (GameObject root in rootObjects)
+        {
+            CheckAndRemoveUnnamedObjects(root, objectsToRemove);
+        }
+
+        // Remove all the unnamed objects found
+        foreach (GameObject obj in objectsToRemove)
+        {
+            Debug.Log("remove something");
+            Destroy(obj);
+        }
+    }
+    
+    
+    void CheckAndRemoveUnnamedObjects(GameObject obj, List<GameObject> objectsToRemove)
+    {
+
+        // Check if the object's name is null or empty
+        if (string.IsNullOrEmpty(obj.name))
+        {
+            objectsToRemove.Add(obj);
+        }
+
+        // Recursively check all child objects
+        foreach (Transform child in obj.transform)
+        {
+            CheckAndRemoveUnnamedObjects(child.gameObject, objectsToRemove);
+        }
+    }
+    
 }

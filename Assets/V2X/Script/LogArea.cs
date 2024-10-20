@@ -71,7 +71,11 @@ public class LogArea : MonoBehaviour
         }
         else if (checkHumans && other.gameObject.GetComponentInParent<NPCPedestrian>() != null)
         {
-            humanTransforms.Add(other.gameObject.GetComponentInParent<NPCPedestrian>().transform);
+            if (!humanTransforms.Contains(other.gameObject.GetComponentInParent<NPCPedestrian>().transform))
+            {
+                // LineOfSight lineOfSightComponent = transform.GetComponent<LineOfSight>();
+                humanTransforms.Add(other.gameObject.GetComponentInParent<NPCPedestrian>().transform);
+            }
         }
         else if (other.GameObject().layer == 6) //6 layer is Vehicle
         {
@@ -232,6 +236,7 @@ public class LogArea : MonoBehaviour
 
 
         LineOfSight lineOfSightComponent = transform.GetComponent<LineOfSight>();
+        lineOfSightComponent.checkImmidiately(); //to ensure state of jumpers
         string row;
 
         //time
@@ -241,8 +246,8 @@ public class LogArea : MonoBehaviour
         //set position
         var pos = ROS2Utility.UnityToRosPosition(transform.position);
         pos = pos + AWSIM.Environment.Instance.MgrsOffsetPosition;
-        
-        
+
+
         //rotation base on bus todo check correctness
         Quaternion r = ROS2Utility.UnityToRosRotation(transform.rotation);
 
@@ -254,11 +259,11 @@ public class LogArea : MonoBehaviour
         }
         else
         {
-            List<MockSensor> sensors = lineOfSightComponent.getObservableSensors();
+            List<MockSensor> sensors = lineOfSightComponent.GetObservableSensors();
             string sensorsNames = "";
             for (int i = 0; i < sensors.Count; i++)
             {
-                sensorsNames += sensors[i].getName() + "|";
+                sensorsNames += sensors[i].getName()+ $"*{lineOfSightComponent.GetNumberOfDetectedPoint(sensors[i])}*" + "|";
             }
 
 
@@ -290,12 +295,14 @@ public class LogArea : MonoBehaviour
     {
         if (checkCars && logPathCars != "" && !File.Exists(logPathCars))
         {
-            AppendStringToFile(logPathCars, "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names \n");
+            AppendStringToFile(logPathCars,
+                "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names \n");
         }
 
         if (checkHumans && logPathHumans != "" && !File.Exists(logPathHumans))
         {
-            AppendStringToFile(logPathHumans, "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names\n");
+            AppendStringToFile(logPathHumans,
+                "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names\n");
         }
 
         yield return null;

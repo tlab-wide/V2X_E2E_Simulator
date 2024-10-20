@@ -5,6 +5,11 @@ using System.Linq;
 using AWSIM;
 using UnityEngine;
 
+
+// This component checks if the bus is inside another object.
+// The scanner object will ignore that specific moment.
+// In future repetitions, it will fill this gap, ensuring that the simulation does not lack data for that specific position.
+ 
 public class ScannerCar : MonoBehaviour
 {
     private Rigidbody rigidbody;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AWSIM.PointCloudMapping.Geometry;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace AWSIM.PointCloudMapping
 {
@@ -13,22 +14,22 @@ namespace AWSIM.PointCloudMapping
     /// The vehicle keeps warping along centerlines at a interval of <see cref="captureLocationInterval"/> and point cloud data from sensors are captured at every warp point.
     /// PCD file will be outputted when you stop your scene or all locations in the route are captured.
     /// </summary>
-    [RequireComponent(typeof(SensorSettingController))]
+    [RequireComponent(typeof(SensorSearch))]
     public class LidarPcdExtractor : MonoBehaviour
     {
         [SerializeField]
         [Tooltip("Imported OSM file. Mapping is conducted along all centerlines of lanelets in the OSM.")]
         private OsmDataContainer osmContainer;
 
-        [Header("New log scan setting")] [SerializeField]
+        [Header("Advance log scan setting")] [SerializeField]
         private bool readPosesFromFile;
 
         [SerializeField] private TextAsset positionsOfCar;
         [SerializeField] private int iterationNumber = 5;
         [SerializeField] private float waitAfterEachScan = 1.0f;
-        [SerializeField] private SensorSettingController sensorSettingController;
+        [FormerlySerializedAs("sensorSettingController")] [SerializeField] private SensorSearch sensorSearch;
 
-        [Header("Normal settings")]
+        [Header("Normal scan settings")]
         [SerializeField]
         [Tooltip(
             "Game object containing sensors to capture pointcloud. It will be warped along centerlines of lanelets.")]
@@ -44,7 +45,7 @@ namespace AWSIM.PointCloudMapping
         [SerializeField] [Tooltip("Result csv file name. On Editor/Windows, it will be saved in Assets/")]
         private string outputCsvFilePath = "result.csv";
 
-        [SerializeField] private bool useCarPos = false;
+        private bool useCarPos = false;
         [SerializeField] private float waitTime;
 
         [SerializeField] [Tooltip("Distance in meters between consecutive warps along the centerline of a lanelet.")]
@@ -76,7 +77,7 @@ namespace AWSIM.PointCloudMapping
             // Initiate csv file with headers 
             csvPath = $"{Application.dataPath}/{outputCsvFilePath}";
             CsvEditorUtils.HandleCsvHeader(csvPath,
-                "state,pose_index,Iteration,shift_x,shift_y,shift_z,angle,Name,X,Y,Z,W_rotation,X_rotation,Y_rotation,Z_rotation\n");
+                "state,pose_index,Iteration,Name,shift_x,shift_y,shift_z,angle,X,Y,Z,W_rotation,X_rotation,Y_rotation,Z_rotation\n");
 
             mappingSensors = vehicleGameObject.GetComponentsInChildren<RGLScanAdapter>();
             mappingSensors = mappingSensors.Concat(rootStaticSensors.GetComponentsInChildren<RGLScanAdapter>())
@@ -146,7 +147,7 @@ namespace AWSIM.PointCloudMapping
 
 
             scannerCar = vehicleGameObject.GetComponent<ScannerCar>();
-            sensorSettingController = this.GetComponent<SensorSettingController>();
+            sensorSearch = this.GetComponent<SensorSearch>();
         }
 
 
@@ -171,12 +172,38 @@ namespace AWSIM.PointCloudMapping
 
 
             //this section implimented for i j k in update methode compatible with unity class structure 
-            Debug.Log(
-                $"stateSensor {stateSensorSetting} , counter pos {counterPos}, counter iteration {counterIteration} ");
-            stateSensorSetting = sensorSettingController.SetupNextState();
-            if (stateSensorSetting == -1)
+
+            if (sensorSearch != null && sensorSearch.isActiveAndEnabled)
             {
-                stateSensorSetting = sensorSettingController.ResetState();
+                Debug.Log("------");
+                Debug.Log(stateSensorSetting);
+                stateSensorSetting = sensorSearch.SetupNextState();
+                if (stateSensorSetting == -1)
+                {
+                    // Debug.Log("***");
+                    // Debug.Log(stateSensorSetting);
+                    stateSensorSetting = sensorSearch.ResetState();
+                    counterPos++;
+                    if (counterPos >= capturePoseQueue.Count)
+                    {
+                        counterPos = 0;
+                        counterIteration++;
+                        // if (counterIteration >= iterationNumber)
+                        // {
+                        //     return;
+                        // }
+                    }
+                    return;
+                    
+                }
+                
+                Debug.Log(
+                    $"stateSensor {stateSensorSetting} , counter pos {counterPos}, counter iteration {counterIteration} ");
+            }
+            else
+            {
+                Debug.Log(
+                    $"Else side _ stateSensor {stateSensorSetting} , counter pos {counterPos}, counter iteration {counterIteration} ");
                 counterPos++;
                 if (counterPos >= capturePoseQueue.Count)
                 {
@@ -184,6 +211,7 @@ namespace AWSIM.PointCloudMapping
                     counterIteration++;
                     if (counterIteration >= iterationNumber)
                     {
+                        //when counterIteration reaches the highest value it means the simulation id ended
                         return;
                     }
                 }
@@ -192,7 +220,7 @@ namespace AWSIM.PointCloudMapping
             Debug.Log($"exit with {stateSensorSetting} ");
 
 
-            Debug.Log($"PointCloudMapper: {capturePoseQueue.Count} captures left");
+            Debug.Log($"PointCloudMapper: {capturePoseQueue.Count - counterPos} of {capturePoseQueue.Count} captures left");
             if (capturePoseQueue.Count == 0)
             {
                 Debug.Log("Entered to saving");
@@ -218,18 +246,18 @@ namespace AWSIM.PointCloudMapping
             if (logAroundCar != null)
             {
                 logAroundCar.CaptureLog(stateSensorSetting, counterPos,
-                    sensorSettingController.GetPos(stateSensorSetting),
-                    sensorSettingController.GetAngle(stateSensorSetting), counterIteration);
+                    sensorSearch.GetPos(stateSensorSetting),
+                    sensorSearch.GetAngle(stateSensorSetting), counterIteration);
             }
 
 
             for (int i = 0; i < mappingSensors.Length; i++)
             {
-                Vector3 shifPos = sensorSettingController.GetPos(stateSensorSetting);
-                float angle = sensorSettingController.GetAngle(stateSensorSetting);
+                Vector3 shifPos = sensorSearch.GetPos(stateSensorSetting);
+                float shiftAngle = sensorSearch.GetAngle(stateSensorSetting);
 
                 string rowLog = $"{counterPos},{stateSensorSetting},{counterIteration},{mappingSensors[i].name},";
-                rowLog += $"{shifPos.x},{shifPos.y},{shifPos.z},{angle},";
+                rowLog += $"{shifPos.x},{shifPos.y},{shifPos.z},{shiftAngle},";
                 //set position
                 var pos = ROS2Utility.UnityToRosPosition(mappingSensors[i].transform.position);
                 pos = pos + worldOriginROS;

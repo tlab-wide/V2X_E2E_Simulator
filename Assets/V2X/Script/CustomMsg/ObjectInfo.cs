@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using AWSIM;
 using ROS2;
 using UnityEngine;
 using CooperativeObjectInfoMessage = dm_cooperative_msgs.msg.CooperativeObjectInfoMessage;
 using Environment = AWSIM.Environment;
 using dm_object_info_msgs.msg;
+using unique_identifier_msgs.msg;
 using Coordinate = CoordinateSharp.Coordinate;
+using Quaternion = UnityEngine.Quaternion;
+using Vector3 = UnityEngine.Vector3;
 
 public class ObjectInfo : MonoBehaviour
 {
@@ -32,6 +36,13 @@ public class ObjectInfo : MonoBehaviour
     private NoiseSetting.Noise rotationNoise;
     private NoiseSetting.Noise dimensionNoise;
     private NoiseSetting.Noise probabilityNoise;
+    
+    
+    // Dictionary to store UUIDs (16-byte array) and their associated integers
+    private Dictionary<string, int> uuidDictionary = new Dictionary<string, int>();
+
+    // Random number generator
+    private System.Random random = new System.Random();
 
 
     public QoSSettings QosSettings = new QoSSettings()
@@ -42,11 +53,18 @@ public class ObjectInfo : MonoBehaviour
         Depth = 1,
     };
 
-    IPublisher<CooperativeObjectInfoMessage> objectPublisher;
-    IPublisher<CooperativeObjectInfoMessage> objectPublisherGroundTruth;
+    // IPublisher<CooperativeObjectInfoMessage> objectPublisher;
+    // IPublisher<CooperativeObjectInfoMessage> objectPublisherGroundTruth;
 
-    private CooperativeObjectInfoMessage msg;
-    private CooperativeObjectInfoMessage msgGroundTruth;
+    IPublisher<ObjectInfoArray> objectPublisher;
+    IPublisher<ObjectInfoArray> objectPublisherGroundTruth;
+
+
+    // private CooperativeObjectInfoMessage msg;
+    // private CooperativeObjectInfoMessage msgGroundTruth;
+    
+    private ObjectInfoArray msg;
+    private ObjectInfoArray msgGroundTruth;
 
     // Start is called before the first frame update
     void Awake()
@@ -56,15 +74,38 @@ public class ObjectInfo : MonoBehaviour
         dimensionNoise = NoiseSetting.Instance.GetNoise(dimensionNoiseName);
         probabilityNoise = NoiseSetting.Instance.GetNoise(probabilityNoiseName);
 
-        msg = new CooperativeObjectInfoMessage();
-        msgGroundTruth = new CooperativeObjectInfoMessage();
+        // msg = new CooperativeObjectInfoMessage();
+        // msgGroundTruth = new CooperativeObjectInfoMessage();
+        
+        msg = new ObjectInfoArray();
+        msgGroundTruth = new ObjectInfoArray();
 
 
         // Create publisher.
         var qos = QosSettings.GetQoSProfile();
-        objectPublisher = SimulatorROS2Node.CreatePublisher<CooperativeObjectInfoMessage>(Topic, qos);
+        // objectPublisher = SimulatorROS2Node.CreatePublisher<CooperativeObjectInfoMessage>(Topic, qos);
+        objectPublisher = SimulatorROS2Node.CreatePublisher<ObjectInfoArray>(Topic, qos);
+        // objectPublisherGroundTruth =
+        //     SimulatorROS2Node.CreatePublisher<CooperativeObjectInfoMessage>(TopicGroundTruth, qos);
         objectPublisherGroundTruth =
-            SimulatorROS2Node.CreatePublisher<CooperativeObjectInfoMessage>(TopicGroundTruth, qos);
+            SimulatorROS2Node.CreatePublisher<ObjectInfoArray>(TopicGroundTruth, qos);
+        
+        
+        
+        // log state of sensor
+        Transform firstSensor = this.sensors[0].transform;
+        Vector3 pos = ROS2Utility.UnityToRosPosition(firstSensor.position);
+        pos = pos + Environment.Instance.MgrsOffsetPosition;
+        Quaternion rot = ROS2Utility.UnityToRosRotation(firstSensor.rotation);
+
+        Debug.Log($"{firstSensor.name} RSU ***|");
+        Debug.Log(pos);
+        Debug.Log(rot);
+        Debug.Log($"{rot.x}, {rot.y},{rot.z} ,{rot.w}");
+        Debug.Log(firstSensor.rotation.eulerAngles.y);
+        
+        
+
     }
 
     private void CheckMockSensors()
@@ -96,123 +137,47 @@ public class ObjectInfo : MonoBehaviour
                 //add to list
                 objectInfos.Add(handlObjectInfo(seenObjects[j], true));
                 objectInfosGroundTruth.Add(handlObjectInfo(seenObjects[j], false));
-
-
-                // old section 
-
-                //
-                // //rotation base on bus //todo check correctness 
-                // var r = ROS2Utility.UnityToRosRotation(seenObjects[j].rotation);
-                // //apply noise
-                // r = rotationNoise.RotateQuaternionAroundY(r);
-                //
-                // predictedObject.Kinematics.Initial_pose_with_covariance.Pose.Orientation.X = r.x;
-                // predictedObject.Kinematics.Initial_pose_with_covariance.Pose.Orientation.Y = r.y;
-                // predictedObject.Kinematics.Initial_pose_with_covariance.Pose.Orientation.Z = r.z;
-                // predictedObject.Kinematics.Initial_pose_with_covariance.Pose.Orientation.W = r.w;
-                //
-                // predictedObject.Existence_probability = 0.8f;
-                // // predictedObject.Existence_probability = probabilityNoise.ApplyNoiseToDecrease(1);
-                //
-                //
-                // NPCVehicle npcVehicle = seenObjects[j].GetComponent<NPCVehicle>();
-                //
-                // autoware_auto_perception_msgs.msg.ObjectClassification objectClassification =
-                //     new autoware_auto_perception_msgs.msg.ObjectClassification();
-                // //
-                // if (npcVehicle != null)
-                // {
-                //     //add noise
-                //     Vector3 dimensions = new Vector3(npcVehicle.Bounds.extents.x * 2,
-                //         npcVehicle.Bounds.extents.y * 2, npcVehicle.Bounds.extents.z * 2);
-                //     dimensions = dimensionNoise.ApplyNoiseOnVector(dimensions);
-                //
-                //
-                //     dimensions = ROS2Utility.UnityToRosPosition(dimensions);
-                //
-                //     predictedObject.Shape.Dimensions.X = dimensions.x;
-                //     predictedObject.Shape.Dimensions.Y =
-                //         Math.Abs(dimensions.y); // dimension no need to be minus when convert to autoware coordination
-                //     predictedObject.Shape.Dimensions.Z = dimensions.z;
-                //
-                //     predictedObject.Kinematics.Initial_pose_with_covariance.Pose.Position.Z = pos.z + dimensions.z;
-                //
-                //     // predictedObject.Shape.Dimensions.X = 4.7f;
-                //     // predictedObject.Shape.Dimensions.Y = 1.93f;
-                //     // predictedObject.Shape.Dimensions.Z = 1.6f;
-                //
-                //     // objectClassification.Label = lineOfSight.GetTypeOfObject();
-                //     
-                //     objectClassification.Label = 1;
-                // }
-                // else
-                // {
-                //     predictedObject.Shape.Dimensions.X = 0.5f;
-                //     predictedObject.Shape.Dimensions.Y = 0.5f;
-                //     predictedObject.Shape.Dimensions.Z = 1.7f;
-                //     predictedObject.Kinematics.Initial_pose_with_covariance.Pose.Position.Z =
-                //         pos.z + predictedObject.Shape.Dimensions.Z / 2;
-                //     objectClassification.Label = 7;
-                // }
-                //
-                //
-                // //handling uuid and type
-                // LineOfSight lineOfSight = seenObjects[j].GetComponent<LineOfSight>();
-                // if (lineOfSight != null)
-                // {
-                //     objectClassification.Probability = 1;
-                //     // objectClassification.Probability = probabilityNoise.ApplyNoiseToDecrease(1);
-                //     predictedObject.Classification = new autoware_auto_perception_msgs.msg.ObjectClassification[]
-                //         { objectClassification };
-                //     // predictedObject.Object_id = lineOfSight.GetUUID();
-                //     predictedObject.Object_id.Uuid[0] = (byte)j;
-                //     predictedObject.Object_id.Uuid[1] = (byte)stationID;
-                //     // predictedObject.Object_id = LineOfSight.GenerateUUid();
-                // }
-                // else
-                // {
-                //     throw new Exception("Detected an object without lineOfSight component");
-                // }
-                //
-                // // predictedObjects.Add(predictedObject);
             }
         }
 
-        msg.Station_id = stationID;
-        msg.Sensor_type = sensorType;
 
-        msg.Object_info_array.Array = objectInfos.ToArray();
+        // msg.Station_id = stationID;
+        // msg.Sensor_type = sensorType;
+        //
+        msg.Array = objectInfos.ToArray();
+        //
+        // msgGroundTruth.Station_id = stationID;
+        // msgGroundTruth.Sensor_type = sensorType;
+        //
+        msgGroundTruth.Array = objectInfosGroundTruth.ToArray();
+        //
+        // //pos station (we mention first element position of sensors as pos station)
+        // if (sensors.Count != 0)
+        // {
+        //     UnityEngine.Vector3 posStation = sensors[0].transform.position;
+        //     posStation = ROS2Utility.UnityToRosPosition(posStation);
+        //     posStation = posStation + Environment.Instance.MgrsOffsetPosition;
+        //
+        //     msg.Station_pose.Pose.Position.X = posStation.x;
+        //     msg.Station_pose.Pose.Position.Y = posStation.y;
+        //     msg.Station_pose.Pose.Position.Z = posStation.z;
+        //
+        //     msgGroundTruth.Station_pose.Pose.Position.X = posStation.x;
+        //     msgGroundTruth.Station_pose.Pose.Position.Y = posStation.y;
+        //     msgGroundTruth.Station_pose.Pose.Position.Z = posStation.z;
+        // }
+        // else
+        // {
+        //     throw new Exception("No sensors have been found in RSU");
+        // }
 
-        msgGroundTruth.Station_id = stationID;
-        msgGroundTruth.Sensor_type = sensorType;
-
-        msgGroundTruth.Object_info_array.Array = objectInfosGroundTruth.ToArray();
-
-        //pos station (we mention first element position of sensors as pos station)
-        if (sensors.Count != 0)
-        {
-            UnityEngine.Vector3 posStation = sensors[0].transform.position;
-            posStation = ROS2Utility.UnityToRosPosition(posStation);
-            posStation = posStation + Environment.Instance.MgrsOffsetPosition;
-
-            msg.Station_pose.Pose.Position.X = posStation.x;
-            msg.Station_pose.Pose.Position.Y = posStation.y;
-            msg.Station_pose.Pose.Position.Z = posStation.z;
-
-            msgGroundTruth.Station_pose.Pose.Position.X = posStation.x;
-            msgGroundTruth.Station_pose.Pose.Position.Y = posStation.y;
-            msgGroundTruth.Station_pose.Pose.Position.Z = posStation.z;
-        }
-        else
-        {
-            throw new Exception("No sensors have been found in RSU");
-        }
-
-
+        // Debug.Log("ss8");
         objectPublisher.Publish(msg);
 
-        objectPublisherGroundTruth.Publish(msgGroundTruth);
-
+        if (!TopicGroundTruth.Equals("None"))
+        {
+            objectPublisherGroundTruth.Publish(msgGroundTruth);
+        }
         //todo prediction for RSU 
     }
 
@@ -254,15 +219,37 @@ public class ObjectInfo : MonoBehaviour
 
 
         //Rotation
-        float rotation = CalculateAngleFromNorth(seenObjects.transform.forward);
+        float rotation = CalculateAngleFromNorth(seenObjects.transform);
         objectInfo.Direction.Value.Value = (ushort)(rotation * 100);
 
 
+        // Debug.Log("ss1");
         //type 
         NPCVehicle npcVehicle = seenObjects.GetComponent<NPCVehicle>();
         LineOfSight lineOfSight = seenObjects.GetComponent<LineOfSight>();
 
-        // Debug.Log($"Line of Sight => {lineOfSight == null} - {lineOfSight.transform.name}");
+        
+        //Id setup
+        UUID uuid = lineOfSight.GetUUID();
+        int generated_id = GetIntForUUID(uuid.Uuid);
+        objectInfo.Id.Value = (ulong)generated_id;
+
+
+        // Debug.Log("ss2");
+        objectInfo.Object_class = new ObjectClass[5];
+
+        for (int i = 0; i < objectInfo.Object_class.Length; i++)
+        {
+            ObjectClass objectClass = new ObjectClass();
+            objectClass.Confidence.Value = 0;
+            objectClass.Id.Value = (byte)i;
+            objectInfo.Object_class[i] = objectClass;
+        }
+        
+        // objectInfo.Time TODO 
+        objectInfo.Time = new TimestampIts();
+        objectInfo.Time.Value = GetITSTimeInMilliseconds();
+        
         if (npcVehicle != null)
         {
             //add noise
@@ -274,15 +261,45 @@ public class ObjectInfo : MonoBehaviour
             objectInfo.Size.Width.Value.Value = (ushort)(dimensions.x * 100);
             objectInfo.Size.Height.Value.Value = (ushort)(dimensions.y * 100);
 
-            // objectInfo.Object_class = new ObjectClass[1];
-            // objectInfo.Object_class[0].Id.Value = lineOfSight.GetTypeOfObject();//todo type of car has bug 
+      
+            ObjectClass objectClassTarget = new ObjectClass();
+            objectClassTarget.Id.Value = 1;
+            objectClassTarget.Confidence.Value = 100;
+
+            // Debug.Log("ss3");
+            
+            objectInfo.Object_class[1] = objectClassTarget;
+            // objectClass.Confidence.Value = 100;
+            // objectClass.Confidence = classConfidence;
+
+            // objectInfo.Object_class[1] = objectClass; //todo 
+
+            // ObjectClass[] test = new ObjectClass[1];
+            // test[0].Id.Value = ClassId.VEHICLE;
+            // test[0].Id.Value = (byte)99;
+
+            
+
+            // Debug.Log("ss4");
+            // objectInfo.Object_class =
+
+            // objectInfo.Object_class[0].Id.Value =  ClassId.VEHICLE;//todo type of car has bug 
+            // objectInfo.Object_class[0].Subclass_type = lineOfSight.GetTypeOfObject();//todo type of car has bug 
+            // objectInfo.Object_class[0].Confidence.Value = (byte)100;
         }
         else
         {
+            ObjectClass objectClassTarget = new ObjectClass();
+            objectClassTarget.Id.Value = 2;
+            objectClassTarget.Confidence.Value = 100;
+
+            objectInfo.Object_class[2] = objectClassTarget;
+            
+            
             objectInfo.Size.Length.Value.Value = (ushort)(0.5f * 100);
             objectInfo.Size.Width.Value.Value = (ushort)(0.5f * 100);
             objectInfo.Size.Height.Value.Value = (ushort)(1.7f * 100);
-            
+
             // objectInfo.Object_class = new ObjectClass[1];
             // objectInfo.Object_class[0].Id.Value = (byte)7; // todo type of car has bug
         }
@@ -359,21 +376,62 @@ public class ObjectInfo : MonoBehaviour
 
 
     // Calculate the Y angle from North
-    // Calculate the angle from North using Atan2
-    public float CalculateAngleFromNorth(Vector3 direction)
+    public float CalculateAngleFromNorth(Transform target)
     {
-        // Project the direction onto the XZ plane
-        direction.y = 0;
-
-        // Calculate the angle using Atan2
-        float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-
-        // Ensure the angle is within 0-360 range
-        if (angle < 0)
-        {
-            angle += 360;
-        }
-
-        return angle;
+        // Ensure the angle is within the 0-360 range using Mathf.Repeat
+        return (target.rotation.eulerAngles.y + 90) % 360;
     }
+    
+    
+    
+  
+
+    public static ulong GetITSTimeInMilliseconds()
+    {
+        // Get the current Unix time in milliseconds
+        long unixTimeMillis = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        // Debug.Log("time--");
+        // Debug.Log(unixTimeMillis);
+        unixTimeMillis = unixTimeMillis - 1072882800000;
+        // Debug.Log("time++");
+        // Debug.Log(unixTimeMillis);
+        return (ulong)unixTimeMillis;
+    }
+    
+    
+    
+    // Function to convert byte array to a string (for use as a dictionary key)
+    private string ByteArrayToString(byte[] byteArray)
+    {
+        return BitConverter.ToString(byteArray).Replace("-", "").ToLower();
+    }
+
+    // Function to retrieve an integer for a given UUID
+    public int GetIntForUUID(byte[] uuid)
+    {
+        // Convert the UUID byte array to a string to use as a dictionary key
+        string uuidKey = ByteArrayToString(uuid);
+
+        // Check if the UUID is already in the dictionary
+        if (uuidDictionary.ContainsKey(uuidKey))
+        {
+            // Return the existing integer
+            return uuidDictionary[uuidKey];
+        }
+        else
+        {
+            // Generate a random integer
+            int newInt = random.Next(1, int.MaxValue);
+
+            // Store the UUID and its associated integer in the dictionary
+            uuidDictionary.Add(uuidKey, newInt);
+
+            // Return the new integer
+            return newInt;
+        }
+    }
+    
+    
+    
 }
