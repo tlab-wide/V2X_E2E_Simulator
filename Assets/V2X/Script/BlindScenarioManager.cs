@@ -165,27 +165,6 @@ public class BlindScenarioManager : Singleton<BlindScenarioManager>
     }
 
 
-    // public Transform getBusLidar()
-    // {
-    //     return busLidar;
-    // }
-
-    // public Transform getRSUsensor()
-    // {
-    //     return currentRSU;
-    // }
-
-    // public bool CheckIsBusLidar(Transform transform)
-    // {
-    //     return transform == busLidar;
-    // }
-
-    // public bool CheckIsCrossRoadLidar(Transform transform)
-    // {
-    //     return transform == currentRSU;
-    // }
-
-
     public int GetBusLidarThreshold()
     {
         return busLidarThreshold;

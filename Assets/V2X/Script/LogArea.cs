@@ -22,8 +22,12 @@ public class LogArea : MonoBehaviour
     [SerializeField] private int waitForFrame = 2;
     [SerializeField] private bool ultraMode = true;
 
-    private List<Transform> humanTransforms = new List<Transform>();
-    private List<Transform> carTransforms = new List<Transform>();
+    [SerializeField] private CheckpointJumper checkpointJumper;
+    
+    private ILogIndex logIndexBus;
+    
+    [SerializeField]private List<Transform> humanTransforms = new List<Transform>();
+    [SerializeField]private List<Transform> carTransforms = new List<Transform>();
 
 
     private string myVariable;
@@ -31,6 +35,8 @@ public class LogArea : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        logIndexBus = checkpointJumper != null ? checkpointJumper : null;
+        
         // set up header of CSV files
         StartCoroutine(HandleCsvHeader());
 
@@ -65,6 +71,8 @@ public class LogArea : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Debug.Log($"bug bus : {other.name}");
+        
         if (checkCars && other.gameObject.GetComponentInParent<NPCVehicle>() != null)
         {
             carTransforms.Add(other.gameObject.GetComponentInParent<NPCVehicle>().transform);
@@ -124,17 +132,12 @@ public class LogArea : MonoBehaviour
         {
             while (true)
             {
-                // foreach (Transform car in carTransforms)
-                // {
-                //     string row = dataRowGenerator(car);
-                //     AppendStringToFile(logPathCars, row);
-                // }
-
                 for (int i = 0; i < carTransforms.Count; i++)
                 {
                     string row = dataRowGenerator(carTransforms[i]);
                     if (row.Equals(""))
                     {
+                        Debug.Log($"removing {i}");
                         carTransforms.RemoveAt(i);
                         i--;
                         continue;
@@ -149,7 +152,8 @@ public class LogArea : MonoBehaviour
                     string row = dataRowGenerator(humanTransforms[i]);
                     if (row.Equals(""))
                     {
-                        carTransforms.RemoveAt(i);
+                        Debug.Log($"removing {i}");
+                        humanTransforms.RemoveAt(i);
                         i--;
                         continue;
                     }
@@ -189,8 +193,9 @@ public class LogArea : MonoBehaviour
                 for (int i = 0; i < carTransforms.Count; i++)
                 {
                     string row = dataRowGenerator(carTransforms[i]);
-                    if (row.Equals(""))
+                    if (row.Equals("")) // it means object has dead
                     {
+                        Debug.Log($"removing {i}");
                         carTransforms.RemoveAt(i);
                         i--;
                         continue;
@@ -205,7 +210,8 @@ public class LogArea : MonoBehaviour
                     string row = dataRowGenerator(humanTransforms[i]);
                     if (row.Equals(""))
                     {
-                        carTransforms.RemoveAt(i);
+                        Debug.Log($"removing {i}");
+                        humanTransforms.RemoveAt(i);
                         i--;
                         continue;
                     }
@@ -222,7 +228,8 @@ public class LogArea : MonoBehaviour
     {
         try
         {
-            if (transform is null || transform.GetComponent<LineOfSight>() is null)
+            // if (transform is null || transform.GetComponent<LineOfSight>() is null)
+            if (transform is null)
             {
                 Debug.LogWarning($"{transform.name} is null and can not save log");
                 return "";
@@ -236,7 +243,7 @@ public class LogArea : MonoBehaviour
 
 
         LineOfSight lineOfSightComponent = transform.GetComponent<LineOfSight>();
-        lineOfSightComponent.checkImmidiately(); //to ensure state of jumpers
+        lineOfSightComponent?.checkImmidiately(); //to ensure state of jumpers
         string row;
 
         //time
@@ -252,10 +259,13 @@ public class LogArea : MonoBehaviour
         Quaternion r = ROS2Utility.UnityToRosRotation(transform.rotation);
 
 
+        int stateBus = logIndexBus?.GetIndex() ?? 0;
+        
         if (lineOfSightComponent is null)
         {
+            
             row =
-                $"{transform.name},{pos.x},{pos.y},{pos.z},{r.w},{r.x},{r.y},{r.z},{rosTime.Sec},{rosTime.Nanosec},{Time.frameCount}\n";
+                $"{transform.name},{pos.x},{pos.y},{pos.z},{r.w},{r.x},{r.y},{r.z},{rosTime.Sec},{rosTime.Nanosec},{Time.frameCount},,,{stateBus}\n";
         }
         else
         {
@@ -268,7 +278,7 @@ public class LogArea : MonoBehaviour
 
 
             row =
-                $"{transform.name},{pos.x},{pos.y},{pos.z},{r.w},{r.x},{r.y},{r.z},{rosTime.Sec},{rosTime.Nanosec} ,{Time.frameCount},{lineOfSightComponent.GetCarBoxState()},{sensorsNames}\n";
+                $"{transform.name},{pos.x},{pos.y},{pos.z},{r.w},{r.x},{r.y},{r.z},{rosTime.Sec},{rosTime.Nanosec} ,{Time.frameCount},{lineOfSightComponent.GetCarBoxState()},{sensorsNames},{stateBus}\n";
         }
 
 
@@ -296,13 +306,13 @@ public class LogArea : MonoBehaviour
         if (checkCars && logPathCars != "" && !File.Exists(logPathCars))
         {
             AppendStringToFile(logPathCars,
-                "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names \n");
+                "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names,Index\n");
         }
 
         if (checkHumans && logPathHumans != "" && !File.Exists(logPathHumans))
         {
             AppendStringToFile(logPathHumans,
-                "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names\n");
+                "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names,Index\n");
         }
 
         yield return null;

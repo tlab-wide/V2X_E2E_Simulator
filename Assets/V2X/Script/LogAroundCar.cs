@@ -7,7 +7,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Object = System.Object;
-using Random = Unity.Mathematics.Random;
 using String = std_msgs.msg.String;
 
 [RequireComponent(typeof(BoxCollider))]

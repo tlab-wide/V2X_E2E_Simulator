@@ -33,8 +33,7 @@ public class SensorsMessage : MonoBehaviour
     };
 
     IPublisher<autoware_auto_perception_msgs.msg.DetectedObjects> sensorDetectedPublisher;
-
-    CooperativeObjectsMessage test;
+    
 
     // Start is called before the first frame update
     void Awake()

@@ -16,6 +16,7 @@ public class LineOfSight : MonoBehaviour
 
     [SerializeField] private Transform cube;
     [SerializeField] private BoxState boxState;
+    [SerializeField] private int minimumNumberOfPointVisible =3;
 
     private List<MockSensor> observableSensor = new List<MockSensor>();
     private Dictionary<MockSensor, int> observableSensorWitCount = new Dictionary<MockSensor, int>();
@@ -96,9 +97,10 @@ public class LineOfSight : MonoBehaviour
         while (this != null && this.gameObject.activeSelf)
         {
             //find there is vision or not
+            bool seenByRSU = false;
+            bool seenByOBU = false;
 
-
-            // lidars handeling 
+            // bus lidars 
             List<Transform> seenObjectsByLidar = new List<Transform>();
             for (int j = 0; j < lidars.Count; j++)
             {
@@ -114,17 +116,18 @@ public class LineOfSight : MonoBehaviour
                 }
 
                 //visualization
-                if (numberOfSeenBusLidars >= BlindScenarioManager.Instance.GetBusLidarThreshold())
+                if (numberOfSeenBusLidars >= BlindScenarioManager.Instance.GetBusLidarThreshold() &&
+                    numberOfSeenBusLidars >= minimumNumberOfPointVisible)
                 {
+                    seenByOBU = true;
                     //just for log system
                     if (!observableSensor.Contains(lidars[j]))
                     {
                         observableSensor.Add(lidars[j]);
                         observableSensorWitCount[lidars[j]] = numberOfSeenBusLidars;
-
                     }
 
-                    lidars[j].addObjectToObserved(this.transform,numberOfSeenBusLidars);
+                    lidars[j].addObjectToObserved(this.transform, numberOfSeenBusLidars);
 
 
                     // BlindScenarioManager.Instance.AddObservedCar(this.transform);
@@ -139,7 +142,7 @@ public class LineOfSight : MonoBehaviour
             }
 
 
-            // RSU handeling 
+            // RSU lidar 
             List<Transform> seenObjectsByRSU = new List<Transform>();
 
             for (int j = 0; j < rsuSensors.Count; j++)
@@ -156,8 +159,10 @@ public class LineOfSight : MonoBehaviour
                 }
 
                 //visualization
-                if (numberOfSeenRSUs >= BlindScenarioManager.Instance.GetRsuThreshold())
+                if (numberOfSeenRSUs >= BlindScenarioManager.Instance.GetRsuThreshold() &&
+                    numberOfSeenRSUs >= minimumNumberOfPointVisible)
                 {
+                    seenByRSU = true;
                     //just for log system
                     if (!observableSensor.Contains(rsuSensors[j]))
                     {
@@ -165,7 +170,7 @@ public class LineOfSight : MonoBehaviour
                         observableSensorWitCount[rsuSensors[j]] = numberOfSeenRSUs;
                     }
 
-                    rsuSensors[j].addObjectToObserved(this.transform,numberOfSeenRSUs);
+                    rsuSensors[j].addObjectToObserved(this.transform, numberOfSeenRSUs);
                 }
                 else
                 {
@@ -175,7 +180,7 @@ public class LineOfSight : MonoBehaviour
             }
 
 
-            // lidar cameras 
+            // bus cameras 
             List<Transform> seenObjectsCameras = new List<Transform>();
             for (int j = 0; j < busCameras.Count; j++)
             {
@@ -191,16 +196,17 @@ public class LineOfSight : MonoBehaviour
                 }
 
                 //visualization
-                if (numberOfSeenBusCameras >= BlindScenarioManager.Instance.GetRsuThreshold())
+                if (numberOfSeenBusCameras >= BlindScenarioManager.Instance.GetBusCameraThreshold() &&
+                    numberOfSeenBusCameras >= minimumNumberOfPointVisible)
                 {
+                    seenByOBU = true;
                     if (!observableSensor.Contains(busCameras[j]))
                     {
                         observableSensor.Add(busCameras[j]);
                         observableSensorWitCount[busCameras[j]] = numberOfSeenBusCameras;
                     }
 
-                    busCameras[j].addObjectToObserved(this.transform,numberOfSeenBusCameras);
-                    
+                    busCameras[j].addObjectToObserved(this.transform, numberOfSeenBusCameras);
                 }
                 else
                 {
@@ -226,15 +232,17 @@ public class LineOfSight : MonoBehaviour
                 }
 
                 //visualization
-                if (numberOfSeenRsuCameras >= BlindScenarioManager.Instance.GetRsuCameraThreshold())
+                if (numberOfSeenRsuCameras >= BlindScenarioManager.Instance.GetRsuCameraThreshold() &&
+                    numberOfSeenRsuCameras >= minimumNumberOfPointVisible)
                 {
+                    seenByRSU = true;
                     if (!observableSensor.Contains(rsuCameras[j]))
                     {
                         observableSensor.Add(rsuCameras[j]);
                         observableSensorWitCount[rsuCameras[j]] = numberOfSeenRsuCameras;
                     }
 
-                    rsuCameras[j].addObjectToObserved(this.transform,numberOfSeenRsuCameras);
+                    rsuCameras[j].addObjectToObserved(this.transform, numberOfSeenRsuCameras);
                 }
                 else
                 {
@@ -245,16 +253,14 @@ public class LineOfSight : MonoBehaviour
 
 
             // select box color
-            if (seenObjectsByLidar.Count >= BlindScenarioManager.Instance.GetBusLidarThreshold() ||
-                seenObjectsCameras.Count >= BlindScenarioManager.Instance.GetBusCameraThreshold())
+            if (seenByOBU)
             {
                 float notSeenPercentage = ((float)points.Count - seenObjectsByLidar.Count) / points.Count;
                 // setColor(1 - notSeenPercentage, BoxState.Green);
                 setColor(1, BoxState.Green);
                 // Debug.Log("now is green");
             }
-            else if (seenObjectsByRSU.Count >= BlindScenarioManager.Instance.GetRsuThreshold() ||
-                     seenObjectsByRsuCameras.Count >= BlindScenarioManager.Instance.GetRsuCameraThreshold())
+            else if (seenByRSU)
             {
                 // float notSeenPercentage = ((float)points.Count - seenObjectsByRSU.Count) / points.Count;
                 // setColor(1 - notSeenPercentage, BoxState.Yellow);
@@ -283,6 +289,8 @@ public class LineOfSight : MonoBehaviour
         List<MockSensor> rsuSensors = currentScenario.getRSUsensors();
         List<MockSensor> rsuCameras = currentScenario.getRsuCameras();
 
+        bool seenByRSU = false;
+        bool seenByOBU = false;
 
         // Transform busLidar = BlindScenarioManager.Instance.getBusLidar();
         // Transform crossroadLidar = BlindScenarioManager.Instance.getRSUsensor();
@@ -307,8 +315,10 @@ public class LineOfSight : MonoBehaviour
             }
 
             //visualization
-            if (numberOfSeenBusLidars >= BlindScenarioManager.Instance.GetBusLidarThreshold())
+            if (numberOfSeenBusLidars >= BlindScenarioManager.Instance.GetBusLidarThreshold() &&
+                numberOfSeenBusLidars >= minimumNumberOfPointVisible)
             {
+                seenByOBU = true;
                 //just for log system
                 if (!observableSensor.Contains(lidars[j]))
                 {
@@ -316,7 +326,7 @@ public class LineOfSight : MonoBehaviour
                     observableSensorWitCount[lidars[j]] = numberOfSeenBusLidars;
                 }
 
-                lidars[j].addObjectToObserved(this.transform,numberOfSeenBusLidars);
+                lidars[j].addObjectToObserved(this.transform, numberOfSeenBusLidars);
 
 
                 // BlindScenarioManager.Instance.AddObservedCar(this.transform);
@@ -348,8 +358,10 @@ public class LineOfSight : MonoBehaviour
             }
 
             //visualization
-            if (numberOfSeenRSUs >= BlindScenarioManager.Instance.GetRsuThreshold())
+            if (numberOfSeenRSUs >= BlindScenarioManager.Instance.GetRsuThreshold() &&
+                numberOfSeenRSUs >= minimumNumberOfPointVisible)
             {
+                seenByRSU = true;
                 //just for log system
                 if (!observableSensor.Contains(rsuSensors[j]))
                 {
@@ -357,7 +369,7 @@ public class LineOfSight : MonoBehaviour
                     observableSensorWitCount[rsuSensors[j]] = numberOfSeenRSUs;
                 }
 
-                rsuSensors[j].addObjectToObserved(this.transform,numberOfSeenRSUs);
+                rsuSensors[j].addObjectToObserved(this.transform, numberOfSeenRSUs);
             }
             else
             {
@@ -367,7 +379,7 @@ public class LineOfSight : MonoBehaviour
         }
 
 
-        // lidar cameras 
+        // bus cameras 
         List<Transform> seenObjectsCameras = new List<Transform>();
         for (int j = 0; j < busCameras.Count; j++)
         {
@@ -383,15 +395,17 @@ public class LineOfSight : MonoBehaviour
             }
 
             //visualization
-            if (numberOfSeenBusCameras >= BlindScenarioManager.Instance.GetRsuThreshold())
+            if (numberOfSeenBusCameras >= BlindScenarioManager.Instance.GetBusCameraThreshold() &&
+                numberOfSeenBusCameras >= minimumNumberOfPointVisible)
             {
+                seenByOBU = true;
                 if (!observableSensor.Contains(busCameras[j]))
                 {
                     observableSensor.Add(busCameras[j]);
                     observableSensorWitCount[busCameras[j]] = numberOfSeenBusCameras;
                 }
 
-                busCameras[j].addObjectToObserved(this.transform,numberOfSeenBusCameras);
+                busCameras[j].addObjectToObserved(this.transform, numberOfSeenBusCameras);
             }
             else
             {
@@ -417,15 +431,17 @@ public class LineOfSight : MonoBehaviour
             }
 
             //visualization
-            if (numberOfSeenRsuCameras >= BlindScenarioManager.Instance.GetRsuCameraThreshold())
+            if (numberOfSeenRsuCameras >= BlindScenarioManager.Instance.GetRsuCameraThreshold() &&
+                numberOfSeenRsuCameras >= minimumNumberOfPointVisible)
             {
+                seenByRSU = true;
                 if (!observableSensor.Contains(rsuCameras[j]))
                 {
                     observableSensor.Add(rsuCameras[j]);
                     observableSensorWitCount[rsuCameras[j]] = numberOfSeenRsuCameras;
                 }
 
-                rsuCameras[j].addObjectToObserved(this.transform,numberOfSeenRsuCameras);
+                rsuCameras[j].addObjectToObserved(this.transform, numberOfSeenRsuCameras);
             }
             else
             {
@@ -436,16 +452,14 @@ public class LineOfSight : MonoBehaviour
 
 
         // select box color
-        if (seenObjectsByLidar.Count >= BlindScenarioManager.Instance.GetBusLidarThreshold() ||
-            seenObjectsCameras.Count >= BlindScenarioManager.Instance.GetBusCameraThreshold())
+        if (seenByOBU)
         {
             float notSeenPercentage = ((float)points.Count - seenObjectsByLidar.Count) / points.Count;
             // setColor(1 - notSeenPercentage, BoxState.Green);
             setColor(1, BoxState.Green);
             // Debug.Log("now is green");
         }
-        else if (seenObjectsByRSU.Count >= BlindScenarioManager.Instance.GetRsuThreshold() ||
-                 seenObjectsByRsuCameras.Count >= BlindScenarioManager.Instance.GetRsuCameraThreshold())
+        else if (seenByRSU)
         {
             // float notSeenPercentage = ((float)points.Count - seenObjectsByRSU.Count) / points.Count;
             // setColor(1 - notSeenPercentage, BoxState.Yellow);

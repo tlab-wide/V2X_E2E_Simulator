@@ -38,8 +38,7 @@ public class DetectedObjectsAutoware : MonoBehaviour
     };
 
     IPublisher<autoware_auto_perception_msgs.msg.DetectedObjects> sensorDetectedPublisher;
-
-    CooperativeObjectsMessage test;
+    
     private autoware_auto_perception_msgs.msg.DetectedObjects msg;
 
     

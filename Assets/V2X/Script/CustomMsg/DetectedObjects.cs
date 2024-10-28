@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using autoware_auto_perception_msgs.msg;
 using AWSIM;
+using dm_rsu_msgs.msg;
 using geometry_msgs.msg;
 using ROS2;
 using std_msgs.msg;
@@ -38,8 +39,8 @@ namespace AWSIM
         };
 
         IPublisher<CooperativeObjectsMessage> poseStampedPublisher;
-
-        CooperativeObjectsMessage test;
+        // IPublisher<> poseStampedPublisher;
+        
         private CooperativeObjectsMessage msg;
 
         // Start is called before the first frame update

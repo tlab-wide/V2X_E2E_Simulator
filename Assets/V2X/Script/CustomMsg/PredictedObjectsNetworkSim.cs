@@ -42,9 +42,10 @@ public class PredictedObjectsNetworkSim : MonoBehaviour
         Depth = 1,
     };
 
+    // IPublisher<CooperativeObjectsMessage> poseStampedPublisher;
     IPublisher<CooperativeObjectsMessage> poseStampedPublisher;
 
-    CooperativeObjectsMessage test;
+    
     private CooperativeObjectsMessage msg;
 
     // Start is called before the first frame update
