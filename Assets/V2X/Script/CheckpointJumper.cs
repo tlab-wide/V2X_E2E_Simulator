@@ -29,6 +29,11 @@ public class CheckpointJumper : MonoBehaviour,ILogIndex
     {
         timer += Time.deltaTime;
 
+        if (timer >= stopTime)
+        {
+            Debug.Log($"{currentIndex} index pos process is finished");
+        }
+
         if (timer >= stopTime && currentIndex < positions.Count-1)
         {
             timer = 0;
