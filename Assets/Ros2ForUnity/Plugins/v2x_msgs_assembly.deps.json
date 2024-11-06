@@ -12,6 +12,8 @@
           "NETStandard.Library": "2.0.3",
           "autoware_auto_geometry_msgs_assembly": "0.0.0.0",
           "autoware_auto_perception_msgs_assembly": "0.0.0.0",
+          "autoware_perception_msgs_assembly": "0.0.0.0",
+          "builtin_interfaces_assembly": "0.0.0.0",
           "geometry_msgs_assembly": "0.0.0.0",
           "ros2cs_common": "0.0.0.0",
           "sensor_msgs_assembly": "0.0.0.0",
@@ -39,6 +41,22 @@
       "autoware_auto_perception_msgs_assembly/0.0.0.0": {
         "runtime": {
           "autoware_auto_perception_msgs_assembly.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "autoware_perception_msgs_assembly/0.0.0.0": {
+        "runtime": {
+          "autoware_perception_msgs_assembly.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "builtin_interfaces_assembly/0.0.0.0": {
+        "runtime": {
+          "builtin_interfaces_assembly.dll": {
             "assemblyVersion": "0.0.0.0",
             "fileVersion": "0.0.0.0"
           }
@@ -83,14 +101,6 @@
             "fileVersion": "0.0.0.0"
           }
         }
-      },
-      "builtin_interfaces_assembly/0.0.0.0": {
-        "runtime": {
-          "builtin_interfaces_assembly.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
       }
     }
   },
@@ -124,6 +134,16 @@
       "serviceable": false,
       "sha512": ""
     },
+    "autoware_perception_msgs_assembly/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "builtin_interfaces_assembly/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "geometry_msgs_assembly/0.0.0.0": {
       "type": "reference",
       "serviceable": false,
@@ -145,11 +165,6 @@
       "sha512": ""
     },
     "unique_identifier_msgs_assembly/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "builtin_interfaces_assembly/0.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
