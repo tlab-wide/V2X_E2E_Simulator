@@ -149,7 +149,7 @@ public class SimpleCyclistMovement : MonoBehaviour
         }
 
         //when the traffic light is red we can pass the street 
-        if (color == autoware_perception_msgs.msg.TrafficLightElement.RED)
+        if (color == autoware_perception_msgs.msg.TrafficSignalElement.RED)
         {
             return true;
         }
