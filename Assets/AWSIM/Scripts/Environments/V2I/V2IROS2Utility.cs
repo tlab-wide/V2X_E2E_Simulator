@@ -19,23 +19,23 @@ namespace AWSIM
         public static byte UnityToRosBulbShape(TrafficLight.BulbType type)
         {
             if (type == TrafficLight.BulbType.ANY_CIRCLE_BULB || type == TrafficLight.BulbType.RED_BULB || type == TrafficLight.BulbType.YELLOW_BULB || type == TrafficLight.BulbType.GREEN_BULB)
-                return autoware_perception_msgs.msg.TrafficLightElement.CIRCLE;
+                return autoware_perception_msgs.msg.TrafficSignalElement.CIRCLE;
             else if (type == TrafficLight.BulbType.LEFT_ARROW_BULB)
-                return autoware_perception_msgs.msg.TrafficLightElement.LEFT_ARROW;
+                return autoware_perception_msgs.msg.TrafficSignalElement.LEFT_ARROW;
             else if (type == TrafficLight.BulbType.RIGHT_ARROW_BULB)
-                return autoware_perception_msgs.msg.TrafficLightElement.RIGHT_ARROW;
+                return autoware_perception_msgs.msg.TrafficSignalElement.RIGHT_ARROW;
             else if (type == TrafficLight.BulbType.UP_ARROW_BULB)
-                return autoware_perception_msgs.msg.TrafficLightElement.UP_ARROW;
+                return autoware_perception_msgs.msg.TrafficSignalElement.UP_ARROW;
             else if (type == TrafficLight.BulbType.DOWN_ARROW_BULB)
-                return autoware_perception_msgs.msg.TrafficLightElement.DOWN_ARROW;
+                return autoware_perception_msgs.msg.TrafficSignalElement.DOWN_ARROW;
             else if (type == TrafficLight.BulbType.DOWN_LEFT_ARROW_BULB)
-                return autoware_perception_msgs.msg.TrafficLightElement.DOWN_LEFT_ARROW;
+                return autoware_perception_msgs.msg.TrafficSignalElement.DOWN_LEFT_ARROW;
             else if (type == TrafficLight.BulbType.DOWN_RIGHT_ARROW_BULB)
-                return autoware_perception_msgs.msg.TrafficLightElement.DOWN_RIGHT_ARROW;
+                return autoware_perception_msgs.msg.TrafficSignalElement.DOWN_RIGHT_ARROW;
             else if (type == TrafficLight.BulbType.CROSS_BULB)
-                return autoware_perception_msgs.msg.TrafficLightElement.CROSS;
+                return autoware_perception_msgs.msg.TrafficSignalElement.CROSS;
             else
-                return autoware_perception_msgs.msg.TrafficLightElement.UNKNOWN;
+                return autoware_perception_msgs.msg.TrafficSignalElement.UNKNOWN;
         }
 
         /// <summary>
@@ -47,13 +47,13 @@ namespace AWSIM
         public static byte UnityToRosBulbStatus(TrafficLight.BulbStatus status)
         {
             if (status == TrafficLight.BulbStatus.SOLID_OFF)
-                return autoware_perception_msgs.msg.TrafficLightElement.SOLID_OFF;
+                return autoware_perception_msgs.msg.TrafficSignalElement.SOLID_OFF;
             else if (status == TrafficLight.BulbStatus.SOLID_ON)
-                return autoware_perception_msgs.msg.TrafficLightElement.SOLID_ON;
+                return autoware_perception_msgs.msg.TrafficSignalElement.SOLID_ON;
             else if (status == TrafficLight.BulbStatus.FLASHING)
-                return autoware_perception_msgs.msg.TrafficLightElement.FLASHING;
+                return autoware_perception_msgs.msg.TrafficSignalElement.FLASHING;
             else
-                return autoware_perception_msgs.msg.TrafficLightElement.UNKNOWN;
+                return autoware_perception_msgs.msg.TrafficSignalElement.UNKNOWN;
         }
 
         /// <summary>
@@ -65,15 +65,15 @@ namespace AWSIM
         public static byte UnityToRosBulbColor(TrafficLight.BulbColor color)
         {
             if (color == TrafficLight.BulbColor.RED)
-                return autoware_perception_msgs.msg.TrafficLightElement.RED;
+                return autoware_perception_msgs.msg.TrafficSignalElement.RED;
             else if (color == TrafficLight.BulbColor.YELLOW)
-                return autoware_perception_msgs.msg.TrafficLightElement.AMBER;
+                return autoware_perception_msgs.msg.TrafficSignalElement.AMBER;
             else if (color == TrafficLight.BulbColor.GREEN)
-                return autoware_perception_msgs.msg.TrafficLightElement.GREEN;
+                return autoware_perception_msgs.msg.TrafficSignalElement.GREEN;
             else if (color == TrafficLight.BulbColor.WHITE)
-                return autoware_perception_msgs.msg.TrafficLightElement.WHITE;
+                return autoware_perception_msgs.msg.TrafficSignalElement.WHITE;
             else
-                return autoware_perception_msgs.msg.TrafficLightElement.UNKNOWN;
+                return autoware_perception_msgs.msg.TrafficSignalElement.UNKNOWN;
         }
 
     }
