@@ -168,9 +168,9 @@ To open the Unity AWSIM project in Unity Editor:
 
 To properly run and use AWSIM project in Unity it is required to download map package which is not included in the repository.
 
-1. Download and import `Kashiwa_7.4.11.unitypackage`
+1. Download and import latest Kashiwa unity package which is currently `Kashiwa_7.4.11.unitypackage`
 
-    [Download Map files (unitypackage)](https://drive.google.com/file/d/1kQYHzRw4uNjD5OXQEAslC88-Q-3Bu0jf/view?usp=sharing){.md-button .md-button--primary}
+    [Download Map files (unitypackage)]([https://drive.google.com/file/d/1kQYHzRw4uNjD5OXQEAslC88-Q-3Bu0jf/view?usp=sharing](https://drive.google.com/file/d/1TeTrDKNnDH_aO3uyTTKGNHHs4j_CaPHa/view?usp=drive_link)){.md-button .md-button--primary}
 
 2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `Kashiwa_7.4.11.unitypackage` file.
 ![](image_10.png)
