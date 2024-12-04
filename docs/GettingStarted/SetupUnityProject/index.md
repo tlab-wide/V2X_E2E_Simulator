@@ -172,7 +172,7 @@ To properly run and use AWSIM project in Unity it is required to download map pa
 
     [Download Map files (unitypackage)](https://drive.google.com/file/d/1kQYHzRw4uNjD5OXQEAslC88-Q-3Bu0jf/view?usp=sharing){.md-button .md-button--primary}
 
-2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `Japan_Tokyo_Nishishinjuku.unitypackage_v2` file.
+2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `Kashiwa_7.4.11.unitypackage` file.
 ![](image_10.png)
 </br>
 ![alt text](<Screenshot from 2024-12-04 14-23-40.png>)
@@ -192,7 +192,7 @@ To properly run and use AWSIM project in Unity it is required to download map pa
 
 The following steps describe how to run the demo in Unity Editor:
 
-1. Open the `AutowareSimulation.unity` scene placed under `Assets/AWSIM/Scenes/Main` directory
+1. Open the `AutowareSimulation.unity` scene placed under `Assets/AWSIM/Scenes/Main` or `Assets/V2x/scenes/` directory
 2. Run the simulation by clicking `Play` button placed at the top section of Editor.
 ![](image_13.png)
 
