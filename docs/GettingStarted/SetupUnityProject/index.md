@@ -115,7 +115,7 @@ To open the Unity AWSIM project in Unity Editor:
 === "Using Unity Hub"
     1. Make sure you have the AWSIM repository cloned and ROS 2 is not sourced.
         ```
-        git clone github.com/tlab-wide/V2X_E2E_Simulator.git
+        git clone https://github.com/tlab-wide/V2X_E2E_Simulator.git
         ```
 
     2. Launch UnityHub.
