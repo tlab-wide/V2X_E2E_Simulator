@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using AWSIM;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class SimpleCyclistMovement : MonoBehaviour
+public class SimpleCyclistMovement : MonoBehaviour, MoveablePedestrian
 {
-    
     [SerializeField] float duration = 7;
     [SerializeField] float speed = 3;
     [SerializeField] TrafficLight trafficLight;
@@ -20,6 +20,8 @@ public class SimpleCyclistMovement : MonoBehaviour
     Vector3 currentPosition;
     Quaternion currentRotation;
     private Animator animator;
+    private float getSpeed;
+    private bool isMoving;
 
 
     void Awake()
@@ -62,6 +64,7 @@ public class SimpleCyclistMovement : MonoBehaviour
 
     IEnumerator MoveForwardRoutine(float duration, float speed)
     {
+        isMoving = true;
         var startTime = Time.fixedTime;
         while (Time.fixedTime - startTime < duration)
         {
@@ -69,6 +72,8 @@ public class SimpleCyclistMovement : MonoBehaviour
             currentPosition += currentRotation * Vector3.forward * speed * Time.fixedDeltaTime;
             npcCyclist.MovePosition(currentPosition);
         }
+
+        isMoving = false;
     }
 
     // IEnumerator RotateRoutine(float duration, float angularSpeed)
@@ -162,5 +167,15 @@ public class SimpleCyclistMovement : MonoBehaviour
     private bool isBulbTurnOn(TrafficLight.BulbStatus bulbStatus)
     {
         return bulbStatus == TrafficLight.BulbStatus.SOLID_ON || bulbStatus == TrafficLight.BulbStatus.FLASHING;
+    }
+
+    public float GetSpeed()
+    {
+        if (isMoving)
+        {
+            return speed;
+        }
+
+        return 0;
     }
 }

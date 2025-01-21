@@ -192,7 +192,7 @@ public class LogAroundCar : MonoBehaviour
 
         //set speed
         Rigidbody rigidbody = transform.GetComponent<Rigidbody>();
-        Vector3 speed = rigidbody.velocity;
+        Vector3 speed = rigidbody.linearVelocity;
         speed = speedNoise.ApplyNoiseOnVector(speed);
         speed = ROS2Utility.UnityToRosPosition(speed);
 

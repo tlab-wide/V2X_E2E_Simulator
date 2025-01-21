@@ -8,7 +8,7 @@ namespace AWSIM
     /// Pedestrian straight back and forth.
     /// </summary>
     [RequireComponent(typeof(NPCPedestrian))]
-    public class SimplePedestrianWalkerController2 : MonoBehaviour
+    public class SimplePedestrianWalkerController2 : MonoBehaviour,MoveablePedestrian
     {
         [SerializeField] float duration;
         [SerializeField] float speed;
@@ -21,6 +21,7 @@ namespace AWSIM
         Quaternion startRotation;
         Vector3 currentPosition;
         Quaternion currentRotation;
+        private bool isMoving = false;
 
         void Awake()
         {
@@ -61,6 +62,7 @@ namespace AWSIM
 
         IEnumerator MoveForwardRoutine(float duration, float speed)
         {
+            isMoving = true; 
             var startTime = Time.fixedTime;
             while (Time.fixedTime - startTime < duration)
             {
@@ -68,6 +70,7 @@ namespace AWSIM
                 currentPosition += currentRotation * Vector3.forward * speed * Time.fixedDeltaTime;
                 npcPedestrian.SetPosition(currentPosition);
             }
+            isMoving = false;
         }
 
         IEnumerator RotateRoutine(float duration, float angularSpeed)
@@ -121,6 +124,16 @@ namespace AWSIM
         private bool isBulbTurnOn(TrafficLight.BulbStatus bulbStatus)
         {
             return bulbStatus == TrafficLight.BulbStatus.SOLID_ON || bulbStatus == TrafficLight.BulbStatus.FLASHING;
+        }
+
+        public float GetSpeed()
+        {
+            if (isMoving)
+            {
+                return speed; 
+            }
+
+            return 0;
         }
     }
 }

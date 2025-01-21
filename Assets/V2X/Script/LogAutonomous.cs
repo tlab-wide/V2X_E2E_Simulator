@@ -55,13 +55,13 @@ public class LogAutonomous : MonoBehaviour
             
             
             //velocity
-            Vector3 speed = rb.velocity;
+            Vector3 speed = rb.linearVelocity;
             speed= ROS2Utility.UnityToRosPosition(speed);
             rowLog +=  $",{speed.x},{speed.y},{speed.z}";
             
             
             //Acceleration
-            Vector3 acc = rb.velocity;
+            Vector3 acc = rb.linearVelocity;
             acc= ROS2Utility.UnityToRosPosition(acc);
             rowLog +=  $",{acc.x},{acc.y},{acc.z}";
             

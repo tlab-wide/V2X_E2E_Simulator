@@ -52,34 +52,7 @@ public class MockSensor : MonoBehaviour
         
         
         
-        ConfigFile.Instance.AddToConfig(this);
-        CheckConfigExist();
         
-
-        //setupCone
-        myCone = GetComponentInChildren<Viewcone>();
-        if (myCone != null)
-        {
-            if (ConfigFile.Instance.IsConeActive(mockSensorType))
-            {
-                myCone.Length = maxDistance;
-                myCone.Rebuild();
-
-                // TO reduce 
-                float Xangle = Hfov >= 80 ? 80 : Hfov;
-                Xangle = Xangle * Mathf.Deg2Rad;
-
-                float Yangle = Vfov >= 179 ? 179 : Vfov;
-                Yangle = Yangle * Mathf.Deg2Rad;
-
-                myCone.transform.localScale = new Vector3((float)(Mathf.Tan(Xangle) * myCone.Length),
-                    (float)(Mathf.Tan(Yangle) * myCone.Length), 1);
-            }
-            else
-            {
-                myCone.gameObject.SetActive(false);
-            }
-        }
     }
 
     public bool haveLineOfSight(Transform targetPoint)
@@ -91,7 +64,7 @@ public class MockSensor : MonoBehaviour
         }
 
         // if (CheckRaycast(targetPoint.position, this.transform.position) && objectInview(targetPoint))
-        if (objectInview(targetPoint) && CheckRaycast(targetPoint.position, this.transform.position))
+        if (objectInView(targetPoint) && CheckRaycast(targetPoint.position, this.transform.position))
         {
             return true;
         }
@@ -101,7 +74,7 @@ public class MockSensor : MonoBehaviour
         }
     }
 
-    private bool objectInview(Transform targetPoint)
+    private bool objectInView(Transform targetPoint)
     {
         Vector3 targetVector = targetPoint.position - this.transform.position;
 
@@ -113,6 +86,7 @@ public class MockSensor : MonoBehaviour
 
         Vector3 targetInXY = Vector3.ProjectOnPlane(targetVector, this.transform.right);
         float angleY = Vector3.Angle(this.transform.forward, targetInXY);
+        
         if (angleY > 90)
         {
             angleY = 180 - angleY;
@@ -122,8 +96,7 @@ public class MockSensor : MonoBehaviour
         {
             return false;
         }
-
-
+        
         Vector3 targetInXZ = Vector3.ProjectOnPlane(targetVector, this.transform.up);
         float angleX = Vector3.Angle(this.transform.forward, targetInXZ);
 
@@ -139,7 +112,7 @@ public class MockSensor : MonoBehaviour
     }
 
 
-    //todo numberOfPoints still not used here if it is required can be used in futur
+    //todo numberOfPoints still not used here if it is required can be used in future
     public void addObjectToObserved(Transform targetPoint, int numberOfPoints)
     {
 

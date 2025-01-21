@@ -7,6 +7,7 @@ using unique_identifier_msgs.msg;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class LineOfSight : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class LineOfSight : MonoBehaviour
 
     [SerializeField] private Transform cube;
     [SerializeField] private BoxState boxState;
-    [SerializeField] private int minimumNumberOfPointVisible =3;
+    [SerializeField] private int minimumNumberOfPointsVisible =1;
 
     private List<MockSensor> observableSensor = new List<MockSensor>();
     private Dictionary<MockSensor, int> observableSensorWitCount = new Dictionary<MockSensor, int>();
@@ -65,12 +66,7 @@ public class LineOfSight : MonoBehaviour
         GenerateRandomBytes(uuid.Uuid);
         return uuid;
     }
-
-    // private void OnEnable()
-    // {
-    //     setColor(0f, BoxState.Green);
-    //     StartCoroutine(CheckLineOfSight());
-    // }
+    
 
     private void OnEnable()
     {
@@ -117,7 +113,7 @@ public class LineOfSight : MonoBehaviour
 
                 //visualization
                 if (numberOfSeenBusLidars >= BlindScenarioManager.Instance.GetBusLidarThreshold() &&
-                    numberOfSeenBusLidars >= minimumNumberOfPointVisible)
+                    numberOfSeenBusLidars >= minimumNumberOfPointsVisible)
                 {
                     seenByOBU = true;
                     //just for log system
@@ -160,7 +156,7 @@ public class LineOfSight : MonoBehaviour
 
                 //visualization
                 if (numberOfSeenRSUs >= BlindScenarioManager.Instance.GetRsuThreshold() &&
-                    numberOfSeenRSUs >= minimumNumberOfPointVisible)
+                    numberOfSeenRSUs >= minimumNumberOfPointsVisible)
                 {
                     seenByRSU = true;
                     //just for log system
@@ -197,7 +193,7 @@ public class LineOfSight : MonoBehaviour
 
                 //visualization
                 if (numberOfSeenBusCameras >= BlindScenarioManager.Instance.GetBusCameraThreshold() &&
-                    numberOfSeenBusCameras >= minimumNumberOfPointVisible)
+                    numberOfSeenBusCameras >= minimumNumberOfPointsVisible)
                 {
                     seenByOBU = true;
                     if (!observableSensor.Contains(busCameras[j]))
@@ -233,7 +229,7 @@ public class LineOfSight : MonoBehaviour
 
                 //visualization
                 if (numberOfSeenRsuCameras >= BlindScenarioManager.Instance.GetRsuCameraThreshold() &&
-                    numberOfSeenRsuCameras >= minimumNumberOfPointVisible)
+                    numberOfSeenRsuCameras >= minimumNumberOfPointsVisible)
                 {
                     seenByRSU = true;
                     if (!observableSensor.Contains(rsuCameras[j]))
@@ -256,15 +252,13 @@ public class LineOfSight : MonoBehaviour
             if (seenByOBU)
             {
                 float notSeenPercentage = ((float)points.Count - seenObjectsByLidar.Count) / points.Count;
-                // setColor(1 - notSeenPercentage, BoxState.Green);
                 setColor(1, BoxState.Green);
                 // Debug.Log("now is green");
             }
             else if (seenByRSU)
             {
                 // float notSeenPercentage = ((float)points.Count - seenObjectsByRSU.Count) / points.Count;
-                // setColor(1 - notSeenPercentage, BoxState.Yellow);
-                setColor(1, BoxState.Yellow);
+                setColor(1, BoxState.Purple);
                 // Debug.Log("yellow");
             }
             else
@@ -316,7 +310,7 @@ public class LineOfSight : MonoBehaviour
 
             //visualization
             if (numberOfSeenBusLidars >= BlindScenarioManager.Instance.GetBusLidarThreshold() &&
-                numberOfSeenBusLidars >= minimumNumberOfPointVisible)
+                numberOfSeenBusLidars >= minimumNumberOfPointsVisible)
             {
                 seenByOBU = true;
                 //just for log system
@@ -359,7 +353,7 @@ public class LineOfSight : MonoBehaviour
 
             //visualization
             if (numberOfSeenRSUs >= BlindScenarioManager.Instance.GetRsuThreshold() &&
-                numberOfSeenRSUs >= minimumNumberOfPointVisible)
+                numberOfSeenRSUs >= minimumNumberOfPointsVisible)
             {
                 seenByRSU = true;
                 //just for log system
@@ -396,7 +390,7 @@ public class LineOfSight : MonoBehaviour
 
             //visualization
             if (numberOfSeenBusCameras >= BlindScenarioManager.Instance.GetBusCameraThreshold() &&
-                numberOfSeenBusCameras >= minimumNumberOfPointVisible)
+                numberOfSeenBusCameras >= minimumNumberOfPointsVisible)
             {
                 seenByOBU = true;
                 if (!observableSensor.Contains(busCameras[j]))
@@ -432,7 +426,7 @@ public class LineOfSight : MonoBehaviour
 
             //visualization
             if (numberOfSeenRsuCameras >= BlindScenarioManager.Instance.GetRsuCameraThreshold() &&
-                numberOfSeenRsuCameras >= minimumNumberOfPointVisible)
+                numberOfSeenRsuCameras >= minimumNumberOfPointsVisible)
             {
                 seenByRSU = true;
                 if (!observableSensor.Contains(rsuCameras[j]))
@@ -454,16 +448,14 @@ public class LineOfSight : MonoBehaviour
         // select box color
         if (seenByOBU)
         {
-            float notSeenPercentage = ((float)points.Count - seenObjectsByLidar.Count) / points.Count;
-            // setColor(1 - notSeenPercentage, BoxState.Green);
+            // float notSeenPercentage = ((float)points.Count - seenObjectsByLidar.Count) / points.Count;
             setColor(1, BoxState.Green);
             // Debug.Log("now is green");
         }
         else if (seenByRSU)
         {
             // float notSeenPercentage = ((float)points.Count - seenObjectsByRSU.Count) / points.Count;
-            // setColor(1 - notSeenPercentage, BoxState.Yellow);
-            setColor(1, BoxState.Yellow);
+            setColor(1, BoxState.Purple);
             // Debug.Log("yellow");
         }
         else
@@ -520,7 +512,7 @@ public class LineOfSight : MonoBehaviour
             case BoxState.Red:
                 material.SetColor("Base_Color", Color.red);
                 break;
-            case BoxState.Yellow:
+            case BoxState.Purple:
                 material.SetColor("Base_Color", Color.blue);
                 break;
         }
@@ -577,7 +569,7 @@ public class LineOfSight : MonoBehaviour
 
     public enum BoxState
     {
-        Yellow,
+        Purple,
         Green,
         Red
     }
