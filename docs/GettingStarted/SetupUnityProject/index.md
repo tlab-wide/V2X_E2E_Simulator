@@ -99,7 +99,6 @@ Follow the steps below to install Unity on your machine:
 ![alt text](image-3.png)
 
     - After successful installation the version will be available under the `Installs` tab in Unity Hub (your Unity6 can be different in minor version section).
-![](image_5.png)
 
 ### Open AWSIM project
 
