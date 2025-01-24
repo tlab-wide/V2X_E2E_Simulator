@@ -95,17 +95,10 @@ Follow the steps below to install Unity on your machine:
 ```
     - To install Unity Editor please proceed as shown on the images below
 ![](image_2.png)
-![](image_3.png)
-![](image_4.png)
-    - At this point, your Unity installation process should have started.
+![alt text](image-1.png)
+![alt text](image-3.png)
 
-        === "Ubuntu 22"
-        - *NOTE: If the installation process has not started after clicking the green button (image above), please copy the hyperlink (by rightclicking the button and selecting `Copy link address`) and add it as a argument for Unity Hub app. An example command:
-        ```
-        ./UnityHub.AppImage unityhub://2021.1.7f1/d91830b65d9b
-        ```
-
-    - After successful installation the version will be available under the `Installs` tab in Unity Hub.
+    - After successful installation the version will be available under the `Installs` tab in Unity Hub (your Unity6 can be different in minor version section).
 ![](image_5.png)
 
 ### Open AWSIM project
@@ -168,9 +161,9 @@ To open the Unity AWSIM project in Unity Editor:
 
 To properly run and use AWSIM project in Unity it is required to download map package which is not included in the repository.
 
-1. Download and import the latest Kashiwa unity package which is currently `Kashiwa_7.4.11.unitypackage`
+1. Download and import the latest Kashiwa unity package which is currently `Kashiwa_7.6.unitypackage`
 
-    [Download Map files (unitypackage)](https://drive.google.com/file/d/1TeTrDKNnDH_aO3uyTTKGNHHs4j_CaPHa/view?usp=drive_link){.md-button .md-button--primary}
+    [Download Map files (unitypackage)](https://drive.google.com/file/d/17azbatTdffcAEfTLtg2blGtlu80tFf8-/view?usp=sharing){.md-button .md-button--primary}
 
 2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `Kashiwa_7.4.11.unitypackage` file.
 ![](image_10.png)
@@ -204,7 +197,7 @@ The following steps describe how to run the demo in Unity Editor:
 <br><br><br><br>
 
 
-
+<!-- 
 # Bug fix
 
 It is probable that you required to check the that the read/write be enable as you can see in the picture
@@ -217,4 +210,4 @@ It is probable that you required to check the that the read/write be enable as y
 # Updates
 There is a minor bug in time scale adjusting in ubuntu to fix this issue in version 7.4.11 please install this minor update package after installing the original package similarly
 
-[7.4.11 Ui update](https://drive.google.com/file/d/1XOW9PvKk820zMUm7ynDqzaSZR4q-YROK/view?usp=sharing){.md-button .md-button--primary}
+[7.4.11 Ui update](https://drive.google.com/file/d/1XOW9PvKk820zMUm7ynDqzaSZR4q-YROK/view?usp=sharing){.md-button .md-button--primary} -->
