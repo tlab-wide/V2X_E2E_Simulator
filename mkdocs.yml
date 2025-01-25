@@ -82,13 +82,12 @@ nav:
 
   - Components:
     - Pseudo Sensor:
+      - Quick Setup: Components/PseudoSensors/PseudoSensorsSetup/index.md
       - Pseudo Sensor: Components/PseudoSensors/PseudoSensors/index.md
       - Noise Setting: Components/PseudoSensors/NoiseSetting/index.md
+      - RSU: Components/RSU/RSU/index.md
     - Vehicle: 
       - Add New Vehicle: Components/Vehicle/AddNewVehicle/index.md
-    - RSU: 
-      - RSU: Components/RSU/RSU/index.md
-      - Add new RSU: Components/RSU/AddNewRSU/index.md
     # - Environment: Components/Environment/index.md
     # - Traffic: Components/Traffic/index.md
     - PCD Scanner:
