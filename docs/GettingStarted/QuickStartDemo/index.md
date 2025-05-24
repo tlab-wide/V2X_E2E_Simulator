@@ -1,21 +1,36 @@
 # Quick Start Demo
 
-Below you can find instructions on how to setup the self-driving demo of AWSIM simulation controlled by Autoware.
-The instruction assumes using the Ubuntu OS.
+This section provides a quick start tutorial for the V2X_E2E_Simulator on Ubuntu. Most of this documentation is based on the <a href="https://tier4.github.io/AWSIM/GettingStarted/QuickStartDemo/">AWSIM documentation</a>.
 
-![](Image_top.png)
+
 
 ### Demo configuration
 
-The simulation provided in the AWSIM demo is configured as follows:
+#### **Standard Vehicle Configuration**
 
-|AWSIM Demo Settings||
+The simulation provided in the **V2X_E2E_Simulator** demo is configured as follows:
+
+| **V2X_E2E_Simulator Demo Settings** | **Details** |
 |:--|:--|
-|Vehicle|Lexus RX 450h|
-|Environment|Japan Tokyo Nishishinjuku|
-|Sensors|Gnss * 1<br> IMU * 1<br> LiDAR * 1<br> Traffic camera * 1|
-|Traffic|Randomized traffic|
-|ROS2|humble|
+| **Vehicle** | Lexus RX 450h |
+| **Environment** | Japan, Tokyo (Kashiwa) |
+| **Sensors** | GNSS ×1 <br> IMU ×1 <br> LiDAR ×1 <br> Traffic Camera ×1 |
+| **Traffic** | 5 different scenarios |
+| **ROS2 Version** | Humble |
+
+---
+
+#### **Bus Configuration**
+An alternative build is also available for the **bus simulation**:
+
+| **V2X_E2E_Simulator Demo Settings** | **Details** |
+|:--|:--|
+| **Vehicle** | Bus |
+| **Environment** | Japan, Tokyo (Kashiwa) |
+| **Sensors** | GNSS ×1 <br> IMU ×1 <br> LiDAR ×3 <br> Traffic Camera ×1 |
+| **Traffic** | 5 different scenarios |
+| **ROS2 Version** | Humble |
+
 
 ### PC specs
 
@@ -32,7 +47,7 @@ Please make sure that your machine meets the following requirements in order to 
 
 ### Localhost settings
 
-The simulation is based on the appropriate network setting, which allows for trouble-free communication of the AWSIM simulation with the Autoware software.
+The simulation is based on the appropriate network setting, which allows for trouble-free communication of the **V2X_E2E_Simulator** simulation with the Autoware software.
 To apply required localhost settings please add the following lines to `~/.bashrc` file:
 
 ``` bash
@@ -55,7 +70,7 @@ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 ## Start the demo
 
-### Running the AWSIM simulation demo
+### Running the **V2X_E2E_Simulator** simulation demo
 
 To run the simulator, please follow the steps below.
 
@@ -114,29 +129,31 @@ To run the simulator, please follow the steps below.
     sudo apt install libvulkan1
     ```
 
-3. Download and Run AWSIM Demo binary.
+3. Download and Run **V2X_E2E_Simulator** Demo binary.
 
-    1. Download `AWSIM_v1.3.1.zip`.
+    1. Download the desired build (Bus or lexus).
 
-        [Download AWSIM Demo for ubuntu](https://github.com/tier4/AWSIM/releases/download/v1.3.1/AWSIM_v1.3.1.zip){.md-button .md-button--primary}
+        [Download V2X_E2E_Simulator Demo for Bus ubuntu](https://drive.google.com/file/d/1QbQizozZh1kLVYYlNSFUGBXGt8CajAbM/view?usp=drive_link){.md-button .md-button--primary}
+
+        [Download V2X_E2E_Simulator Demo for Lexus ubuntu](https://drive.google.com/file/d/1q4WkCwwlp-LZb3iQLhD1qAB0R6S9IKbU/view?usp=drive_link){.md-button .md-button--primary}
     
     2. Unzip the downloaded file.
 
-    3. Make the `AWSIM.x86_64` file executable.
+    3. Make the `*.x86_64` file executable.
 
-        Rightclick the `AWSIM.x86_64` file and check the `Execute` checkbox
+        Rightclick the `*.x86_64` file and check the `Execute` checkbox
 
         ![](Image_1.png)
 
         or execute the command below.
 
         ```
-        chmod +x <path to AWSIM folder>/AWSIM.x86_64
+        chmod +x <path to V2X folder>/{file_name}.x86_64
         ```
 
-    4. Launch `AWSIM.x86_64`.
+    4. Launch `*.x86_64`.
         ```
-        ./<path to AWSIM folder>/AWSIM.x86_64
+        ./<path to V2X folder>/{file_name}.x86_64
         ``` 
         
         !!! warning
@@ -145,86 +162,234 @@ To run the simulator, please follow the steps below.
 
         ![](Image_0.png)
 
-### Launching Autoware
 
-In order to configure and run the Autoware software with the AWSIM demo, please:
 
-1. Download `map files (pcd, osm)` and unzip them.
+### Simulation Environment Images
 
-    [Download Map files (pcd, osm)](https://github.com/tier4/AWSIM/releases/download/v1.3.0/shinjuku_map.zip){.md-button .md-button--primary}
+#### **Lexus Simulation in E2E V2X Simulator**
+![Lexus Simulation](image_lexus.png)  
+*Figure: Lexus vehicle in the simulation environment.*
 
-1. Clone [Autoware](https://github.com/autowarefoundation/autoware) and move to the directory.
+#### **Bus Simulation in E2E V2X Simulator**
+![Bus Simulation](image_bus.png)  
+*Figure: Bus vehicle in the simulation environment.*
+
+
+
+
+### Controlling Features
+
+Without using **Autoware**, you can manually control the cars to create your desired scenario.
+
+#### **1. Basic Controls**  
+- **D** (Drive) → Press to enable driving mode.  
+- **P** (Park) → Press to stop the vehicle.  
+- **R** (Reverse) → Press to drive in reverse mode.  
+
+#### **2. Driving Controls**  
+- After pressing **D** (Drive), use the **arrow keys** to move around the city.  
+
+#### **3. Teleport Feature**  
+- There are **four predefined teleport locations** in the scene.  
+- The car can teleport **only when in Drive mode** and must have **at least a small amount of speed**.  
+- Use the following keys to teleport to different locations on the map:  
+  - **Q**, **E**, **F**, **X** → Teleport to four different places in the city.  
+#### **4. Manual Object Creation**
+- Use button **O** to spawn cars in scenarios where this feature is available
+
+![Keyboard](Keyboard.jpg)  
+*Figure: Defualt keys for extra functionalities*
+
+
+
+### RSU Section
+
+You can retrieve **RSU (Roadside Unit) data** and drive the car **without using Autoware**.  
+
+#### **RSU Data Visualization in Rviz**
+To visualize RSU data, you need **Rviz** with support for custom message visualization.  
+
+- If you **already have an Rviz configuration** that supports custom messages, you can use it directly.  
+- If you **do not have the required Rviz configuration**, install **Autoware** and use its **default Rviz settings** for proper visualization.  
+
+#### **RSU Data Visualization in Rviz (Autoware)**
+The following images illustrate how **RSU data** appears in Rviz (Autoware):
+
+##### **RSU Data - When the Car is Present**
+![RSU Data - In Place](image_rsu_inplace.png)  
+*Figure: RSU data visualization when the car is close to the crossroad.*
+
+##### **RSU Data - When the Car is Absent**
+![RSU Data - Not In Place](image_rsu_not_inplace.png)  
+*Figure: RSU data visualization when the car is not present at the crossroad.*
+
+
+
+---
+## Topic List
+
+In **V2X_E2E_Simulator version 7.8.1**, the following topics are published.
+
+Some topics are **AWSIM default topics**, which you can check in the [AWSIM documentation](https://tier4.github.io/AWSIM/Components/ROS2/ROS2TopicAndServiceList/).
+
+---
+
+### **1. Objects Sensed by Bus Onboard Perception Sensors**
+These objects are detected by the **Bus pseudo sensor**, which consists of a **4-LiDAR setup** and **more than 10 cameras**.
+
+- **Published Topic:**  
+  - `/OBU/Sensing`
+
+---
+
+### **2. NetSim-Compatible Topics**
+These topics represent **all detected objects at each intersection** and are used as **input for NetSim**.
+
+The message type **`CooperativeObjectsMessage`** comes from `autoware_auto_perception_msgs.msg`, which is a compatible type with **Autoware**. In the Autoware architecture, this message is typically created by one of the internal nodes. However, in our simulation, we replicate the detection algorithm and send this message directly from the simulator. 
+
+Therefore, if we use this feature, we can ignore or disable the camera responsible for generating the corresponding message. Our policy for using this message is **hybrid**—it can be used either in combination with other real sensors or as a standalone pseudo sensor.
+
+
+
+| **Topic Name** | **Intersection** |
+|:--|:--|
+| `/v2x/cooperative1` | Ganken Intersection |
+| `/v2x/cooperative2` | Kakeiken Intersection |
+| `/v2x/cooperative3` | Daisan Kidoutai |
+| `/v2x/cooperative4` | Wakashiba Intersection |
+
+---
+
+### **3. Autoware-Compatible Topics**
+These topics are **used as direct inputs to Autoware** for testing.
+The message type **`PredictedObjects`** comes from `autoware_auto_perception_msgs.msg`, which is a default message type of **Autoware** and **AWSIM**.
+
+| **Topic Name** | **Intersection** |
+|:--|:--|
+| `/v2x/predicted_objects1` | Ganken Intersection |
+| `/v2x/predicted_objects2` | Kakeiken Intersection |
+| `/v2x/predicted_objects3` | Daisan Kidoutai |
+| `/v2x/predicted_objects4` | Wakashiba Intersection |
+
+---
+
+### **4. Cool4 DM Format Topics**
+These topics provide **the same detected objects in Cool4 DM format**.  
+(**Currently, only Intersection 1 and 2 have DM-compatible RSUs**).
+The message type **`ObjectInfoArray`** comes from `dm_object_info_msgs.msg`. This message is not compatible with **Autoware** and was created to work with  the **DM protocol**.
+
+
+
+| **Topic Name** | **Intersection** |
+|:--|:--|
+| `/v2x/object_info_1` | Ganken Intersection |
+| `/v2x/object_info_1_noise` | Ganken Intersection (with noise) |
+| `/v2x/object_info_2` | Kakeiken Intersection |
+| `/v2x/object_info_2_noise` | Kakeiken Intersection (with noise) |
+
+
+### **5. DM Format Topics for Intersection #2 in Kashiwa**
+For **Intersection #2 in Kashiwa**, detected objects from **each sensor** are also published in **DM format**.  
+The **rsu number** and **sensor number** help distinguish different sensors.  
+- `/object_info` → Detected objects **without noise**  
+- `/object_info_noise` → Detected objects **with noise**  
+
+#### **Published Topics:**
+```plaintext
+/v2x/rsu12020002/sensor1/object_info
+/v2x/rsu12020002/sensor1/object_info_noise
+/v2x/rsu12020002/sensor2/object_info
+/v2x/rsu12020002/sensor2/object_info_noise
+/v2x/rsu12020002/sensor3/object_info
+/v2x/rsu12020002/sensor3/object_info_noise
+/v2x/rsu12020002/sensor4/object_info
+/v2x/rsu12020002/sensor4/object_info_noise
+/v2x/rsu12020002/sensor5/object_info
+/v2x/rsu12020002/sensor5/object_info_noise
+/v2x/rsu12020003/sensor1/object_info
+/v2x/rsu12020003/sensor1/object_info_noise
+/v2x/rsu12020003/sensor2/object_info
+/v2x/rsu12020003/sensor2/object_info_noise
+/v2x/rsu12020003/sensor3/object_info
+/v2x/rsu12020003/sensor3/object_info_noise
+/v2x/rsu12020003/sensor4/object_info
+/v2x/rsu12020003/sensor4/object_info_noise
+/v2x/rsu12020003/sensor5/object_info
+/v2x/rsu12020003/sensor5/object_info_noise
 ```
-git clone https://github.com/autowarefoundation/autoware.git
-cd autoware
-```
-1. Use the **main** branch
 
-1. Configure the environment. (Skip if Autoware environment has been configured before)
-```
-./setup-dev-env.sh
-```
-1. Create the `src` directory and clone external dependent repositories into it.
-```
-mkdir src
-vcs import src < autoware.repos
-```
-1. Install dependent ROS packages.
-```
 
-source /opt/ros/humble/setup.bash
-rosdep update
-rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
-```
-1. Build the workspace.
-```
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
-```
-1. Launch Autoware.
 
-    !!! warning
+---
 
-        `<your mapfile location>` must be changed arbitrarily. When specifying the path the `~` operator cannot be used - please specify absolute full path.
-```
-source install/setup.bash
-ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=sample_vehicle sensor_model:=awsim_sensor_kit map_path:=<your mapfile location>
-```
-![](Image_2.png)
+### **6. Ground Truth Topics**
+These topics publish the **ground truth** of **all objects** in the intersection.
 
-## Let's run the self-Driving simulation
+- `/v2x/rsu_all/object_info_groundtruth`
+- `/v2x/rsu_all/object_info_groundtruth_noise`
 
-1. Launch AWSIM and Autoware according to the steps described earlier in this document.
-![](Image_top.png)
+---
 
-2. The Autoware will automatically set its pose estimation as presented below.
-![](Image_Initial.png)
+### **7. V2X Traffic Signal Information for Autoware**
+- **Published Topic:**  
+  - `/v2x/traffic_signals`
 
-3. Set the navigation goal for the vehicle.
-![](Image_goal_0.png)
-![](Image_goal_1.png)
 
-4. Optionally, you can define an intermediate point through which the vehicle will travel on its way to the destination.
-![](Image_checkpoint_0.png)
-The generated path can be seen on the image below.
-![](Image_path.png)
+## Scenarios
 
-5. Enable self-driving.
+There are **five scenarios** available in **V2X_E2E_Simulator version 7.8.2**.  
+You can select a scenario using the **number keys (1-5) on the main keyboard**.  
+(**Note:** The **numpad keys do not work** for scenario selection.)
 
-To make the vehicle start navigating please engage it's operation using the command below.
 
-```
-cd autoware
-source install/setup.bash
-ros2 topic pub /autoware/engage autoware_vehicle_msgs/msg/Engage '{engage: True}' -1
-```
+### **Available Scenarios**
+- (1):**Normal Traffic** – City traffic with **pedestrians and cyclists**.
+- (2)**Empty City** – No traffic or humans.  
+   . **Manual spawning** of vehicles is available using the **O key** at **Intersection #1**.  
+   . A **return gate** is placed along the way.
+- (3)**Manual Traffic with Pedestrians & Cyclists**  
+   . **Manual vehicle spawning** is available.  
+   . **Pedestrians and cyclists** are present.  
+   . A **return gate** is located in **Intersection #2**.
+- (4)**Standard City Traffic**  
+   . Normal **traffic, pedestrians, and cyclists**.  
+   . A **return gate** is placed in **Intersection #1**.
+- (5)**High Pedestrian Density**  
+   . Extra **pedestrians** are present in **Intersection #4**.
 
-![](Image_running.png)
 
-The self-driving simulation demo has been successfully launched!
 
-## Troubleshooting
 
-In case of any problems with running the sample AWSIM binary with Autoware, start with checking our [Troubleshooting page](https://tier4.github.io/AWSIM/DeveloperGuide/TroubleShooting/) with the most common problems.
+## Steps to Lunch Autoware
 
-## Appendix
-- [AWSIM ROS2 topic list](../../Components/ROS2/ROS2TopicList/index.md)
+1. **Download and Extract Map Files**  
+   Download the `map files (pcd, osm)` and unzip them.
+
+   [Download Map Files (pcd, osm)](https://drive.google.com/file/d/1sPpqLBxyWCifsDPViqgYgX3b91Fwh6JK/view?usp=drive_link){.md-button .md-button--primary}
+
+2. **Ensure Compatibility with Autoware**  
+   This version of the **E2E V2X Simulator** is compatible with **Autoware version 2024.05**.  
+   Check this link for **Autoware 2024.05**: [Autoware 2024.05 Release](https://github.com/autowarefoundation/autoware/releases/tag/2024.05).
+
+3. **Modify Parameters for Bus Autoware**  
+   To work with **Bus Autoware**, you need to modify the vehicle parameters and sensor setup.  
+   By default, the parameters are set for the **Lexus**, but you need to add the **bus configuration** separately.
+
+4. **Download and Configure Bus-Specific Files**  
+   In order to work with **Bus Autoware**, you need to download the bus vehicle parameters and the bus sensor kit setup.
+
+   - **Bus Vehicle Parameters**: 
+    [Download Bus Vehicle Parameters](https://drive.google.com/file/d/1x_ro7XKXHiObi-Tiy-BKj4Z2xExc8vSw/view?usp=drive_link){.md-button .md-button--primary}
+
+
+   - **Bus Sensor Kit**:
+   [Download Bus Sensor Kit](https://drive.google.com/file/d/1vJ-aszM0l5tHfYoezstcA7cOfBINmxjt/view?usp=drive_link){.md-button .md-button--primary}
+
+   **Place the downloaded files in the following directories:**
+   - `autoware/src/vehicle/sample_vehicle_launch/sample_vehicle_description/config`
+   - `autoware/src/param/autoware_individual_params/individual_params/config/default/awsim_sensor_kit`
+
+
+
+
+

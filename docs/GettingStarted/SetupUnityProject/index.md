@@ -52,6 +52,8 @@ AWSIM comes with a *standalone* flavor of [`Ros2ForUnity`](../../Components/ROS2
 
     Do not run the AWSIM, Unity Hub, or the Editor with ROS 2 sourced.
 
+
+
 === "Ubuntu 22"
     - Make sure that the terminal which you are using to run Unity Hub, Editor, or AWSIM doesn't have ROS 2 sourced.
     - It is common to have ROS 2 sourced automatically with `~/.bashrc` or `~/.profile`. Make sure it is not obscuring your working environment:
@@ -59,47 +61,71 @@ AWSIM comes with a *standalone* flavor of [`Ros2ForUnity`](../../Components/ROS2
         - Running Unity Hub from the terminal uses the current terminal configuration from `~/.profile` and `~/.bashrc`.
         - Running Unity Editor from the UnityHub inherits the environment setup from the Unity Hub. 
 
+
+!!! warning
+
+    Currently, there are cases where the Nvidia driver version is too high, resulting in Segmentation fault. In that case, please lower the Nvidia driver version (550 is recommended.)
+
+
+The easiest way to be sure about your version is by using 'Software & Updates' in Ubuntu.
+
+![alt text](<Screenshot from 2024-12-04 14-18-59.png>)
+
+
 === "Windows"
     - Make sure your Windows environment variables are ROS 2 free.
+
+
+
 
 ### Unity installation
 
 !!! info
 
-    AWSIM's Unity version is currently **2021.1.7f1**
+    AWSIM's Unity version is currently **unity 6**
 
 Follow the steps below to install Unity on your machine:
 
 1. Install UnityHub to manage Unity projects. Please go to [Unity download page](https://unity3d.com/get-unity/download) and download latest `UnityHub.AppImage`.
 ![](image_1.png)
-2. Install Unity 2021.1.7f1 via UnityHub.
-    - Open new terminal, navigate to directory where `UnityHub.AppImage` is download and execute the following command:
+2. Install Unity 6 via UnityHub.
+    - Open new terminal, navigate to directory where `UnityHub.AppImage` is download and execute the following command (or find the unityhub icon and run it):
 ```
 ./UnityHub.AppImage
 ```
-    - To install Unity Editor please proceed as shown on the images below
-![](image_2.png)
-![](image_3.png)
-![](image_4.png)
-    - At this point, your Unity installation process should have started.
-
-        === "Ubuntu 22"
-        - *NOTE: If the installation process has not started after clicking the green button (image above), please copy the hyperlink (by rightclicking the button and selecting `Copy link address`) and add it as a argument for Unity Hub app. An example command:
+    - Make sure you have the V2X repository cloned and ROS 2 is not sourced.
         ```
-        ./UnityHub.AppImage unityhub://2021.1.7f1/d91830b65d9b
+        git clone https://github.com/tlab-wide/V2X_E2E_Simulator.git
         ```
+    - Now we add the project to unity hub
+    ![](image_6.png)
+    - In this step, you have to select either 'V2X_E2E_Simulator' or 'AWSIM' (you will only see one of these options in your setup sequence).
+    ![](image_7.png)
 
-    - After successful installation the version will be available under the `Installs` tab in Unity Hub.
-![](image_5.png)
+    - Then, you will see this error (if you don't already have the exact version of Unity 6).
+    ![alt text](image-4.png)
+    - To fix this issue, install the correct version by clicking on the warning sign and selecting the shown version.
+    ![alt text](image-5.png)
+    - Only select the Linux Build Support. If you add other packages, you won't face any problems, but the installation will take longer. You can also install other packages later.
+    ![alt text](image-6.png)
+    - After successful installation the version will be available under the `Installs` tab in Unity Hub (your Unity6 can be different in minor version section).
 
-### Open AWSIM project
+
+
+<!-- ![](image_2.png)
+![alt text](image-1.png)
+![alt text](image-3.png) -->
+
+    
+
+<!-- ### Open AWSIM project
 
 To open the Unity AWSIM project in Unity Editor:
 
 === "Using Unity Hub"
     1. Make sure you have the AWSIM repository cloned and ROS 2 is not sourced.
         ```
-        git clone git@github.com:tier4/AWSIM.git
+        git clone https://github.com/tlab-wide/V2X_E2E_Simulator.git
         ```
 
     2. Launch UnityHub.
@@ -123,21 +149,7 @@ To open the Unity AWSIM project in Unity Editor:
 
         - The project is now ready to use
         ![](image_9.png)
-
-=== "Using Terminal"
-
-    1. Enter the AWSIM directory (make sure ROS 2 is not sourced).
-        ```
-        cd AWSIM
-        ```
-
-    2. If your Unity Editor is in default location, run the project using the editor command.
-        ```
-        ~/Unity/Hub/Editor/2021.1.7f1/Editor/Unity -projectPath .
-        ```
-
-        !!! info
-            If your Unity Editor is installed in different location, please adjust the path accordingly.
+ -->
 
 !!! warning
 
@@ -152,12 +164,15 @@ To open the Unity AWSIM project in Unity Editor:
 
 To properly run and use AWSIM project in Unity it is required to download map package which is not included in the repository.
 
-1. Download and import `Japan_Tokyo_Nishishinjuku.unitypackage_v2`
+1. Download and import the latest Kashiwa unity package which is currently `Kashiwa_7.8.unitypackage`
 
-    [Download Map files (unitypackage)](https://github.com/tier4/AWSIM/releases/download/v1.2.2/Japan_Tokyo_Nishishinjuku_v2.unitypackage){.md-button .md-button--primary}
+    [Download Map files (unitypackage)](https://drive.google.com/file/d/1kAf_gZPu9zcm3SPo1MRCZVLIHzNL-YKH/view?usp=sharing){.md-button .md-button--primary}
 
-2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `Japan_Tokyo_Nishishinjuku.unitypackage_v2` file.
+2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `Kashiwa_7.8.unitypackage` file (or each version that you desire or download, in the image picture bleongs to Kashiwa_7.4.11.unitypackage).
 ![](image_10.png)
+</br>
+![alt text](<Screenshot from 2024-12-04 14-23-40.png>)
+</br>
 ![](image_11.png)
 3. `Nishishinjuku` package has been successfully imported under `Assets/AWSIM/Externals/`directory.
 ![](image_12.png)
@@ -166,11 +181,36 @@ To properly run and use AWSIM project in Unity it is required to download map pa
 
     The Externals directory is added to the `.gitignore` because the map has a large file size and should not be directly uploaded to the repository.
 
+
+*NOTE: There is a high probability that the engine may crash once during the installation of this package due to the excessive RAM required, but there is no problem, and the installation will complete after a minute.
+
 ## Run the demo in Editor
 
 The following steps describe how to run the demo in Unity Editor:
 
-1. Open the `AutowareSimulation.unity` scene placed under `Assets/AWSIM/Scenes/Main` directory
+1. Open the `AutowareSimulation.unity` scene placed under `Assets/AWSIM/Scenes/Main` or `Assets/V2x/scenes/` directory
 2. Run the simulation by clicking `Play` button placed at the top section of Editor.
 ![](image_13.png)
+
+
+<div style="text-align: center;">
+  <img src="image_14.png" alt="alt text" width="1200">
+</div>
+
 <br><br><br><br>
+
+
+<!-- 
+# Bug fix
+
+It is probable that you required to check the that the read/write be enable as you can see in the picture
+
+
+"It is likely that you need to check the `\Assets\AWSIM\Models\Sensors\Velodyne VLP-16` VLP-16.fbx file to ensure that the read/write option is enabled, as shown in the picture."
+
+![alt text](image.png)
+
+# Updates
+There is a minor bug in time scale adjusting in ubuntu to fix this issue in version 7.4.11 please install this minor update package after installing the original package similarly
+
+[7.4.11 Ui update](https://drive.google.com/file/d/1XOW9PvKk820zMUm7ynDqzaSZR4q-YROK/view?usp=sharing){.md-button .md-button--primary} -->

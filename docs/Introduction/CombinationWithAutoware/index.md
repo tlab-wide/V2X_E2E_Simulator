@@ -1,137 +1,62 @@
+# Cooperative Autoware
 
-<video width="1920" controls autoplay muted loop>
-<source src="awsim_video.mp4" type="video/mp4">
-</video>
+## Download 
+[Cooperative Autoware](https://drive.google.com/file/d/1x5M7YegynHbTBnRW1qIkoA0bpzMZLOAP/view?usp=drive_link)
 
-[*Autoware*](../Autoware/) is a powerful open-source software platform for autonomous driving. Its modular architecture, including perception, localization, planning, and control modules, provides a comprehensive framework for developing self-driving vehicles. [*Autoware*](../Autoware/) combined with  [*AWSIM*](../AWSIM/) simulator provides safe testing, validation, and optimization of autonomous driving algorithms in diverse scenarios.
+## Build
 
-!!! note "Run with Autoware"
-    If you would like to know how to run *AWSIM* with *Autoware*, we encourage you to read this [section](../../GettingStarted/QuickStartDemo/).
+The repository comes as a workspace by itself. To build the workspace follow the steps below:
 
+- Clone this repository to some desired folder:
+```
+git clone git@github.com:hoosh-ir/autoware.git
+```
 
-## Features
-The combination of *Autoware* and *AWSIM* provides the opportunity to check the correctness of the vehicle's behavior in various traffic situations. Below are presented some typical features provided by this combination. Moreover, examples of detecting several bad behaviors are included.
+- Navigate to the root of the workspace:
+```
+cd autoware
+```
 
-### Engagement
+- Execute the ansible script to download and install system dependencies:
+```
+./setup-dev-env.sh
+```
 
-- Driving straight through an intersection with priority
-  
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/DRIVE_STRAIGHT.mp4" type="video/mp4">
-    </video>
+- Install ROS dependencies:
+```
+source /opt/ros/humble/setup.bash
+rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
+```
 
-- Turning at the intersection
- 
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/DRIVE_TURN.mp4" type="video/mp4">
-    </video>
+- Build the workspace:
+```
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+```
 
-### Traffic light recognition
+### Memory Issues At Build Time
 
-- Stopping at a red light
-  
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/WAIT_RED.mp4" type="video/mp4">
-    </video>
+Building Autoware requires and enormous amount RAM (about 32GB). If you have insufficient memory, use the following commands to allocate 32GB of swap file:
+```
+# Optional: Check the current swapfile
+free -h
 
-- Driving on a green light
- 
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/DRIVE_GREEN.mp4" type="video/mp4">
-    </video>
+# Remove the current swapfile
+sudo swapoff /swapfile
+sudo rm /swapfile
 
-- Stopping at yellow light
+# Create a new swapfile
+sudo fallocate -l 32G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
 
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/WAIT_YELLOW2.mp4" type="video/mp4">
-    </video>
+# Optional: Check if the change is reflected
+free -h
+```
 
-- Still driving at yellow light (only when it is too late to stop)
+### Additional Options Provided
 
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/DRIVE_YELLOW2.mp4" type="video/mp4">
-    </video>
-
-### Interaction with vehicles
-- Yield right-of-way when turning right
-
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/vehicle_right_of_way.mp4" type="video/mp4">
-    </video>
-
-- Following the vehicles ahead
- 
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/vehicle_following.mp4" type="video/mp4">
-    </video>
-
-- Stopping behind the vehicles ahead 
- 
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/vehicle_sudden.mp4" type="video/mp4">
-    </video>
-
-- Cutting-in to a different traffic lane
-  
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/vehicle_cut_in.mp4" type="video/mp4">
-    </video>
-
-
-### Interaction with pedestrians
-- Giving right of way to a pedestrian crossing at a red light
-
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/pedestrian_crosswalk.mp4" type="video/mp4">
-    </video>
-
-- Giving way to a pedestrian crossing beyond a crosswalk
-
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/pedestrian_road.mp4" type="video/mp4">
-    </video>
-
-
-### Detecting bad behaviors
-- Incorrect and dangerous execution of a lane change
-
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/bad_cut_in.mp4" type="video/mp4">
-    </video>
-
-- Too late detection of a pedestrian entering the roadway
-
-    <video width="1920" controls autoplay muted loop>
-    <source src="features/bad_pedestrian_detection.mp4" type="video/mp4">
-    </video>
-
-
-## Combination Architecture
-![](awsim_autoware.png)
-
-The combination of *AWSIM* with *Autoware* is possible thanks to *Vehicle Interface* and *Sensing* modules of [*Autoware*](../Autoware/) architecture. The component responsible for ensuring connection with these modules from the *AWSIM* side is `EgoVehicle`. It has been adapted to the *Autoware* architecture and provides *ROS2* topic-based communication. However, the other essential component is `ClockPublisher`, which provides simulation time for *Autoware* - also published on the topic - more details [here](../../Components/ROS2/ROS2ForUnity/#extension-scripts).
-
-`EgoVehicle` component provides the publication of the current vehicle status through a script working within `Vehicle Status`. It provides real-time information such as: current speed, current steering of the wheels or current states of lights - these are outputs from *AWSIM*. 
-
-On the other hand, `Vehicle Ros Input` is responsible for providing the values of the outputs from *Autoware*. It subscribes to the current commands related to the given acceleration, gearbox gear or control of the specified lights.  
-
-Execution of the received commands is possible thanks to `Vehicle`, which ensures the setting of appropriate accelerations on the `**Wheel` and controlling the visual elements of the vehicle.
-
-The remaining data delivered from *AWSIM* to *Autoware* are sensors data, which provides information about the current state of the surrounding environment and those necessary to accurately estimate `EgoVehicle` position.
-
-More about `EgoVehicle` and its scripts is described in this [section](../../Components/Vehicle/EgoVehicle/).
-
-### Sequence diagram
-Below is a simplified sequential diagram of information exchange in connection between *AWSIM* and *Autoware*. As you can see, the first essential information published from *AWSIM* is `Clock` - the simulation time. Next, `EgoVehicle` is spawned and first sensors data are published, which are used in the process of automatic position initialization on *Autoware* side. At the same time, the simulation on *AWSIM* side is updated.
-
-Next in the diagram is the main information update loop in which:
-
-- During each cycle there is a synchronization with the time from the simulation.
-- *AWSIM* publishes data from sensors available in `EgoVehicle`, which are taken into account in the processes carried out in *Autoware*.
-- The control commands from *Autoware* are subscribed by *AWSIM*, which are executed on *AWSIM* side and `EgoVehicle` update is performed.
-- The current state of the `EgoVehicle` is published.
-
-The order of information exchange presented in the diagram is a simplification. The exchange of information takes place through the publish-subscribe model and each data is sent with a predefined frequency.
-
-![](autoware_awsim_sequence.png)
-
+```lightweight_localisation_ndt:=true/false```
+```lightweight_perception_detection:=true/false``` used along with ```pseudo_sensing_topic:=<AWSIM pseudo sensor topic>```
+```lightweight_perception_traffic_light:=true/false```
+```cooperative_mode:=true/false```
