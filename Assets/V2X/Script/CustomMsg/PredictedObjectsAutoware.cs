@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using autoware_auto_perception_msgs.msg;
+using autoware_perception_msgs.msg;
 using AWSIM;
 using ROS2;
 using UnityEngine;
@@ -167,13 +167,13 @@ public class PredictedObjectsAutoware : MonoBehaviour
                 LineOfSight lineOfSight = seenObjects[j].GetComponent<LineOfSight>();
                 if (lineOfSight != null)
                 {
-                    autoware_auto_perception_msgs.msg.ObjectClassification objectClassification =
-                        new autoware_auto_perception_msgs.msg.ObjectClassification();
+                    autoware_perception_msgs.msg.ObjectClassification objectClassification =
+                        new autoware_perception_msgs.msg.ObjectClassification();
                     objectClassification.Label = lineOfSight.GetTypeOfObject();
                     // objectClassification.Label = 1;
                     //objectClassification.Probability = probabilityNoise.ApplyNoiseToDecrease(1);
                     objectClassification.Probability = 1;
-                    predictedObject.Classification = new autoware_auto_perception_msgs.msg.ObjectClassification[]
+                    predictedObject.Classification = new autoware_perception_msgs.msg.ObjectClassification[]
                         { objectClassification };
                     predictedObject.Object_id = lineOfSight.GetUUID();
                     // predictedObject.Object_id.Uuid[0] = (byte)j;
