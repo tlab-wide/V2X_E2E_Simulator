@@ -1,46 +1,103 @@
-# AWSIM
+site_name: V2X E2E simulator
 
-> [!NOTE]  
-> **Please check out v2.0.0 announcement! https://github.com/tier4/AWSIM/issues/383**
- 
-![](/README_img/AWSIM.png)
+theme:
+  language: en 
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
 
-AWSIM is the best scene simulator for [Autoware](https://github.com/autowarefoundation/autoware).
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    # - navigation.instant
+    - navigation.sections
+    # - navigation.expand
+    - navigation.path
+    - navigation.footer
+    - content.tabs.link
+    - search.suggest
+    # - search.highlight
+    - content.code.copy
+  icon:
+    repo: fontawesome/brands/github    
 
-## Features
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
 
-- Connection to the latest main branch of Autoware
-- Simulator components included (Vehicle, Sensor, Environment, ROS2, etc.)
-- Support for Ubuntu 22.04 and windows10/11
-- ROS2 native communication
-- Open source software
-- Made with Unity Game Engine
+markdown_extensions:
+  - tables
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.arithmatex:
+      generic: true  
 
-## Tutorial
+extra:
+  version:
+    provider: mike
 
-First, try the tutorial !  
-[AWSIM Document - Quick Start Demo](https://tier4.github.io/AWSIM/GettingStarted/QuickStartDemo/)
+extra_javascript:
+    - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
-## Documentation
+nav:
+  - Home: index.md
 
-https://tier4.github.io/AWSIM/
+  - Getting started:
+    - Quick Start Demo: GettingStarted/QuickStartDemo/index.md
+    - Setup Unity Project: GettingStarted/SetupUnityProject/index.md
+    - Load PCD in Unity: LoadPCD/index.md
 
-## License
+  - Introduction:
+    - Autoware, Awsim and Our project : Introduction/AutowareAwsimAndV2X/index.md
+    - CombinationWithAutoware: Introduction/CombinationWithAutoware/index.md
 
-AWSIM License
-Applies to `tier4/AWSIM` repositories and all content contained in the [Releases](https://github.com/tier4/AWSIM/releases).
+  - Project guide:
+    # - Directory: ProjectGuide/Directory/index.md
+    - Kashiwa Scenes: ProjectGuide/KashiwaScenes/index.md
+    - Git Branch: ProjectGuide/GitBranch/index.md
+    - External Libraries: ProjectGuide/ExternalLibraries/index.md
 
-- code : Apache 2.0
-- assets : CC BY-NC
 
-See also [LICENSE](./LICENSE)
 
-## Contact
-
-日本語/English OK
-
-e-mail : takatoki.makino@tier4.jp  
-discord : mackie#6141  
-twitter : https&#58;//twitter.com/mackierx111
-
-(c) 2022 TIER IV, inc
+  - Components:
+    - Pseudo Sensor:
+      - Quick Setup: Components/PseudoSensors/PseudoSensorsSetup/index.md
+      - Pseudo Sensor: Components/PseudoSensors/PseudoSensors/index.md
+      - Noise Setting: Components/PseudoSensors/NoiseSetting/index.md
+      - RSU: Components/RSU/RSU/index.md
+    - Vehicle: 
+      - Add New Vehicle: Components/Vehicle/AddNewVehicle/index.md
+    # - Environment: Components/Environment/index.md
+    # - Traffic: Components/Traffic/index.md
+    - PCD Scanner:
+      - PCD Scanner Component: Components/PCDScanner/Component/index.md
+      - PCD Scanner Package (old): Components/PCDScanner/Package/index.md
+    - Loggers: Components/Logger/index.md
+    - Pedestrian & Cyclist: Components/Pedestrian/index.md
+  
+  - NetSim: NetSim/index.md
+  - TroubleShooting: TroubleShooting/index.md
+  - In progress: inProgressSections/index.md
+  - License: License/index.md
+  - Contact: Contact/index.md
