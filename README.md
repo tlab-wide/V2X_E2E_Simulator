@@ -1,103 +1,25 @@
-site_name: V2X E2E simulator
-
-theme:
-  language: en 
-  name: material
-  palette:
-    # Palette toggle for light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-
-    # Palette toggle for dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
-  features:
-    # - navigation.instant
-    - navigation.sections
-    # - navigation.expand
-    - navigation.path
-    - navigation.footer
-    - content.tabs.link
-    - search.suggest
-    # - search.highlight
-    - content.code.copy
-  icon:
-    repo: fontawesome/brands/github    
-
-markdown_extensions:
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-
-markdown_extensions:
-  - tables
-  - admonition
-  - pymdownx.superfences
-  - pymdownx.details
-  - pymdownx.tabbed:
-      alternate_style: true
-  - attr_list
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
-  - pymdownx.arithmatex:
-      generic: true  
-
-extra:
-  version:
-    provider: mike
-
-extra_javascript:
-    - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-
-nav:
-  - Home: index.md
-
-  - Getting started:
-    - Quick Start Demo: GettingStarted/QuickStartDemo/index.md
-    - Setup Unity Project: GettingStarted/SetupUnityProject/index.md
-    - Load PCD in Unity: LoadPCD/index.md
-
-  - Introduction:
-    - Autoware, Awsim and Our project : Introduction/AutowareAwsimAndV2X/index.md
-    - CombinationWithAutoware: Introduction/CombinationWithAutoware/index.md
-
-  - Project guide:
-    # - Directory: ProjectGuide/Directory/index.md
-    - Kashiwa Scenes: ProjectGuide/KashiwaScenes/index.md
-    - Git Branch: ProjectGuide/GitBranch/index.md
-    - External Libraries: ProjectGuide/ExternalLibraries/index.md
+# V2X_E2E_Simulator
 
 
 
-  - Components:
-    - Pseudo Sensor:
-      - Quick Setup: Components/PseudoSensors/PseudoSensorsSetup/index.md
-      - Pseudo Sensor: Components/PseudoSensors/PseudoSensors/index.md
-      - Noise Setting: Components/PseudoSensors/NoiseSetting/index.md
-      - RSU: Components/RSU/RSU/index.md
-    - Vehicle: 
-      - Add New Vehicle: Components/Vehicle/AddNewVehicle/index.md
-    # - Environment: Components/Environment/index.md
-    # - Traffic: Components/Traffic/index.md
-    - PCD Scanner:
-      - PCD Scanner Component: Components/PCDScanner/Component/index.md
-      - PCD Scanner Package (old): Components/PCDScanner/Package/index.md
-    - Loggers: Components/Logger/index.md
-    - Pedestrian & Cyclist: Components/Pedestrian/index.md
-  
-  - NetSim: NetSim/index.md
-  - TroubleShooting: TroubleShooting/index.md
-  - In progress: inProgressSections/index.md
-  - License: License/index.md
-  - Contact: Contact/index.md
+![image](https://github.com/hoosh-ir/V2X_E2E_Simulator/assets/32614364/2e273eb2-89f0-47f3-9e6f-81648e3cd807)
+
+
+[AWSIM]([https://github.com/autowarefoundation/autoware](https://github.com/tier4/AWSIM))  is the best scene simulator for [Autoware](https://github.com/autowarefoundation/autoware) and V2X_E2E_Simulator
+is based on AWSIM.
+
+## Features
+
+- Addition of cyclist and extra paterns of movement for pedestrians
+- Support for Ubuntu 22.04 and windows10/11
+- ROS2 native communication
+- Open source software
+- Custome Messages
+- Traffic anaylitics features
+
+## Documentation
+https://tlab-wide.github.io/V2X_E2E_Simulator/
+
+## License
+
+(c) 2022 Tsukada LAB
