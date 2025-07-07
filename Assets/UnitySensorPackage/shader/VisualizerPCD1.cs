@@ -50,14 +50,14 @@ public class VisualizerPCD1 : MonoBehaviour
 
     // private MonoBehaviour sensor;
 
-    private RaycastLiDARSensor lidar;
+    [SerializeField]private RaycastLiDARSensor lidar;
 
   
 
     public void Start()
     {
         // Check if LiDAR is attached
-        lidar = GetComponent<RaycastLiDARSensor>();
+        // lidar = GetComponent<RaycastLiDARSensor>();
         lidar.scanCallBackEvent.AddListener(OnNewLidarData);
         
 

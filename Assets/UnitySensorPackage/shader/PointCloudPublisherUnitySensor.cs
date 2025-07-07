@@ -5,15 +5,17 @@ using sensor_msgs.msg;
 using std_msgs.msg;
 using UnityEngine;
 using UnitySensors.Sensor.LiDAR;
+using Environment = AWSIM.Environment;
 
 public class PointCloudPublisherUnitySensor : MonoBehaviour
 {
     // Fill this from elsewhere (ray-casts, meshes, etc.)
     [SerializeField] private Vector3[] _hit_positions;
+    [SerializeField] private bool shiftPoins;
 
     // Topic + QoS  -----------------------------------------------------------
     private IPublisher<PointCloud2> _pcdPub;
-    [SerializeField] private const string TOPIC = "/sim/points";
+    [SerializeField] private  string TOPIC = "/sim/points";
 
     private readonly QoSSettings _qos = new QoSSettings()
     {
@@ -100,8 +102,34 @@ public class PointCloudPublisherUnitySensor : MonoBehaviour
         {
             return;
         }
-
+        
         _hit_positions = lidarSensor.hitPositions;
+        
+        
+        if (shiftPoins)
+        {
+            Vector3[] ros_hit_position = new Vector3[_hit_positions.Length];
+            for (int i = 0; i < _hit_positions.Length; i++)
+            {
+                var pos = ROS2Utility.UnityToRosPosition(_hit_positions[i]);
+                pos = pos + Environment.Instance.MgrsOffsetPosition;
+                ros_hit_position[i] = pos;
+            }
+            _hit_positions = ros_hit_position;
+        }
+        else
+        {
+            //todo merge same sections
+            Vector3[] ros_hit_position = new Vector3[_hit_positions.Length];
+            for (int i = 0; i < _hit_positions.Length; i++)
+            {
+                var pos = _hit_positions[i] - this.transform.position;
+                pos = ROS2Utility.UnityToRosPosition(pos);
+                
+                ros_hit_position[i] = pos;
+            }
+            _hit_positions = ros_hit_position;
+        }
         SendData();
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DotSpatial.Projections.Transforms;
 using UnityEngine;
 
 using Unity.Collections;
@@ -9,6 +10,7 @@ using UnityEngine.Events;
 using UnitySensors.Utils.Noise;
 
 using Random = Unity.Mathematics.Random;
+using Transform = UnityEngine.Transform;
 
 namespace UnitySensors.Sensor.LiDAR
 {
@@ -123,12 +125,23 @@ namespace UnitySensors.Sensor.LiDAR
             _raycastHitsToPointsJob.indexOffset = (_raycastHitsToPointsJob.indexOffset + pointsNum) % scanPattern.size;
             
             _hit_positions = new Vector3[pointCloud.points.Length];
+
+            float3    sensorPos = transform.position;            // translation
+            quaternion sensorRot = (quaternion)transform.rotation; // rotation
             
             for (int i = 0; i < pointCloud.points.Length; i++)
             {
+                //old 
                 // Assuming pointCloud.points is of type PointXYZI and position is a float3
-                float3 point = pointCloud.points[i].position;
-                _hit_positions[i] = new Vector3(point.x, point.y, point.z);
+                // float3 point = pointCloud.points[i].position + sensorPos ;
+                // _hit_positions[i] = new Vector3(point.x, point.y, point.z);
+                
+                float3 local = pointCloud.points[i].position;
+
+                // rotate → translate
+                float3 world = math.mul(sensorRot, local) + sensorPos;
+
+                _hit_positions[i] = new Vector3(world.x, world.y, world.z);
             }
 
             scanCallBackEvent.Invoke();
