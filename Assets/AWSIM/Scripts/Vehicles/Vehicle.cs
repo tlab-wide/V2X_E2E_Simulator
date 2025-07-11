@@ -246,7 +246,7 @@ namespace AWSIM
         /// <summary>
         /// Vehicle velocity (m/s)
         /// </summary>
-        public Vector3 Velocity => m_rigidbody.velocity;
+        public Vector3 Velocity => m_rigidbody.linearVelocity;
 
         /// <summary>
         /// Vehcile local velocity (m/s)
@@ -362,7 +362,7 @@ namespace AWSIM
             }
 
             // cache value for next frame.
-            lastVelocity = m_rigidbody.velocity;
+            lastVelocity = m_rigidbody.linearVelocity;
             lastPosition = m_transform.position;
             lastRotation = m_transform.rotation;
             lastSleep = sleep;

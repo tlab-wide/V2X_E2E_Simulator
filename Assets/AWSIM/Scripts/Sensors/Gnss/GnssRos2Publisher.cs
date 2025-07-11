@@ -80,6 +80,11 @@ namespace AWSIM
             poseWithCovarianceStampedMsg.Pose.Pose.Position.X = outputData.MgrsPosition.x;
             poseWithCovarianceStampedMsg.Pose.Pose.Position.Y = outputData.MgrsPosition.y;
             poseWithCovarianceStampedMsg.Pose.Pose.Position.Z = outputData.MgrsPosition.z;
+            
+            poseMsg.Pose.Orientation.X = outputData.MgrsRotation.x;
+            poseMsg.Pose.Orientation.Y = outputData.MgrsRotation.y;
+            poseMsg.Pose.Orientation.Z = outputData.MgrsRotation.z;
+            poseMsg.Pose.Orientation.W = outputData.MgrsRotation.w;
 
             // Update msg header.
             var poseWithCovarianceStampedHeader = poseWithCovarianceStampedMsg as MessageWithHeader;
@@ -96,6 +101,7 @@ namespace AWSIM
         {
             SimulatorROS2Node.RemovePublisher<geometry_msgs.msg.PoseStamped>(posePublisher);
             SimulatorROS2Node.RemovePublisher<geometry_msgs.msg.PoseWithCovarianceStamped>(poseWithCovarianceStampedPublisher);
+            
         }
     }
 }

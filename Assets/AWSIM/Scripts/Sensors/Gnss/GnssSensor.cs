@@ -27,11 +27,13 @@ namespace AWSIM
             /// </summary>
             public Vector3 MgrsPosition;
             public GeoCoordinate GeoCoordinate;
+            public Quaternion MgrsRotation;
 
             public OutputData()
             {
                 MgrsPosition = new Vector3();
                 GeoCoordinate = new GeoCoordinate();
+                MgrsRotation = new Quaternion();
             }
         }
 
@@ -78,6 +80,9 @@ namespace AWSIM
             outputData.MgrsPosition = rosPosition + Environment.Instance.MgrsOffsetPosition;   // ros gnss sensor's pos + mgrs offset pos.
             outputData.GeoCoordinate = GeoCoordinateConverter.Cartesian2Geo(unityPosition, Environment.Instance.WorldOriginGeoCoordinate);
 
+            var r = ROS2Utility.UnityToRosRotation(m_transform.rotation);
+            outputData.MgrsRotation = r;
+            
             // Calls registered callbacks
             OnOutputData.Invoke(outputData);
         }
