@@ -94,7 +94,9 @@ nav:
       - PCD Scanner Component: Components/PCDScanner/Component/index.md
       - PCD Scanner Package (old): Components/PCDScanner/Package/index.md
     - Loggers: Components/Logger/index.md
-    - Pedestrian & Cyclist: Components/Pedestrian/index.md
+    - Pedestrian & Cyclist: 
+      - General: Components/Pedestrian/index.md
+      - WayPoint For Pedestrians and Cyclists : Components/WaypointPed/index.md
   
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
