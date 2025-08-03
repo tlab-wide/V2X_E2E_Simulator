@@ -16,6 +16,8 @@ public class SpawnerOnWaypoint : MonoBehaviour
     [SerializeField] private float minWaitingTime = 5f;
     [SerializeField] private float maxWaitingTime = 300f;
     [SerializeField]private float randomSelectedWaitingTime = 0f;
+    
+    [SerializeField]private KeyCode spawnKey = KeyCode.O;
 
     private Vector3 spawnPos;
     private Quaternion spawnRot;
@@ -32,7 +34,7 @@ public class SpawnerOnWaypoint : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.O))
+        if (Input.GetKeyDown(spawnKey))
         {
             // Instantiate the object at spawnPos and spawnRot
             if (spawnerPrefab != null)

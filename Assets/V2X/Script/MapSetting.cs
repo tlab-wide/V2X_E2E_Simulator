@@ -1,13 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using AWSIM;
 using AWSIM.TrafficSimulation;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Environment = AWSIM.Environment;
+using Quaternion = UnityEngine.Quaternion;
 using Random = UnityEngine.Random;
+using Vector3 = UnityEngine.Vector3;
 
 public class MapSetting : MonoBehaviour
 {
@@ -21,7 +25,8 @@ public class MapSetting : MonoBehaviour
     [SerializeField] private GameObject parentOfRename;
 
 
-    [Header("Replacer")] [SerializeField] private Transform replaceParent;
+    [Header("Replacer")] [SerializeField] private string baseNameSelector = "orange tree";
+    [SerializeField] private Transform replaceParent;
 
     [FormerlySerializedAs("newParentToReplace")] [SerializeField]
     private Transform newParentToJoin;
@@ -117,33 +122,105 @@ public class MapSetting : MonoBehaviour
 
     public void replaceTheChilds()
     {
-        Debug.Log("catched");
+        // Find and process each matching tree
+        // var renderers = replaceParent.GetComponentsInChildren<MeshRenderer>();
+        // foreach (var mr in renderers)
+        // {
+        //     if (!mr.gameObject.name.Contains(baseNameSelector))
+        //         continue;
+        //
+        //     Transform oldT = mr.transform;
+        //
+        //     // Instantiate as a linked prefab under newParentToJoin
+        //     GameObject newInstance = (GameObject)PrefabUtility.InstantiatePrefab(
+        //         prefabObjToReplace, 
+        //         newParentToJoin
+        //     );
+        //
+        //     // Match world position & rotation
+        //     newInstance.transform.position = oldT.position;
+        //     newInstance.transform.rotation = Quaternion.identity;
+        //     newInstance.transform.name = oldT.name;
+        //
+        //     // Match world-scale (lossy → local)
+        //     Vector3 worldScale = oldT.lossyScale;
+        //     Vector3 parentScale = newParentToJoin.lossyScale;
+        //     newInstance.transform.localScale = new Vector3(
+        //         worldScale.x / parentScale.x,
+        //         worldScale.y / parentScale.y,
+        //         worldScale.z / parentScale.z
+        //     );
+        // }
+        //
+        // Debug.Log("Instantiated prefab-linked trees for all matching originals (kept originals).");
+        //border
+        // Debug.Log("Starting replacement…");
+        //
+        // // 1) Gather all MeshRenderers under replaceParent
+        // MeshRenderer[] trees = replaceParent.GetComponentsInChildren<MeshRenderer>();
+        // List<MeshRenderer> treesSelected = new List<MeshRenderer>();
+        //
+        // for (int i = 0; i < trees.Length; i++)
+        // {
+        //     if (trees[i].gameObject.name.Contains(baseNameSelector))
+        //         treesSelected.Add(trees[i]);
+        // }
+        //
+        // // 2) For each selected tree…
+        // foreach (var treeRenderer in treesSelected)
+        // {
+        //     Transform oldTreeT = treeRenderer.transform;
+        //
+        //     // a) Instantiate prefab at the exact world position & rotation
+        //     GameObject newTree = Instantiate(
+        //         prefabObjToReplace,
+        //         oldTreeT.position,
+        //         Quaternion.identity,
+        //         newParentToJoin      // parent in one shot
+        //     );
+        //     
+        //     newTree.gameObject.name = treeRenderer.name;
+        //
+        //     // b) (Optional) Match the world-scale of the original
+        //     //    Note: you can skip this if your prefab already has correct scale
+        //     Vector3 worldScale = oldTreeT.lossyScale;
+        //     newTree.transform.localScale = new Vector3(
+        //         worldScale.x / newParentToJoin.lossyScale.x,
+        //         worldScale.y / newParentToJoin.lossyScale.y,
+        //         worldScale.z / newParentToJoin.lossyScale.z
+        //     );
+        //
+        //     // c) (Optional) Destroy the old tree
+        //     Destroy(oldTreeT.gameObject);
+        // }
+        //
+        // Debug.Log($"Replaced {treesSelected.Count} trees with prefabs.");
+        //todo
 
-        TrafficLane[] trafficLanes = replaceParent.GetComponentsInChildren<TrafficLane>();
-
-
-        for (int i = 0; i < trafficLanes.Length; i++)
-        {
-            Vector3[] wayPoints = trafficLanes[i].Waypoints;
-            for (int j = 0; j < wayPoints.Length; j++)
-            {
-                Vector3 stepSize;
-                if (wayPoints.Length > j + 1)
-                {
-                    stepSize = (wayPoints[j + 1] - wayPoints[j]) / overSampling;
-                    for (int k = 0; k < overSampling; k++)
-                    {
-                        Debug.Log("WE ARE IN");
-                        Instantiate(prefabObjToReplace, wayPoints[j] + k * stepSize, Quaternion.identity,
-                            newParentToJoin);
-                    }
-                }
-                else
-                {
-                    Instantiate(prefabObjToReplace, wayPoints[j], Quaternion.identity, newParentToJoin);
-                }
-            }
-        }
+        // old approach 
+        // TrafficLane[] trafficLanes = replaceParent.GetComponentsInChildren<TrafficLane>();
+        // for (int i = 0; i < trafficLanes.Length; i++)
+        // {
+        //     Vector3[] wayPoints = trafficLanes[i].Waypoints;
+        //     for (int j = 0; j < wayPoints.Length; j++)
+        //     {
+        //         Vector3 stepSize;
+        //         if (wayPoints.Length > j + 1)
+        //         {
+        //             stepSize = (wayPoints[j + 1] - wayPoints[j]) / overSampling;
+        //             for (int k = 0; k < overSampling; k++)
+        //             {
+        //                 Debug.Log("WE ARE IN");
+        //                 Instantiate(prefabObjToReplace, wayPoints[j] + k * stepSize, Quaternion.identity,
+        //                     newParentToJoin);
+        //             }
+        //         }
+        //         else
+        //         {
+        //             Instantiate(prefabObjToReplace, wayPoints[j], Quaternion.identity, newParentToJoin);
+        //         }
+        //     }
+        // }
     }
 
 
@@ -199,9 +276,11 @@ public class MapSetting : MonoBehaviour
         }
     }
 
+    [Header("Tree Tool")] [SerializeField]
+    private Transform treeParent;
 
     [SerializeField] private GameObject[] treeObjects;
-
+    
 
     [SerializeField] private Vector3 shiftVector3 = new Vector3(0, 0, -1);
 
@@ -209,36 +288,108 @@ public class MapSetting : MonoBehaviour
 
     [SerializeField] private bool removePrev = false;
 
-    public void SwapTrees()
-    {
-        GameObject[] trees = GameObject.FindGameObjectsWithTag("OldTree");
-        foreach (var prevTree in trees)
-        {
-            Mesh mesh = prevTree.GetComponent<MeshFilter>().sharedMesh;
-            Vector3[] vertices = mesh.vertices;
+    // [SerializeField] private Vector3 shiftTree;
+    // [SerializeField] private Vector3 scaleMultiplyer = Vector3.one;
+    [SerializeField] private Transform newParent;
 
-            Vector3 sum = Vector3.zero;
-            for (int i = 0; i < vertices.Length; i++)
+    [SerializeField] private string searchingName= "tree";
+
+    [SerializeField] private Vector3 baseScale = Vector3.one;
+    [SerializeField] private bool Scale = false;
+    
+    
+    private List<Transform> CollectMatchingChildren(Transform parent, string searchingName, List<Transform> treeChildren = null)
+    {
+        if (treeChildren == null)
+        {
+            treeChildren = new List<Transform>();
+        }
+        
+        foreach (Transform child in parent)
+        {
+            if (child.gameObject.activeInHierarchy && child.name.ToLower().Contains(searchingName.ToLower()))
             {
-                sum += vertices[i];
+                treeChildren.Add(child);
             }
 
-            Vector3 avg = sum / vertices.Length;
+            // Recursively search the child's children
+            CollectMatchingChildren(child, searchingName,treeChildren);
+        }
+        
+        return treeChildren;
+    }
+    
+    public void SwapTrees()
+    {
+        List<Transform> treeChildren = new List<Transform>();
 
-            Vector3 newPos = avg;
-            newPos += shiftVector3;
+        // Immediate child
+        // foreach (Transform child in treeParent)
+        // {
+        //     if (child.gameObject.activeInHierarchy && child.name.ToLower().Contains(searchingName.ToLower()))
+        //     {
+        //         treeChildren.Add(child);
+        //     }
+        // }
+        
+        // nested search
+        treeChildren = CollectMatchingChildren(treeParent, searchingName);
+
+
+        Debug.Log(treeChildren.Count);
+        foreach (var prevTree in treeChildren)
+        {
+            // //in case of pivot is not in the center of mass of the tree
+            // Mesh mesh = prevTree.GetComponent<MeshFilter>().sharedMesh;
+            // Vector3[] vertices = mesh.vertices;
+            //
+            // Vector3 sum = Vector3.zero;
+            // for (int i = 0; i < vertices.Length; i++)
+            // {
+            //     sum += vertices[i];
+            // }
+            //
+            // Vector3 avg = sum / vertices.Length;
+            //
+            // Vector3 newPos = avg;
+            // newPos += shiftVector3;
+
+            Vector3 newPos = prevTree.transform.position;
 
 
             GameObject SelectTreePrefab = SelectRandomTreePrefabObjects();
             GameObject newTreeObject = Instantiate(SelectTreePrefab, Vector3.zero, Quaternion.identity);
-            newTreeObject.transform.localScale = treeScale;
-            newTreeObject.transform.position = newPos;
-            newTreeObject.transform.parent = prevTree.transform.parent;
+            newTreeObject.transform.position = newPos + shiftVector3;
+            newTreeObject.transform.parent = newParent;
+            newTreeObject.name = searchingName;
+
+            if (Scale)
+            {
+                // Compare the original object's scale to the base scale
+                // Vector3 originalScale = prevTree.parent.transform.localScale;
+                Vector3 originalScale = prevTree.transform.localScale;
+
+                // Calculate relative scale factors
+                Vector3 relativeScale = new Vector3(
+                    originalScale.x / baseScale.x,
+                    originalScale.y / baseScale.y,
+                    originalScale.z / baseScale.z
+                );
+
+                // Apply treeScale as a coefficient
+                Vector3 finalScale = Vector3.Scale(relativeScale, treeScale);
+                newTreeObject.transform.localScale = finalScale;
+            }
+            else
+            {
+                newTreeObject.transform.localScale = treeScale;
+            }
 
             //todo  delete the tree 
             if (removePrev)
             {
-                DestroyImmediate(prevTree.gameObject);
+                // DestroyImmediate(prevTree.gameObject);
+                prevTree.gameObject.SetActive(false);
             }
         }
     }
@@ -445,7 +596,7 @@ public class MapSetting : MonoBehaviour
     {
         // Find all root GameObjects in the current scene
         GameObject[] rootObjects = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
-        
+
         // Create a list to store objects that need to be removed
         List<GameObject> objectsToRemove = new List<GameObject>();
 
@@ -462,11 +613,10 @@ public class MapSetting : MonoBehaviour
             Destroy(obj);
         }
     }
-    
-    
+
+
     void CheckAndRemoveUnnamedObjects(GameObject obj, List<GameObject> objectsToRemove)
     {
-
         // Check if the object's name is null or empty
         if (string.IsNullOrEmpty(obj.name))
         {
@@ -479,5 +629,33 @@ public class MapSetting : MonoBehaviour
             CheckAndRemoveUnnamedObjects(child.gameObject, objectsToRemove);
         }
     }
-    
+
+
+
+    [SerializeField] private Transform parentMeshLessFunction;
+
+    public void RemoveMeshlessFather()
+    {
+        List<Transform> meshObjects = new List<Transform>();
+
+        // Collect all descendants that have a MeshRenderer
+        foreach (Transform child in parentMeshLessFunction.GetComponentsInChildren<Transform>(true))
+        {
+            if (child.GetComponent<MeshRenderer>() != null)
+            {
+                meshObjects.Add(child);
+            }
+        }
+
+        // Reparent them directly to parentMeshLessFunction if their parent has no MeshRenderer
+        foreach (Transform meshObj in meshObjects)
+        {
+            Transform parent = meshObj.parent;
+            if (parent != null && parent != parentMeshLessFunction && parent.GetComponent<MeshRenderer>() == null)
+            {
+                meshObj.SetParent(parentMeshLessFunction, true); // true preserves world position
+            }
+        }
+    }
+
 }

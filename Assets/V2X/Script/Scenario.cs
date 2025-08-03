@@ -14,8 +14,8 @@ public class Scenario : MonoBehaviour
     private static Color cameraRsuLineColor = Color.green;
 
 
-    [SerializeField] private List<MockSensor> busCameras;
-    [SerializeField] private List<MockSensor> lidars;
+    [SerializeField] private List<MockSensor> carCameras; 
+    [SerializeField] private List<MockSensor> carLidars;
 
     [FormerlySerializedAs("RSUs")] [SerializeField]
     private List<MockSensor> rsuSensors;
@@ -108,12 +108,12 @@ public class Scenario : MonoBehaviour
 
     public List<MockSensor> getLidars()
     {
-        return lidars;
+        return carLidars;
     }
 
     public List<MockSensor> getCameras()
     {
-        return busCameras;
+        return carCameras;
     }
 
     public List<MockSensor> getRSUsensors()

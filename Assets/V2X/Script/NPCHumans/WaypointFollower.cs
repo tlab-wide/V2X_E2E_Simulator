@@ -153,6 +153,7 @@ public class WaypointFollower : MonoBehaviour,ISpeed
 
     private Animator animator;
 
+    //Animation update and falling check 
     private void Update()
     {
         CheckDie();

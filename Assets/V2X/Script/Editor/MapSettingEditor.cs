@@ -55,7 +55,11 @@ public class MapSettingEditor : Editor
         {
             myScript.RemoveUnnamedObjects();
         }
-        
+
+        if (GUILayout.Button("Remove parent object which have no mesh render"))
+        {
+            myScript.RemoveMeshlessFather();
+        }
         
         
     }

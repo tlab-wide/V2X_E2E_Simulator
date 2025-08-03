@@ -21,7 +21,7 @@ public class ObjectInfo : MonoBehaviour
     [SerializeField] private List<MockSensor> sensors;
 
     [SerializeField] private float Hz = 10;
-    
+
     [SerializeField] private bool isGroundTruth = false;
 
     // [SerializeField] private ulong stationID = 24;
@@ -58,9 +58,9 @@ public class ObjectInfo : MonoBehaviour
 
     [SerializeField] private static float N_utm = 3972957.923f;
 
-    
+
     private Vector3 utm_vector;
-    
+
 
     public QoSSettings QosSettings = new QoSSettings()
     {
@@ -111,18 +111,18 @@ public class ObjectInfo : MonoBehaviour
 
 
         // log state of sensor
-        Transform firstSensor = this.sensors[0].transform;
-        Vector3 pos = ROS2Utility.UnityToRosPosition(firstSensor.position);
-        pos = pos + Environment.Instance.MgrsOffsetPosition;
-        Quaternion rot = ROS2Utility.UnityToRosRotation(firstSensor.rotation);
+        // Transform firstSensor = this.sensors[0].transform;
+        // Vector3 pos = ROS2Utility.UnityToRosPosition(firstSensor.position);
+        // pos = pos + Environment.Instance.MgrsOffsetPosition;
+        // Quaternion rot = ROS2Utility.UnityToRosRotation(firstSensor.rotation);
 
         // Debug.Log($"{firstSensor.name} RSU ***|");
         // Debug.Log(pos);
         // Debug.Log(rot);
         // Debug.Log($"{rot.x}, {rot.y},{rot.z} ,{rot.w}");
         // Debug.Log(firstSensor.rotation.eulerAngles.y);
-        
-        
+        Debug.Log("NEW test is the best");
+        Debug.Log(this.transform.rotation.eulerAngles);
     }
 
     private void CheckMockSensors()
@@ -151,19 +151,18 @@ public class ObjectInfo : MonoBehaviour
 
                 haveSeen.Add(seenObjects[j]);
                 //add to list
-                
+
                 objectInfos.Add(handlObjectInfo(seenObjects[j], true));
                 objectInfosGroundTruth.Add(handlObjectInfo(seenObjects[j], false));
             }
         }
 
 
-
         msg.Array = objectInfos.ToArray();
-        
+
         msgGroundTruth.Array = objectInfosGroundTruth.ToArray();
-      
-        
+
+
         objectPublisher.Publish(msg);
 
         if (!TopicGroundTruth.Equals("None"))
@@ -188,13 +187,12 @@ public class ObjectInfo : MonoBehaviour
         //add noise
 
         var pos = byNoise ? positionNoise.ApplyNoiseOnVector(pos_pure) : pos_pure;
-        
+
 
         Vector3 pos_utm = pos + utm_vector;
-        (double lat, double lon) =  GeographicLib.UTMUPS.Reverse(54,true,pos_utm.x,pos_utm.y);
-        
-        
-        
+        (double lat, double lon) = GeographicLib.UTMUPS.Reverse(54, true, pos_utm.x, pos_utm.y);
+
+
         // objectInfo.Object_location.Latitude.Value = float.Parse(lat);
         objectInfo.Object_location.Latitude.Value = (int)(lat * 10000000);
 
@@ -202,9 +200,8 @@ public class ObjectInfo : MonoBehaviour
         objectInfo.Object_location.Longitude.Value = (int)(lon * 10000000);
 
         objectInfo.Object_location.Altitude.Value = (int)(pos.z * 100);
-        
-        
-        
+
+
         // objectInfo.Object_location.Geodetic_system.Value = 4326;
         objectInfo.Object_location.Geodetic_srid.Value = 4326;
 
@@ -213,9 +210,11 @@ public class ObjectInfo : MonoBehaviour
             (byte)((int)(byNoise ? (probabilityNoise.ApplyNoiseOnFloat(0.8f) * 101) : 1f * 101));
 
 
-        //Rotation
+        //Orientation
         float rotation = CalculateAngleFromNorth(seenObject.transform);
-        objectInfo.Direction.Value.Value = (ushort)(rotation * 80);
+        objectInfo.Orientation.Value.Value = (ushort)(rotation * 80);
+
+        // Debug.Log($"Rotation: {rotation} ***");
 
 
         // Debug.Log("ss1");
@@ -229,16 +228,38 @@ public class ObjectInfo : MonoBehaviour
         int generated_id = GetIntForUUID(uuid.Uuid);
         objectInfo.Id.Value = (ulong)generated_id;
 
-        //speed setup 
+        //get rigidbody
         Rigidbody rigidbody = seenObject.GetComponent<Rigidbody>();
 
-        
+        //direction
+        // // ---- direction in the horizontal plane ----
+        Vector3 vel = rigidbody.linearVelocity; // current velocity
+        // Vector3 vel = seenObject.forward; // current velocity  just for test
+        Vector3 dir = new Vector3(vel.x, 0f, vel.z); // ignore vertical component
 
+        float direction = 0;
+
+        if (dir.sqrMagnitude > 0.0001f) // small threshold to skip “almost-stopped”
+        {
+            dir.Normalize();
+
+            // azimuth (°) clockwise from north (+Z axis)
+            direction = Vector3.SignedAngle(Vector3.forward, dir, Vector3.up);
+            direction = CalculateAngleFromNorth(direction);
+            // Debug.Log($"Azimuth: {direction:0.0}°");
+        }
+        else
+        {
+            //not moving object
+            direction = rotation;
+        }
+        
+        objectInfo.Direction.Value.Value = (ushort)(direction * 80);
 
         // Debug.Log("ss2");
         objectInfo.Object_class = new ObjectClass[1];
 
-        
+
         for (int i = 0; i < objectInfo.Object_class.Length; i++)
         {
             ObjectClass objectClass = new ObjectClass();
@@ -257,14 +278,14 @@ public class ObjectInfo : MonoBehaviour
 
         objectInfo.Information_source_list = new[] { objectIdSource };
 
-        
+
         //based on msg document
         // public const byte UNKNOWN = 0;
         // public const byte VEHICLE = 1;
         // public const byte PERSON = 2;
         // public const byte ANIMAL = 3;
         // public const byte OTHER = 4;
-        
+
         if (npcVehicle != null)
         {
             //add noise
@@ -280,23 +301,20 @@ public class ObjectInfo : MonoBehaviour
             ObjectClass objectClassTarget = new ObjectClass();
             objectClassTarget.Id.Value = 1;
             objectClassTarget.Confidence.Value = 101;
-            
-            
+
 
             objectInfo.Object_class[0] = objectClassTarget;
-            
-            
+
+
             //setup velocity
             objectInfo.Speed.Value.Value = (short)(Vector3.Magnitude(rigidbody.linearVelocity) * 100);
-            
-            
         }
         else
         {
             ObjectClass objectClassTarget = new ObjectClass();
             objectClassTarget.Id.Value = 2;
             objectClassTarget.Confidence.Value = 101;
-            
+
 
             objectInfo.Object_class[0] = objectClassTarget;
 
@@ -304,10 +322,10 @@ public class ObjectInfo : MonoBehaviour
             objectInfo.Size.Length.Value.Value = (ushort)(0.5f * 100);
             objectInfo.Size.Width.Value.Value = (ushort)(0.5f * 100);
             objectInfo.Size.Height.Value.Value = (ushort)(1.7f * 100);
-            
+
             //setup velocity
             // Debug.Log(seenObject.transform.name);
-            objectInfo.Speed.Value.Value = (short) (seenObject.GetComponent<ISpeed>().GetSpeed() * 100);
+            objectInfo.Speed.Value.Value = (short)(seenObject.GetComponent<ISpeed>().GetSpeed() * 100);
 
             // objectInfo.Object_class = new ObjectClass[1];
             // objectInfo.Object_class[0].Id.Value = (byte)7; // todo type of car has bug
@@ -384,11 +402,21 @@ public class ObjectInfo : MonoBehaviour
     }
 
 
-    // Calculate the Y angle from North
+    // Calculate the Y angle for ROS rotation style
+    public float YawAngluarRotationRosSystem(Transform target)
+    {
+        return -((target.rotation.eulerAngles.y) % 360);
+    }
+
+    // Calculate the Y angle from North for Azimuth
     public float CalculateAngleFromNorth(Transform target)
     {
-        // Ensure the angle is within the 0-360 range using Mathf.Repeat
         return (target.rotation.eulerAngles.y + 90) % 360;
+    }
+
+    public float CalculateAngleFromNorth(float target)
+    {
+        return (target + 90) % 360;
     }
 
 
@@ -438,7 +466,7 @@ public class ObjectInfo : MonoBehaviour
     }
 
 
-    public  ulong GenerateObjectId(string rsuIdHex, byte sensorId, ushort detectedObjectId)
+    public ulong GenerateObjectId(string rsuIdHex, byte sensorId, ushort detectedObjectId)
     {
         // Convert RSU ID from hex string to uint
         uint rsuId = Convert.ToUInt32(rsuIdHex, 16);
@@ -458,14 +486,13 @@ public class ObjectInfo : MonoBehaviour
         {
             // Bits 63-62: "01" (Recognition by Cooperative Roadside Equipment)
             objectId |= (1UL << 63); // Set bit 63 to 1 (0b10 in bits 63-62)
-            
         }
         else
         {
             // Bits 63-62: "01" (Recognition by Cooperative Roadside Equipment)
             objectId |= (1UL << 62); // Set bit 62 to 1 (0b01 in bits 63-62)
         }
-        
+
 
         // Bits 61-56: All "0" (Reserved, already zero-initialized)
 
@@ -507,7 +534,7 @@ public class ObjectInfo : MonoBehaviour
         // Debug.Log($"rsuId: {rsuIdHex}, sensorId: {sensorId}, detectedObjectId: {detectedObjectId}");
         // Debug.Log($"Final : {objectId:X16}");
         // Debug.Log($"Final  {objectId}");
-        
+
         return objectId;
     }
 }

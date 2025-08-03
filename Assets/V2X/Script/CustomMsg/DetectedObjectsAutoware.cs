@@ -6,7 +6,7 @@ using ROS2;
 using Unity.VisualScripting;
 using UnityEngine;
 using v2x_msgs.msg;
-using ObjectClassification = autoware_auto_perception_msgs.msg.ObjectClassification;
+using ObjectClassification = autoware_perception_msgs.msg.ObjectClassification;
 
 public class DetectedObjectsAutoware : MonoBehaviour
 {
@@ -40,9 +40,9 @@ public class DetectedObjectsAutoware : MonoBehaviour
         Depth = 1,
     };
 
-    IPublisher<autoware_auto_perception_msgs.msg.DetectedObjects> sensorDetectedPublisher;
+    IPublisher<autoware_perception_msgs.msg.DetectedObjects> sensorDetectedPublisher;
 
-    private autoware_auto_perception_msgs.msg.DetectedObjects msg;
+    private autoware_perception_msgs.msg.DetectedObjects msg;
 
 
     void Awake()
@@ -54,7 +54,7 @@ public class DetectedObjectsAutoware : MonoBehaviour
 
 
         
-        msg = new autoware_auto_perception_msgs.msg.DetectedObjects();
+        msg = new autoware_perception_msgs.msg.DetectedObjects();
         msg.Header = new std_msgs.msg.Header()
         {
             Frame_id = frameId,
@@ -64,7 +64,7 @@ public class DetectedObjectsAutoware : MonoBehaviour
         // Create publisher.
         var qos = QosSettings.GetQoSProfile();
         sensorDetectedPublisher =
-            SimulatorROS2Node.CreatePublisher<autoware_auto_perception_msgs.msg.DetectedObjects>(Topic, qos);
+            SimulatorROS2Node.CreatePublisher<autoware_perception_msgs.msg.DetectedObjects>(Topic, qos);
     }
 
     private Vector3 CalculateRelativePosition(Vector3 objectPos)
@@ -81,8 +81,8 @@ public class DetectedObjectsAutoware : MonoBehaviour
 
     private void CheckMockSensors()
     {
-        List<autoware_auto_perception_msgs.msg.DetectedObject> objects =
-            new List<autoware_auto_perception_msgs.msg.DetectedObject>();
+        List<autoware_perception_msgs.msg.DetectedObject> objects =
+            new List<autoware_perception_msgs.msg.DetectedObject>();
         List<Transform> haveSeen = new List<Transform>();
         for (int i = 0; i < sensors.Count; i++)
         {
@@ -99,8 +99,8 @@ public class DetectedObjectsAutoware : MonoBehaviour
                 haveSeen.Add(seenObjects[j]);
 
 
-                autoware_auto_perception_msgs.msg.DetectedObject DetectedObject =
-                    new autoware_auto_perception_msgs.msg.DetectedObject();
+                autoware_perception_msgs.msg.DetectedObject DetectedObject =
+                    new autoware_perception_msgs.msg.DetectedObject();
 
                 var pos = CalculateRelativePosition(seenObjects[j].transform.position);
                 pos = ROS2Utility.UnityToRosPosition(pos);
@@ -180,8 +180,8 @@ public class DetectedObjectsAutoware : MonoBehaviour
                 LineOfSight lineOfSight = seenObjects[j].GetComponent<LineOfSight>();
                 if (lineOfSight != null)
                 {
-                    autoware_auto_perception_msgs.msg.ObjectClassification objectClassification =
-                        new autoware_auto_perception_msgs.msg.ObjectClassification();
+                    autoware_perception_msgs.msg.ObjectClassification objectClassification =
+                        new autoware_perception_msgs.msg.ObjectClassification();
                     objectClassification.Label = lineOfSight.GetTypeOfObject();
                     objectClassification.Probability = 1;
                     // objectClassification.Probability = probabilityNoise.ApplyNoiseToDecrease(1);;

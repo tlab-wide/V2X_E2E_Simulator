@@ -9,6 +9,7 @@ public class ConstraintTraffic : MonoBehaviour, IConstraintWayPoint
 
     public bool CheckState()
     {
+        // Debug.Log($"Called +++ {this.transform.name}");
         if (trafficLight is null || !trafficLight.gameObject.activeSelf || !trafficLight.gameObject.activeInHierarchy)
         {
             return true;
