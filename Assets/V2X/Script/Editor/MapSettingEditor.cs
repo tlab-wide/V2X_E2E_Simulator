@@ -62,5 +62,12 @@ public class MapSettingEditor : Editor
         }
         
         
+        if (GUILayout.Button("Sequential naming for exact named objects"))
+        {
+            myScript.RenameSequentialBySearch();
+        }
+        
+        
+        
     }
 }

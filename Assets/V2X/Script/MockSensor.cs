@@ -22,9 +22,10 @@ public class MockSensor : MonoBehaviour
 
     [FormerlySerializedAs("observableAngleY")] [SerializeField]
     private float Vfov = 180;
+    [SerializeField] private byte sensorId = 1;
+
 
     [SerializeField] private List<Transform> seenObjects = new List<Transform>();
-
 
     [SerializeField] private float maxDistance = 50;
 
@@ -36,6 +37,11 @@ public class MockSensor : MonoBehaviour
         return mockSensorType;
     }
 
+    public byte GetSensorId()
+    {
+        return sensorId;
+    }
+
 
     private void Awake()
     {
@@ -43,6 +49,8 @@ public class MockSensor : MonoBehaviour
         // {
         //     LineOfSightManagerJobs.Instance.RegisterSensor(this.transform, maxDistance, Hfov, Vfov);
         // }
+        
+        
         
     }
 

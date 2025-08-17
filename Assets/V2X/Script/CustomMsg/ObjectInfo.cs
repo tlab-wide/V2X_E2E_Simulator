@@ -136,7 +136,8 @@ public class ObjectInfo : MonoBehaviour
             objectInfosGroundTruth = new List<dm_object_info_msgs.msg.ObjectInfo>();
         List<Transform> haveSeen = new List<Transform>();
 
-
+        // todo seenObjects as dictionary make it a dictionary that holds the seenObjects and then add funtion at the end of for get out of the scope eterate on keys seprately and call the add
+        // the dictionary key would be the seenObjects[j].GetInstanceID() and value be the list of seen object that it has been seen
         for (int i = 0; i < sensors.Count; i++)
         {
             List<Transform> seenObjects = sensors[i].GetSeenObjects();
@@ -169,7 +170,6 @@ public class ObjectInfo : MonoBehaviour
         {
             objectPublisherGroundTruth.Publish(msgGroundTruth);
         }
-        //todo prediction for RSU 
     }
 
     private float timer;
@@ -195,11 +195,12 @@ public class ObjectInfo : MonoBehaviour
 
         // objectInfo.Object_location.Latitude.Value = float.Parse(lat);
         objectInfo.Object_location.Latitude.Value = (int)(lat * 10000000);
-
+        
         // objectInfo.Object_location.Longitude.Value = float.Parse(longitude);
         objectInfo.Object_location.Longitude.Value = (int)(lon * 10000000);
 
-        objectInfo.Object_location.Altitude.Value = (int)(pos.z * 100);
+        objectInfo.Object_location.Altitude.Value = (int)((pos.z + Environment.Instance.MgrsOffsetPosition.z) * 100);
+        // Debug.Log($"the altitude reported {objectInfo.Object_location.Altitude.Value}");
 
 
         // objectInfo.Object_location.Geodetic_system.Value = 4326;
@@ -215,8 +216,6 @@ public class ObjectInfo : MonoBehaviour
         objectInfo.Orientation.Value.Value = (ushort)(rotation * 80);
 
         // Debug.Log($"Rotation: {rotation} ***");
-
-
         // Debug.Log("ss1");
         //type 
         NPCVehicle npcVehicle = seenObject.GetComponent<NPCVehicle>();
@@ -225,8 +224,8 @@ public class ObjectInfo : MonoBehaviour
 
         //Id setup
         UUID uuid = lineOfSight.GetUUID();
-        int generated_id = GetIntForUUID(uuid.Uuid);
-        objectInfo.Id.Value = (ulong)generated_id;
+        int generatedId = GetIntForUUID(uuid.Uuid);
+        objectInfo.Id.Value = (ulong)generatedId;
 
         //get rigidbody
         Rigidbody rigidbody = seenObject.GetComponent<Rigidbody>();
@@ -273,10 +272,19 @@ public class ObjectInfo : MonoBehaviour
         objectInfo.Time.Value = GetITSTimeInMilliseconds();
 
 
-        ObjectId objectIdSource = new ObjectId();
-        objectIdSource.Value = GenerateObjectId(rsuId, sensorId, (ushort)generated_id);
-
-        objectInfo.Information_source_list = new[] { objectIdSource };
+        ObjectId objectIdInstance = new ObjectId();
+        objectIdInstance.Value = GenerateObjectId(rsuId, sensorId, (ushort)generatedId);
+        objectInfo.Id.Value = objectIdInstance.Value;
+        
+        
+        // ObjectId informationSourceId = new ObjectId();  //todo ask about it but temporarily is ok 
+        // informationSourceId.Value = sensorId;
+        
+        objectInfo.Information_source_list = new[] { objectIdInstance };
+        // Debug.Log($"object info size : {objectInfo.Information_source_list.Length} , value is {objectInfo.Id.Value}");
+        
+        
+        
 
 
         //based on msg document

@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Environment = AWSIM.Environment;
+using Object = UnityEngine.Object;
 using Quaternion = UnityEngine.Quaternion;
 using Random = UnityEngine.Random;
 using Vector3 = UnityEngine.Vector3;
@@ -658,4 +659,29 @@ public class MapSetting : MonoBehaviour
         }
     }
 
+    
+    [Header("Rename same names")] [SerializeField] private string targetName;
+    // private GameObject parentOfLanelet;
+    //
+    //this function will find the object that have same name as the target name and add index to them
+    public void RenameSequentialBySearch()
+    {
+        int startIndex = 1;
+
+        GameObject[] allObjects = Object.FindObjectsOfType<GameObject>();
+
+        int index = startIndex;
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name == targetName) // exact match
+            {
+                // Undo.RecordObject(obj, "Rename Kaj Object");
+                obj.name = targetName + " " + index; // add space or not
+                index++;
+            }
+        }
+
+        Debug.Log($"Renamed {index - startIndex} objects with the exact name '{targetName}'");
+    }
+    
 }

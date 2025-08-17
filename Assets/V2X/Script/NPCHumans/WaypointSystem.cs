@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class WaypointSystem : MonoBehaviour
 {
@@ -11,7 +12,20 @@ public class WaypointSystem : MonoBehaviour
     }
 
     public List<WaypointNode> waypoints = new List<WaypointNode>();
+    [FormerlySerializedAs("activeLoop")] public bool loopStatus = false;
 
+
+    public bool GetLoopStatus()
+    {
+        return loopStatus;
+    }
+
+
+    public Transform GetFirstWaypoint()
+    {
+        return waypoints[0].waypoint;
+    }
+    
     public WaypointNode GetClosestWaypoint(Vector3 position)
     {
         WaypointNode closest = null;
@@ -102,7 +116,7 @@ public class WaypointSystem : MonoBehaviour
             }
         }
 
-        if (waypoints.Count > 1)
+        if (loopStatus && waypoints.Count > 1)
         {
             Gizmos.DrawLine(waypoints[waypoints.Count-1].waypoint.position, waypoints[0].waypoint.position);
         }
