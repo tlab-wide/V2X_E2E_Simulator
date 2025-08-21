@@ -109,8 +109,8 @@ public class LineOfSight : MonoBehaviour
             yield return null; //wait one frame
 
         Scenario currentScenario = BlindScenarioManager.Instance.getCurrentScenario();
-        List<MockSensor> lidars = currentScenario.getLidars();
-        List<MockSensor> busCameras = currentScenario.getCameras();
+        List<MockSensor> carLidars = currentScenario.getLidars();
+        List<MockSensor> carCameras = currentScenario.getCameras();
         List<MockSensor> rsuSensors = currentScenario.getRSUsensors();
         List<MockSensor> rsuCameras = currentScenario.getRsuCameras();
 
@@ -126,17 +126,18 @@ public class LineOfSight : MonoBehaviour
 
             // bus lidars 
             List<Transform> seenObjectsByLidar = new List<Transform>();
-            for (int j = 0; j < lidars.Count; j++)
+            for (int j = 0; j < carLidars.Count; j++)
             {
                 int numberOfSeenBusLidars = 0;
                 for (int i = 0; i < points.Count; i++)
                 {
                     Transform startPoint = points[i];
-                    if (lidars[j].haveLineOfSight(startPoint))
+                    if (carLidars[j].haveLineOfSight(startPoint))
                     {
                         numberOfSeenBusLidars++;
                         seenObjectsByLidar.Add(startPoint);
                     }
+                    carLidars[j].UpdateLastUpdateTime();
                 }
 
                 //visualization
@@ -145,13 +146,13 @@ public class LineOfSight : MonoBehaviour
                 {
                     seenByOBU = true;
                     //just for log system
-                    if (!observableSensor.Contains(lidars[j]))
+                    if (!observableSensor.Contains(carLidars[j]))
                     {
-                        observableSensor.Add(lidars[j]);
-                        observableSensorWitCount[lidars[j]] = numberOfSeenBusLidars;
+                        observableSensor.Add(carLidars[j]);
+                        observableSensorWitCount[carLidars[j]] = numberOfSeenBusLidars;
                     }
 
-                    lidars[j].addObjectToObserved(this.transform, numberOfSeenBusLidars);
+                    carLidars[j].addObjectToObserved(this.transform, numberOfSeenBusLidars);
 
 
                     // BlindScenarioManager.Instance.AddObservedCar(this.transform);
@@ -160,8 +161,8 @@ public class LineOfSight : MonoBehaviour
                 else
                 {
                     //just for log system
-                    observableSensor.Remove(lidars[j]);
-                    lidars[j].removeObjectFromObserved(this.transform);
+                    observableSensor.Remove(carLidars[j]);
+                    carLidars[j].removeObjectFromObserved(this.transform);
                 }
             }
 
@@ -180,6 +181,7 @@ public class LineOfSight : MonoBehaviour
                         numberOfSeenRSUs++;
                         seenObjectsByRSU.Add(startPoint);
                     }
+                    rsuSensors[j].UpdateLastUpdateTime();
                 }
 
                 //visualization
@@ -206,17 +208,18 @@ public class LineOfSight : MonoBehaviour
 
             // bus cameras 
             List<Transform> seenObjectsCameras = new List<Transform>();
-            for (int j = 0; j < busCameras.Count; j++)
+            for (int j = 0; j < carCameras.Count; j++)
             {
                 int numberOfSeenBusCameras = 0;
                 for (int i = 0; i < points.Count; i++)
                 {
                     Transform startPoint = points[i];
-                    if (busCameras[j].haveLineOfSight(startPoint))
+                    if (carCameras[j].haveLineOfSight(startPoint))
                     {
                         numberOfSeenBusCameras++;
                         seenObjectsCameras.Add(startPoint);
                     }
+                    carCameras[j].UpdateLastUpdateTime();
                 }
 
                 //visualization
@@ -224,18 +227,18 @@ public class LineOfSight : MonoBehaviour
                     numberOfSeenBusCameras >= minimumNumberOfPointsVisible)
                 {
                     seenByOBU = true;
-                    if (!observableSensor.Contains(busCameras[j]))
+                    if (!observableSensor.Contains(carCameras[j]))
                     {
-                        observableSensor.Add(busCameras[j]);
-                        observableSensorWitCount[busCameras[j]] = numberOfSeenBusCameras;
+                        observableSensor.Add(carCameras[j]);
+                        observableSensorWitCount[carCameras[j]] = numberOfSeenBusCameras;
                     }
 
-                    busCameras[j].addObjectToObserved(this.transform, numberOfSeenBusCameras);
+                    carCameras[j].addObjectToObserved(this.transform, numberOfSeenBusCameras);
                 }
                 else
                 {
-                    observableSensor.Remove(busCameras[j]);
-                    busCameras[j].removeObjectFromObserved(this.transform);
+                    observableSensor.Remove(carCameras[j]);
+                    carCameras[j].removeObjectFromObserved(this.transform);
                 }
             }
 
@@ -253,6 +256,7 @@ public class LineOfSight : MonoBehaviour
                         numberOfSeenRsuCameras++;
                         seenObjectsByRsuCameras.Add(startPoint);
                     }
+                    rsuCameras[j].UpdateLastUpdateTime();
                 }
 
                 //visualization

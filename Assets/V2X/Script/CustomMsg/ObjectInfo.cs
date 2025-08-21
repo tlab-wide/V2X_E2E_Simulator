@@ -26,10 +26,13 @@ public class ObjectInfo : MonoBehaviour
 
     // [SerializeField] private ulong stationID = 24;
 
-    public string Topic = "/v2x/cooperative";
-    public string TopicGroundTruth = "/v2x/cooperativeGroundTruth";
+    [FormerlySerializedAs("Topic")] public string topic = "/v2x/cooperative";
+
+    [FormerlySerializedAs("TopicGroundTruth")]
+    public string topicGroundTruth = "/v2x/cooperativeGroundTruth";
+
     public string rsuId = "0x1100";
-    public byte sensorId = 1;
+    // public byte sensorId = 1;
 
 
     public string frameId = "obj";
@@ -38,6 +41,9 @@ public class ObjectInfo : MonoBehaviour
     [SerializeField] private string rotationNoiseName = "default noise";
     [SerializeField] private string dimensionNoiseName = "default noise";
     [SerializeField] private string probabilityNoiseName = "default noise";
+
+    [Header("Delayed message")] [SerializeField]
+    private List<MessageDelay<ObjectInfoArray>> messageDelays;
 
 
     private NoiseSetting.Noise positionNoise;
@@ -103,11 +109,11 @@ public class ObjectInfo : MonoBehaviour
         // Create publisher.
         var qos = QosSettings.GetQoSProfile();
         // objectPublisher = SimulatorROS2Node.CreatePublisher<CooperativeObjectInfoMessage>(Topic, qos);
-        objectPublisher = SimulatorROS2Node.CreatePublisher<ObjectInfoArray>(Topic, qos);
+        objectPublisher = SimulatorROS2Node.CreatePublisher<ObjectInfoArray>(topic, qos);
         // objectPublisherGroundTruth =
         //     SimulatorROS2Node.CreatePublisher<CooperativeObjectInfoMessage>(TopicGroundTruth, qos);
         objectPublisherGroundTruth =
-            SimulatorROS2Node.CreatePublisher<ObjectInfoArray>(TopicGroundTruth, qos);
+            SimulatorROS2Node.CreatePublisher<ObjectInfoArray>(topicGroundTruth, qos);
 
 
         // log state of sensor
@@ -123,59 +129,127 @@ public class ObjectInfo : MonoBehaviour
         // Debug.Log(firstSensor.rotation.eulerAngles.y);
         Debug.Log("NEW test is the best");
         Debug.Log(this.transform.rotation.eulerAngles);
+
+
+        InitializeDelaySystem();
     }
+
+    // private void CheckMockSensors()
+    // {
+    //     // Collect all sightings across sensors, grouped by object instance ID
+    //     var sightings = new Dictionary<int, List<Transform>>();
+    //
+    //     for (int i = 0; i < sensors.Count; i++)
+    //     {
+    //         List<Transform> seenObjects = sensors[i].GetSeenObjects();
+    //         for (int j = 0; j < seenObjects.Count; j++)
+    //         {
+    //             var t = seenObjects[j];
+    //             if (t == null) continue;
+    //
+    //             int id = t.GetInstanceID();
+    //             if (!sightings.TryGetValue(id, out var bucket))
+    //             {
+    //                 bucket = new List<Transform>();
+    //                 sightings[id] = bucket;
+    //             }
+    //             bucket.Add(t); // keep all sightings; we’ll emit once per key later
+    //         }
+    //     }
+    //
+    //     // Build outgoing messages once per unique object (per instance ID)
+    //     List<dm_object_info_msgs.msg.ObjectInfo> objectInfos = new List<dm_object_info_msgs.msg.ObjectInfo>();
+    //     List<dm_object_info_msgs.msg.ObjectInfo> objectInfosGroundTruth = new List<dm_object_info_msgs.msg.ObjectInfo>();
+    //
+    //     foreach (var kvp in sightings)
+    //     {
+    //         // If you ever need per-object metadata (e.g., "how many sensors saw this"),
+    //         // kvp.Value.Count gives you that.
+    //         Transform representative = kvp.Value[0];
+    //
+    //         objectInfos.Add(handlObjectInfo(representative, true));
+    //         objectInfosGroundTruth.Add(handlObjectInfo(representative, false));
+    //     }
+    //
+    //     msg.Array = objectInfos.ToArray();
+    //     msgGroundTruth.Array = objectInfosGroundTruth.ToArray();
+    //
+    //     objectPublisher.Publish(msg);
+    //
+    //     if (!string.IsNullOrEmpty(TopicGroundTruth) && !TopicGroundTruth.Equals("None"))
+    //     {
+    //         objectPublisherGroundTruth.Publish(msgGroundTruth);
+    //     }
+    // }
+
 
     private void CheckMockSensors()
     {
-        // ObjectInfoArray objectInfoArray = new ObjectInfoArray();
-        //
-        // objectInfoArray.Array = objectInfos.ToArray();
-        // List<PredictedObject> predictedObjects = new List<PredictedObject>();
-        List<dm_object_info_msgs.msg.ObjectInfo> objectInfos = new List<dm_object_info_msgs.msg.ObjectInfo>();
-        List<dm_object_info_msgs.msg.ObjectInfo>
-            objectInfosGroundTruth = new List<dm_object_info_msgs.msg.ObjectInfo>();
-        List<Transform> haveSeen = new List<Transform>();
+        // Group sightings by unique instance ID and keep:
+        // - a representative Transform for the object
+        // - the list of sensors that saw it
+        var sightings = new Dictionary<Transform, List<MockSensor>>();
 
-        // todo seenObjects as dictionary make it a dictionary that holds the seenObjects and then add funtion at the end of for get out of the scope eterate on keys seprately and call the add
-        // the dictionary key would be the seenObjects[j].GetInstanceID() and value be the list of seen object that it has been seen
         for (int i = 0; i < sensors.Count; i++)
         {
-            List<Transform> seenObjects = sensors[i].GetSeenObjects();
+            var sensor = sensors[i];
+            List<Transform> seenObjects = sensor.GetSeenObjects();
 
             for (int j = 0; j < seenObjects.Count; j++)
             {
-                // remove duplications
-                if (haveSeen.Contains(seenObjects[j]))
+                Transform t = seenObjects[j];
+                if (t == null) continue;
+
+                // Use the Transform itself as the key
+                if (!sightings.TryGetValue(t, out var watchers))
                 {
-                    continue;
+                    watchers = new List<MockSensor>();
+                    sightings[t] = watchers;
                 }
 
-                haveSeen.Add(seenObjects[j]);
-                //add to list
-
-                objectInfos.Add(handlObjectInfo(seenObjects[j], true));
-                objectInfosGroundTruth.Add(handlObjectInfo(seenObjects[j], false));
+                // Ensure each sensor is recorded once for this object
+                if (!watchers.Contains(sensor))
+                {
+                    watchers.Add(sensor);
+                }
             }
+        }
+
+        // Build outgoing messages once per unique object
+        var objectInfos = new List<dm_object_info_msgs.msg.ObjectInfo>();
+        var objectInfosGroundTruth = new List<dm_object_info_msgs.msg.ObjectInfo>();
+
+        foreach (var kvp in sightings)
+        {
+            Transform rep = kvp.Key;
+            List<MockSensor> watchers = kvp.Value;
+
+            objectInfos.Add(handlObjectInfo(rep, watchers, true));
+            objectInfosGroundTruth.Add(handlObjectInfo(rep, watchers, false));
         }
 
 
         msg.Array = objectInfos.ToArray();
-
         msgGroundTruth.Array = objectInfosGroundTruth.ToArray();
-
 
         objectPublisher.Publish(msg);
 
-        if (!TopicGroundTruth.Equals("None"))
+
+        // Publish GT only when TopicGroundTruth is not null/empty and not the sentinel "None"
+        if (!string.IsNullOrEmpty(topicGroundTruth) && !topicGroundTruth.Equals("None"))
         {
             objectPublisherGroundTruth.Publish(msgGroundTruth);
         }
+
+        PublishByDelay(msg, msgGroundTruth);
     }
+
 
     private float timer;
 
 
-    private dm_object_info_msgs.msg.ObjectInfo handlObjectInfo(Transform seenObject, bool byNoise = true)
+    private dm_object_info_msgs.msg.ObjectInfo handlObjectInfo(Transform seenObject, List<MockSensor> sensors,
+        bool byNoise = true)
     {
         dm_object_info_msgs.msg.ObjectInfo objectInfo = new dm_object_info_msgs.msg.ObjectInfo();
 
@@ -195,7 +269,7 @@ public class ObjectInfo : MonoBehaviour
 
         // objectInfo.Object_location.Latitude.Value = float.Parse(lat);
         objectInfo.Object_location.Latitude.Value = (int)(lat * 10000000);
-        
+
         // objectInfo.Object_location.Longitude.Value = float.Parse(longitude);
         objectInfo.Object_location.Longitude.Value = (int)(lon * 10000000);
 
@@ -252,7 +326,7 @@ public class ObjectInfo : MonoBehaviour
             //not moving object
             direction = rotation;
         }
-        
+
         objectInfo.Direction.Value.Value = (ushort)(direction * 80);
 
         // Debug.Log("ss2");
@@ -267,24 +341,26 @@ public class ObjectInfo : MonoBehaviour
             objectInfo.Object_class[i] = objectClass;
         }
 
-        // objectInfo.Time TODO 
+
         objectInfo.Time = new TimestampIts();
-        objectInfo.Time.Value = GetITSTimeInMilliseconds();
+        objectInfo.Time.Value = GetITSTimeInMilliseconds(sensors[0].GetLastUpdateTime());
+
+
+        objectInfo.Information_source_list = new ObjectId[sensors.Count];
+        for (int i = 0; i < sensors.Count; i++)
+        {
+            ObjectId sourceInfoObjectIdInstance = new ObjectId();
+            sourceInfoObjectIdInstance.Value = GenerateObjectId(rsuId, sensors[i].GetSensorId(), (ushort)generatedId);
+            objectInfo.Information_source_list[i] = sourceInfoObjectIdInstance;
+        }
 
 
         ObjectId objectIdInstance = new ObjectId();
-        objectIdInstance.Value = GenerateObjectId(rsuId, sensorId, (ushort)generatedId);
+        objectIdInstance.Value = objectInfo.Information_source_list[0].Value; // we would send first input 
         objectInfo.Id.Value = objectIdInstance.Value;
-        
-        
-        // ObjectId informationSourceId = new ObjectId();  //todo ask about it but temporarily is ok 
-        // informationSourceId.Value = sensorId;
-        
-        objectInfo.Information_source_list = new[] { objectIdInstance };
+
+
         // Debug.Log($"object info size : {objectInfo.Information_source_list.Length} , value is {objectInfo.Id.Value}");
-        
-        
-        
 
 
         //based on msg document
@@ -441,6 +517,16 @@ public class ObjectInfo : MonoBehaviour
         return (ulong)unixTimeMillis;
     }
 
+    public static ulong GetITSTimeInMilliseconds(long unixTimeMillis)
+    {
+        // Debug.Log("time--");
+        // Debug.Log(unixTimeMillis);
+        unixTimeMillis = unixTimeMillis - 1072882800000;
+        // Debug.Log("time++");
+        // Debug.Log(unixTimeMillis);
+        return (ulong)unixTimeMillis;
+    }
+
 
     // Function to convert byte array to a string (for use as a dictionary key)
     private string ByteArrayToString(byte[] byteArray)
@@ -544,5 +630,104 @@ public class ObjectInfo : MonoBehaviour
         // Debug.Log($"Final  {objectId}");
 
         return objectId;
+    }
+
+
+    // Delay System
+    private void InitializeDelaySystem()
+    {
+        var qos = QosSettings.GetQoSProfile();
+        //handle general delays
+        var generalDelays = NetworkSimulator.Instance.GetGeneralDelayMessagesConfigs();
+        for (int i = 0; i < generalDelays.Count; i++)
+        {
+            var md = generalDelays[i]; // COPY
+            var baseTopic = md.delayConfig.isGroundTruth ? topicGroundTruth : topic;
+
+            MessageDelay<ObjectInfoArray> messageDelayConfig = new MessageDelay<ObjectInfoArray>(md.delayConfig);
+
+
+            messageDelayConfig.SetIPublisher(SimulatorROS2Node.CreatePublisher<ObjectInfoArray>(
+                baseTopic + md.GetTopicName(), qos));
+
+            messageDelays.Add(messageDelayConfig); // <- IMPORTANT: write back the mutated struct
+        }
+
+
+        //handle custom delays
+        for (int i = 0; i < messageDelays.Count; i++)
+        {
+            var md = messageDelays[i]; // COPY
+            var baseTopic = md.delayConfig.isGroundTruth ? topicGroundTruth : topic;
+            md.SetIPublisher(SimulatorROS2Node.CreatePublisher<ObjectInfoArray>(
+                baseTopic + md.delayConfig.topicName, qos));
+
+            messageDelays.Add(md); // <- IMPORTANT: write back the mutated struct
+        }
+    }
+
+    private void PublishByDelay(ObjectInfoArray message, ObjectInfoArray messageGroundTruth)
+    {
+        for (int i = 0; i < messageDelays.Count; i++)
+        {
+            var md = messageDelays[i]; // (optional) local copy for clarity
+
+            if (md.delayConfig.isGroundTruth)
+            {
+                NetworkSimulator.Instance.PublishLate(md, Clone(messageGroundTruth));
+            }
+            else
+            {
+                NetworkSimulator.Instance.PublishLate(md, Clone(message));
+            }
+        }
+    }
+
+
+    // private static ObjectInfoArray Clone(ObjectInfoArray source)
+    // {
+    //     if (source == null) return null;
+    //
+    //     // Push the managed state to the native buffer (allocates/updates source._handle)
+    //     source.WriteNativeMessage();
+    //
+    //     // Read back from the native buffer into a brand-new managed instance
+    //     var copy = new ObjectInfoArray();
+    //     copy.ReadNativeMessage(source.Handle);
+    //
+    //     return copy;
+    // }
+
+    // private static ObjectInfoArray Clone(ObjectInfoArray source)
+    // {
+    //     if (source == null) return null;
+    //
+    //     // Create a temporary native message to serialize INTO (not the source’s handle).
+    //     var tmpNative = new ObjectInfoArray();
+    //     try
+    //     {
+    //         // Serialize the source into tmpNative’s native struct
+    //         source.WriteNativeMessage(tmpNative.Handle);
+    //
+    //         // Read back into a brand-new managed instance
+    //         var copy = new ObjectInfoArray();
+    //         copy.ReadNativeMessage(tmpNative.Handle);
+    //         return copy;
+    //     }
+    //     finally
+    //     {
+    //         // Free the temporary native buffer immediately
+    //         tmpNative.Dispose();
+    //     }
+    // }
+
+    private static ObjectInfoArray Clone(ObjectInfoArray source)
+    {
+        if (source == null) return null;
+
+        // Create a temporary native message to serialize INTO (not the source’s handle).
+        var tmpNative = new ObjectInfoArray();
+        tmpNative.Array = source.Array;
+        return tmpNative;
     }
 }

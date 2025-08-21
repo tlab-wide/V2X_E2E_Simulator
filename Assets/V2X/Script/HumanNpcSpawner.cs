@@ -98,7 +98,7 @@ public class HumanNpcSpawner : MonoBehaviour
         // Final list to activate; this list size equals selectedWaypoints size.
         List<Transform> toActivate = new List<Transform>(chosenFromPool);
         toActivate.AddRange(instantiated);
-        toActivate.ForEach(t  => Debug.Log($"name of the selected {t.gameObject.name}") );
+        // toActivate.ForEach(t  => Debug.Log($"name of the selected {t.gameObject.name}") );
 
         for (int i = 0; i < toActivate.Count; i++)
         {

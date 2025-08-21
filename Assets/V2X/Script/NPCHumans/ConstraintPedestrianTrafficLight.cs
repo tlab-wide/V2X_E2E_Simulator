@@ -41,7 +41,7 @@ public class ConstraintPedestrianTrafficLight : MonoBehaviour,IConstraintWayPoin
         }
         else
         {
-            Debug.Log($"by color {color.ToString()}");
+            // Debug.Log($"by color {color.ToString()}");
             lastCheckedstate = false;
             return false;
         }

@@ -104,6 +104,7 @@ public class PredictedObjectsAutoware : MonoBehaviour
                 predictedObject.Kinematics.Initial_pose_with_covariance.Pose.Position.Y = pos.y;
                 predictedObject.Kinematics.Initial_pose_with_covariance.Pose.Position.Z = pos.z;
 
+              
 
                 //rotation base on bus //todo check correctness 
                 var r = ROS2Utility.UnityToRosRotation(seenObjects[j].rotation);
@@ -148,6 +149,8 @@ public class PredictedObjectsAutoware : MonoBehaviour
                     predictedObject.Shape.Dimensions.Z = dimensions.z;
 
                     predictedObject.Kinematics.Initial_pose_with_covariance.Pose.Position.Z = pos.z + dimensions.z;
+                    
+                    
 
                     // predictedObject.Shape.Dimensions.X = 4.7f;
                     // predictedObject.Shape.Dimensions.Y = 1.93f;

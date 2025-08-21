@@ -30,8 +30,19 @@ public class MockSensor : MonoBehaviour
     [SerializeField] private float maxDistance = 50;
 
     private Viewcone myCone;
+    
+    long lastUpdateTime = 0;
 
-
+    public void UpdateLastUpdateTime()
+    {
+        lastUpdateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    }
+    
+    public long GetLastUpdateTime()
+    {
+        return lastUpdateTime;
+    }
+    
     public MockSensorType GetMockSensorType()
     {
         return mockSensorType;
