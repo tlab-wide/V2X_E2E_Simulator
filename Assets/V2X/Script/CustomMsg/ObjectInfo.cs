@@ -43,7 +43,8 @@ public class ObjectInfo : MonoBehaviour
     [SerializeField] private string probabilityNoiseName = "default noise";
 
     [Header("Delayed message")] [SerializeField]
-    private List<MessageDelay<ObjectInfoArray>> messageDelays;
+    private List<MessageDelayConfig> messageDelaysConfigs;
+    private List<MessageDelay<ObjectInfoArray>> messageDelays = new List<MessageDelay<ObjectInfoArray>>();
 
 
     private NoiseSetting.Noise positionNoise;
@@ -655,14 +656,16 @@ public class ObjectInfo : MonoBehaviour
 
 
         //handle custom delays
-        for (int i = 0; i < messageDelays.Count; i++)
+        for (int i = 0; i < messageDelaysConfigs.Count; i++)
         {
-            var md = messageDelays[i]; // COPY
-            var baseTopic = md.delayConfig.isGroundTruth ? topicGroundTruth : topic;
-            md.SetIPublisher(SimulatorROS2Node.CreatePublisher<ObjectInfoArray>(
-                baseTopic + md.delayConfig.topicName, qos));
+            var md = messageDelaysConfigs[i]; // COPY
+            var baseTopic = md.isGroundTruth ? topicGroundTruth : topic;
+            
+            MessageDelay<ObjectInfoArray> messageDelayConfig = new MessageDelay<ObjectInfoArray>(md);
+            messageDelayConfig.SetIPublisher(SimulatorROS2Node.CreatePublisher<ObjectInfoArray>(
+                baseTopic + md.topicName, qos));
 
-            messageDelays.Add(md); // <- IMPORTANT: write back the mutated struct
+            messageDelays.Add(messageDelayConfig); // <- IMPORTANT: write back the mutated struct
         }
     }
 

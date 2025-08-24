@@ -51,15 +51,18 @@ public struct MessageDelay<T> where T : Message
     public string GetTopicName() => delayConfig.topicName;
 }
 
+[Serializable]
 public class MessageDelayConfig
 {
     [SerializeField] [Min(0f)] public float delayMilliseconds;
+    [SerializeField] [Min(0f)] public float delayVariance; // ± variance in ms
     [SerializeField] [Range(0f, 1f)] public float packetLostProbability;
+    [SerializeField] [Min(0f)] public float packetLostVariance; // ± variance
     [SerializeField] public string topicName;
     [SerializeField] public bool isGroundTruth; 
 
-    [SerializeField] [Min(0f)] public float delayVariance; // ± variance in ms
-    [SerializeField] [Range(0f, 1f)] public float packetLostVariance; // ± variance
+    
+    
     
 
     public MessageDelayConfig(

@@ -20,7 +20,7 @@ public class MapSetting : MonoBehaviour
     private GameObject parentOfLanelet;
 
 
-    [Header("Rename Tool")] [SerializeField]
+    [Header("Rename Tool Sequential From parent")] [SerializeField]
     private string baseName = "lanelet";
 
     [SerializeField] private GameObject parentOfRename;

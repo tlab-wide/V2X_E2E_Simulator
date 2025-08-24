@@ -15,6 +15,7 @@ public class NetworkSimulator : Singleton<NetworkSimulator>
         float sampledLossP = Mathf.Clamp01(
             cfg.packetLostProbability + UnityEngine.Random.Range(-cfg.packetLostVariance, cfg.packetLostVariance)
         );
+        
 
         // Drop the packet based on the sampled probability
         if (UnityEngine.Random.value < sampledLossP)
