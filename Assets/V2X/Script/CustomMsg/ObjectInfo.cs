@@ -225,8 +225,8 @@ public class ObjectInfo : MonoBehaviour
             Transform rep = kvp.Key;
             List<MockSensor> watchers = kvp.Value;
 
-            objectInfos.Add(handlObjectInfo(rep, watchers, true));
-            objectInfosGroundTruth.Add(handlObjectInfo(rep, watchers, false));
+            objectInfos.Add(HandlObjectInfo(rep, watchers, true));
+            objectInfosGroundTruth.Add(HandlObjectInfo(rep, watchers, false));
         }
 
 
@@ -249,7 +249,7 @@ public class ObjectInfo : MonoBehaviour
     private float timer;
 
 
-    private dm_object_info_msgs.msg.ObjectInfo handlObjectInfo(Transform seenObject, List<MockSensor> sensors,
+    private dm_object_info_msgs.msg.ObjectInfo HandlObjectInfo(Transform seenObject, List<MockSensor> sensors,
         bool byNoise = true)
     {
         dm_object_info_msgs.msg.ObjectInfo objectInfo = new dm_object_info_msgs.msg.ObjectInfo();

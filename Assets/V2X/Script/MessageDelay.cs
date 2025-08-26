@@ -47,7 +47,7 @@ public struct MessageDelay<T> where T : Message
     }
 
     public float GetDelayTime() => delayConfig.delayMilliseconds;
-    public float GetProbabilityPacketLoss() => delayConfig.packetLostProbability;
+    public float GetProbabilityPacketLoss() => delayConfig.packetLossProbability;
     public string GetTopicName() => delayConfig.topicName;
 }
 
@@ -56,8 +56,8 @@ public class MessageDelayConfig
 {
     [SerializeField] [Min(0f)] public float delayMilliseconds;
     [SerializeField] [Min(0f)] public float delayVariance; // ± variance in ms
-    [SerializeField] [Range(0f, 1f)] public float packetLostProbability;
-    [SerializeField] [Min(0f)] public float packetLostVariance; // ± variance
+    [FormerlySerializedAs("packetLostProbability")] [SerializeField] [Range(0f, 1f)] public float packetLossProbability;
+    [FormerlySerializedAs("packetLostVariance")] [SerializeField] [Min(0f)] public float packetLossVariance; // ± variance
     [SerializeField] public string topicName;
     [SerializeField] public bool isGroundTruth; 
 
@@ -67,18 +67,18 @@ public class MessageDelayConfig
 
     public MessageDelayConfig(
         float delayMilliseconds,
-        float packetLostProbability,
+        float packetLossProbability,
         string topicName,
         bool isGroundTruth,
         float delayVariance = 0f,
-        float packetLostVariance = 0f
+        float packetLossVariance = 0f
     )
     {
         this.delayMilliseconds = delayMilliseconds;
-        this.packetLostProbability = packetLostProbability;
+        this.packetLossProbability = packetLossProbability;
         this.topicName = topicName;
         this.isGroundTruth = isGroundTruth;
         this.delayVariance = delayVariance;
-        this.packetLostVariance = packetLostVariance;
+        this.packetLossVariance = packetLossVariance;
     }
 }

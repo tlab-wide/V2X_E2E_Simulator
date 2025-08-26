@@ -13,7 +13,7 @@ public class NetworkSimulator : Singleton<NetworkSimulator>
 
         // Sample a packet-loss probability with variance, clamp to [0,1]
         float sampledLossP = Mathf.Clamp01(
-            cfg.packetLostProbability + UnityEngine.Random.Range(-cfg.packetLostVariance, cfg.packetLostVariance)
+            cfg.packetLossProbability + UnityEngine.Random.Range(-cfg.packetLossVariance, cfg.packetLossVariance)
         );
         
 
