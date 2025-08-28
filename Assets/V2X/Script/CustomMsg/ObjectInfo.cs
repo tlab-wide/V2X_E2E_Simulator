@@ -43,6 +43,7 @@ public class ObjectInfo : MonoBehaviour
     [SerializeField] private string probabilityNoiseName = "default noise";
 
     [Header("Delayed message")] [SerializeField]
+    private bool enableDelayedMessages = true;
     private List<MessageDelayConfig> messageDelaysConfigs;
     private List<MessageDelay<ObjectInfoArray>> messageDelays = new List<MessageDelay<ObjectInfoArray>>();
 
@@ -132,7 +133,8 @@ public class ObjectInfo : MonoBehaviour
         Debug.Log(this.transform.rotation.eulerAngles);
 
 
-        InitializeDelaySystem();
+        if (enableDelayedMessages)
+            InitializeDelaySystem();
     }
 
     // private void CheckMockSensors()
@@ -241,8 +243,9 @@ public class ObjectInfo : MonoBehaviour
         {
             objectPublisherGroundTruth.Publish(msgGroundTruth);
         }
-
-        PublishByDelay(msg, msgGroundTruth);
+        
+        if (enableDelayedMessages) 
+            PublishByDelay(msg, msgGroundTruth);
     }
 
 
