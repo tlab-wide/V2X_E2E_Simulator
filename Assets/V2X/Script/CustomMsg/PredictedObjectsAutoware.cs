@@ -10,7 +10,7 @@ using Environment = AWSIM.Environment;
 
 public class PredictedObjectsAutoware : MonoBehaviour
 {
-    [SerializeField] private List<MockSensor> sensors;
+    [SerializeField] private List<DetectionSensor> sensors;
 
     [SerializeField] private float Hz = 1;
 

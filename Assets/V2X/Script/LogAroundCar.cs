@@ -214,7 +214,7 @@ public class LogAroundCar : MonoBehaviour
             // StartCoroutine(lineOfSightComponent.CheckLineOfSight()); //this line of code is very important
             lineOfSightComponent.checkImmidiately(); // todo i never test this function specifically for this component but it tested on the similar log components 
             //it will recaculate line of sight for the element to each sensor 
-            List<MockSensor> sensors = lineOfSightComponent.GetObservableSensors();
+            List<MockDetectionSensor> sensors = lineOfSightComponent.GetObservableSensors();
             string sensorsNames = "";
             for (int i = 0; i < sensors.Count; i++)
             {

@@ -14,7 +14,7 @@ using Environment = AWSIM.Environment;
 
 public class FreeSpaceInfo : MonoBehaviour
 {
-    [SerializeField] private List<MockSensor> sensors;
+    [SerializeField] private List<MockDetectionSensor> sensors;
 
     [SerializeField] private float Hz = 1;
 

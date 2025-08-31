@@ -12,6 +12,8 @@ using Environment = AWSIM.Environment;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
+
+// Deprecated
 public class ObjectInfoPublisher : MonoBehaviour
 {
     [Header("Source")]

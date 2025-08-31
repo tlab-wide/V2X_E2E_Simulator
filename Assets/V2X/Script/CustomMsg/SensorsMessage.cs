@@ -12,7 +12,7 @@ using ObjectClassification = autoware_auto_perception_msgs.msg.ObjectClassificat
 
 public class SensorsMessage : MonoBehaviour
 {
-    [SerializeField] private List<MockSensor> sensors;
+    [SerializeField] private List<MockDetectionSensor> sensors;
 
     [SerializeField] private float Hz = 1;
 

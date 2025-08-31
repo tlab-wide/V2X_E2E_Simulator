@@ -23,8 +23,8 @@ public class LineOfSight : MonoBehaviour
 
     
 
-    private List<MockSensor> observableSensor = new List<MockSensor>();
-    private Dictionary<MockSensor, int> observableSensorWitCount = new Dictionary<MockSensor, int>();
+    private List<MockDetectionSensor> observableSensor = new List<MockDetectionSensor>();
+    private Dictionary<MockDetectionSensor, int> observableSensorWitCount = new Dictionary<MockDetectionSensor, int>();
     private UUID uuid;
 
 
@@ -109,10 +109,10 @@ public class LineOfSight : MonoBehaviour
             yield return null; //wait one frame
 
         Scenario currentScenario = BlindScenarioManager.Instance.getCurrentScenario();
-        List<MockSensor> carLidars = currentScenario.getLidars();
-        List<MockSensor> carCameras = currentScenario.getCameras();
-        List<MockSensor> rsuSensors = currentScenario.getRSUsensors();
-        List<MockSensor> rsuCameras = currentScenario.getRsuCameras();
+        List<MockDetectionSensor> carLidars = currentScenario.getLidars();
+        List<MockDetectionSensor> carCameras = currentScenario.getCameras();
+        List<MockDetectionSensor> rsuSensors = currentScenario.getRSUsensors();
+        List<MockDetectionSensor> rsuCameras = currentScenario.getRsuCameras();
 
 
         // Transform busLidar = BlindScenarioManager.Instance.getBusLidar();
@@ -310,10 +310,10 @@ public class LineOfSight : MonoBehaviour
     public void checkImmidiately()
     {
         Scenario currentScenario = BlindScenarioManager.Instance.getCurrentScenario();
-        List<MockSensor> lidars = currentScenario.getLidars();
-        List<MockSensor> busCameras = currentScenario.getCameras();
-        List<MockSensor> rsuSensors = currentScenario.getRSUsensors();
-        List<MockSensor> rsuCameras = currentScenario.getRsuCameras();
+        List<MockDetectionSensor> lidars = currentScenario.getLidars();
+        List<MockDetectionSensor> busCameras = currentScenario.getCameras();
+        List<MockDetectionSensor> rsuSensors = currentScenario.getRSUsensors();
+        List<MockDetectionSensor> rsuCameras = currentScenario.getRsuCameras();
 
         bool seenByRSU = false;
         bool seenByOBU = false;
@@ -503,14 +503,14 @@ public class LineOfSight : MonoBehaviour
         return this.boxState;
     }
 
-    public List<MockSensor> GetObservableSensors()
+    public List<MockDetectionSensor> GetObservableSensors()
     {
         return observableSensor;
     }
 
-    public int GetNumberOfDetectedPoint(MockSensor mockSensor)
+    public int GetNumberOfDetectedPoint(MockDetectionSensor mockDetectionSensor)
     {
-        return observableSensorWitCount[mockSensor];
+        return observableSensorWitCount[mockDetectionSensor];
     }
 
 
@@ -654,7 +654,7 @@ public class LineOfSight : MonoBehaviour
     //     Debug.Log($"[{name}] Detected by sensors: {sensorNames}");
     // }
     
-    public void SetDetectedSensors2(List<MockSensor> sensors)
+    public void SetDetectedSensors2(List<MockDetectionSensor> sensors)
     {
         bool detectedByRsu = false;
         bool detectedByBus = false;
@@ -662,12 +662,12 @@ public class LineOfSight : MonoBehaviour
         // Determine which sensor types detected this object.
         foreach (var sensor in sensors)
         {
-            MockSensor.MockSensorType sensorType = sensor.GetMockSensorType();
-            if (sensorType == MockSensor.MockSensorType.OBU_LIDAR || sensorType == MockSensor.MockSensorType.OBU_CAMERA)
+            MockDetectionSensor.MockSensorType sensorType = sensor.GetMockSensorType();
+            if (sensorType == MockDetectionSensor.MockSensorType.OBU_LIDAR || sensorType == MockDetectionSensor.MockSensorType.OBU_CAMERA)
             {
                 detectedByBus = true;
             }
-            if (sensorType == MockSensor.MockSensorType.RSU_Lidar || sensorType == MockSensor.MockSensorType.RSU_CAMERA)
+            if (sensorType == MockDetectionSensor.MockSensorType.RSU_Lidar || sensorType == MockDetectionSensor.MockSensorType.RSU_CAMERA)
             {
                 detectedByRsu = true;
             }
@@ -693,7 +693,7 @@ public class LineOfSight : MonoBehaviour
         // Update internal lists and counts.
         observableSensor = sensors;
         observableSensor.Clear();
-        foreach (MockSensor sensor in sensors)
+        foreach (MockDetectionSensor sensor in sensors)
         {
             if (observableSensorWitCount.ContainsKey(sensor))
                 observableSensorWitCount[sensor]++;

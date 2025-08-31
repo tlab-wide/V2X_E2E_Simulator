@@ -41,12 +41,12 @@ public class SensorSearch : MonoBehaviour
         Debug.Log($"state of current scenario {currentScenario} is {currentScenario == null}");
 
         // collecting RSU sensor references in entire scene 
-        foreach (MockSensor mockSensor in currentScenario.getRsuCameras())
+        foreach (MockDetectionSensor mockSensor in currentScenario.getRsuCameras())
         {
             sensors.Add(mockSensor.transform);
         }
 
-        foreach (MockSensor mockSensor in currentScenario.getRSUsensors())
+        foreach (MockDetectionSensor mockSensor in currentScenario.getRSUsensors())
         {
             sensors.Add(mockSensor.transform);
         }

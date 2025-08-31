@@ -93,19 +93,19 @@ public class ConfigFile : Singleton<ConfigFile>
 
 
     //add sensor details to template config 
-    public void AddToConfig(MockSensor mockSensor)
+    public void AddToConfig(MockDetectionSensor mockDetectionSensor)
     {
         if (configDataTemplate is null)
         {
             configDataTemplate = new ConfigData();
         }
 
-        ConfigSensor sensor = mockSensor.GetConfigSensor();
+        ConfigSensor sensor = mockDetectionSensor.GetConfigSensor();
 
 
         // Each sensor is either in AVs or RSUs.
-        if (MockSensor.MockSensorType.OBU_LIDAR == mockSensor.GetMockSensorType() ||
-            MockSensor.MockSensorType.OBU_CAMERA == mockSensor.GetMockSensorType())
+        if (MockDetectionSensor.MockSensorType.OBU_LIDAR == mockDetectionSensor.GetMockSensorType() ||
+            MockDetectionSensor.MockSensorType.OBU_CAMERA == mockDetectionSensor.GetMockSensorType())
         {
             configDataTemplate.AV_sensors.Add(sensor);
         }
@@ -139,7 +139,7 @@ public class ConfigFile : Singleton<ConfigFile>
         return null;
     }
 
-    public bool IsConeActive(MockSensor.MockSensorType mockSensorType)
+    public bool IsConeActive(MockDetectionSensor.MockSensorType mockSensorType)
     {
         if (configData is null)
         {
@@ -148,13 +148,13 @@ public class ConfigFile : Singleton<ConfigFile>
 
         switch (mockSensorType)
         {
-            case MockSensor.MockSensorType.RSU_Lidar:
+            case MockDetectionSensor.MockSensorType.RSU_Lidar:
                 return configData.isRsuConeActive;
-            case MockSensor.MockSensorType.OBU_LIDAR:
+            case MockDetectionSensor.MockSensorType.OBU_LIDAR:
                 return configData.isLidarConeActive;
-            case MockSensor.MockSensorType.OBU_CAMERA:
+            case MockDetectionSensor.MockSensorType.OBU_CAMERA:
                 return configData.isCameraConeActive;
-            case MockSensor.MockSensorType.RSU_CAMERA:
+            case MockDetectionSensor.MockSensorType.RSU_CAMERA:
                 return configData.isRsuCameraConeActive;
         }
 
@@ -226,7 +226,7 @@ public class ConfigFile : Singleton<ConfigFile>
     [System.Serializable]
     public class ConfigSensor
     {
-        public MockSensor.MockSensorType SensorAsType;
+        public MockDetectionSensor.MockSensorType SensorAsType;
 
         // public string SensorTypeAsString;
         public string name;
@@ -240,7 +240,7 @@ public class ConfigFile : Singleton<ConfigFile>
         public float y_rotation;
         public float z_rotation;
 
-        public ConfigSensor(MockSensor.MockSensorType sensorAsType, string name, string category, bool isEnable,
+        public ConfigSensor(MockDetectionSensor.MockSensorType sensorAsType, string name, string category, bool isEnable,
             float x_pos,
             float y_pos, float z_pos, float x_rotation, float y_rotation, float z_rotation, float maxDistance = 50)
         {

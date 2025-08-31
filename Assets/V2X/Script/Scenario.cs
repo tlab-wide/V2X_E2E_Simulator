@@ -14,20 +14,20 @@ public class Scenario : MonoBehaviour
     private static Color cameraRsuLineColor = Color.green;
 
 
-    [SerializeField] private List<MockSensor> carCameras; 
-    [SerializeField] private List<MockSensor> carLidars;
+    [SerializeField] private List<MockDetectionSensor> carCameras; 
+    [SerializeField] private List<MockDetectionSensor> carLidars;
 
     [FormerlySerializedAs("RSUs")] [SerializeField]
-    private List<MockSensor> rsuSensors;
+    private List<MockDetectionSensor> rsuSensors;
 
-    [SerializeField] private List<MockSensor> rsuCameras;
+    [SerializeField] private List<MockDetectionSensor> rsuCameras;
 
     [SerializeField] private Transform mainBusCamera;
 
 
     // [SerializeField] private GameObject linePoolParent;
 
-    [SerializeField] private Dictionary<MockSensor, List<Transform>> lines;
+    [SerializeField] private Dictionary<MockDetectionSensor, List<Transform>> lines;
 
     [SerializeField] private Transform preferredPositionForMainCamera = null;
 
@@ -38,7 +38,7 @@ public class Scenario : MonoBehaviour
     {
         if (lines == null)
         {
-            lines = new Dictionary<MockSensor, List<Transform>>();
+            lines = new Dictionary<MockDetectionSensor, List<Transform>>();
         }
     }
 
@@ -71,20 +71,20 @@ public class Scenario : MonoBehaviour
     // }
 
 
-    public void addSensorsList(MockSensor mockSensor, List<Transform> target)
+    public void addSensorsList(MockDetectionSensor mockDetectionSensor, List<Transform> target)
     {
         if (lines == null)
         {
-            lines = new Dictionary<MockSensor, List<Transform>>();
+            lines = new Dictionary<MockDetectionSensor, List<Transform>>();
         }
 
-        if (lines.ContainsKey(mockSensor))
+        if (lines.ContainsKey(mockDetectionSensor))
         {
-            lines[mockSensor] = target;
+            lines[mockDetectionSensor] = target;
         }
         else
         {
-            lines.Add(mockSensor, target);
+            lines.Add(mockDetectionSensor, target);
         }
     }
 
@@ -106,22 +106,22 @@ public class Scenario : MonoBehaviour
         mainBusCamera.gameObject.SetActive(isActive);
     }
 
-    public List<MockSensor> getLidars()
+    public List<MockDetectionSensor> getLidars()
     {
         return carLidars;
     }
 
-    public List<MockSensor> getCameras()
+    public List<MockDetectionSensor> getCameras()
     {
         return carCameras;
     }
 
-    public List<MockSensor> getRSUsensors()
+    public List<MockDetectionSensor> getRSUsensors()
     {
         return rsuSensors;
     }
 
-    public List<MockSensor> getRsuCameras()
+    public List<MockDetectionSensor> getRsuCameras()
     {
         return rsuCameras;
     }

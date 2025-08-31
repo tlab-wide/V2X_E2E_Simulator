@@ -4,7 +4,7 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(BoxCollider))]
-public sealed class GroundTruthArea : MonoBehaviour
+public sealed class GroundTruthArea : DetectionSensor
 {
     [Tooltip("Only GameObjects on these layers will be tracked.")]
     public LayerMask layerMask;
@@ -114,4 +114,15 @@ public sealed class GroundTruthArea : MonoBehaviour
     [ContextMenu("Refresh Debug List (Editor Only)")]
     private void RefreshDebugListContextMenu() => SyncDebugListEditorOnly();
     #endif
+    public override List<Transform> GetSeenObjects()
+    {
+        // Clean out any nulls (objects that were destroyed without OnTriggerExit)
+        _inside.RemoveWhere(go => !go);
+
+        var result = new List<Transform>(_inside.Count);
+        foreach (var go in _inside)
+            result.Add(go.transform);
+
+        return result;
+    }
 }

@@ -10,7 +10,7 @@ using Environment = AWSIM.Environment;
 
 public class PredictedObjectsNetworkSim : MonoBehaviour
 {
-    [SerializeField] private List<MockSensor> sensors;
+    [SerializeField] private List<MockDetectionSensor> sensors;
 
     [SerializeField] private float Hz = 1;
     [SerializeField] private ulong stationID = 24;

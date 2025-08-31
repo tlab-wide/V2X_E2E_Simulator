@@ -18,7 +18,7 @@ using System.Collections;
 
 public class ObjectInfo : MonoBehaviour
 {
-    [SerializeField] private List<MockSensor> sensors;
+    [SerializeField] private List<MockDetectionSensor> sensors;
 
     [SerializeField] private float Hz = 10;
 
@@ -44,7 +44,7 @@ public class ObjectInfo : MonoBehaviour
 
     [Header("Delayed message")] [SerializeField]
     private bool enableDelayedMessages = true;
-    private List<MessageDelayConfig> messageDelaysConfigs;
+    [SerializeField]private List<MessageDelayConfig> messageDelaysConfigs = new List<MessageDelayConfig>();
     private List<MessageDelay<ObjectInfoArray>> messageDelays = new List<MessageDelay<ObjectInfoArray>>();
 
 
@@ -191,7 +191,7 @@ public class ObjectInfo : MonoBehaviour
         // Group sightings by unique instance ID and keep:
         // - a representative Transform for the object
         // - the list of sensors that saw it
-        var sightings = new Dictionary<Transform, List<MockSensor>>();
+        var sightings = new Dictionary<Transform, List<MockDetectionSensor>>();
 
         for (int i = 0; i < sensors.Count; i++)
         {
@@ -206,7 +206,7 @@ public class ObjectInfo : MonoBehaviour
                 // Use the Transform itself as the key
                 if (!sightings.TryGetValue(t, out var watchers))
                 {
-                    watchers = new List<MockSensor>();
+                    watchers = new List<MockDetectionSensor>();
                     sightings[t] = watchers;
                 }
 
@@ -225,7 +225,7 @@ public class ObjectInfo : MonoBehaviour
         foreach (var kvp in sightings)
         {
             Transform rep = kvp.Key;
-            List<MockSensor> watchers = kvp.Value;
+            List<MockDetectionSensor> watchers = kvp.Value;
 
             objectInfos.Add(HandlObjectInfo(rep, watchers, true));
             objectInfosGroundTruth.Add(HandlObjectInfo(rep, watchers, false));
@@ -252,7 +252,7 @@ public class ObjectInfo : MonoBehaviour
     private float timer;
 
 
-    private dm_object_info_msgs.msg.ObjectInfo HandlObjectInfo(Transform seenObject, List<MockSensor> sensors,
+    private dm_object_info_msgs.msg.ObjectInfo HandlObjectInfo(Transform seenObject, List<MockDetectionSensor> sensors,
         bool byNoise = true)
     {
         dm_object_info_msgs.msg.ObjectInfo objectInfo = new dm_object_info_msgs.msg.ObjectInfo();

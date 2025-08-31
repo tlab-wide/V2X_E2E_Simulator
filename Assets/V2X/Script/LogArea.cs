@@ -269,7 +269,7 @@ public class LogArea : MonoBehaviour
         }
         else
         {
-            List<MockSensor> sensors = lineOfSightComponent.GetObservableSensors();
+            List<MockDetectionSensor> sensors = lineOfSightComponent.GetObservableSensors();
             string sensorsNames = "";
             for (int i = 0; i < sensors.Count; i++)
             {

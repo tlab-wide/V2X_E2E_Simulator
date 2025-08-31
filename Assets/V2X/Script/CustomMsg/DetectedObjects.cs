@@ -18,7 +18,7 @@ namespace AWSIM
 {
     public class DetectedObjects : MonoBehaviour
     {
-        [SerializeField] private List<MockSensor> sensors;
+        [SerializeField] private List<MockDetectionSensor> sensors;
 
         [SerializeField] private float Hz = 1;
 

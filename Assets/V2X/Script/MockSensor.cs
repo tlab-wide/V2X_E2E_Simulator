@@ -6,10 +6,11 @@ using std_msgs.msg;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
+using UnitySensors.Attribute;
 using Environment = AWSIM.Environment;
 
 
-public class MockSensor : MonoBehaviour
+public class MockDetectionSensor : DetectionSensor
 {
     [FormerlySerializedAs("name")] [SerializeField]
     private string SenorName = "sensor1";
@@ -185,7 +186,7 @@ public class MockSensor : MonoBehaviour
         }
     }
 
-    public List<Transform> GetSeenObjects()
+    public override List<Transform> GetSeenObjects()
     {
         RemoveDeletedObjects();
         return seenObjects;
@@ -269,4 +270,10 @@ public class MockSensor : MonoBehaviour
         OBU_CAMERA = 3,
         RSU_CAMERA = 4,
     }
+}
+
+
+public abstract class DetectionSensor : MonoBehaviour
+{
+    public abstract List<Transform> GetSeenObjects();
 }

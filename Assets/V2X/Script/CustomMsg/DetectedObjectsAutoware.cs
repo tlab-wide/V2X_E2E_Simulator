@@ -10,9 +10,8 @@ using ObjectClassification = autoware_perception_msgs.msg.ObjectClassification;
 
 public class DetectedObjectsAutoware : MonoBehaviour
 {
-    [SerializeField] private List<MockSensor> sensors;
+    [SerializeField] private List<MockDetectionSensor> sensors;
     [SerializeField] private float Hz = 10;
-
 
     public string Topic = "/OBU/Sensing";
     public string frameId = "bus";
@@ -23,14 +22,17 @@ public class DetectedObjectsAutoware : MonoBehaviour
     [SerializeField] private string dimensionNoiseName = "default noise";
     [SerializeField] private string probabilityNoiseName = "default noise";
 
-
     private NoiseSetting.Noise positionNoise;
     private NoiseSetting.Noise rotationNoise;
     private NoiseSetting.Noise dimensionNoise;
     private NoiseSetting.Noise probabilityNoise;
 
-    
-
+    // ---- Delay system (disabled by default) ----
+    [Header("Delayed message")]
+    [SerializeField] private bool enableDelayedMessages = false; // default false
+    [SerializeField] private List<MessageDelayConfig> messageDelaysConfigs = new List<MessageDelayConfig>();
+    private readonly List<MessageDelay<autoware_perception_msgs.msg.DetectedObjects>> messageDelays
+        = new List<MessageDelay<autoware_perception_msgs.msg.DetectedObjects>>();
 
     public QoSSettings QosSettings = new QoSSettings()
     {
@@ -41,9 +43,7 @@ public class DetectedObjectsAutoware : MonoBehaviour
     };
 
     IPublisher<autoware_perception_msgs.msg.DetectedObjects> sensorDetectedPublisher;
-
     private autoware_perception_msgs.msg.DetectedObjects msg;
-
 
     void Awake()
     {
@@ -52,30 +52,73 @@ public class DetectedObjectsAutoware : MonoBehaviour
         dimensionNoise = NoiseSetting.Instance.GetNoise(dimensionNoiseName);
         probabilityNoise = NoiseSetting.Instance.GetNoise(probabilityNoiseName);
 
-
-        
         msg = new autoware_perception_msgs.msg.DetectedObjects();
         msg.Header = new std_msgs.msg.Header()
         {
             Frame_id = frameId,
         };
 
-
-        // Create publisher.
         var qos = QosSettings.GetQoSProfile();
         sensorDetectedPublisher =
             SimulatorROS2Node.CreatePublisher<autoware_perception_msgs.msg.DetectedObjects>(Topic, qos);
+
+        if (enableDelayedMessages)
+            InitializeDelaySystem();
+    }
+
+    private void InitializeDelaySystem()
+    {
+        var qos = QosSettings.GetQoSProfile();
+
+        // 1) Global (“general”) delay topics from NetworkSimulator
+        var generalDelays = NetworkSimulator.Instance.GetGeneralDelayMessagesConfigs();
+        foreach (var md in generalDelays)
+        {
+            var delay = new MessageDelay<autoware_perception_msgs.msg.DetectedObjects>(md.delayConfig);
+            delay.SetIPublisher(
+                SimulatorROS2Node.CreatePublisher<autoware_perception_msgs.msg.DetectedObjects>(Topic + md.GetTopicName(), qos)
+            );
+            messageDelays.Add(delay);
+        }
+
+        // 2) Component-local delays from inspector
+        foreach (var md in messageDelaysConfigs)
+        {
+            var delay = new MessageDelay<autoware_perception_msgs.msg.DetectedObjects>(md);
+            delay.SetIPublisher(
+                SimulatorROS2Node.CreatePublisher<autoware_perception_msgs.msg.DetectedObjects>(Topic + md.topicName, qos)
+            );
+            messageDelays.Add(delay);
+        }
+    }
+
+    private void PublishByDelay(autoware_perception_msgs.msg.DetectedObjects message)
+    {
+        if (!enableDelayedMessages) return;
+
+        foreach (var md in messageDelays)
+        {
+            NetworkSimulator.Instance.PublishLate(md, Clone(message));
+        }
+    }
+
+    private static autoware_perception_msgs.msg.DetectedObjects Clone(autoware_perception_msgs.msg.DetectedObjects source)
+    {
+        if (source == null) return null;
+
+        var copy = new autoware_perception_msgs.msg.DetectedObjects
+        {
+            Header = source.Header,
+            // Shallow copy is typically fine; switch to .Clone() if you mutate after publish.
+            Objects = (autoware_perception_msgs.msg.DetectedObject[])source.Objects?.Clone()
+        };
+        return copy;
     }
 
     private Vector3 CalculateRelativePosition(Vector3 objectPos)
     {
         Vector3 relativePosition = objectPos - busTransform.position;
-
-        // Rotate the relative position based on the source's rotation
         Vector3 relativePositionRotated = Quaternion.Inverse(busTransform.rotation) * relativePosition;
-
-        // Debug.Log("**--releative pos--**");
-        // Debug.Log(relativePositionRotated);
         return relativePositionRotated;
     }
 
@@ -92,12 +135,9 @@ public class DetectedObjectsAutoware : MonoBehaviour
             {
                 // remove duplications
                 if (haveSeen.Contains(seenObjects[j]) || !seenObjects[j].gameObject.activeInHierarchy)
-                {
                     continue;
-                }
 
                 haveSeen.Add(seenObjects[j]);
-
 
                 autoware_perception_msgs.msg.DetectedObject DetectedObject =
                     new autoware_perception_msgs.msg.DetectedObject();
@@ -105,36 +145,30 @@ public class DetectedObjectsAutoware : MonoBehaviour
                 var pos = CalculateRelativePosition(seenObjects[j].transform.position);
                 pos = ROS2Utility.UnityToRosPosition(pos);
 
-                //add noise
+                // add noise
                 pos = positionNoise.ApplyNoiseOnVector(pos);
-
 
                 DetectedObject.Kinematics.Pose_with_covariance.Pose.Position.X = pos.x;
                 DetectedObject.Kinematics.Pose_with_covariance.Pose.Position.Y = pos.y;
                 DetectedObject.Kinematics.Pose_with_covariance.Pose.Position.Z = pos.z;
                 DetectedObject.Kinematics.Orientation_availability = 2;
 
-
-                //speed
+                // speed
                 DetectedObject.Kinematics.Has_twist = true;
                 ISpeed ispeed = seenObjects[j].gameObject.GetComponentInParent<ISpeed>();
-                if (ispeed == null )
-                {
+                if (ispeed == null)
                     ispeed = seenObjects[j].transform.GetComponent<ISpeed>();
-                }
-                // Debug.Log(seenObjects[j].gameObject.name);
-                // Debug.Log($"is it ok {rigidbody== null}");
+
                 geometry_msgs.msg.Vector3 linearVelocity = new geometry_msgs.msg.Vector3();
                 float magnitude = ispeed.GetSpeed();
                 linearVelocity.X = magnitude;
                 DetectedObject.Kinematics.Twist_with_covariance.Twist.Linear = linearVelocity;
 
-
-                //rotation base on bus todo check correctness
+                // rotation based on bus
                 Quaternion r =
                     ROS2Utility.UnityToRosRotation(Quaternion.Inverse(busTransform.rotation) * seenObjects[j].rotation);
 
-                //apply noise
+                // apply noise
                 r = rotationNoise.RotateQuaternionAroundY(r);
 
                 DetectedObject.Kinematics.Pose_with_covariance.Pose.Orientation.X = r.x;
@@ -142,28 +176,23 @@ public class DetectedObjectsAutoware : MonoBehaviour
                 DetectedObject.Kinematics.Pose_with_covariance.Pose.Orientation.Z = r.z;
                 DetectedObject.Kinematics.Pose_with_covariance.Pose.Orientation.W = r.w;
 
-                // DetectedObject.Existence_probability = 1f;
                 DetectedObject.Existence_probability = probabilityNoise.ApplyNoiseToDecrease(1);
 
-                //handling dimension
+                // dimensions
                 NPCVehicle npcVehicle = seenObjects[j].GetComponent<NPCVehicle>();
 
                 if (npcVehicle != null)
                 {
-                    //add noise
                     Vector3 dimensions = new Vector3(npcVehicle.Bounds.extents.x * 2, npcVehicle.Bounds.extents.y * 2,
                         npcVehicle.Bounds.extents.z * 2);
                     dimensions = dimensionNoise.ApplyNoiseOnVector(dimensions);
-
-
                     dimensions = ROS2Utility.UnityToRosPosition(dimensions);
 
                     DetectedObject.Shape.Dimensions.X = dimensions.x;
-                    DetectedObject.Shape.Dimensions.Y =
-                        Math.Abs(dimensions.y); // dimension no need to be minus when convert to autoware coordination
+                    DetectedObject.Shape.Dimensions.Y = Math.Abs(dimensions.y);
                     DetectedObject.Shape.Dimensions.Z = dimensions.z;
 
-                    // this line of code allign center of mass 
+                    // center of mass alignment
                     DetectedObject.Kinematics.Pose_with_covariance.Pose.Position.Z = pos.z + dimensions.z / 2;
                 }
                 else
@@ -176,15 +205,15 @@ public class DetectedObjectsAutoware : MonoBehaviour
                         pos.z + DetectedObject.Shape.Dimensions.Z / 2;
                 }
 
-                //handling type
+                // type
                 LineOfSight lineOfSight = seenObjects[j].GetComponent<LineOfSight>();
                 if (lineOfSight != null)
                 {
-                    autoware_perception_msgs.msg.ObjectClassification objectClassification =
-                        new autoware_perception_msgs.msg.ObjectClassification();
-                    objectClassification.Label = lineOfSight.GetTypeOfObject();
-                    objectClassification.Probability = 1;
-                    // objectClassification.Probability = probabilityNoise.ApplyNoiseToDecrease(1);;
+                    var objectClassification = new ObjectClassification
+                    {
+                        Label = lineOfSight.GetTypeOfObject(),
+                        Probability = 1
+                    };
                     DetectedObject.Classification = new ObjectClassification[] { objectClassification };
                 }
                 else
@@ -192,35 +221,31 @@ public class DetectedObjectsAutoware : MonoBehaviour
                     throw new Exception("Detected an object without lineOfSight component");
                 }
 
-
                 objects.Add(DetectedObject);
             }
         }
-
 
         msg.Objects = objects.ToArray();
 
         msg.Header.Stamp = SimulatorROS2Node.GetCurrentRosTime();
         sensorDetectedPublisher.Publish(msg);
-    }
 
+        // Conditionally publish delayed/lossy copies
+        PublishByDelay(msg);
+    }
 
     private float timer;
 
     public void FixedUpdate()
     {
         timer += Time.deltaTime;
-        // timer += Time.fixedDeltaTime;
 
-
-        //todo It's not reasonable but work :) HZ * 2 
-        // Awsim already use time.deltatime which is approximately wrong but works and also 
+        // HZ * 2 to align with AWSIM's deltaTime cadence used elsewhere
         var interval = 1.0f / (Hz * 2);
         if (timer + 0.00001f < interval)
             return;
 
         timer = 0;
-
         CheckMockSensors();
     }
 }
