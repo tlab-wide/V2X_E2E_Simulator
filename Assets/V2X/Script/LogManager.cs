@@ -1,15 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using Object = System.Object;
 using Random = UnityEngine.Random;
-using String = std_msgs.msg.String;
 
 public class LogManager : Singleton<LogManager>
 {

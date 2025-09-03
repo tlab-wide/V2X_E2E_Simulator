@@ -211,7 +211,7 @@ public class PredictedObjectsAutoware : MonoBehaviour
                 {
                     throw new Exception("Detected an object without lineOfSight component");
                 }
-
+                FillCovariancesInPlace(predictedObject);
                 predictedObjects.Add(predictedObject);
             }
         }
@@ -243,4 +243,61 @@ public class PredictedObjectsAutoware : MonoBehaviour
 
         CheckMockSensors();
     }
+    
+    [Header("Msg Default fillers")]
+    [SerializeField] private float posStdDevXY   = 0.5f; // m
+    [SerializeField] private float posStdDevZ    = 1.0f; // m
+    [SerializeField] private float yawStdDevDeg  = 5f;   // deg
+    [SerializeField] private float linVelStdDev  = 0.5f; // m/s
+    [SerializeField] private float angVelStdDevDeg = 5f; // deg/s
+
+
+    //v
+    private void FillCovariancesInPlace(PredictedObject po)
+    {
+        // Pose 6x6: [x y z roll pitch yaw]
+        var poseCov  = po.Kinematics.Initial_pose_with_covariance.Covariance;
+        // Twist 6x6: [vx vy vz vroll vpitch vyaw]
+        var twistCov = po.Kinematics.Initial_twist_with_covariance.Covariance;
+
+        if (poseCov == null || poseCov.Length != 36)  throw new Exception("Pose covariance array invalid");
+        if (twistCov == null || twistCov.Length != 36) throw new Exception("Twist covariance array invalid");
+
+        Array.Clear(poseCov,  0, poseCov.Length);
+        Array.Clear(twistCov, 0, twistCov.Length);
+
+        double sx2   = posStdDevXY * posStdDevXY;
+        double sy2   = sx2;
+        double sz2   = posStdDevZ  * posStdDevZ;
+
+        double yawRad = Mathf.Deg2Rad * yawStdDevDeg;
+        double syaw2  = yawRad * yawRad;
+
+        // If roll/pitch are basically unknown, give large but non-zero variance.
+        double rpd   = Mathf.Deg2Rad * 30f;  // 30 deg
+        double sroll2  = rpd * rpd;
+        double spitch2 = sroll2;
+
+        // Diagonal for PoseWithCovariance
+        poseCov[0]  = sx2;     // x
+        poseCov[7]  = sy2;     // y
+        poseCov[14] = sz2;     // z
+        poseCov[21] = sroll2;  // roll
+        poseCov[28] = spitch2; // pitch
+        poseCov[35] = syaw2;   // yaw
+
+        // Velocities
+        double svlin2 = linVelStdDev * linVelStdDev;
+        double avRad  = Mathf.Deg2Rad * angVelStdDevDeg;
+        double svang2 = avRad * avRad;
+
+        twistCov[0]  = svlin2; // vx
+        twistCov[7]  = svlin2; // vy
+        twistCov[14] = svlin2; // vz
+        twistCov[21] = svang2; // vroll
+        twistCov[28] = svang2; // vpitch
+        twistCov[35] = svang2; // vyaw
+    }
+
+
 }

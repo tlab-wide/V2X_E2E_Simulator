@@ -13,7 +13,6 @@ using UnityEngine.Serialization;
 using Coordinate = CoordinateSharp.Coordinate;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
-using UnityEngine;
 using System.Collections;
 
 public class ObjectInfo : MonoBehaviour

@@ -1,10 +1,6 @@
 using System;
 using System.Collections;
-using dm_object_info_msgs.msg;
 using ROS2;
-using UnityEngine;
-using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
