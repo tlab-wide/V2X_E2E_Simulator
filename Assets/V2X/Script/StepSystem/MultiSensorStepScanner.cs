@@ -1,73 +1,75 @@
 using UnityEngine;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO; // Required for directory and path operations
-using RGLUnityPlugin; // Required for RGL and LidarSensor classes
-using AWSIM.PointCloudMapping; // The original namespace for RGLScanAdapter
+using System.IO; // Directory and path ops
+using RGLUnityPlugin; // LidarSensor + RGLNodeSequence
+using AWSIM.PointCloudMapping; // Keep if your project already references it (for ROS2.Transformations)
+
+// NOTE: Requires ROS2.Transformations.Unity2RosMatrix4x4() in your project when global mode is used.
 
 namespace AWSIM.Scanning
 {
     /// <summary>
     /// Central controller to manage, trigger, and save scans from multiple sensors (LiDAR + Cameras).
-    /// - Pure standalone LiDAR scans each step (no temporal integration).
+    /// - Standalone LiDAR scans each step (no temporal accumulation).
+    /// - Toggle between global (ROS) or local LiDAR coordinates without modifying LidarSensor.
     /// - Camera screenshots per step.
-    /// - One trigger that captures and writes files with pattern: sensorName#step.ext
+    /// - Filenames follow: sensorName#step.ext
     /// </summary>
     public class MultiSensorStepScanner : MonoBehaviour
     {
         [Header("LiDAR Sensor Configuration")]
         [SerializeField]
         [Tooltip("All LiDAR GameObjects to be controlled. Each must have a LidarSensor component.")]
-        private List<GameObject> sensorGameObjects;
+        private List<GameObject> sensorGameObjects = new List<GameObject>();
 
-        [Header("Camera Configuration")]
+        [Header("Coordinate Frame")]
         [SerializeField]
-        [Tooltip("Unity Camera components to capture images from each step.")]
-        private List<Camera> cameras;
-
-        [SerializeField]
-        [Tooltip("Captured image width in pixels.")]
-        private int imageWidth = 1920;
+        [Tooltip("If true, LiDAR outputs are transformed to ROS world using worldOriginROS.\nIf false, LiDAR outputs are saved in LiDAR-local coordinates.")]
+        private bool useGlobalCoordinatesForLidar = false;
 
         [SerializeField]
-        [Tooltip("Captured image height in pixels.")]
-        private int imageHeight = 1080;
-
-        public enum ImageFormat { PNG, JPG, EXR }
-        [SerializeField]
-        [Tooltip("Image format used when saving camera captures.")]
-        private ImageFormat imageFormat = ImageFormat.PNG;
-
-        [Header("RGL Graph Configuration")]
-        [SerializeField]
-        [Tooltip("World origin in ROS coordinate systems, will be added to every point's coordinates.")]
+        [Tooltip("World origin in ROS coordinate system; used only when 'useGlobalCoordinatesForLidar' is true.")]
         private Vector3 worldOriginROS;
 
+        [Header("Downsampling (applies to saved clouds)")]
         [SerializeField]
-        [Tooltip("Enable/disable point cloud data downsampling.")]
+        [Tooltip("Enable/disable point cloud downsampling for saved outputs.")]
         private bool enableDownsampling = true;
 
         [SerializeField]
-        [Tooltip("Resolution for point cloud data downsampling. Smaller values mean higher density.")]
+        [Tooltip("Voxel size for downsampling. Smaller values mean higher density.")]
         [Min(0.000001f)]
         private float leafSize = 0.1f;
 
-        [Header("Output Configuration")]
+        [Header("Cameras")]
         [SerializeField]
-        [Tooltip("Directory within Assets where outputs are saved. Subfolders 'Lidar' and 'Images' are created inside.")]
+        [Tooltip("Unity Camera components to capture images from each step.")]
+        private List<Camera> cameras = new List<Camera>();
+
+        [SerializeField, Tooltip("Optional: populate 'cameras' from all enabled Cameras on Start().")]
+        private bool autoPopulateCameras = false;
+
+        [SerializeField, Min(1)] private int imageWidth = 1920;
+        [SerializeField, Min(1)] private int imageHeight = 1080;
+
+        public enum ImageFormat { PNG, JPG, EXR }
+        [SerializeField] private ImageFormat imageFormat = ImageFormat.PNG;
+
+        [Header("Output")]
+        [SerializeField]
+        [Tooltip("Root folder (inside Assets) where outputs are saved. Subfolders 'Lidar' and 'Images' are created.")]
         private string outputDirectoryRoot = "SensorSteps";
 
-        // Internal dictionary to manage a separate RGL subgraph for each sensor.
-        private Dictionary<GameObject, RGLNodeSequence> sensorSubgraphs;
-
-        // Step index increased every time we capture & save a step.
-        [SerializeField, Tooltip("Current step index (zero-padded in filenames).")]
+        [SerializeField, Tooltip("Zero-based step index; auto-increments after each step.")]
         private int stepIndex = 0;
 
+        // Per-sensor subgraphs we own (one fresh subgraph per step for standalone output)
+        private Dictionary<GameObject, RGLNodeSequence> sensorSubgraphs;
+
+        // Node IDs inside our subgraphs
         private const string TransformNodeId = "ROS_WORLD_TF";
         private const string DownsampleNodeId = "DOWNSAMPLE";
-        // NOTE: No temporal merge node => standalone scan every time.
 
         void Start()
         {
@@ -81,86 +83,108 @@ namespace AWSIM.Scanning
 
             sensorSubgraphs = new Dictionary<GameObject, RGLNodeSequence>();
 
-            // Initialize LiDARs
+            // Initialize LiDARs (no temporal nodes; standalone)
             if (sensorGameObjects != null)
             {
                 foreach (var sensorGO in sensorGameObjects)
                 {
-                    if (sensorGO != null && sensorGO.TryGetComponent<LidarSensor>(out var lidarSensor))
+                    if (sensorGO == null) continue;
+
+                    if (sensorGO.TryGetComponent<LidarSensor>(out var lidarSensor))
                     {
-                        // Disable automatic capturing to allow for manual, stepped control.
+                        // Manual stepped control
                         lidarSensor.AutomaticCaptureHz = 0;
 
-                        // Create a fresh RGL subgraph for this specific sensor (standalone per step).
+                        // Build a per-sensor subgraph according to the chosen frame mode
                         InitializeSubgraphForSensor(lidarSensor);
                     }
-                    else if (sensorGO != null)
+                    else
                     {
-                        Debug.LogWarning($"GameObject '{sensorGO.name}' does not have a LidarSensor component and will be ignored.");
+                        Debug.LogWarning($"'{sensorGO.name}' has no LidarSensor component and will be ignored.");
                     }
                 }
             }
 
-            // Validate cameras list but no heavy init needed.
+            if (autoPopulateCameras)
+            {
+                cameras = new List<Camera>(FindObjectsOfType<Camera>(includeInactive: false));
+            }
             if (cameras == null) cameras = new List<Camera>();
         }
 
         /// <summary>
-        /// Creates, configures, and connects an RGL subgraph for a given LidarSensor.
-        /// Standalone pipeline: Transform (+ optional downsample). No temporal accumulation.
+        /// Build and connect a per-sensor subgraph:
+        /// - Global (ROS): Transform (Unity->ROS + origin) -> [Downsample] -> connect to WORLD frame
+        /// - Local: [Downsample] -> connect to LIDAR frame
         /// </summary>
         private void InitializeSubgraphForSensor(LidarSensor lidarSensor)
         {
-            // Calculate the coordinate system transformation matrix.
-            var worldTransform = ROS2.Transformations.Unity2RosMatrix4x4();
-            worldTransform.SetColumn(3, worldTransform.GetColumn(3) + (Vector4)worldOriginROS);
+            var subgraph = new RGLNodeSequence();
 
-            // Create the RGL node sequence for processing the point cloud.
-            var subgraph = new RGLNodeSequence()
-                .AddNodePointsTransform(TransformNodeId, worldTransform);
+            if (useGlobalCoordinatesForLidar)
+            {
+                // Unity->ROS transform + origin offset
+                var worldTransform = ROS2.Transformations.Unity2RosMatrix4x4();
+                worldTransform.SetColumn(3, worldTransform.GetColumn(3) + (Vector4)worldOriginROS);
 
-            // Add downsampling node (toggle via SetActive).
-            subgraph.AddNodePointsDownsample(DownsampleNodeId, new Vector3(leafSize, leafSize, leafSize));
-            subgraph.SetActive(DownsampleNodeId, enableDownsampling);
+                subgraph
+                    .AddNodePointsTransform(TransformNodeId, worldTransform)
+                    .AddNodePointsDownsample(DownsampleNodeId, new Vector3(leafSize, leafSize, leafSize));
 
-            // Connect the newly created graph to the sensor's output.
-            lidarSensor.ConnectToWorldFrame(subgraph);
+                subgraph.SetActive(DownsampleNodeId, enableDownsampling);
 
-            // Store the subgraph so we can access it later for saving.
+                // WORLD frame (Unity world points come from LidarSensor world branch)
+                lidarSensor.ConnectToWorldFrame(subgraph);
+            }
+            else
+            {
+                // LOCAL frame: no transform node at all
+                subgraph
+                    .AddNodePointsDownsample(DownsampleNodeId, new Vector3(leafSize, leafSize, leafSize));
+
+                subgraph.SetActive(DownsampleNodeId, enableDownsampling);
+
+                // Connect to LIDAR-local points (provided by LidarSensor without edits to that class)
+                lidarSensor.ConnectToLidarFrame(subgraph);
+            }
+
             sensorSubgraphs[lidarSensor.gameObject] = subgraph;
-            Debug.Log($"Initialized RGL subgraph for sensor: {lidarSensor.gameObject.name}");
+            Debug.Log($"Initialized subgraph for {lidarSensor.gameObject.name} ({(useGlobalCoordinatesForLidar ? "GLOBAL/ROS" : "LOCAL")})");
         }
 
         /// <summary>
-        /// Triggers a LiDAR capture on all assigned sensors with fresh graphs (no accumulation).
+        /// Trigger LiDAR capture on all sensors with fresh subgraphs (no accumulation).
         /// </summary>
         private void TriggerLidarScans()
         {
             if (!enabled) return;
-
             if (sensorGameObjects == null || sensorGameObjects.Count == 0) return;
 
             Debug.Log($"Triggering LiDAR capture on {sensorSubgraphs.Count} sensor(s).");
             foreach (var sensorGO in sensorGameObjects)
             {
-                if (sensorGO != null && sensorGO.TryGetComponent<LidarSensor>(out var lidarSensor))
+                if (sensorGO == null) continue;
+
+                if (sensorGO.TryGetComponent<LidarSensor>(out var lidarSensor))
                 {
-                    // Ensure data is not accumulated across captures: clear and recreate graph for this step
-                    if (sensorSubgraphs.TryGetValue(sensorGO, out var oldSubgraph))
+                    // Rebuild subgraph to ensure standalone output for this step
+                    if (sensorSubgraphs.TryGetValue(sensorGO, out var old))
                     {
-                        oldSubgraph.Clear();
+                        old.Clear();
                     }
                     InitializeSubgraphForSensor(lidarSensor);
 
-                    // Trigger the actual sensor capture (expected to be per-frame/step).
+                    // Per-step capture
                     lidarSensor.Capture();
                 }
             }
         }
 
         /// <summary>
-        /// Saves a separate .pcd file for each LiDAR using its managed subgraph.
-        /// Filename: sensorName#step.pcd
+        /// Save one .pcd per LiDAR through our subgraphs.
+        /// Files: <LidarName>#<step>.pcd
+        /// - GLOBAL mode => ROS world coordinates
+        /// - LOCAL mode  => LiDAR-local coordinates
         /// </summary>
         private void SaveLidarScans()
         {
@@ -169,23 +193,22 @@ namespace AWSIM.Scanning
             string lidarDir = Path.Combine(Application.dataPath, outputDirectoryRoot, "Lidar");
             Directory.CreateDirectory(lidarDir);
 
-            foreach (var entry in sensorSubgraphs)
+            foreach (var kv in sensorSubgraphs)
             {
-                var sensorGO = entry.Key;
-                var subgraph = entry.Value;
+                var sensorGO = kv.Key;
+                var subgraph = kv.Value;
 
-                string sensorName = SanitizeName(sensorGO.name);
-                string fileName = $"{sensorName}#{stepIndex:D4}.pcd";
-                string fullFilePath = Path.Combine(lidarDir, fileName);
+                string sensorName = Sanitize(sensorGO.name);
+                string file = Path.Combine(lidarDir, $"{sensorName}#{stepIndex:D4}.pcd");
 
-                subgraph.SavePcdFile(fullFilePath);
-                Debug.Log($"Saved PCD for {sensorName} to {fullFilePath}");
+                subgraph.SavePcdFile(file);
+                Debug.Log($"Saved PCD [{(useGlobalCoordinatesForLidar ? "GLOBAL/ROS" : "LOCAL")}] -> {file}");
             }
         }
 
         /// <summary>
-        /// Captures and saves an image for each configured camera.
-        /// Filename: cameraName#step.(png|jpg|exr)
+        /// Save an image for each camera.
+        /// Files: <CameraName>#<step>.(png|jpg|exr)
         /// </summary>
         private void SaveCameraShots()
         {
@@ -198,35 +221,26 @@ namespace AWSIM.Scanning
             {
                 if (cam == null) continue;
 
-                string camName = SanitizeName(cam.name);
-                string filePath = Path.Combine(imgDir, $"{camName}#{stepIndex:D4}.{GetImageExtension()}");
-                CaptureCameraToFile(cam, imageWidth, imageHeight, imageFormat, filePath);
-                Debug.Log($"Saved camera image for {camName} to {filePath}");
+                string camName = Sanitize(cam.name);
+                string path = Path.Combine(imgDir, $"{camName}#{stepIndex:D4}.{GetImageExtension(imageFormat)}");
+                CaptureCameraToFile(cam, imageWidth, imageHeight, imageFormat, path);
+                Debug.Log($"Saved image -> {path}");
             }
         }
 
         /// <summary>
-        /// Main entry point: triggers a new step capture and writes files for LiDARs and Cameras.
-        /// Call this to perform one "step".
+        /// One call to capture and write everything for this step (LiDAR + Cameras), then increment stepIndex.
         /// </summary>
         public void TriggerAndSaveStep()
         {
-            // 1) Trigger LiDARs (fresh subgraphs => standalone capture)
-            TriggerLidarScans();
-
-            // 2) Save LiDAR scans for this step
+            TriggerLidarScans(); // fresh graphs => standalone scans
             SaveLidarScans();
-
-            // 3) Capture and save camera images
             SaveCameraShots();
-
-            // 4) Advance the step counter
             stepIndex++;
         }
 
         /// <summary>
-        /// Optional coroutine version if you prefer to ensure a frame passes.
-        /// Useful if your pipeline requires the next frame for rendering side-effects.
+        /// Optional coroutine variant if your pipeline needs a frame boundary.
         /// </summary>
         public IEnumerator TriggerAndSaveStepCoroutine()
         {
@@ -234,29 +248,28 @@ namespace AWSIM.Scanning
             yield return null;
         }
 
-        /// <summary>
-        /// Called by Unity when a value is changed in the Inspector.
-        /// Updates the downsampling parameters on all managed RGL graphs.
-        /// </summary>
         public void OnValidate()
         {
-            if (sensorSubgraphs == null) return;
-
-            foreach (var subgraph in sensorSubgraphs.Values)
+            // Keep live subgraphs synced with inspector changes
+            if (sensorSubgraphs != null)
             {
-                subgraph.UpdateNodePointsDownsample(DownsampleNodeId, new Vector3(leafSize, leafSize, leafSize));
-                subgraph.SetActive(DownsampleNodeId, enableDownsampling);
+                foreach (var sg in sensorSubgraphs.Values)
+                {
+                    if (sg.HasNode(DownsampleNodeId))
+                    {
+                        sg.UpdateNodePointsDownsample(DownsampleNodeId, new Vector3(leafSize, leafSize, leafSize));
+                        sg.SetActive(DownsampleNodeId, enableDownsampling);
+                    }
+                }
             }
 
-            imageWidth = Mathf.Max(1, imageWidth);
+            imageWidth  = Mathf.Max(1, imageWidth);
             imageHeight = Mathf.Max(1, imageHeight);
         }
 
-        /// <summary>
-        /// Example usage: Press 'Space' to capture & save a full step (LiDAR + Cameras).
-        /// </summary>
         void Update()
         {
+            // Example hotkey
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 TriggerAndSaveStep();
@@ -267,32 +280,25 @@ namespace AWSIM.Scanning
         // Helpers
         // --------------------------
 
-        private static string SanitizeName(string name)
+        private static string Sanitize(string name)
         {
-            // Remove/replace characters that could upset filesystems. '#' is allowed and required by spec.
             foreach (char c in Path.GetInvalidFileNameChars())
                 name = name.Replace(c.ToString(), "_");
             return name;
         }
 
-        private static string GetImageExtension()
+        private static string GetImageExtension(ImageFormat fmt)
         {
-            return imageExtStatic switch
+            switch (fmt)
             {
-                ImageFormat.JPG => "jpg",
-                ImageFormat.EXR => "exr",
-                _ => "png",
-            };
+                case ImageFormat.JPG: return "jpg";
+                case ImageFormat.EXR: return "exr";
+                default: return "png";
+            }
         }
-
-        // Static cache for enum inside static method
-        private static ImageFormat imageExtStatic = ImageFormat.PNG;
 
         private void CaptureCameraToFile(Camera cam, int width, int height, ImageFormat fmt, string filePath)
         {
-            // Allow GetImageExtension() to know current format
-            imageExtStatic = fmt;
-
             var rt = new RenderTexture(width, height, 24, RenderTextureFormat.Default, RenderTextureReadWrite.Default);
             var prevTarget = cam.targetTexture;
             var prevActive = RenderTexture.active;
@@ -303,7 +309,10 @@ namespace AWSIM.Scanning
                 RenderTexture.active = rt;
                 cam.Render();
 
-                var tex = new Texture2D(width, height, fmt == ImageFormat.EXR ? TextureFormat.RGBAFloat : TextureFormat.RGB24, false, fmt == ImageFormat.EXR);
+                var tex = new Texture2D(width, height,
+                    fmt == ImageFormat.EXR ? TextureFormat.RGBAFloat : TextureFormat.RGB24,
+                    false, fmt == ImageFormat.EXR);
+
                 tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
                 tex.Apply();
 
