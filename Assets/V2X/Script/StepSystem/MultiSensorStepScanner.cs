@@ -335,6 +335,7 @@ namespace AWSIM.Scanning
         /// <summary>
         /// Captures a crisp image by temporarily disabling PostFX, TAA, and Dynamic Resolution
         /// via reflection (works across Built-in, URP, HDRP without hard dependencies).
+        /// Also excludes HDRP Volume effects (Clouds/DoF/Motion Blur) during capture and uses a warm-up render.
         /// </summary>
         private void CaptureCameraToFile(Camera cam, int width, int height, ImageFormat fmt, int msaaSamples, string filePath)
         {
@@ -368,6 +369,10 @@ namespace AWSIM.Scanning
             var hdrpType = Type.GetType("UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData, Unity.RenderPipelines.HighDefinition.Runtime");
             Component hdrpData = hdrpType != null ? cam.GetComponent(hdrpType) : null;
             object prevHdrpAA = null;
+
+            // NEW: store/zero the volume layer mask so no Volume-driven effects (Clouds, DoF, MB) run during capture
+            object prevHdrpVolumeMask = null;
+            LayerMask _noneMask = 0;
 
             try
             {
@@ -413,22 +418,38 @@ namespace AWSIM.Scanning
                 }
 
                 // HDRP toggles
-                if (hdrpData != null && disableTemporalAAForCapture)
+                if (hdrpData != null)
                 {
-                    // Set antialiasing to None
-                    var aaProp = hdrpType.GetProperty("antialiasing");
-                    if (aaProp != null)
+                    if (disableTemporalAAForCapture)
                     {
-                        prevHdrpAA = aaProp.GetValue(hdrpData, null);
-                        var enumType = aaProp.PropertyType;
-                        var noneVal = Enum.Parse(enumType, "None", ignoreCase: true);
-                        aaProp.SetValue(hdrpData, noneVal, null);
+                        // Set antialiasing to None
+                        var aaProp = hdrpType.GetProperty("antialiasing");
+                        if (aaProp != null)
+                        {
+                            prevHdrpAA = aaProp.GetValue(hdrpData, null);
+                            var enumType = aaProp.PropertyType;
+                            var noneVal = Enum.Parse(enumType, "None", ignoreCase: true);
+                            aaProp.SetValue(hdrpData, noneVal, null);
+                        }
                     }
-                    // Note: HDRP post-processing is volume-driven; turning off TAA removes most blur.
-                    // If you still see DOF, disable/adjust your Volume or use a capture-only camera layer.
+
+                    if (disablePostProcessingForCapture)
+                    {
+                        // Zero out the Volume layer mask so all volume effects are skipped this frame (clouds/DoF/MB/exposure/etc).
+                        var volMaskProp = hdrpType.GetProperty("volumeLayerMask");
+                        if (volMaskProp != null)
+                        {
+                            prevHdrpVolumeMask = volMaskProp.GetValue(hdrpData, null);
+                            volMaskProp.SetValue(hdrpData, _noneMask, null);
+                        }
+                    }
                 }
 
-                // Render
+                // ---------- RENDER ----------
+                // Warm-up frame: after toggling AA/volume, render once to flush HDRP temporal histories.
+                cam.Render();
+
+                // Actual capture frame
                 cam.Render();
 
                 // Read back
@@ -483,6 +504,13 @@ namespace AWSIM.Scanning
                 {
                     var aaProp = hdrpType.GetProperty("antialiasing");
                     aaProp?.SetValue(hdrpData, prevHdrpAA, null);
+                }
+
+                // Restore the Volume layer mask (HDRP)
+                if (hdrpData != null && prevHdrpVolumeMask != null)
+                {
+                    var volMaskProp = hdrpType.GetProperty("volumeLayerMask");
+                    volMaskProp?.SetValue(hdrpData, prevHdrpVolumeMask, null);
                 }
 
                 cam.allowDynamicResolution = prevAllowDynRes;
