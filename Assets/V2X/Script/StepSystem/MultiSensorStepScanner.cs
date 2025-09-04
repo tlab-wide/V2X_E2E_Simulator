@@ -2,51 +2,48 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO; // Directory and path ops
-using RGLUnityPlugin; // LidarSensor + RGLNodeSequence
-using AWSIM.PointCloudMapping; // Keep if your project already references it (for ROS2.Transformations)
-
-// NOTE: Requires ROS2.Transformations.Unity2RosMatrix4x4() when global mode is used.
+using System.IO;
+using System.Reflection;
+using RGLUnityPlugin;
+using AWSIM.PointCloudMapping;
 
 namespace AWSIM.Scanning
 {
     /// <summary>
-    /// Central controller to manage, trigger, and save scans from multiple sensors (LiDAR + Cameras).
-    /// - Standalone LiDAR scans each step (no temporal accumulation).
-    /// - Toggle GLOBAL (ROS world + origin) or LOCAL (LiDAR origin) outputs.
-    /// - LOCAL mode rotates Unity local points into ROS axes (x fwd, y left, z up) with no translation.
-    /// - Camera screenshots per step with post-processing/TAA/dynamic-resolution safely disabled during capture.
-    /// - Filenames: sensorName#step.ext
+    /// Multi-sensor step scanner (LiDAR + Cameras), optimized for HDRP/URP/Built-in.
+    /// - Reuses camera buffers to minimize GC/stalls.
+    /// - Caches reflection metadata for URP/HDRP/Built-in PP toggles.
+    /// - Masks out HDRP Volumes during capture (or uses a dedicated capture mask).
+    /// - Warm-up render(s) to clear temporal history.
+    /// - Optional freeze of the scene so moving objects stay sharp.
+    /// - Standalone LiDAR scans (no temporal accumulation).
     /// </summary>
     public class MultiSensorStepScanner : MonoBehaviour
     {
+        // --------------------------
+        // LiDAR Configuration
+        // --------------------------
         [Header("LiDAR Sensor Configuration")]
-        [SerializeField]
-        [Tooltip("All LiDAR GameObjects to be controlled. Each must have a LidarSensor component.")]
+        [SerializeField, Tooltip("All LiDAR GameObjects to be controlled. Each must have a LidarSensor component.")]
         private List<GameObject> sensorGameObjects = new List<GameObject>();
 
         [Header("Coordinate Frame")]
-        [SerializeField]
-        [Tooltip("If true, LiDAR outputs are transformed to ROS world using worldOriginROS.\nIf false, outputs are at LiDAR origin but rotated into ROS axes (no translation).")]
+        [SerializeField, Tooltip("If true, LiDAR outputs are transformed to ROS world using worldOriginROS.")]
         private bool useGlobalCoordinatesForLidar = false;
 
-        [SerializeField]
-        [Tooltip("World origin in ROS coordinate system; used only when 'useGlobalCoordinatesForLidar' is true.")]
+        [SerializeField, Tooltip("World origin in ROS coordinate system; used only when global mode is true.")]
         private Vector3 worldOriginROS;
 
         [Header("LiDAR Downsampling (applies to saved clouds)")]
-        [SerializeField]
-        private bool enableDownsampling = true;
+        [SerializeField] private bool enableDownsampling = true;
+        [SerializeField, Min(0.000001f)] private float leafSize = 0.1f;
 
-        [SerializeField, Min(0.000001f)]
-        private float leafSize = 0.1f;
-
+        // --------------------------
+        // Camera Configuration
+        // --------------------------
         [Header("Cameras")]
-        [SerializeField]
-        private List<Camera> cameras = new List<Camera>();
-
-        [SerializeField]
-        private bool autoPopulateCameras = false;
+        [SerializeField] private List<Camera> cameras = new List<Camera>();
+        [SerializeField] private bool autoPopulateCameras = false;
 
         [SerializeField, Min(1)] private int imageWidth = 1920;
         [SerializeField, Min(1)] private int imageHeight = 1080;
@@ -55,7 +52,7 @@ namespace AWSIM.Scanning
         [SerializeField] private ImageFormat imageFormat = ImageFormat.PNG;
 
         [Header("Capture Quality (Images)")]
-        [SerializeField, Tooltip("Temporarily disable all camera post-processing (DOF, Motion Blur, etc.) while capturing.")]
+        [SerializeField, Tooltip("Temporarily disable all camera post-processing (DoF, Motion Blur, etc.) while capturing.")]
         private bool disablePostProcessingForCapture = true;
 
         [SerializeField, Tooltip("Try to disable Temporal AA on URP/HDRP cameras while capturing.")]
@@ -64,26 +61,89 @@ namespace AWSIM.Scanning
         [SerializeField, Tooltip("Temporarily disable Dynamic Resolution while capturing.")]
         private bool disableDynamicResolutionForCapture = true;
 
-        [SerializeField, Tooltip("MSAA samples for the offscreen RenderTexture (1,2,4,8).")]
+        [SerializeField, Tooltip("MSAA samples for the offscreen RenderTexture (1,2,4,8). Ignored by HDRP deferred + post.")]
         private int captureMsaaSamples = 1;
 
+        [Header("HDRP Capture Controls")]
+        [SerializeField, Tooltip("Warm-up renders after toggles to flush temporal history (TAA/clouds). 1 is usually enough.")]
+        private int warmupRenders = 1;
+
+        [SerializeField, Tooltip("If non-zero, use this mask for capture-only HDRP volumes (neutral). If zero, disable all volumes.")]
+        private LayerMask hdrpCaptureVolumeMaskOverride = 0;
+
+        [Header("Freeze During Capture (to keep moving cars sharp)")]
+        [SerializeField, Tooltip("Freeze time during capture so moving objects don't advance while histories flush.")]
+        private bool freezeSceneDuringCapture = true;
+
+        [SerializeField, Tooltip("Also freeze animators that run on UnscaledTime (rare). Slight perf cost when true.")]
+        private bool freezeUnscaledAnimators = false;
+
+        [Header("Performance")]
+        [SerializeField, Tooltip("Reuse GPU/CPU buffers per camera to avoid allocations.")]
+        private bool reuseBuffers = true;
+
+        [SerializeField, Tooltip("Use GetTemporary for RTs (faster). If false, persistent RTs are created/destroyed.")]
+        private bool useTemporaryRT = true;
+
+        [SerializeField, Range(1, 100), Tooltip("JPEG quality if JPG is selected.")]
+        private int jpgQuality = 95;
+
+        // --------------------------
+        // Output
+        // --------------------------
         [Header("Output")]
-        [SerializeField]
-        [Tooltip("Root folder (inside Assets) where outputs are saved. Subfolders 'Lidar' and 'Images' are created.")]
+        [SerializeField, Tooltip("Root folder (inside Assets) where outputs are saved. Subfolders 'Lidar' and 'Images' are created.")]
         private string outputDirectoryRoot = "SensorSteps";
 
         [SerializeField, Tooltip("Zero-based step index; auto-increments after each step.")]
         private int stepIndex = 0;
 
-        // Per-sensor subgraphs we own (one fresh subgraph per step for standalone output)
+        // --------------------------
+        // Internals
+        // --------------------------
         private Dictionary<GameObject, RGLNodeSequence> sensorSubgraphs;
-
-        // Node IDs inside our subgraphs
-        private const string TransformNodeId = "ROS_WORLD_TF";          // global rotation+translation
-        private const string LocalAxesToRosNodeId = "LOCAL_TO_ROS_AXES"; // local rotation only (no translation)
+        private const string TransformNodeId = "ROS_WORLD_TF";
+        private const string LocalAxesToRosNodeId = "LOCAL_TO_ROS_AXES";
         private const string DownsampleNodeId = "DOWNSAMPLE";
 
-        void Start()
+        private string _lidarDirPath;
+        private string _imageDirPath;
+
+        private readonly Dictionary<UnityEngine.Object, string> _sanitizedNameCache = new();
+        private readonly Dictionary<Camera, CaptureBuffers> _buffersByCamera = new();
+
+        // Animator freeze cache (only used if freezeUnscaledAnimators = true)
+        private readonly List<(Animator anim, float speed)> _frozenAnimators = new();
+
+        // -------- Reflection Cache (URP/HDRP/Built-in) --------
+        private static class R
+        {
+            public static readonly Type PPLayerType =
+                Type.GetType("UnityEngine.Rendering.PostProcessing.PostProcessLayer, Unity.Postprocessing.Runtime");
+
+            public static readonly PropertyInfo PPLayer_enabled =
+                PPLayerType?.GetProperty("enabled");
+
+            public static readonly Type URPType =
+                Type.GetType("UnityEngine.Rendering.Universal.UniversalAdditionalCameraData, Unity.RenderPipelines.Universal.Runtime");
+
+            public static readonly PropertyInfo URP_renderPostProcessing =
+                URPType?.GetProperty("renderPostProcessing");
+
+            public static readonly PropertyInfo URP_antialiasing =
+                URPType?.GetProperty("antialiasing");
+
+            public static readonly Type HDRPType =
+                Type.GetType("UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData, Unity.RenderPipelines.HighDefinition.Runtime");
+
+            public static readonly PropertyInfo HDRP_antialiasing =
+                HDRPType?.GetProperty("antialiasing");
+
+            public static readonly PropertyInfo HDRP_volumeLayerMask =
+                HDRPType?.GetProperty("volumeLayerMask");
+        }
+
+        private void Start()
         {
             if ((sensorGameObjects == null || sensorGameObjects.Count == 0) &&
                 (cameras == null || cameras.Count == 0))
@@ -93,53 +153,107 @@ namespace AWSIM.Scanning
                 return;
             }
 
-            sensorSubgraphs = new Dictionary<GameObject, RGLNodeSequence>();
+            if (autoPopulateCameras)
+                cameras = new List<Camera>(FindObjectsOfType<Camera>(includeInactive: false));
+            if (cameras == null) cameras = new List<Camera>();
 
-            // Initialize LiDARs (no temporal nodes; standalone)
+            string root = Path.Combine(Application.dataPath, outputDirectoryRoot);
+            _lidarDirPath = Path.Combine(root, "Lidar");
+            _imageDirPath = Path.Combine(root, "Images");
+            Directory.CreateDirectory(_lidarDirPath);
+            Directory.CreateDirectory(_imageDirPath);
+
+            if (captureMsaaSamples != 1 && captureMsaaSamples != 2 && captureMsaaSamples != 4 && captureMsaaSamples != 8)
+                captureMsaaSamples = 1;
+
+            sensorSubgraphs = new Dictionary<GameObject, RGLNodeSequence>();
             if (sensorGameObjects != null)
             {
                 foreach (var sensorGO in sensorGameObjects)
                 {
-                    if (sensorGO == null) continue;
-
-                    if (sensorGO.TryGetComponent<LidarSensor>(out var lidarSensor))
+                    if (sensorGO && sensorGO.TryGetComponent<LidarSensor>(out var lidar))
                     {
-                        // Manual stepped control
-                        lidarSensor.AutomaticCaptureHz = 0;
-
-                        // Build a per-sensor subgraph according to the chosen frame mode
-                        InitializeSubgraphForSensor(lidarSensor);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"'{sensorGO.name}' has no LidarSensor component and will be ignored.");
+                        lidar.AutomaticCaptureHz = 0;
+                        InitializeOrRebuildSubgraph(lidar);
                     }
                 }
             }
-
-            if (autoPopulateCameras)
-            {
-                cameras = new List<Camera>(FindObjectsOfType<Camera>(includeInactive: false));
-            }
-            if (cameras == null) cameras = new List<Camera>();
-
-            // Clamp MSAA to sane values (1,2,4,8)
-            if (captureMsaaSamples != 1 && captureMsaaSamples != 2 && captureMsaaSamples != 4 && captureMsaaSamples != 8)
-                captureMsaaSamples = 1;
         }
 
-        /// <summary>
-        /// Build and connect a per-sensor subgraph:
-        /// - GLOBAL (ROS): Transform (Unity->ROS + origin) -> [Downsample] -> connect to WORLD frame
-        /// - LOCAL: (Unity->ROS rotation ONLY, zero translation) -> [Downsample] -> connect to LIDAR frame
-        /// </summary>
-        private void InitializeSubgraphForSensor(LidarSensor lidarSensor)
+        private void OnDestroy()
         {
-            var subgraph = new RGLNodeSequence();
+            foreach (var kv in _buffersByCamera)
+                kv.Value?.Release(kv.Value.IsTempRT);
+            _buffersByCamera.Clear();
+
+            if (sensorSubgraphs != null)
+            {
+                foreach (var sg in sensorSubgraphs.Values)
+                    sg?.Clear();
+                sensorSubgraphs.Clear();
+            }
+        }
+
+        public void OnValidate()
+        {
+            imageWidth = Mathf.Max(1, imageWidth);
+            imageHeight = Mathf.Max(1, imageHeight);
+            if (captureMsaaSamples != 1 && captureMsaaSamples != 2 && captureMsaaSamples != 4 && captureMsaaSamples != 8)
+                captureMsaaSamples = 1;
+
+            if (sensorSubgraphs != null)
+            {
+                foreach (var sg in sensorSubgraphs.Values)
+                {
+                    if (sg != null && sg.HasNode(DownsampleNodeId))
+                    {
+                        sg.UpdateNodePointsDownsample(DownsampleNodeId, new Vector3(leafSize, leafSize, leafSize));
+                        sg.SetActive(DownsampleNodeId, enableDownsampling);
+                    }
+                }
+            }
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+                TriggerAndSaveStep();
+        }
+
+        // --------------------------
+        // Public API
+        // --------------------------
+        public void TriggerAndSaveStep()
+        {
+            TriggerLidarScans();
+            SaveLidarScans();
+            SaveCameraShots();
+            stepIndex++;
+        }
+
+        public IEnumerator TriggerAndSaveStepCoroutine()
+        {
+            TriggerAndSaveStep();
+            yield return null;
+        }
+
+        // --------------------------
+        // LiDAR
+        // --------------------------
+        private void InitializeOrRebuildSubgraph(LidarSensor lidar)
+        {
+            if (!sensorSubgraphs.TryGetValue(lidar.gameObject, out var subgraph) || subgraph == null)
+            {
+                subgraph = new RGLNodeSequence();
+                sensorSubgraphs[lidar.gameObject] = subgraph;
+            }
+            else
+            {
+                subgraph.Clear();
+            }
 
             if (useGlobalCoordinatesForLidar)
             {
-                // Unity->ROS transform + origin offset (full transform)
                 var worldTransform = ROS2.Transformations.Unity2RosMatrix4x4();
                 worldTransform.SetColumn(3, worldTransform.GetColumn(3) + (Vector4)worldOriginROS);
 
@@ -148,378 +262,361 @@ namespace AWSIM.Scanning
                     .AddNodePointsDownsample(DownsampleNodeId, new Vector3(leafSize, leafSize, leafSize));
 
                 subgraph.SetActive(DownsampleNodeId, enableDownsampling);
-
-                // WORLD frame (Unity world points come from LidarSensor world branch)
-                lidarSensor.ConnectToWorldFrame(subgraph);
+                lidar.ConnectToWorldFrame(subgraph);
             }
             else
             {
-                // LOCAL mode: rotate Unity local points into ROS axes, but **no translation** (stay at LiDAR origin)
                 var localToRosAxes = UnityLocalToRosAxesMatrix();
-
                 subgraph
-                    .AddNodePointsTransform(LocalAxesToRosNodeId, localToRosAxes)
+                    .AddNodePointsTransform(LocalAxesToRosNodeId, localToRosAxes) // <-- fixed: use constant, no missing method
                     .AddNodePointsDownsample(DownsampleNodeId, new Vector3(leafSize, leafSize, leafSize));
 
                 subgraph.SetActive(DownsampleNodeId, enableDownsampling);
-
-                // Connect to LIDAR-local points (provided by LidarSensor)
-                lidarSensor.ConnectToLidarFrame(subgraph);
+                lidar.ConnectToLidarFrame(subgraph);
             }
-
-            sensorSubgraphs[lidarSensor.gameObject] = subgraph;
-            Debug.Log($"Initialized subgraph for {lidarSensor.gameObject.name} ({(useGlobalCoordinatesForLidar ? "GLOBAL/ROS world" : "LOCAL @ LiDAR origin (ROS axes)" )})");
         }
 
-        /// <summary>
-        /// Rotation-only matrix that maps Unity axes (left-handed: x right, y up, z fwd)
-        /// to ROS axes (right-handed: x fwd, y left, z up), with zero translation.
-        /// Mapping: x_ros =  z_unity,  y_ros = -x_unity,  z_ros = y_unity.
-        /// </summary>
         private static Matrix4x4 UnityLocalToRosAxesMatrix()
         {
             var m = Matrix4x4.identity;
             m.m00 = 0;  m.m01 = 0;  m.m02 = 1;  m.m03 = 0;  // x_ros
             m.m10 = -1; m.m11 = 0;  m.m12 = 0;  m.m13 = 0;  // y_ros
             m.m20 = 0;  m.m21 = 1;  m.m22 = 0;  m.m23 = 0;  // z_ros
-            m.m30 = 0;  m.m31 = 0;  m.m32 = 0;  m.m33 = 1;  // homogeneous
+            m.m30 = 0;  m.m31 = 0;  m.m32 = 0;  m.m33 = 1;
             return m;
         }
 
-        /// <summary>
-        /// Trigger LiDAR capture on all sensors with fresh subgraphs (no accumulation).
-        /// </summary>
         private void TriggerLidarScans()
         {
-            if (!enabled) return;
-            if (sensorGameObjects == null || sensorGameObjects.Count == 0) return;
+            if (!enabled || sensorGameObjects == null || sensorGameObjects.Count == 0) return;
 
-            Debug.Log($"Triggering LiDAR capture on {sensorSubgraphs.Count} sensor(s).");
             foreach (var sensorGO in sensorGameObjects)
             {
-                if (sensorGO == null) continue;
-
-                if (sensorGO.TryGetComponent<LidarSensor>(out var lidarSensor))
+                if (!sensorGO) continue;
+                if (sensorGO.TryGetComponent<LidarSensor>(out var lidar))
                 {
-                    // Rebuild subgraph to ensure standalone output for this step
-                    if (sensorSubgraphs.TryGetValue(sensorGO, out var old))
-                    {
-                        old.Clear();
-                    }
-                    InitializeSubgraphForSensor(lidarSensor);
-
-                    // Per-step capture
-                    lidarSensor.Capture();
+                    InitializeOrRebuildSubgraph(lidar);
+                    lidar.Capture();
                 }
             }
         }
 
-        /// <summary>
-        /// Save one .pcd per LiDAR through our subgraphs.
-        /// Files: <LidarName>#<step>.pcd
-        /// - GLOBAL mode => ROS world coordinates (origin applied)
-        /// - LOCAL mode  => LiDAR origin, but in ROS axes (no translation)
-        /// </summary>
         private void SaveLidarScans()
         {
             if (sensorSubgraphs == null || sensorSubgraphs.Count == 0) return;
-
-            string lidarDir = Path.Combine(Application.dataPath, outputDirectoryRoot, "Lidar");
-            Directory.CreateDirectory(lidarDir);
 
             foreach (var kv in sensorSubgraphs)
             {
                 var sensorGO = kv.Key;
                 var subgraph = kv.Value;
+                if (!sensorGO || subgraph == null) continue;
 
-                string sensorName = Sanitize(sensorGO.name);
-                string file = Path.Combine(lidarDir, $"{sensorName}#{stepIndex:D4}.pcd");
-
+                string sensorName = GetSanitized(sensorGO);
+                string file = Path.Combine(_lidarDirPath, $"{sensorName}#{stepIndex:D4}.pcd");
                 subgraph.SavePcdFile(file);
-                Debug.Log($"Saved PCD [{(useGlobalCoordinatesForLidar ? "GLOBAL/ROS world" : "LOCAL (ROS axes)" )}] -> {file}");
+#if UNITY_EDITOR
+                Debug.Log($"Saved PCD [{(useGlobalCoordinatesForLidar ? "GLOBAL/ROS world" : "LOCAL (ROS axes)")}]-> {file}");
+#endif
             }
         }
 
-        /// <summary>
-        /// Save an image for each camera.
-        /// Files: <CameraName>#<step>.(png|jpg|exr)
-        /// </summary>
+        // --------------------------
+        // Cameras
+        // --------------------------
         private void SaveCameraShots()
         {
             if (cameras == null || cameras.Count == 0) return;
 
-            string imgDir = Path.Combine(Application.dataPath, outputDirectoryRoot, "Images");
-            Directory.CreateDirectory(imgDir);
-
             foreach (var cam in cameras)
             {
-                if (cam == null) continue;
+                if (!cam) continue;
 
-                string camName = Sanitize(cam.name);
-                string path = Path.Combine(imgDir, $"{camName}#{stepIndex:D4}.{GetImageExtension(imageFormat)}");
+                string camName = GetSanitized(cam);
+                string path = Path.Combine(_imageDirPath, $"{camName}#{stepIndex:D4}.{GetImageExtension(imageFormat)}");
                 CaptureCameraToFile(cam, imageWidth, imageHeight, imageFormat, captureMsaaSamples, path);
+#if UNITY_EDITOR
                 Debug.Log($"Saved image -> {path}");
+#endif
             }
         }
 
-        /// <summary>
-        /// One call to capture and write everything for this step (LiDAR + Cameras), then increment stepIndex.
-        /// </summary>
-        public void TriggerAndSaveStep()
+        private static string GetImageExtension(ImageFormat fmt) =>
+            fmt == ImageFormat.JPG ? "jpg" : (fmt == ImageFormat.EXR ? "exr" : "png");
+
+        private string GetSanitized(UnityEngine.Object obj)
         {
-            TriggerLidarScans(); // fresh graphs => standalone scans
-            SaveLidarScans();
-            SaveCameraShots();
-            stepIndex++;
-        }
+            if (obj == null) return "null";
+            if (_sanitizedNameCache.TryGetValue(obj, out var cached)) return cached;
 
-        /// <summary>
-        /// Optional coroutine variant if your pipeline needs a frame boundary.
-        /// </summary>
-        public IEnumerator TriggerAndSaveStepCoroutine()
-        {
-            TriggerAndSaveStep();
-            yield return null;
-        }
-
-        public void OnValidate()
-        {
-            // Keep live subgraphs synced with inspector changes
-            if (sensorSubgraphs != null)
-            {
-                foreach (var sg in sensorSubgraphs.Values)
-                {
-                    if (sg.HasNode(DownsampleNodeId))
-                    {
-                        sg.UpdateNodePointsDownsample(DownsampleNodeId, new Vector3(leafSize, leafSize, leafSize));
-                        sg.SetActive(DownsampleNodeId, enableDownsampling);
-                    }
-                }
-            }
-
-            imageWidth  = Mathf.Max(1, imageWidth);
-            imageHeight = Mathf.Max(1, imageHeight);
-            if (captureMsaaSamples != 1 && captureMsaaSamples != 2 && captureMsaaSamples != 4 && captureMsaaSamples != 8)
-                captureMsaaSamples = 1;
-        }
-
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                TriggerAndSaveStep();
-            }
-        }
-
-        // --------------------------
-        // Helpers
-        // --------------------------
-
-        private static string Sanitize(string name)
-        {
+            string name = obj.name;
             foreach (char c in Path.GetInvalidFileNameChars())
                 name = name.Replace(c.ToString(), "_");
+
+            _sanitizedNameCache[obj] = name;
             return name;
         }
 
-        private static string GetImageExtension(ImageFormat fmt)
+        // --------------------------
+        // Capture Implementation
+        // --------------------------
+        private sealed class CaptureBuffers
         {
-            switch (fmt)
+            public RenderTexture RT;
+            public Texture2D Tex;
+            public int W, H, Msaa;
+            public bool IsEXR;
+            public bool IsTempRT;
+
+            public void Ensure(int w, int h, int msaa, bool exr, bool useTemp)
             {
-                case ImageFormat.JPG: return "jpg";
-                case ImageFormat.EXR: return "exr";
-                default: return "png";
+                if (RT != null && Tex != null && W == w && H == h && Msaa == msaa && IsEXR == exr && IsTempRT == useTemp)
+                    return;
+
+                Release(IsTempRT);
+
+                var desc = new RenderTextureDescriptor(w, h)
+                {
+                    depthBufferBits = 24,
+                    msaaSamples = Mathf.Max(1, msaa),
+                    sRGB = (QualitySettings.activeColorSpace == ColorSpace.Linear),
+                    colorFormat = RenderTextureFormat.Default
+                };
+
+                RT = useTemp ? RenderTexture.GetTemporary(desc) : new RenderTexture(desc);
+                RT.useMipMap = false;
+                RT.autoGenerateMips = false;
+                RT.anisoLevel = 0;
+
+                Tex = new Texture2D(
+                    w, h,
+                    exr ? TextureFormat.RGBAHalf : TextureFormat.RGB24,
+                    false, exr);
+
+                W = w; H = h; Msaa = msaa; IsEXR = exr; IsTempRT = useTemp;
+            }
+
+            public void Release(bool wasTemp)
+            {
+                if (RT)
+                {
+                    if (wasTemp) RenderTexture.ReleaseTemporary(RT);
+                    else { RT.Release(); UnityEngine.Object.Destroy(RT); }
+                    RT = null;
+                }
+                if (Tex)
+                {
+                    UnityEngine.Object.Destroy(Tex);
+                    Tex = null;
+                }
             }
         }
 
-        /// <summary>
-        /// Captures a crisp image by temporarily disabling PostFX, TAA, and Dynamic Resolution
-        /// via reflection (works across Built-in, URP, HDRP without hard dependencies).
-        /// Also excludes HDRP Volume effects (Clouds/DoF/Motion Blur) during capture and uses a warm-up render.
-        /// </summary>
+        private struct CameraState
+        {
+            public RenderTexture prevTarget;
+            public RenderTexture prevActive;
+            public bool prevAllowDynRes;
+
+            public Component ppLayer;
+            public bool? prevPpEnabled;
+
+            public Component urpData;
+            public object prevUrpPost;
+            public object prevUrpAA;
+
+            public Component hdrpData;
+            public object prevHdrpAA;
+            public object prevHdrpVolumeMask;
+
+            public float prevTimeScale;
+        }
+
         private void CaptureCameraToFile(Camera cam, int width, int height, ImageFormat fmt, int msaaSamples, string filePath)
         {
-            // Create the offscreen RT
-            var rt = new RenderTexture(width, height, 24, RenderTextureFormat.Default, RenderTextureReadWrite.Default)
-            {
-                antiAliasing = Mathf.Max(1, msaaSamples),
-                useMipMap = false,
-                autoGenerateMips = false,
-                anisoLevel = 0
-            };
+            bool isEXR = (fmt == ImageFormat.EXR);
+            var buffers = GetBuffers(cam, width, height, msaaSamples, isEXR);
 
-            // Save current state
-            var prevTarget = cam.targetTexture;
-            var prevActive = RenderTexture.active;
-            var prevAllowDynRes = cam.allowDynamicResolution;
-
-            // --- Try to disable post-processing / TAA across pipelines (non-throwing reflection) ---
-            // Built-in (PostProcessing Stack v2)
-            var ppLayerType = Type.GetType("UnityEngine.Rendering.PostProcessing.PostProcessLayer, Unity.Postprocessing.Runtime");
-            Component ppLayer = ppLayerType != null ? cam.GetComponent(ppLayerType) : null;
-            bool? prevPpEnabled = null;
-
-            // URP
-            var urpType = Type.GetType("UnityEngine.Rendering.Universal.UniversalAdditionalCameraData, Unity.RenderPipelines.Universal.Runtime");
-            Component urpData = urpType != null ? cam.GetComponent(urpType) : null;
-            object prevUrpPost = null;
-            object prevUrpAA = null;
-
-            // HDRP
-            var hdrpType = Type.GetType("UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData, Unity.RenderPipelines.HighDefinition.Runtime");
-            Component hdrpData = hdrpType != null ? cam.GetComponent(hdrpType) : null;
-            object prevHdrpAA = null;
-
-            // NEW: store/zero the volume layer mask so no Volume-driven effects (Clouds, DoF, MB) run during capture
-            object prevHdrpVolumeMask = null;
-            LayerMask _noneMask = 0;
-
+            var state = new CameraState();
             try
             {
-                // Set target and render
-                cam.targetTexture = rt;
-                RenderTexture.active = rt;
+                // Optionally freeze scene so moving objects don't blur between frames
+                if (freezeSceneDuringCapture)
+                {
+                    state.prevTimeScale = Time.timeScale;
+                    Time.timeScale = 0f;
+
+                    if (freezeUnscaledAnimators)
+                    {
+                        _frozenAnimators.Clear();
+                        var anims = FindObjectsOfType<Animator>();
+                        foreach (var a in anims)
+                        {
+                            if (a.updateMode == AnimatorUpdateMode.UnscaledTime)
+                            {
+                                _frozenAnimators.Add((a, a.speed));
+                                a.speed = 0f;
+                            }
+                        }
+                    }
+                }
+
+                // Bind RT
+                state.prevTarget = cam.targetTexture;
+                state.prevActive = RenderTexture.active;
+                state.prevAllowDynRes = cam.allowDynamicResolution;
+
+                cam.targetTexture = buffers.RT;
+                RenderTexture.active = buffers.RT;
 
                 if (disableDynamicResolutionForCapture)
                     cam.allowDynamicResolution = false;
 
-                // Built-in PPSv2 off
-                if (disablePostProcessingForCapture && ppLayer != null)
+                // Resolve pipeline components once
+                state.ppLayer = (R.PPLayerType != null) ? cam.GetComponent(R.PPLayerType) : null;
+                state.urpData = (R.URPType != null) ? cam.GetComponent(R.URPType) : null;
+                state.hdrpData = (R.HDRPType != null) ? cam.GetComponent(R.HDRPType) : null;
+
+                // Built-in PPv2: disable
+                if (disablePostProcessingForCapture && state.ppLayer && R.PPLayer_enabled != null)
                 {
-                    var enabledProp = ppLayerType.GetProperty("enabled");
-                    prevPpEnabled = (bool)enabledProp.GetValue(ppLayer, null);
-                    enabledProp.SetValue(ppLayer, false, null);
+                    state.prevPpEnabled = (bool)R.PPLayer_enabled.GetValue(state.ppLayer, null);
+                    R.PPLayer_enabled.SetValue(state.ppLayer, false, null);
                 }
 
-                // URP toggles
-                if (urpData != null)
+                // URP: disable PP and AA
+                if (state.urpData)
                 {
-                    if (disablePostProcessingForCapture)
+                    if (disablePostProcessingForCapture && R.URP_renderPostProcessing != null)
                     {
-                        var postProp = urpType.GetProperty("renderPostProcessing");
-                        if (postProp != null)
-                        {
-                            prevUrpPost = postProp.GetValue(urpData, null);
-                            postProp.SetValue(urpData, false, null);
-                        }
+                        state.prevUrpPost = R.URP_renderPostProcessing.GetValue(state.urpData, null);
+                        R.URP_renderPostProcessing.SetValue(state.urpData, false, null);
                     }
-                    if (disableTemporalAAForCapture)
+                    if (disableTemporalAAForCapture && R.URP_antialiasing != null)
                     {
-                        // Set antialiasing to None (if available)
-                        var aaProp = urpType.GetProperty("antialiasing");
-                        if (aaProp != null)
-                        {
-                            prevUrpAA = aaProp.GetValue(urpData, null);
-                            var enumType = aaProp.PropertyType;
-                            var noneVal = Enum.Parse(enumType, "None", ignoreCase: true);
-                            aaProp.SetValue(urpData, noneVal, null);
-                        }
+                        state.prevUrpAA = R.URP_antialiasing.GetValue(state.urpData, null);
+                        var enumType = R.URP_antialiasing.PropertyType;
+                        var noneVal = Enum.Parse(enumType, "None", ignoreCase: true);
+                        R.URP_antialiasing.SetValue(state.urpData, noneVal, null);
                     }
                 }
 
-                // HDRP toggles
-                if (hdrpData != null)
+                // HDRP: disable AA and volumes (or apply capture mask)
+                if (state.hdrpData)
                 {
-                    if (disableTemporalAAForCapture)
+                    if (disableTemporalAAForCapture && R.HDRP_antialiasing != null)
                     {
-                        // Set antialiasing to None
-                        var aaProp = hdrpType.GetProperty("antialiasing");
-                        if (aaProp != null)
-                        {
-                            prevHdrpAA = aaProp.GetValue(hdrpData, null);
-                            var enumType = aaProp.PropertyType;
-                            var noneVal = Enum.Parse(enumType, "None", ignoreCase: true);
-                            aaProp.SetValue(hdrpData, noneVal, null);
-                        }
+                        state.prevHdrpAA = R.HDRP_antialiasing.GetValue(state.hdrpData, null);
+                        var enumType = R.HDRP_antialiasing.PropertyType;
+                        var noneVal = Enum.Parse(enumType, "None", ignoreCase: true);
+                        R.HDRP_antialiasing.SetValue(state.hdrpData, noneVal, null);
                     }
 
-                    if (disablePostProcessingForCapture)
+                    if (disablePostProcessingForCapture && R.HDRP_volumeLayerMask != null)
                     {
-                        // Zero out the Volume layer mask so all volume effects are skipped this frame (clouds/DoF/MB/exposure/etc).
-                        var volMaskProp = hdrpType.GetProperty("volumeLayerMask");
-                        if (volMaskProp != null)
-                        {
-                            prevHdrpVolumeMask = volMaskProp.GetValue(hdrpData, null);
-                            volMaskProp.SetValue(hdrpData, _noneMask, null);
-                        }
+                        state.prevHdrpVolumeMask = R.HDRP_volumeLayerMask.GetValue(state.hdrpData, null);
+                        var maskToUse = hdrpCaptureVolumeMaskOverride; // 0 => disable all volumes
+                        R.HDRP_volumeLayerMask.SetValue(state.hdrpData, maskToUse, null);
                     }
                 }
 
-                // ---------- RENDER ----------
-                // Warm-up frame: after toggling AA/volume, render once to flush HDRP temporal histories.
-                cam.Render();
+                // Warm-up renders to flush histories (runs while frozen so nothing moves)
+                int warms = Mathf.Max(0, warmupRenders);
+                for (int i = 0; i < warms; i++) cam.Render();
 
                 // Actual capture frame
                 cam.Render();
 
-                // Read back
-                var tex = new Texture2D(width, height,
-                    fmt == ImageFormat.EXR ? TextureFormat.RGBAFloat : TextureFormat.RGB24,
-                    false, fmt == ImageFormat.EXR);
+                // Readback
+                buffers.Tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+                buffers.Tex.Apply(false, false);
 
-                tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-                tex.Apply();
-
+                // Encode
                 byte[] bytes;
                 switch (fmt)
                 {
                     case ImageFormat.JPG:
-                        bytes = tex.EncodeToJPG(95);
+                        bytes = buffers.Tex.EncodeToJPG(Mathf.Clamp(jpgQuality, 1, 100));
                         break;
                     case ImageFormat.EXR:
-                        bytes = tex.EncodeToEXR(Texture2D.EXRFlags.OutputAsFloat | Texture2D.EXRFlags.CompressZIP);
+                        bytes = buffers.Tex.EncodeToEXR(Texture2D.EXRFlags.CompressZIP);
                         break;
                     default:
-                        bytes = tex.EncodeToPNG();
+                        bytes = buffers.Tex.EncodeToPNG();
                         break;
                 }
 
                 File.WriteAllBytes(filePath, bytes);
-                Destroy(tex);
             }
             finally
             {
-                // Restore per-camera settings
-                if (ppLayer != null && prevPpEnabled.HasValue)
+                // Restore pipeline settings
+                if (state.ppLayer && state.prevPpEnabled.HasValue && R.PPLayer_enabled != null)
+                    R.PPLayer_enabled.SetValue(state.ppLayer, state.prevPpEnabled.Value, null);
+
+                if (state.urpData)
                 {
-                    var enabledProp = ppLayerType.GetProperty("enabled");
-                    enabledProp.SetValue(ppLayer, prevPpEnabled.Value, null);
+                    if (state.prevUrpPost != null && R.URP_renderPostProcessing != null)
+                        R.URP_renderPostProcessing.SetValue(state.urpData, state.prevUrpPost, null);
+
+                    if (state.prevUrpAA != null && R.URP_antialiasing != null)
+                        R.URP_antialiasing.SetValue(state.urpData, state.prevUrpAA, null);
                 }
 
-                if (urpData != null)
+                if (state.hdrpData)
                 {
-                    if (prevUrpPost != null)
+                    if (state.prevHdrpAA != null && R.HDRP_antialiasing != null)
+                        R.HDRP_antialiasing.SetValue(state.hdrpData, state.prevHdrpAA, null);
+
+                    if (state.prevHdrpVolumeMask != null && R.HDRP_volumeLayerMask != null)
+                        R.HDRP_volumeLayerMask.SetValue(state.hdrpData, state.prevHdrpVolumeMask, null);
+                }
+
+                // Restore camera targets
+                cam.allowDynamicResolution = state.prevAllowDynRes;
+                cam.targetTexture = state.prevTarget;
+                RenderTexture.active = state.prevActive;
+
+                // Unfreeze scene if we froze it
+                if (freezeSceneDuringCapture)
+                {
+                    if (freezeUnscaledAnimators)
                     {
-                        var postProp = urpType.GetProperty("renderPostProcessing");
-                        postProp?.SetValue(urpData, prevUrpPost, null);
+                        foreach (var (anim, speed) in _frozenAnimators)
+                        {
+                            if (anim) anim.speed = speed;
+                        }
+                        _frozenAnimators.Clear();
                     }
-                    if (prevUrpAA != null)
-                    {
-                        var aaProp = urpType.GetProperty("antialiasing");
-                        aaProp?.SetValue(urpData, prevUrpAA, null);
-                    }
+
+                    Time.timeScale = state.prevTimeScale;
                 }
 
-                if (hdrpData != null && prevHdrpAA != null)
+                // Dispose buffers if not reusing
+                if (!reuseBuffers && _buffersByCamera.TryGetValue(cam, out var bufs))
                 {
-                    var aaProp = hdrpType.GetProperty("antialiasing");
-                    aaProp?.SetValue(hdrpData, prevHdrpAA, null);
+                    bufs.Release(bufs.IsTempRT);
+                    _buffersByCamera.Remove(cam);
                 }
-
-                // Restore the Volume layer mask (HDRP)
-                if (hdrpData != null && prevHdrpVolumeMask != null)
-                {
-                    var volMaskProp = hdrpType.GetProperty("volumeLayerMask");
-                    volMaskProp?.SetValue(hdrpData, prevHdrpVolumeMask, null);
-                }
-
-                cam.allowDynamicResolution = prevAllowDynRes;
-
-                cam.targetTexture = prevTarget;
-                RenderTexture.active = prevActive;
-                rt.Release();
-                Destroy(rt);
             }
+        }
+
+        private CaptureBuffers GetBuffers(Camera cam, int w, int h, int msaa, bool exr)
+        {
+            if (!reuseBuffers)
+            {
+                var temp = new CaptureBuffers();
+                temp.Ensure(w, h, msaa, exr, useTemporaryRT);
+                return temp;
+            }
+
+            if (!_buffersByCamera.TryGetValue(cam, out var buffers) || buffers == null)
+            {
+                buffers = new CaptureBuffers();
+                _buffersByCamera[cam] = buffers;
+            }
+
+            buffers.Ensure(w, h, msaa, exr, useTemporaryRT);
+            return buffers;
         }
     }
 }
