@@ -52,8 +52,9 @@ public class HumanNpcSpawner : MonoBehaviour
 
         while (true)
         {
+            Debug.Log("waiting Spawning human NPC hora");
             yield return wait;
-
+            Debug.Log("Spawning human NPC hora");
             int targetCount = numberSpawningHuman;
             if (varianceSpawningHuman > 0)
             {

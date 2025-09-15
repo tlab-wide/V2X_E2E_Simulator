@@ -39,6 +39,7 @@ public class ScenarioSelector : MonoBehaviour
     // Method to activate a specific scenario and deactivate all others
     public void ActivateScenario(int scenarioIndex)
     {
+        Debug.Log($"Activate scenario called by value {scenarioIndex}");
         // Check if the scenarioIndex is within the bounds of the scenarios list
         if (scenarioIndex >= 0 && scenarioIndex < scenarios.Count)
         {
