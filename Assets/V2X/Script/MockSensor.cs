@@ -23,7 +23,7 @@ public class MockDetectionSensor : DetectionSensor
 
     [FormerlySerializedAs("observableAngleY")] [SerializeField]
     private float Vfov = 180;
-    [SerializeField] private byte sensorId = 1;
+    
 
 
     [SerializeField] private List<Transform> seenObjects = new List<Transform>();
@@ -32,39 +32,17 @@ public class MockDetectionSensor : DetectionSensor
 
     private Viewcone myCone;
     
-    long lastUpdateTime = 0;
-
-    public void UpdateLastUpdateTime()
-    {
-        lastUpdateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-    }
     
-    public long GetLastUpdateTime()
-    {
-        return lastUpdateTime;
-    }
     
     public MockSensorType GetMockSensorType()
     {
         return mockSensorType;
     }
 
-    public byte GetSensorId()
-    {
-        return sensorId;
-    }
+    
 
 
-    private void Awake()
-    {
-        // if (LineOfSightManagerJobs.Instance.IsJobsRunning())
-        // {
-        //     LineOfSightManagerJobs.Instance.RegisterSensor(this.transform, maxDistance, Hfov, Vfov);
-        // }
-        
-        
-        
-    }
+   
 
     private void OnEnable()
     {
@@ -92,7 +70,7 @@ public class MockDetectionSensor : DetectionSensor
         }
 
         // if (CheckRaycast(targetPoint.position, this.transform.position) && objectInview(targetPoint))
-        if (objectInView(targetPoint) && CheckRaycast(targetPoint.position, this.transform.position))
+        if (ObjectInView(targetPoint) && CheckRaycast(targetPoint.position, this.transform.position))
         {
             return true;
         }
@@ -102,41 +80,69 @@ public class MockDetectionSensor : DetectionSensor
         }
     }
 
-    private bool objectInView(Transform targetPoint)
+    //long time used
+    // private bool ObjectInView(Transform targetPoint)
+    // {
+    //     Vector3 targetVector = targetPoint.position - this.transform.position;
+    //
+    //     //this if reduce amount of process and ignore far car from the max depth in calculation
+    //     if (targetVector.magnitude > maxDistance)
+    //     {
+    //         return false;
+    //     }
+    //
+    //     Vector3 targetInXY = Vector3.ProjectOnPlane(targetVector, this.transform.right);
+    //     float angleY = Vector3.Angle(this.transform.forward, targetInXY);
+    //     
+    //
+    //     if (angleY > Vfov)
+    //     {
+    //         return false;
+    //     }
+    //
+    //     Vector3 targetInXZ = Vector3.ProjectOnPlane(targetVector, this.transform.up);
+    //     float angleX = Vector3.Angle(this.transform.forward, targetInXZ);
+    //
+    //
+    //     if (angleX > Hfov)
+    //     {
+    //         return false;
+    //     }
+    //     else
+    //     {
+    //         return true;
+    //     }
+    // }
+
+    // Hfov / Vfov are FULL angles in degrees (like Camera.fieldOfView). 
+// If you already store HALF angles, remove the *0.5f parts.
+
+    private bool ObjectInView(Transform targetPoint)
     {
-        Vector3 targetVector = targetPoint.position - this.transform.position;
-
-        //this if reduce amount of process and ignore far car from the max depth in calculation
-        if (targetVector.magnitude > maxDistance)
-        {
+        // Early-out on distance (no sqrt)
+        Vector3 toTarget = targetPoint.position - transform.position;
+        if (toTarget.sqrMagnitude > maxDistance * maxDistance)
             return false;
-        }
 
-        Vector3 targetInXY = Vector3.ProjectOnPlane(targetVector, this.transform.right);
-        float angleY = Vector3.Angle(this.transform.forward, targetInXY);
+        // Convert to this transform's local space
+        Vector3 local = transform.InverseTransformPoint(targetPoint.position);
 
-        // if (angleY > 90)
-        // {
-        //     angleY = 180 - angleY;
-        // }
-
-        if (angleY > Vfov)
-        {
+        // Must be in front of the forward vector (z forward in local space)
+        if (local.z <= 0f)
             return false;
-        }
 
-        Vector3 targetInXZ = Vector3.ProjectOnPlane(targetVector, this.transform.up);
-        float angleX = Vector3.Angle(this.transform.forward, targetInXZ);
+        // Horizontal (yaw) and Vertical (pitch) angles in degrees
+        float yawDeg   = Mathf.Atan2(local.x, local.z) * Mathf.Rad2Deg; // left/right
+        float pitchDeg = Mathf.Atan2(local.y, local.z) * Mathf.Rad2Deg; // up/down
 
+        // Compare to HALF FOVs
+        // float halfH = Hfov * 0.5f;
+        // float halfV = Vfov * 0.5f;
 
-        if (angleX > Hfov)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        if (Mathf.Abs(yawDeg) > Hfov)   return false;
+        if (Mathf.Abs(pitchDeg) > Vfov) return false;
+
+        return true;
     }
 
 
@@ -276,4 +282,25 @@ public class MockDetectionSensor : DetectionSensor
 public abstract class DetectionSensor : MonoBehaviour
 {
     public abstract List<Transform> GetSeenObjects();
+    
+    
+    long lastUpdateTime = 0;
+
+    public void UpdateLastUpdateTime()
+    {
+        lastUpdateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    }
+    
+    public long GetLastUpdateTime()
+    {
+        return lastUpdateTime;
+    }
+    
+    [SerializeField] private byte sensorId = 1;
+    
+    
+    public byte GetSensorId()
+    {
+        return sensorId;
+    }
 }

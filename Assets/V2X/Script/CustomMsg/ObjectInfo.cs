@@ -17,7 +17,7 @@ using System.Collections;
 
 public class ObjectInfo : MonoBehaviour
 {
-    [SerializeField] private List<MockDetectionSensor> sensors;
+    [SerializeField] private List<DetectionSensor> sensors;
 
     [SerializeField] private float Hz = 10;
 
@@ -190,7 +190,7 @@ public class ObjectInfo : MonoBehaviour
         // Group sightings by unique instance ID and keep:
         // - a representative Transform for the object
         // - the list of sensors that saw it
-        var sightings = new Dictionary<Transform, List<MockDetectionSensor>>();
+        var sightings = new Dictionary<Transform, List<DetectionSensor>>();
 
         for (int i = 0; i < sensors.Count; i++)
         {
@@ -205,7 +205,7 @@ public class ObjectInfo : MonoBehaviour
                 // Use the Transform itself as the key
                 if (!sightings.TryGetValue(t, out var watchers))
                 {
-                    watchers = new List<MockDetectionSensor>();
+                    watchers = new List<DetectionSensor>();
                     sightings[t] = watchers;
                 }
 
@@ -224,8 +224,11 @@ public class ObjectInfo : MonoBehaviour
         foreach (var kvp in sightings)
         {
             Transform rep = kvp.Key;
-            List<MockDetectionSensor> watchers = kvp.Value;
-
+            List<DetectionSensor> watchers = kvp.Value;
+            if (rep.tag.Equals("Ego"))
+            {
+                continue; // it is the ego car
+            }
             objectInfos.Add(HandlObjectInfo(rep, watchers, true));
             objectInfosGroundTruth.Add(HandlObjectInfo(rep, watchers, false));
         }
@@ -251,9 +254,10 @@ public class ObjectInfo : MonoBehaviour
     private float timer;
 
 
-    private dm_object_info_msgs.msg.ObjectInfo HandlObjectInfo(Transform seenObject, List<MockDetectionSensor> sensors,
+    private dm_object_info_msgs.msg.ObjectInfo HandlObjectInfo(Transform seenObject, List<DetectionSensor> sensors,
         bool byNoise = true)
     {
+        
         dm_object_info_msgs.msg.ObjectInfo objectInfo = new dm_object_info_msgs.msg.ObjectInfo();
 
 
@@ -292,9 +296,6 @@ public class ObjectInfo : MonoBehaviour
         float rotation = CalculateAngleFromNorth(seenObject.transform);
         objectInfo.Orientation.Value.Value = (ushort)(rotation * 80);
 
-        // Debug.Log($"Rotation: {rotation} ***");
-        // Debug.Log("ss1");
-        //type 
         NPCVehicle npcVehicle = seenObject.GetComponent<NPCVehicle>();
         LineOfSight lineOfSight = seenObject.GetComponent<LineOfSight>();
 

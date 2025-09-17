@@ -6,6 +6,9 @@ using System.IO;
 using System.Reflection;
 using RGLUnityPlugin;
 using AWSIM.PointCloudMapping;
+using System.Text;
+using unique_identifier_msgs.msg; // for UUID from LineOfSight.GetUUID()
+
 
 namespace AWSIM.Scanning
 {
@@ -34,18 +37,22 @@ namespace AWSIM.Scanning
         [SerializeField, Tooltip("World origin in ROS coordinate system; used only when global mode is true.")]
         private Vector3 worldOriginROS;
 
-        [Header("LiDAR Downsampling (applies to saved clouds)")]
-        [SerializeField] private bool enableDownsampling = true;
+        [Header("LiDAR Downsampling (applies to saved clouds)")] [SerializeField]
+        private bool enableDownsampling = true;
+
         [SerializeField, Min(0.000001f)] private float leafSize = 0.1f;
 
         // --------------------------
         // Camera Configuration
         // --------------------------
         [Header("Camera Scanning")]
-        [SerializeField, Tooltip("All camera GameObjects to capture from each step. Each must have a Camera component, and optionally a custom camera feature.")]
+        [SerializeField,
+         Tooltip(
+             "All camera GameObjects to capture from each step. Each must have a Camera component, and optionally a custom camera feature.")]
         private List<GameObject> cameraGameObjects = new List<GameObject>();
 
-        [SerializeField, Tooltip("Override output resolution for fallback capture. If false, uses camera.pixelWidth/Height.")]
+        [SerializeField,
+         Tooltip("Override output resolution for fallback capture. If false, uses camera.pixelWidth/Height.")]
         private bool overrideCameraResolution = false;
 
         [SerializeField, Min(1)] private int fallbackWidth = 1920;
@@ -54,18 +61,47 @@ namespace AWSIM.Scanning
         [SerializeField, Range(1, 8), Tooltip("Supersampling multiplier for fallback capture (1 = none).")]
         private int fallbackSupersampling = 1;
 
-        private enum ImageFormat { PNG, JPG }
+        private enum ImageFormat
+        {
+            PNG,
+            JPG
+        }
+
         [SerializeField] private ImageFormat imageFormat = ImageFormat.PNG;
         [SerializeField, Range(1, 100)] private int jpgQuality = 95;
 
-        [SerializeField, Tooltip("If your project already has a camera feature component, we will try to use it first by interface/method name. Leave empty to auto-detect.")]
+        [SerializeField,
+         Tooltip(
+             "If your project already has a camera feature component, we will try to use it first by interface/method name. Leave empty to auto-detect.")]
         private string preferredCameraFeatureTypeName = ""; // optional hint
+
+        // --------------------------
+        // Ground Truth Logging
+        // --------------------------
+        [Header("Ground Truth Logging")]
+        [SerializeField, Tooltip("List of GroundTruthArea volumes whose seen objects will be UNIONed each step.")]
+        private List<GroundTruthArea> groundTruthAreas = new List<GroundTruthArea>();
+
+        [SerializeField,
+         Tooltip("Optional reference frame; if set, positions are made relative to this before Unity->ROS conversion.")]
+        private Transform rosReference;
+
+        [SerializeField, Tooltip("Subfolder (under outputDirectoryRoot) where per-step CSVs will be written.")]
+        private string groundTruthFolderName = "GroundTruth";
+
+        [SerializeField, Tooltip("Write a CSV header row for each step file.")]
+        private bool writeCsvHeader = true;
+
+        // internal path for this logger
+        private string _groundTruthDirPath;
+
 
         // --------------------------
         // Output
         // --------------------------
         [Header("Output")]
-        [SerializeField, Tooltip("Root folder (inside Assets) where outputs are saved. Subfolders 'Lidar' and 'Camera' are created.")]
+        [SerializeField,
+         Tooltip("Root folder (inside Assets) where outputs are saved. Subfolders 'Lidar' and 'Camera' are created.")]
         private string outputDirectoryRoot = "SensorSteps";
 
         [SerializeField, Tooltip("Zero-based step index; auto-increments after each step.")]
@@ -112,8 +148,10 @@ namespace AWSIM.Scanning
             string root = Path.Combine(Application.dataPath, outputDirectoryRoot);
             _lidarDirPath = Path.Combine(root, "Lidar");
             _cameraDirPath = Path.Combine(root, "Camera");
+            _groundTruthDirPath =  Path.Combine(root, "GroundTruthPos");
             Directory.CreateDirectory(_lidarDirPath);
             Directory.CreateDirectory(_cameraDirPath);
+            Directory.CreateDirectory(_groundTruthDirPath);
 
             sensorSubgraphs = new Dictionary<GameObject, RGLNodeSequence>();
             foreach (var sensorGO in sensorGameObjects)
@@ -124,6 +162,9 @@ namespace AWSIM.Scanning
                     InitializeOrRebuildSubgraph(lidar);
                 }
             }
+
+
+            
         }
 
         private void OnDestroy()
@@ -179,6 +220,9 @@ namespace AWSIM.Scanning
 
                 SaveLidarScans();
                 // Camera shots are saved as they're captured.
+
+                SaveGroundTruthCsv();
+
 
                 stepIndex++;
             }
@@ -254,10 +298,22 @@ namespace AWSIM.Scanning
         private static Matrix4x4 UnityLocalToRosAxesMatrix()
         {
             var m = Matrix4x4.identity;
-            m.m00 = 0;  m.m01 = 0;  m.m02 = 1;  m.m03 = 0;  // x_ros
-            m.m10 = -1; m.m11 = 0;  m.m12 = 0;  m.m13 = 0;  // y_ros
-            m.m20 = 0;  m.m21 = 1;  m.m22 = 0;  m.m23 = 0;  // z_ros
-            m.m30 = 0;  m.m31 = 0;  m.m32 = 0;  m.m33 = 1;
+            m.m00 = 0;
+            m.m01 = 0;
+            m.m02 = 1;
+            m.m03 = 0; // x_ros
+            m.m10 = -1;
+            m.m11 = 0;
+            m.m12 = 0;
+            m.m13 = 0; // y_ros
+            m.m20 = 0;
+            m.m21 = 1;
+            m.m22 = 0;
+            m.m23 = 0; // z_ros
+            m.m30 = 0;
+            m.m31 = 0;
+            m.m32 = 0;
+            m.m33 = 1;
             return m;
         }
 
@@ -296,7 +352,8 @@ namespace AWSIM.Scanning
                 string file = Path.Combine(lidarBase, $"{sensorName}#{stepIndex:D4}.pcd");
                 subgraph.SavePcdFile(file);
 #if UNITY_EDITOR
-                Debug.Log($"Saved PCD [{(useGlobalCoordinatesForLidar ? "GLOBAL/ROS world" : "LOCAL (ROS axes)")}]-> {file}");
+                Debug.Log(
+                    $"Saved PCD [{(useGlobalCoordinatesForLidar ? "GLOBAL/ROS world" : "LOCAL (ROS axes)")}]-> {file}");
 #endif
             }
         }
@@ -358,7 +415,8 @@ namespace AWSIM.Scanning
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogWarning($"Camera feature (IStepPhotoSource) failed on '{camGO.name}': {ex.Message}. Falling back.");
+                            Debug.LogWarning(
+                                $"Camera feature (IStepPhotoSource) failed on '{camGO.name}': {ex.Message}. Falling back.");
                         }
                     }
 
@@ -386,8 +444,8 @@ namespace AWSIM.Scanning
             if (comp == null) return false;
             // Attempt common signatures on the explicitly-preferred component.
             return TryInvokeMethod(comp, "CaptureAndSave", path)
-                || TryInvokeMethod(comp, "TakePicture", path)
-                || TryInvokeMethod(comp, "CaptureToFile", path);
+                   || TryInvokeMethod(comp, "TakePicture", path)
+                   || TryInvokeMethod(comp, "CaptureToFile", path);
         }
 
         private bool TryInvokeAnyCameraFeatureMethod(GameObject go, string path)
@@ -406,6 +464,7 @@ namespace AWSIM.Scanning
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -500,18 +559,19 @@ namespace AWSIM.Scanning
 
         private void WithCameraTemporarilyActive(GameObject camGO, Camera cam, Action captureAction)
         {
-            bool hadActiveSelf = camGO.activeSelf;   // this GO's own active flag
-            bool hadEnabled    = cam.enabled;
+            bool hadActiveSelf = camGO.activeSelf; // this GO's own active flag
+            bool hadEnabled = cam.enabled;
 
             // Turn on if off
             if (!hadActiveSelf) camGO.SetActive(true);
-            if (!hadEnabled)    cam.enabled = true;
+            if (!hadEnabled) cam.enabled = true;
 
             try
             {
                 // If a parent is disabled, we can't fully activate this GO; warn but still attempt.
                 if (!camGO.activeInHierarchy)
-                    Debug.LogWarning($"'{camGO.name}' is inactive in hierarchy (likely due to a disabled parent). Attempting capture anyway.");
+                    Debug.LogWarning(
+                        $"'{camGO.name}' is inactive in hierarchy (likely due to a disabled parent). Attempting capture anyway.");
 
                 captureAction?.Invoke();
             }
@@ -528,6 +588,130 @@ namespace AWSIM.Scanning
             string dir = Path.Combine(baseDir, sensorName);
             Directory.CreateDirectory(dir);
             return dir;
+        }
+
+
+        // --------------------------
+// Ground Truth CSV
+// --------------------------
+        private void SaveGroundTruthCsv()
+        {
+            // Collect unique seen transforms from all configured GT areas
+            var seen = CollectSeenTransforms();
+
+            // One CSV per step, under outputDirectoryRoot/GroundTruth
+            string file = System.IO.Path.Combine(_groundTruthDirPath, $"GT#{stepIndex:D4}.csv");
+
+            try
+            {
+                using (var sw = new System.IO.StreamWriter(file, false, Encoding.UTF8))
+                {
+                    if (writeCsvHeader)
+                        sw.WriteLine("uuid,name,x_ros,y_ros,z_ros,yaw_deg_ros,step");
+
+                    foreach (var t in seen)
+                    {
+                        if (!t) continue;
+
+                        // Position: same logic you showed:
+                        // var pos = CalculateRelativePosition(seenObjects[j].transform.position);
+                        // pos = ROS2Utility.UnityToRosPosition(pos);
+                        UnityEngine.Vector3
+                            posLocal = CalculateRelativePosition(t.position); // relative to rosReference (if provided)
+                        UnityEngine.Vector3 posRos = ROS2Utility.UnityToRosPosition(posLocal); // your existing utility
+
+                        // Rotation (Y): apply -Y Euler (optionally relative to rosReference)
+                        float yawUnityDeg = GetRelativeYawDeg(t);
+                        float yawRosDeg = -yawUnityDeg;
+
+                        // UUID from LineOfSight
+                        string uuidHex = TryGetUuidHex(t);
+
+                        // Name (reuse your own sanitizer if you have one; else fallback to t.gameObject.name)
+                        // Name (reuse your own sanitizer if you have one; else fallback to t.gameObject.name)
+                        string objName = GetSanitized(t.gameObject);
+
+                        sw.WriteLine(
+                            $"{uuidHex},{objName},{posRos.x:F6},{posRos.y:F6},{posRos.z:F6},{yawRosDeg:F3},{stepIndex}");
+                    }
+                }
+#if UNITY_EDITOR
+                UnityEngine.Debug.Log($"Saved GroundTruth CSV -> {file}");
+#endif
+            }
+            catch (System.Exception ex)
+            {
+                UnityEngine.Debug.LogError($"Failed writing GroundTruth CSV '{file}': {ex}");
+            }
+        }
+
+        /// <summary>Union of seen object transforms across all configured GroundTruthAreas.</summary>
+        private System.Collections.Generic.List<UnityEngine.Transform> CollectSeenTransforms()
+        {
+            var set = new System.Collections.Generic.HashSet<int>(); // instanceID de-dup
+            var list = new System.Collections.Generic.List<UnityEngine.Transform>();
+
+            if (groundTruthAreas == null) return list;
+
+            for (int i = 0; i < groundTruthAreas.Count; i++)
+            {
+                var gta = groundTruthAreas[i];
+                if (!gta) continue;
+
+                // GroundTruthArea returns transforms of the seen GameObjects.
+                var seen = gta.GetSeenObjects(); // List<Transform>
+                for (int j = 0; j < seen.Count; j++)
+                {
+                    var t = seen[j];
+                    if (!t) continue;
+
+                    int id = t.GetInstanceID();
+                    if (set.Add(id))
+                        list.Add(t);
+                }
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Make a world-space position relative to rosReference if provided; otherwise just return the world pos.
+        /// (Matches your pattern: CalculateRelativePosition(...) -> ROS2Utility.UnityToRosPosition(...))
+        /// </summary>
+        private UnityEngine.Vector3 CalculateRelativePosition(UnityEngine.Vector3 worldPos)
+        {
+            if (rosReference != null)
+                return rosReference.InverseTransformPoint(worldPos);
+            return worldPos;
+        }
+
+        /// <summary>Return target yaw (degrees) relative to rosReference (if set), else world yaw.</summary>
+        private float GetRelativeYawDeg(UnityEngine.Transform target)
+        {
+            var q = target.rotation;
+            if (rosReference != null)
+                q = UnityEngine.Quaternion.Inverse(rosReference.rotation) * q;
+
+            return q.eulerAngles.y; // Unity yaw
+        }
+
+        /// <summary>Read UUID from LineOfSight on this transform (or parent/children). Returns 32-char lowercase hex or "NO_UUID".</summary>
+        private string TryGetUuidHex(UnityEngine.Transform t)
+        {
+            if (!t) return "NO_UUID";
+
+            LineOfSight los = t.GetComponent<LineOfSight>();
+            if (!los) los = t.GetComponentInParent<LineOfSight>();
+            if (!los) los = t.GetComponentInChildren<LineOfSight>();
+
+            if (los != null)
+            {
+                UUID u = los.GetUUID();
+                if (u != null && u.Uuid != null && u.Uuid.Length > 0)
+                    return System.BitConverter.ToString(u.Uuid).Replace("-", "").ToLowerInvariant();
+            }
+
+            return "NO_UUID";
         }
     }
 }
