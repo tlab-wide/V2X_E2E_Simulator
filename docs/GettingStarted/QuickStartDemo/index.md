@@ -253,10 +253,10 @@ Therefore, if we use this feature, we can ignore or disable the camera responsib
 
 | **Topic Name** | **Intersection** |
 |:--|:--|
-| `/v2x/cooperative1` | Ganken Intersection |
-| `/v2x/cooperative2` | Kakeiken Intersection |
-| `/v2x/cooperative3` | Daisan Kidoutai |
-| `/v2x/cooperative4` | Wakashiba Intersection |
+| `/v2x/rsu1/net_sim` | Ganken Intersection |
+| `/v2x/rsu2/net_sim` | Kakeiken Intersection |
+| `/v2x/rsu3/net_sim` | Daisan Kidoutai |
+| `/v2x/rsu4/net_sim` | Wakashiba Intersection |
 
 ---
 
@@ -266,10 +266,10 @@ The message type **`PredictedObjects`** comes from `autoware_auto_perception_msg
 
 | **Topic Name** | **Intersection** |
 |:--|:--|
-| `/v2x/predicted_objects1` | Ganken Intersection |
-| `/v2x/predicted_objects2` | Kakeiken Intersection |
-| `/v2x/predicted_objects3` | Daisan Kidoutai |
-| `/v2x/predicted_objects4` | Wakashiba Intersection |
+| `/v2x/rsu1/predicted_object` | Ganken Intersection |
+| `/v2x/rsu2/predicted_object` | Kakeiken Intersection |
+| `/v2x/rsu3/predicted_object` | Daisan Kidoutai |
+| `/v2x/rsu4/predicted_object` | Wakashiba Intersection |
 
 ---
 
@@ -293,29 +293,51 @@ For **Intersection #2 in Kashiwa**, detected objects from **each sensor** are al
 The **rsu number** and **sensor number** help distinguish different sensors.  
 - `/object_info` → Detected objects **without noise**  
 - `/object_info_noise` → Detected objects **with noise**  
+- `/object_info_noise/Cellular` → Detected objects **with noise and delay based on network types**
 
 #### **Published Topics:**
 ```plaintext
 /v2x/rsu12020002/sensor1/object_info
 /v2x/rsu12020002/sensor1/object_info_noise
+/v2x/rsu12020002/sensor1/object_info_noise/Cellular
+/v2x/rsu12020002/sensor1/object_info_noise/DSRC
 /v2x/rsu12020002/sensor2/object_info
 /v2x/rsu12020002/sensor2/object_info_noise
+/v2x/rsu12020002/sensor2/object_info_noise/Cellular
+/v2x/rsu12020002/sensor2/object_info_noise/DSRC
 /v2x/rsu12020002/sensor3/object_info
 /v2x/rsu12020002/sensor3/object_info_noise
+/v2x/rsu12020002/sensor3/object_info_noise/Cellular
+/v2x/rsu12020002/sensor3/object_info_noise/DSRC
 /v2x/rsu12020002/sensor4/object_info
 /v2x/rsu12020002/sensor4/object_info_noise
+/v2x/rsu12020002/sensor4/object_info_noise/Cellular
+/v2x/rsu12020002/sensor4/object_info_noise/DSRC
 /v2x/rsu12020002/sensor5/object_info
 /v2x/rsu12020002/sensor5/object_info_noise
+/v2x/rsu12020002/sensor5/object_info_noise/Cellular
+/v2x/rsu12020002/sensor5/object_info_noise/DSRC
 /v2x/rsu12020003/sensor1/object_info
 /v2x/rsu12020003/sensor1/object_info_noise
+/v2x/rsu12020003/sensor1/object_info_noise/Cellular
+/v2x/rsu12020003/sensor1/object_info_noise/DSRC
 /v2x/rsu12020003/sensor2/object_info
 /v2x/rsu12020003/sensor2/object_info_noise
+/v2x/rsu12020003/sensor2/object_info_noise/Cellular
+/v2x/rsu12020003/sensor2/object_info_noise/DSRC
 /v2x/rsu12020003/sensor3/object_info
 /v2x/rsu12020003/sensor3/object_info_noise
+/v2x/rsu12020003/sensor3/object_info_noise/Cellular
+/v2x/rsu12020003/sensor3/object_info_noise/DSRC
 /v2x/rsu12020003/sensor4/object_info
 /v2x/rsu12020003/sensor4/object_info_noise
+/v2x/rsu12020003/sensor4/object_info_noise/Cellular
+/v2x/rsu12020003/sensor4/object_info_noise/DSRC
 /v2x/rsu12020003/sensor5/object_info
 /v2x/rsu12020003/sensor5/object_info_noise
+/v2x/rsu12020003/sensor5/object_info_noise/Cellular
+/v2x/rsu12020003/sensor5/object_info_noise/DSRC
+
 ```
 
 
@@ -327,12 +349,18 @@ These topics publish the **ground truth** of **all objects** in the intersection
 
 - `/v2x/rsu_all/object_info_groundtruth`
 - `/v2x/rsu_all/object_info_groundtruth_noise`
+- `/v2x/rsu_all/object_info_groundtruth_noise/Cellular`
+- `/v2x/rsu_all/object_info_groundtruth_noise/DSRC`
 
 ---
 
 ### **7. V2X Traffic Signal Information for Autoware**
 - **Published Topic:**  
-  - `/v2x/traffic_signals`
+  - `/v2x/traffic_signals` 
+  - `/v2x/rsu1/traffic_signals`
+  - `/v2x/rsu2/traffic_signals`
+  - `/v2x/rsu3/traffic_signals`
+  - `/v2x/rsu4/traffic_signals`
 
 
 ## Scenarios

@@ -4,7 +4,7 @@
 
     It is advised to checkout the [Quick Start Demo](../QuickStartDemo) tutorial before reading this section.
 
-This page is a tutorial for setting up a AWSIM Unity project.
+This page is a tutorial for setting up  E2E_V2E Simulator in Unity project.
 
 ## Environment preparation
 
@@ -14,7 +14,7 @@ This page is a tutorial for setting up a AWSIM Unity project.
     1. Make sure your machine meets the [required hardware specifications](../QuickStartDemo/#pc-specs).
         - *NOTE: PC requirements may vary depending on simulation contents which may change as the simulator develops*
     2. Prepare a desktop PC with Ubuntu 22.04 installed.
-    2. Install [Nvidia drivers and Vulkan Graphics API](../QuickStartDemo/#running-the-awsim-simulation-demo).
+    2. Install [Nvidia drivers and Vulkan Graphics API](../QuickStartDemo).
     3. Install [git](https://git-scm.com/).
     4. Set the ROS 2 middleware and the localhost only mode in `~/.profile` (or, in `~/.bash_profile` or `~/bash_login` if either of those exists) file:
     ``` bash
@@ -35,7 +35,7 @@ This page is a tutorial for setting up a AWSIM Unity project.
     ```
 
         !!! info
-            As a result, each time you run the terminal (`bash` prompt), your OS will be configured for the best ROS 2 performance. Make sure you open your terminal at least one before running any instance of AWSIM (or Editor running the AWSIM).
+            As a result, each time you run the terminal (bash prompt), your OS will be configured for the best ROS 2 performance. Make sure you open your terminal at least once before running any instance of the E2E_V2E Simulator (or the Editor running the E2E_V2E Simulator).
 
 === "Windows"
     1. Make sure your machine meets the [required hardware specifications](../QuickStartDemo/#pc-specs).
@@ -46,11 +46,11 @@ This page is a tutorial for setting up a AWSIM Unity project.
 
 ### ROS 2
 
-AWSIM comes with a *standalone* flavor of [`Ros2ForUnity`](../../Components/ROS2/ROS2ForUnity/index.md). This means that, to avoid internal conflicts between different ROS 2 versions, you shouldn't run the Editor or AWSIM binary with ROS 2 sourced.
+E2E_V2E Simulator comes with a *standalone* flavor of [`Ros2ForUnity`](../../Components/ROS2/ROS2ForUnity/index.md). This means that, to avoid internal conflicts between different ROS 2 versions, you shouldn't run the Editor or E2E_V2E Simulator binary with ROS 2 sourced.
 
 !!! warning
 
-    Do not run the AWSIM, Unity Hub, or the Editor with ROS 2 sourced.
+    Do not run the E2E_V2E Simulator, Unity Hub, or the Editor with ROS 2 sourced.
 
 
 
@@ -82,11 +82,11 @@ The easiest way to be sure about your version is by using 'Software & Updates' i
 
 !!! info
 
-    AWSIM's Unity version is currently **unity 6**
+    E2E_V2E Simulator's Unity version is currently **unity 6000.0.50f1**
 
 Follow the steps below to install Unity on your machine:
 
-1. Install UnityHub to manage Unity projects. Please go to [Unity download page](https://unity3d.com/get-unity/download) and download latest `UnityHub.AppImage`.
+1. Install **UnityHub** to manage Unity projects. Please go to [Unity download page](https://unity3d.com/get-unity/download) and download latest `UnityHub.AppImage`.
 ![](image_1.png)
 2. Install Unity 6 via UnityHub.
     - Open new terminal, navigate to directory where `UnityHub.AppImage` is download and execute the following command (or find the unityhub icon and run it):
@@ -100,7 +100,7 @@ Follow the steps below to install Unity on your machine:
     - Now we add the project to unity hub
     ![](image_6.png)
     - In this step, you have to select either 'V2X_E2E_Simulator' or 'AWSIM' (you will only see one of these options in your setup sequence).
-    ![](image_7.png)
+    ![alt text](image-9.png)
 
     - Then, you will see this error (if you don't already have the exact version of Unity 6).
     ![alt text](image-4.png)
@@ -164,18 +164,17 @@ To open the Unity AWSIM project in Unity Editor:
 
 To properly run and use AWSIM project in Unity it is required to download map package which is not included in the repository.
 
-1. Download and import the latest Kashiwa unity package which is currently `Kashiwa_7.8.unitypackage`
+1. Download and import the latest E2E_V2E_<version.unitypackage unity package 
 
     [Download Map files (unitypackage)](https://drive.google.com/file/d/1kAf_gZPu9zcm3SPo1MRCZVLIHzNL-YKH/view?usp=sharing){.md-button .md-button--primary}
 
-2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `Kashiwa_7.8.unitypackage` file (or each version that you desire or download, in the image picture bleongs to Kashiwa_7.4.11.unitypackage).
+2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `E2E_V2E_<version>.unitypackage` file (or each version that you desire or download, in the image picture bleongs to E2E_V2E_v2_8_13.unitypackage).
 ![](image_10.png)
-</br>
-![alt text](<Screenshot from 2024-12-04 14-23-40.png>)
-</br>
+![alt text](image-8.png)
 ![](image_11.png)
-3. `Nishishinjuku` package has been successfully imported under `Assets/AWSIM/Externals/`directory.
-![](image_12.png)
+3. The package has been successfully imported under `Assets/V2X/Scenes/`directory.
+<!-- ![](image_12.png) -->
+![alt text](image-10.png)
 
 !!! info
 
@@ -184,13 +183,8 @@ To properly run and use AWSIM project in Unity it is required to download map pa
 
 *NOTE: There is a high probability that the engine may crash once during the installation of this package due to the excessive RAM required, but there is no problem, and the installation will complete after a minute.
 
-## Run the demo in Editor
 
-The following steps describe how to run the demo in Unity Editor:
-
-1. Open the `AutowareSimulation.unity` scene placed under `Assets/AWSIM/Scenes/Main` or `Assets/V2x/scenes/` directory
-2. Run the simulation by clicking `Play` button placed at the top section of Editor.
-![](image_13.png)
+<!-- ![](image_13.png) -->
 
 
 <div style="text-align: center;">
