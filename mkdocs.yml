@@ -102,6 +102,7 @@ nav:
       - General: Components/Pedestrian/index.md
       - WayPoint For Pedestrians and Cyclists : Components/WaypointPed/index.md
     - MultiSensorStepScanning: Components/MultiSensorStepScanning/index.md
+    - RandomSpawnCharacters: Components/RandomSpawnCharacters/index.md
   
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md

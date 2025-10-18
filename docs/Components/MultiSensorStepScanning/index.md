@@ -6,7 +6,7 @@
 **Script:** `MultiSensorStepScanning.cs`  
 
 A unified, step-based scanning system for LiDAR and camera sensors in Unity.  
-Designed for **AWSIM / RGLUnityPlugin**, this tool enables synchronized LiDAR and camera captures on a per-step basis, useful for dataset generation, ground-truth logging, or robotic simulation.
+Designed for **AWSIM / RGLUnityPlugin**, this tool enables synchronized LiDAR and camera captures on a per-step basis, useful for dataset generation, ground-truth logging, or robotic simulation. The most important aspect of this component is ensuring that all elements are captured simultaneously, preventing any blurring or misalignment in the camera image.
 
 ---
 
