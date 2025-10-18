@@ -60,6 +60,9 @@ extra:
 
 extra_javascript:
     - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+    
+extra_css:
+    - main.css
 
 nav:
   - Home: index.md
@@ -98,6 +101,7 @@ nav:
     - Pedestrian & Cyclist: 
       - General: Components/Pedestrian/index.md
       - WayPoint For Pedestrians and Cyclists : Components/WaypointPed/index.md
+    - MultiSensorStepScanning: Components/MultiSensorStepScanning/index.md
   
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
