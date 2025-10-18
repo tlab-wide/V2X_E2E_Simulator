@@ -20,7 +20,7 @@ public class NetworkSimulator : Singleton<NetworkSimulator>
         // Drop the packet based on the sampled probability
         if (UnityEngine.Random.value < sampledLossP)
         {
-            Debug.Log($"Dropped msg on '{cfg.topicName}' (p={sampledLossP:0.###})");
+            // Debug.Log($"Dropped msg on '{cfg.topicName}' (p={sampledLossP:0.###})");
             return;
         }
 

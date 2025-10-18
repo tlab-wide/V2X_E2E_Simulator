@@ -128,8 +128,8 @@ public class MockDetectionSensor : DetectionSensor
         Vector3 local = transform.InverseTransformPoint(targetPoint.position);
 
         // Must be in front of the forward vector (z forward in local space)
-        if (local.z <= 0f)
-            return false;
+        // if (local.z <= 0f)
+        //     return false;
 
         // Horizontal (yaw) and Vertical (pitch) angles in degrees
         float yawDeg   = Mathf.Atan2(local.x, local.z) * Mathf.Rad2Deg; // left/right

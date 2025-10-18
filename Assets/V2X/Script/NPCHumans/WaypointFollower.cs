@@ -21,10 +21,43 @@ public class WaypointFollower : MonoBehaviour, ISpeed
     [SerializeField] private float stickToGroundForce = 5f;
 
     [Header("Local Avoidance (simple)")]
+    [Tooltip("Master toggle for simple local avoidance.")]
+    [SerializeField] private bool enableLocalAvoidance = true;
     [Tooltip("If unset, uses this object's layer automatically.")]
     [SerializeField] private LayerMask characterMask = 0;
     [SerializeField] private float avoidRadius = 0.9f;
     [Range(0f, 2f)]  [SerializeField] private float avoidWeight = 0.6f;
+
+    [Header("Obstacle Stop (layer-based)")]
+    [Tooltip("Master toggle for obstacle stopping via BoxCast/Ray checks.")]
+    [SerializeField] private bool enableObstacleStop = true;
+    [Tooltip("If any collider on these layers is in front, the agent will stop.")]
+    [SerializeField] private LayerMask stopForMask = 0;
+    [Tooltip("How far ahead to check for stop layers.")]
+    [SerializeField] private float stopCheckDistance = 1.75f;
+    [Tooltip("Extra clearance required before resuming, to reduce start/stop jitter.")]
+    [SerializeField] private float stopClearHysteresis = 0.2f;
+
+    [Tooltip("Half extents of the box used for forward detection (x = half width, y = half height, z = half depth).")]
+    [SerializeField] private Vector3 stopBoxHalfExtents = new Vector3(0.6f, 0.9f, 0.15f);
+    [Tooltip("Vertical center of the box above ground (meters).")]
+    [SerializeField] private float stopBoxVerticalOffset = 0.9f;
+
+    [Tooltip("Enable slim ray fallbacks at low/mid heights.")]
+    [SerializeField] private bool stopUseRayFallback = true;
+    [Tooltip("Heights (meters) for the two forward rays.")]
+    [SerializeField] private Vector2 stopRayHeights = new Vector2(0.45f, 1.0f);
+
+    // NEW: freeze options to prevent sliding when blocked
+    [Header("Blocked-Stop Freezing")]
+    [Tooltip("Master toggle for applying freeze constraints while blocked.")]
+    [SerializeField] private bool enableFreezingWhenBlocked = true;
+    [Tooltip("Freeze X/Z position while blocked to prevent sliding.")]
+    [SerializeField] private bool freezeXZWhenBlocked = true;
+    [Tooltip("Freeze ALL position/rotation while blocked (overrides XZ).")]
+    [SerializeField] private bool freezeAllWhenBlocked = false;
+
+    private bool blockedAhead = false;
 
     [Header("Step Assist")]
     [SerializeField] private float stepMaxHeight = 0.35f;    // maximum curb/step height to climb
@@ -72,6 +105,24 @@ public class WaypointFollower : MonoBehaviour, ISpeed
         characterMask = 0; // Auto-pick our layer at runtime
         moveSpeedProperty = "moveSpeed";
         rotateSpeedProperty = "rotateSpeed";
+
+        // Obstacle Stop defaults
+        enableObstacleStop = true;
+        stopForMask = 0;
+        stopCheckDistance = 1.75f;
+        stopClearHysteresis = 0.2f;
+        stopBoxHalfExtents = new Vector3(0.6f, 0.9f, 0.15f);
+        stopBoxVerticalOffset = 0.9f;
+        stopUseRayFallback = true;
+        stopRayHeights = new Vector2(0.45f, 1.0f);
+
+        // Avoidance & Freeze toggles
+        enableLocalAvoidance = true;
+        enableFreezingWhenBlocked = true;
+
+        // Freeze defaults
+        freezeXZWhenBlocked = true;
+        freezeAllWhenBlocked = false;
     }
 
     void Awake()
@@ -145,13 +196,25 @@ public class WaypointFollower : MonoBehaviour, ISpeed
     void Update()
     {
         CheckDie();
-
         if (animator == null) return;
+
         var v = rb.linearVelocity;
         float speed2D = new Vector2(v.x, v.z).magnitude;
+
+        // Optional tiny-speed clamp to stabilize blends
+        if (speed2D < 0.01f) speed2D = 0f;
+
+        // FORCE idle while blocked by an obstacle
+        if (blockedAhead) speed2D = 0f;
+
         animator.SetFloat(moveSpeedHash, speed2D);
-        animator.SetFloat(rotateSpeedHash, rb.angularVelocity.magnitude);
+
+        float rotMag = rb.angularVelocity.magnitude;
+        if (rotMag < 0.01f) rotMag = 0f;
+        if (blockedAhead) rotMag = 0f; // don't let rotation keep you out of Idle
+        animator.SetFloat(rotateSpeedHash, rotMag);
     }
+
 
     // --- Core movement with slope following, local avoidance, and step assist ---
     void MoveToWaypoint()
@@ -166,6 +229,9 @@ public class WaypointFollower : MonoBehaviour, ISpeed
                 return;
             }
         }
+
+        // If obstacle stop is disabled at runtime, clear any latched 'blocked' state.
+        if (!enableObstacleStop) blockedAhead = false;
 
         // Direction to target
         Vector3 toTarget = currentWaypoint.waypoint.position - transform.position;
@@ -206,32 +272,85 @@ public class WaypointFollower : MonoBehaviour, ISpeed
         Vector3 avoid = Vector3.zero;
         int count = 0;
 
-        Vector3 capP0 = transform.position + Vector3.up * 0.1f;
-        Vector3 capP1 = transform.position + Vector3.up * (Mathf.Max(0.2f, agentHeight - 0.1f));
-        Collider[] neighbors = Physics.OverlapCapsule(
-            capP0, capP1, avoidRadius, characterMask, QueryTriggerInteraction.Ignore
-        );
-
-        foreach (var col in neighbors)
+        if (enableLocalAvoidance)
         {
-            if (!col || col.attachedRigidbody == null) continue;
-            if (col.attachedRigidbody == rb) continue;
-            if (!col.GetComponent<WaypointFollower>()) continue; // only avoid our own agents
+            Vector3 capP0 = transform.position + Vector3.up * 0.1f;
+            Vector3 capP1 = transform.position + Vector3.up * (Mathf.Max(0.2f, agentHeight - 0.1f));
+            Collider[] neighbors = Physics.OverlapCapsule(
+                capP0, capP1, avoidRadius, characterMask, QueryTriggerInteraction.Ignore
+            );
 
-            Vector3 delta = transform.position - col.transform.position;
-            delta.y = 0f;
-            float d = delta.magnitude;
-            if (d > 0.001f)
+            foreach (var col in neighbors)
             {
-                avoid += delta / (d * d); // stronger when closer
-                count++;
+                if (!col || col.attachedRigidbody == null) continue;
+                if (col.attachedRigidbody == rb) continue;
+                if (!col.GetComponent<WaypointFollower>()) continue; // only avoid our own agents
+
+                Vector3 delta = transform.position - col.transform.position;
+                delta.y = 0f;
+                float d = delta.magnitude;
+                if (d > 0.001f)
+                {
+                    avoid += delta / (d * d); // stronger when closer
+                    count++;
+                }
             }
+            if (count > 0) avoid /= count;
         }
-        if (count > 0) avoid /= count;
 
         Vector3 moveDir = desiredDir;
-        if (avoidWeight > 0f && avoid.sqrMagnitude > 0f)
+        if (enableLocalAvoidance && avoidWeight > 0f && avoid.sqrMagnitude > 0f)
             moveDir = (desiredDir + avoidWeight * avoid).normalized;
+
+        // BoxCast + (optional) ray fallback stop check
+        if (IsBlockedAheadBox(moveDir) || blockedAhead)
+        {
+            // require a touch more clearance before resuming
+            blockedAhead = IsBlockedAheadBox(moveDir, stopClearHysteresis);
+
+            // >>> Freeze to prevent sliding while blocked <<<
+            if (enableFreezingWhenBlocked)
+            {
+                if (freezeAllWhenBlocked)
+                {
+                    rb.constraints = RigidbodyConstraints.FreezeAll;
+                }
+                else if (freezeXZWhenBlocked)
+                {
+                    rb.constraints = initialConstraints |
+                                     RigidbodyConstraints.FreezePositionX |
+                                     RigidbodyConstraints.FreezePositionZ;
+                }
+                else
+                {
+                    rb.constraints = initialConstraints;
+                }
+            }
+            else
+            {
+                // No extra freezing: just keep normal movement constraints
+                rb.constraints = initialConstraints;
+            }
+
+            rb.linearVelocity = Vector3.zero; // fully stop
+
+            //force animator to Idle right away <<<
+            if (animator != null)
+            {
+                animator.SetFloat(moveSpeedHash, 0f);
+                animator.SetFloat(rotateSpeedHash, 0f);
+                // animator.applyRootMotion = false; // optional if your controller needs it
+            }
+            
+            // Optional: face intended direction while waiting
+            Vector3 face = new Vector3(moveDir.x, 0f, moveDir.z);
+            if (face.sqrMagnitude > 1e-4f)
+            {
+                Quaternion t = Quaternion.LookRotation(face.normalized, Vector3.up);
+                transform.rotation = Quaternion.Slerp(transform.rotation, t, turnSpeed * Time.deltaTime);
+            }
+            return; // pause movement this tick
+        }
 
         // Waypoint arrival
         if (planarDist <= stoppingDistance)
@@ -255,14 +374,15 @@ public class WaypointFollower : MonoBehaviour, ISpeed
             if (onGround && yVel <= 0f)
                 horizVel += Vector3.down * stickToGroundForce * Time.fixedDeltaTime;
 
-            // Step assist: if a small vertical face is ahead but the upper space is clear,
-            // add a gentle upward bias so we "walk up" curbs instead of getting stuck.
+            // Step assist
             if (onGround && StepOffsetAssist(moveDir, out float yBias))
             {
                 yVel = Mathf.Max(yVel, yBias);
             }
 
+            // >>> Restore constraints while moving <<<
             rb.constraints = initialConstraints;
+
             rb.linearVelocity = new Vector3(horizVel.x, yVel, horizVel.z);
         }
 
@@ -420,6 +540,74 @@ public class WaypointFollower : MonoBehaviour, ISpeed
         return true;
     }
 
+    /// <summary>
+    /// Checks if a collider on stopForMask is in front within stopCheckDistance (+extra).
+    /// Uses a BoxCast aligned to the agent forward, plus two thin ray fallbacks at
+    /// bumper/hood heights to catch narrow geometry (e.g., posts).
+    /// Respects 'enableObstacleStop'.
+    /// </summary>
+    private bool IsBlockedAheadBox(Vector3 moveDir, float extra = 0f)
+    {
+        if (!enableObstacleStop) return false;     // master toggle
+        if (stopForMask == 0) return false;
+        if (moveDir.sqrMagnitude < 1e-4f) return false;
+
+        Vector3 fwd = new Vector3(moveDir.x, 0f, moveDir.z).normalized;
+        if (fwd.sqrMagnitude < 1e-4f) return false;
+
+        // Distance with hysteresis allowance
+        float dist = Mathf.Max(0.05f, stopCheckDistance + Mathf.Max(0f, extra));
+
+        // Build box parameters
+        Vector3 half = new Vector3(
+            Mathf.Max(stopBoxHalfExtents.x, agentRadius * 1.05f),
+            Mathf.Max(stopBoxHalfExtents.y, agentHeight * 0.35f),
+            Mathf.Max(0.02f, stopBoxHalfExtents.z)
+        );
+
+        // Center the box at a configurable height so it hits vehicle bumpers/hoods
+        float yOff = Mathf.Clamp(stopBoxVerticalOffset, 0.05f, Mathf.Max(0.1f, agentHeight - 0.1f));
+        Vector3 center = transform.position + Vector3.up * yOff;
+
+        // Align the box to our facing
+        Quaternion orientation = Quaternion.LookRotation(fwd, Vector3.up);
+
+        // BoxCast forward
+        bool boxHit = Physics.BoxCast(
+            center, half, fwd, out RaycastHit hit,
+            orientation, dist, stopForMask, QueryTriggerInteraction.Ignore
+        );
+
+        // Optionally ignore self if the mask accidentally includes us (safety)
+        if (boxHit)
+        {
+            var rbHit = hit.rigidbody;
+            if (rbHit != null && rbHit == rb) boxHit = false;
+            else if (hit.collider != null && hit.collider.transform.IsChildOf(transform)) boxHit = false;
+        }
+
+        if (boxHit) return true;
+
+        // Slim ray fallback at two heights – helps with thin colliders or gaps
+        if (stopUseRayFallback)
+        {
+            Vector3 o1 = transform.position + Vector3.up * Mathf.Max(0.05f, stopRayHeights.x);
+            Vector3 o2 = transform.position + Vector3.up * Mathf.Max(0.05f, stopRayHeights.y);
+
+            bool r1 = Physics.Raycast(o1, fwd, out RaycastHit h1, dist, stopForMask, QueryTriggerInteraction.Ignore);
+            if (r1 && h1.rigidbody == rb) r1 = false;
+            if (r1 && h1.collider != null && h1.collider.transform.IsChildOf(transform)) r1 = false;
+
+            bool r2 = Physics.Raycast(o2, fwd, out RaycastHit h2, dist, stopForMask, QueryTriggerInteraction.Ignore);
+            if (r2 && h2.rigidbody == rb) r2 = false;
+            if (r2 && h2.collider != null && h2.collider.transform.IsChildOf(transform)) r2 = false;
+
+            if (r1 || r2) return true;
+        }
+
+        return false;
+    }
+
 #if UNITY_EDITOR
     void OnValidate()
     {
@@ -433,6 +621,16 @@ public class WaypointFollower : MonoBehaviour, ISpeed
         stepCheckDistance = Mathf.Max(0.05f, stepCheckDistance);
         stepClimbSpeed = Mathf.Max(0.01f, stepClimbSpeed);
 
+        // Obstacle Stop sanity
+        stopCheckDistance = Mathf.Max(0.05f, stopCheckDistance);
+        stopClearHysteresis = Mathf.Clamp(stopClearHysteresis, 0f, 1f);
+        stopBoxHalfExtents.x = Mathf.Max(0.05f, stopBoxHalfExtents.x);
+        stopBoxHalfExtents.y = Mathf.Max(0.1f,  stopBoxHalfExtents.y);
+        stopBoxHalfExtents.z = Mathf.Max(0.02f,  stopBoxHalfExtents.z);
+        stopBoxVerticalOffset = Mathf.Max(0.05f, stopBoxVerticalOffset);
+        stopRayHeights.x = Mathf.Max(0.05f, stopRayHeights.x);
+        stopRayHeights.y = Mathf.Max(0.05f, stopRayHeights.y);
+
         // Keep upright by default
         if ((initialConstraints & (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ)) == 0)
             initialConstraints |= RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
@@ -440,6 +638,9 @@ public class WaypointFollower : MonoBehaviour, ISpeed
         // Refresh animator hashes if names changed in inspector
         moveSpeedHash = Animator.StringToHash(moveSpeedProperty);
         rotateSpeedHash = Animator.StringToHash(rotateSpeedProperty);
+
+        // If obstacle stop toggled off in Inspector, clear blocked latch in edit-time previews
+        if (!enableObstacleStop) blockedAhead = false;
     }
 
     void OnDrawGizmosSelected()
@@ -448,12 +649,39 @@ public class WaypointFollower : MonoBehaviour, ISpeed
         Gizmos.DrawWireSphere(transform.position + Vector3.up * 0.1f, avoidRadius);
 
         // Visualize step check
-        Vector3 fwd = transform.forward;
+        Vector3 fwdStep = transform.forward;
         Vector3 lowerOrigin = transform.position + Vector3.up * Mathf.Max(0.1f, agentRadius * 0.5f);
         Vector3 upperOrigin = lowerOrigin + Vector3.up * Mathf.Max(0.05f, stepMaxHeight);
         Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(lowerOrigin, lowerOrigin + fwd * stepCheckDistance);
-        Gizmos.DrawLine(upperOrigin, upperOrigin + fwd * stepCheckDistance);
+        Gizmos.DrawLine(lowerOrigin, lowerOrigin + fwdStep * stepCheckDistance);
+        Gizmos.DrawLine(upperOrigin, upperOrigin + fwdStep * stepCheckDistance);
+
+        // Visualize BoxCast path
+        Gizmos.color = Color.red;
+        Vector3 f = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
+        float dist = stopCheckDistance;
+        Vector3 center = transform.position + Vector3.up * stopBoxVerticalOffset;
+        Quaternion ori = Quaternion.LookRotation(f, Vector3.up);
+
+        Matrix4x4 prev = Gizmos.matrix;
+
+        Gizmos.matrix = Matrix4x4.TRS(center, ori, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, stopBoxHalfExtents * 2f);
+
+        Gizmos.matrix = Matrix4x4.TRS(center + f * dist, ori, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, stopBoxHalfExtents * 2f);
+
+        // Rays (fallback)
+        if (stopUseRayFallback)
+        {
+            Gizmos.matrix = prev;
+            Vector3 o1 = transform.position + Vector3.up * stopRayHeights.x;
+            Vector3 o2 = transform.position + Vector3.up * stopRayHeights.y;
+            Gizmos.DrawLine(o1, o1 + f * dist);
+            Gizmos.DrawLine(o2, o2 + f * dist);
+        }
+
+        Gizmos.matrix = prev;
     }
 #endif
 }

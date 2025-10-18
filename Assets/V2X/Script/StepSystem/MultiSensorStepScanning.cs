@@ -86,8 +86,8 @@ namespace AWSIM.Scanning
          Tooltip("Optional reference frame; if set, positions are made relative to this before Unity->ROS conversion.")]
         private Transform rosReference;
 
-        [SerializeField, Tooltip("Subfolder (under outputDirectoryRoot) where per-step CSVs will be written.")]
-        private string groundTruthFolderName = "GroundTruth";
+        // [SerializeField, Tooltip("Subfolder (under outputDirectoryRoot) where per-step CSVs will be written.")]
+        // private string groundTruthFolderName = "GroundTruth";
 
         [SerializeField, Tooltip("Write a CSV header row for each step file.")]
         private bool writeCsvHeader = true;

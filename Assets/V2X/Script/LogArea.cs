@@ -303,18 +303,34 @@ public class LogArea : MonoBehaviour
 
     private IEnumerator HandleCsvHeader()
     {
-        if (checkCars && logPathCars != "" && !File.Exists(logPathCars))
+        if (checkCars && !string.IsNullOrEmpty(logPathCars))
         {
-            AppendStringToFile(logPathCars,
+            EnsureFileExistsWithHeader(logPathCars,
                 "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names,Index\n");
         }
 
-        if (checkHumans && logPathHumans != "" && !File.Exists(logPathHumans))
+        if (checkHumans && !string.IsNullOrEmpty(logPathHumans))
         {
-            AppendStringToFile(logPathHumans,
+            EnsureFileExistsWithHeader(logPathHumans,
                 "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names,Index\n");
         }
 
         yield return null;
+    }
+
+    private void EnsureFileExistsWithHeader(string filePath, string header)
+    {
+        // Make sure the directory exists
+        string directory = Path.GetDirectoryName(filePath);
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        // Create the file and write header if it doesn’t exist
+        if (!File.Exists(filePath))
+        {
+            File.WriteAllText(filePath, header);
+        }
     }
 }

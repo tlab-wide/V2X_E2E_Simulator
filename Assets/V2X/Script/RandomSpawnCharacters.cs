@@ -63,7 +63,6 @@ public class RandomSpawnCharacters : MonoBehaviour
 
     void SamplePoints()
     {
-        // first element is the father and we ignore that 
 
         for (int i = 0; i < humans.Length; i++)
         {
@@ -96,7 +95,7 @@ public class RandomSpawnCharacters : MonoBehaviour
 
     private int timer = 0;
 
-    void Update()
+    void FixedUpdate()
     {
         
         if (Time.frameCount - timer > (eachPosWaitFrame))

@@ -12,7 +12,15 @@ public class HumanNpcSpawner : MonoBehaviour
     [Tooltip("List of waypoint systems to choose from (unique selection each cycle).")]
     public List<WaypointSystem> waypointSystems = new List<WaypointSystem>();
 
-    [Header("Spawning Config")]
+    [Header("Initial Spawn (runs once in Start)")]
+    [Tooltip("Spawn this many NPCs at start (inclusive range, random pick).")]
+    [SerializeField] private int initialSpawnMin = 0;
+    [SerializeField] private int initialSpawnMax = 5;
+
+    [Tooltip("If false, the repeating spawn loop will be skipped (only initial burst).")]
+    [SerializeField] private bool runSpawnLoopAfterInitial = true;
+
+    [Header("Spawning Config (repeating loop)")]
     [Tooltip("Time (seconds) between each random generation cycle.")]
     public float waitTimeRandomGeneration = 5f;
 
@@ -31,10 +39,33 @@ public class HumanNpcSpawner : MonoBehaviour
 
     private Coroutine _spawnLoop;
 
+    private void OnValidate()
+    {
+        if (initialSpawnMin < 0) initialSpawnMin = 0;
+        if (initialSpawnMax < initialSpawnMin) initialSpawnMax = initialSpawnMin;
+        if (waitTimeRandomGeneration < 0f) waitTimeRandomGeneration = 0f;
+        if (numberSpawningHuman < 0) numberSpawningHuman = 0;
+        if (varianceSpawningHuman < 0) varianceSpawningHuman = 0;
+        if (maxExtraInstantiatesPerCycle < 0) maxExtraInstantiatesPerCycle = 0;
+    }
+
     private void Start()
     {
         DeactivateEntirePool();
-        _spawnLoop = StartCoroutine(SpawnLoop());
+
+        // --- One-time random initial spawn ---
+        int initialCount = Random.Range(initialSpawnMin, initialSpawnMax + 1); // inclusive max
+        if (initialCount > 0)
+        {
+            Debug.Log($"Initial random spawn: {initialCount}");
+            SpawnBatch(initialCount);
+        }
+
+        // --- Optional repeating loop ---
+        if (runSpawnLoopAfterInitial)
+        {
+            _spawnLoop = StartCoroutine(SpawnLoop());
+        }
     }
 
     private void DeactivateEntirePool()
@@ -66,7 +97,6 @@ public class HumanNpcSpawner : MonoBehaviour
 
             Debug.Log($"number of spawning humans 1: {numberSpawningHuman}");
             SpawnBatch(targetCount);
-            
         }
     }
 
@@ -99,7 +129,6 @@ public class HumanNpcSpawner : MonoBehaviour
         // Final list to activate; this list size equals selectedWaypoints size.
         List<Transform> toActivate = new List<Transform>(chosenFromPool);
         toActivate.AddRange(instantiated);
-        // toActivate.ForEach(t  => Debug.Log($"name of the selected {t.gameObject.name}") );
 
         for (int i = 0; i < toActivate.Count; i++)
         {
@@ -132,16 +161,8 @@ public class HumanNpcSpawner : MonoBehaviour
         // Assign the chosen system.
         follower.SetWaypointSystem(wpSystem);
 
-        // If you added the helper on WaypointFollower, use it:
-        // (Recommended for explicitly setting index = 0 and snapping to first waypoint.)
-        follower.ForceStartAtFirstWaypoint(); // requires the helper method you added
-
-        // If you *haven’t* added ForceStartAtFirstWaypoint yet, comment the line above and use this fallback:
-        // Transform firstWp = wpSystem.GetFirstWaypoint();
-        // npc.SetPositionAndRotation(firstWp.position, firstWp.rotation);
-        // var rb = npc.GetComponent<Rigidbody>();
-        // if (rb != null) { rb.linearVelocity = Vector3.zero; rb.angularVelocity = Vector3.zero; }
-        // // TODO: Without the helper, currentWaypointIndex is private; rely on WaypointFollower.Start() closest logic.
+        // Requires your helper method on WaypointFollower
+        follower.ForceStartAtFirstWaypoint();
     }
 
     // --- Helpers ---

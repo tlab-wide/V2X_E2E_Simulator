@@ -17,8 +17,8 @@ public class Scenario : MonoBehaviour
     [SerializeField] private List<MockDetectionSensor> carCameras; 
     [SerializeField] private List<MockDetectionSensor> carLidars;
 
-    [FormerlySerializedAs("RSUs")] [SerializeField]
-    private List<MockDetectionSensor> rsuSensors;
+    [FormerlySerializedAs("rsuSensors")] [FormerlySerializedAs("RSUs")] [SerializeField]
+    private List<MockDetectionSensor> rsuLidar;
 
     [SerializeField] private List<MockDetectionSensor> rsuCameras;
 
@@ -118,7 +118,7 @@ public class Scenario : MonoBehaviour
 
     public List<MockDetectionSensor> getRSUsensors()
     {
-        return rsuSensors;
+        return rsuLidar;
     }
 
     public List<MockDetectionSensor> getRsuCameras()
