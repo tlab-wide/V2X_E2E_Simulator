@@ -1,6 +1,8 @@
-.md-content p,
-.md-content li,
-.md-content blockquote {
+/* .md-content p, */
+/* .md-content li */
+/* .md-content blockquote {
   text-align: justify;
   text-justify: inter-word;
-}
+  text-align-last: left; 
+  hyphens: auto;
+}  */

@@ -55,7 +55,7 @@ E2E_V2E Simulator comes with a *standalone* flavor of [`Ros2ForUnity`](../../Com
 
 
 === "Ubuntu 22"
-    - Make sure that the terminal which you are using to run Unity Hub, Editor, or AWSIM doesn't have ROS 2 sourced.
+    - Make sure that the terminal which you are using to run Unity Hub, Editor, or V2X doesn't have ROS 2 sourced.
     - It is common to have ROS 2 sourced automatically with `~/.bashrc` or `~/.profile`. Make sure it is not obscuring your working environment:
         - Running Unity Hub from the Ubuntu GUI menu takes the environment configuration from `~/.profile`.
         - Running Unity Hub from the terminal uses the current terminal configuration from `~/.profile` and `~/.bashrc`.
@@ -86,8 +86,9 @@ The easiest way to be sure about your version is by using 'Software & Updates' i
 
 Follow the steps below to install Unity on your machine:
 
-1. Install **UnityHub** to manage Unity projects. Please go to [Unity download page](https://unity3d.com/get-unity/download) and download latest `UnityHub.AppImage`.
-![](image_1.png)
+1. Install **UnityHub** to manage Unity projects. Please go to [Unity download page](https://docs.unity3d.com/hub/manual/InstallHub.html) and download the DEB package link.
+![alt text](image-11.png)
+
 2. Install Unity 6 via UnityHub.
     - Open new terminal, navigate to directory where `UnityHub.AppImage` is download and execute the following command (or find the unityhub icon and run it):
 ```
@@ -99,8 +100,13 @@ Follow the steps below to install Unity on your machine:
         ```
     - Now we add the project to unity hub
     ![](image_6.png)
-    - In this step, you have to select either 'V2X_E2E_Simulator' or 'AWSIM' (you will only see one of these options in your setup sequence).
+    - In this step, you have to select either 'V2X_E2E_Simulator'.
     ![alt text](image-9.png)
+
+    !!! warning
+
+        You may see a window during this step that says you need to install the Editor first. The window provides two options: Open and Cancel.
+        At this stage, the Open button does not function, so select Cancel to continue instructions.
 
     - Then, you will see this error (if you don't already have the exact version of Unity 6).
     ![alt text](image-4.png)
@@ -152,17 +158,21 @@ To open the Unity AWSIM project in Unity Editor:
  -->
 
 !!! warning
-
+    <div style="text-align: left; text-justify: no;">
     If you get the safe mode dialog when starting UnityEditor, you may need to install openssl.
 
-    1. download libssl  
-    `$ wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb`
-    2. install  
-    `sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb`
+    1. Download libssl  
+       `$ wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb`
+    2. Install  
+       `sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb`
+    </div>
+
+
+
 
 ### Import external packages
 
-To properly run and use AWSIM project in Unity it is required to download map package which is not included in the repository.
+To properly run and use our project in Unity it is required to download map package which is not included in the repository.
 
 1. Download and import the latest E2E_V2E_<version.unitypackage unity package 
 

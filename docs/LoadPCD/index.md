@@ -1,3 +1,11 @@
+<style>
+
+.md-content {
+  text-align: justify;
+}
+
+</style>
+
 # Loading PCD Files in Unity
 
 Loading Point Cloud Data (PCD) files into Unity can be challenging and often requires a paid solution. In this project, we've utilized the Pcx repository available on [GitHub](https://github.com/keijiro/Pcx). However, it's important to note that Pcx is primarily designed to work with `.ply` files. We recommend using CloudCompare to convert `.pcd` files to `.ply`. In the initial step, simply open the `.pcd` file and make sure not to change anything related to the position of the points.
