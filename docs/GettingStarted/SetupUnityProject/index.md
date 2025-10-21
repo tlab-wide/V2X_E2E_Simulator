@@ -174,7 +174,7 @@ To open the Unity AWSIM project in Unity Editor:
 
 To properly run and use our project in Unity it is required to download map package which is not included in the repository.
 
-1. Download and import the latest V2X_E2E_<version.unitypackage unity package 
+1. Download and import the latest V2X_E2E_<version.unitypackage unity package> 
 
     [Download Map files (unitypackage)](https://drive.google.com/file/d/1kAf_gZPu9zcm3SPo1MRCZVLIHzNL-YKH/view?usp=sharing){.md-button .md-button--primary}
 
