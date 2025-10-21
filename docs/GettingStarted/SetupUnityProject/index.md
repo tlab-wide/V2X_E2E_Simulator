@@ -4,7 +4,7 @@
 
     It is advised to checkout the [Quick Start Demo](../QuickStartDemo) tutorial before reading this section.
 
-This page is a tutorial for setting up  E2E_V2E Simulator in Unity project.
+This page is a tutorial for setting up  V2X_E2E Simulator in Unity project.
 
 ## Environment preparation
 
@@ -35,7 +35,7 @@ This page is a tutorial for setting up  E2E_V2E Simulator in Unity project.
     ```
 
         !!! info
-            As a result, each time you run the terminal (bash prompt), your OS will be configured for the best ROS 2 performance. Make sure you open your terminal at least once before running any instance of the E2E_V2E Simulator (or the Editor running the E2E_V2E Simulator).
+            As a result, each time you run the terminal (bash prompt), your OS will be configured for the best ROS 2 performance. Make sure you open your terminal at least once before running any instance of the V2X_E2E Simulator (or the Editor running the V2X_E2E Simulator).
 
 === "Windows"
     1. Make sure your machine meets the [required hardware specifications](../QuickStartDemo/#pc-specs).
@@ -46,11 +46,11 @@ This page is a tutorial for setting up  E2E_V2E Simulator in Unity project.
 
 ### ROS 2
 
-E2E_V2E Simulator comes with a *standalone* flavor of [`Ros2ForUnity`](../../Components/ROS2/ROS2ForUnity/index.md). This means that, to avoid internal conflicts between different ROS 2 versions, you shouldn't run the Editor or E2E_V2E Simulator binary with ROS 2 sourced.
+V2X_E2E Simulator comes with a *standalone* flavor of [`Ros2ForUnity`](../../Components/ROS2/ROS2ForUnity/index.md). This means that, to avoid internal conflicts between different ROS 2 versions, you shouldn't run the Editor or V2X_E2E Simulator binary with ROS 2 sourced.
 
 !!! warning
 
-    Do not run the E2E_V2E Simulator, Unity Hub, or the Editor with ROS 2 sourced.
+    Do not run the V2X_E2E Simulator, Unity Hub, or the Editor with ROS 2 sourced.
 
 
 
@@ -82,7 +82,7 @@ The easiest way to be sure about your version is by using 'Software & Updates' i
 
 !!! info
 
-    E2E_V2E Simulator's Unity version is currently **unity 6000.0.50f1**
+    V2X_E2E Simulator's Unity version is currently **unity 6000.0.50f1**
 
 Follow the steps below to install Unity on your machine:
 
@@ -174,11 +174,11 @@ To open the Unity AWSIM project in Unity Editor:
 
 To properly run and use our project in Unity it is required to download map package which is not included in the repository.
 
-1. Download and import the latest E2E_V2E_<version.unitypackage unity package 
+1. Download and import the latest V2X_E2E_<version.unitypackage unity package 
 
     [Download Map files (unitypackage)](https://drive.google.com/file/d/1kAf_gZPu9zcm3SPo1MRCZVLIHzNL-YKH/view?usp=sharing){.md-button .md-button--primary}
 
-2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `E2E_V2E_<version>.unitypackage` file (or each version that you desire or download, in the image picture bleongs to E2E_V2E_v2_8_13.unitypackage).
+2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `V2X_E2E_<version>.unitypackage` file (or each version that you desire or download, in the image picture bleongs to V2X_E2E_v2_8_13.unitypackage).
 ![](image_10.png)
 ![alt text](image-8.png)
 ![](image_11.png)
