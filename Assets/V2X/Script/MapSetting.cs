@@ -277,108 +277,81 @@ public class MapSetting : MonoBehaviour
         }
     }
 
-    [Header("Tree Tool")] [SerializeField]
-    private Transform treeParent;
+    [Header("Tree Tool")] [SerializeField] public Transform treeParent;
+    public Transform newParent;
+    public string searchingName = "tree";
+    public Vector3 shiftVector3 = Vector3.zero;
+    public bool removePrev = true;
+    public bool Scale = true;
+    public Vector3 baseScale = Vector3.one;
+    public Vector3 treeScale = Vector3.one;
 
     [SerializeField] private GameObject[] treeObjects;
-    
 
-    [SerializeField] private Vector3 shiftVector3 = new Vector3(0, 0, -1);
-
-    [SerializeField] private Vector3 treeScale = new Vector3(0.3f, 0.3f, 0.3f);
-
-    [SerializeField] private bool removePrev = false;
-
-    // [SerializeField] private Vector3 shiftTree;
-    // [SerializeField] private Vector3 scaleMultiplyer = Vector3.one;
-    [SerializeField] private Transform newParent;
-
-    [SerializeField] private string searchingName= "tree";
-
-    [SerializeField] private Vector3 baseScale = Vector3.one;
-    [SerializeField] private bool Scale = false;
-    
-    
-    private List<Transform> CollectMatchingChildren(Transform parent, string searchingName, List<Transform> treeChildren = null)
-    {
-        if (treeChildren == null)
-        {
-            treeChildren = new List<Transform>();
-        }
-        
-        foreach (Transform child in parent)
-        {
-            if (child.gameObject.activeInHierarchy && child.name.ToLower().Contains(searchingName.ToLower()))
-            {
-                treeChildren.Add(child);
-            }
-
-            // Recursively search the child's children
-            CollectMatchingChildren(child, searchingName,treeChildren);
-        }
-        
-        return treeChildren;
-    }
-    
     public void SwapTrees()
     {
-        List<Transform> treeChildren = new List<Transform>();
+        if (!treeParent)
+        {
+            Debug.LogWarning("treeParent is null.");
+            return;
+        }
 
-        // Immediate child
-        // foreach (Transform child in treeParent)
-        // {
-        //     if (child.gameObject.activeInHierarchy && child.name.ToLower().Contains(searchingName.ToLower()))
-        //     {
-        //         treeChildren.Add(child);
-        //     }
-        // }
-        
-        // nested search
-        treeChildren = CollectMatchingChildren(treeParent, searchingName);
+        if (!newParent)
+        {
+            Debug.LogWarning("newParent is null.");
+            return;
+        }
 
+        if (string.IsNullOrEmpty(searchingName))
+        {
+            Debug.LogWarning("searchingName is empty.");
+            return;
+        }
 
-        Debug.Log(treeChildren.Count);
+        var treeChildren = CollectMatchingChildren(treeParent, searchingName);
+        Debug.Log($"Found {treeChildren.Count} matching transforms");
+
+        // 🔸 Track index counts per prefab name
+        Dictionary<string, int> prefabInstanceCounters = new Dictionary<string, int>();
+
         foreach (var prevTree in treeChildren)
         {
-            // //in case of pivot is not in the center of mass of the tree
-            // Mesh mesh = prevTree.GetComponent<MeshFilter>().sharedMesh;
-            // Vector3[] vertices = mesh.vertices;
-            //
-            // Vector3 sum = Vector3.zero;
-            // for (int i = 0; i < vertices.Length; i++)
-            // {
-            //     sum += vertices[i];
-            // }
-            //
-            // Vector3 avg = sum / vertices.Length;
-            //
-            // Vector3 newPos = avg;
-            // newPos += shiftVector3;
+            if (!prevTree) continue;
 
-            Vector3 newPos = prevTree.transform.position;
+            Vector3 spawnPos = prevTree.position + shiftVector3;
 
+            GameObject reference = SelectRandomTreePrefabObjects();
+            if (!reference)
+            {
+                Debug.LogWarning("SelectRandomTreePrefabObjects() returned null. Skipping.");
+                continue;
+            }
 
-            GameObject SelectTreePrefab = SelectRandomTreePrefabObjects();
-            GameObject newTreeObject = Instantiate(SelectTreePrefab, Vector3.zero, Quaternion.identity);
-            newTreeObject.transform.position = newPos + shiftVector3;
-            newTreeObject.transform.parent = newParent;
-            newTreeObject.name = searchingName;
+            // Ensure we have a prefab *asset* (not a scene instance), and instantiate with prefab linkage when possible.
+            GameObject prefabAsset = GetPrefabAsset(reference);
+            GameObject newTreeObject =
+                InstantiateKeepingPrefabLink(prefabAsset, spawnPos, Quaternion.identity, newParent);
 
+            // 🔸 Determine prefab base name (clean and safe)
+            string prefabName = prefabAsset != null ? prefabAsset.name : reference.name;
+
+            // 🔸 Increment index per prefab type
+            if (!prefabInstanceCounters.ContainsKey(prefabName))
+                prefabInstanceCounters[prefabName] = 0;
+
+            int index = prefabInstanceCounters[prefabName]++;
+            newTreeObject.name = $"{prefabName}_{index:D2}"; // 2-digit formatting like “_01”
+
+            // Scale logic
             if (Scale)
             {
-                // Compare the original object's scale to the base scale
-                // Vector3 originalScale = prevTree.parent.transform.localScale;
-                Vector3 originalScale = prevTree.transform.localScale;
-
-                // Calculate relative scale factors
-                Vector3 relativeScale = new Vector3(
-                    originalScale.x / baseScale.x,
-                    originalScale.y / baseScale.y,
-                    originalScale.z / baseScale.z
+                Vector3 originalScale = prevTree.localScale;
+                Vector3 finalScale = new Vector3(
+                    originalScale.x * baseScale.x,
+                    originalScale.y * baseScale.y,
+                    originalScale.z * baseScale.z
                 );
-
-                // Apply treeScale as a coefficient
-                Vector3 finalScale = Vector3.Scale(relativeScale, treeScale);
+                finalScale = Vector3.Scale(finalScale, treeScale);
                 newTreeObject.transform.localScale = finalScale;
             }
             else
@@ -386,13 +359,79 @@ public class MapSetting : MonoBehaviour
                 newTreeObject.transform.localScale = treeScale;
             }
 
-            //todo  delete the tree 
             if (removePrev)
             {
-                // DestroyImmediate(prevTree.gameObject);
                 prevTree.gameObject.SetActive(false);
             }
+
+#if UNITY_EDITOR
+            // Record modifications so overrides show up on the instance
+            PrefabUtility.RecordPrefabInstancePropertyModifications(newTreeObject.transform);
+#endif
         }
+    }
+
+
+    // [SerializeField] private Vector3 shiftTree;
+
+    private List<Transform> CollectMatchingChildren(Transform parent, string search, List<Transform> acc = null)
+    {
+        acc ??= new List<Transform>();
+        string needle = search.ToLowerInvariant();
+
+        foreach (Transform child in parent)
+        {
+            var go = child.gameObject;
+            if (go.activeInHierarchy && child.name.ToLowerInvariant().Contains(needle))
+                acc.Add(child);
+
+            CollectMatchingChildren(child, search, acc);
+        }
+
+        return acc;
+    }
+
+    private static float SafeDiv(float a, float b) => Mathf.Approximately(b, 0f) ? 0f : a / b;
+
+    /// <summary>
+    /// Returns a prefab *asset* if the reference is a scene instance; otherwise returns the input if it's already an asset.
+    /// If it's not a prefab at all, returns the original reference (so runtime still works).
+    /// </summary>
+    private static GameObject GetPrefabAsset(GameObject reference)
+    {
+#if UNITY_EDITOR
+        // If it's a scene instance of a prefab, get the corresponding asset
+        var source = PrefabUtility.GetCorrespondingObjectFromSource(reference);
+        if (source != null) return source;
+
+        // If it's already a prefab asset, keep it
+        var type = PrefabUtility.GetPrefabAssetType(reference);
+        if (type != PrefabAssetType.NotAPrefab) return reference;
+#endif
+
+        // Not a prefab (e.g., pure scene object or runtime)—fallback
+        return reference;
+    }
+
+    /// <summary>
+    /// Instantiates while preserving prefab linkage in the Editor. Falls back to normal Instantiate at runtime.
+    /// </summary>
+    private static GameObject InstantiateKeepingPrefabLink(GameObject prefabOrObject, Vector3 pos, Quaternion rot,
+        Transform parent)
+    {
+#if UNITY_EDITOR
+        // If this is a prefab asset, use PrefabUtility to keep the link
+        if (prefabOrObject && PrefabUtility.GetPrefabAssetType(prefabOrObject) != PrefabAssetType.NotAPrefab)
+        {
+            var obj = (GameObject)PrefabUtility.InstantiatePrefab(prefabOrObject, parent);
+            obj.transform.SetPositionAndRotation(pos, rot);
+            return obj;
+        }
+#endif
+
+        // Runtime or non-prefab: normal instantiate
+        var instance = Object.Instantiate(prefabOrObject, pos, rot, parent);
+        return instance;
     }
 
 
@@ -632,7 +671,6 @@ public class MapSetting : MonoBehaviour
     }
 
 
-
     [SerializeField] private Transform parentMeshLessFunction;
 
     public void RemoveMeshlessFather()
@@ -659,8 +697,10 @@ public class MapSetting : MonoBehaviour
         }
     }
 
-    
-    [Header("Rename same names")] [SerializeField] private string targetName;
+
+    [Header("Rename same names")] [SerializeField]
+    private string targetName;
+
     // private GameObject parentOfLanelet;
     //
     //this function will find the object that have same name as the target name and add index to them
@@ -683,5 +723,4 @@ public class MapSetting : MonoBehaviour
 
         Debug.Log($"Renamed {index - startIndex} objects with the exact name '{targetName}'");
     }
-    
 }

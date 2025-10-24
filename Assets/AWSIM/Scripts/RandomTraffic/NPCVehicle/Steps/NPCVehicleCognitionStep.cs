@@ -181,8 +181,9 @@ namespace AWSIM.TrafficSimulation
 
                 // Reduce the detection range so that large sized vehicles can pass each other.
                 var boxCastExtents = States[stateIndex].Extents * 0.5f;
-                boxCastExtents.y *= 1;
+                boxCastExtents.y *= 2;
                 boxCastExtents.z = 0.1f;
+                boxCastExtents.x = 1.2f;
                 var endPoint = Waypoints[waypointOffset + waypointIndex];
 
                 var distance = Vector3.Distance(startPoint, endPoint);
@@ -894,7 +895,7 @@ namespace AWSIM.TrafficSimulation
 
                     }
 
-                    var trafficLight = state.TrafficLightLane?.StopLine.TrafficLight;
+                    var trafficLight = state.TrafficLightLane?.StopLine.TrafficLight; //todo extra check
                     if (trafficLight == null)
                     {
                         state.TrafficLightPassability = TrafficLightPassability.GREEN;

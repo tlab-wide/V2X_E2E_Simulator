@@ -92,13 +92,14 @@ namespace AWSIM.TrafficSimulation
         /// <param name="candidateLanes">Candidate lanes to be assigned as right of way</param>
         public static void FindAndSetRightOfWays(TrafficLane lane, IList<TrafficLane> candidateLanes)
         {
-            lane.RightOfWayLanes.Clear();
-
+            var computed = new List<TrafficLane>();
             foreach (var other in candidateLanes)
-            {
                 if (JudgeRightOfWay(lane, other))
-                    lane.RightOfWayLanes.Add(other);
-            }
+                    computed.Add(other);
+
+            if (computed.Count == 0) return;             // <-- keep existing manual list
+            lane.RightOfWayLanes.Clear();
+            lane.RightOfWayLanes.AddRange(computed);
         }
 
         /// <summary>
