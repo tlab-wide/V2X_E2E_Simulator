@@ -87,7 +87,7 @@ To run the simulator, please follow the steps below.
 
         !!! warning
         
-            Currently, there are cases where the Nvidia driver version is too high, resulting in Segmentation fault. In that case, please lower the Nvidia driver version (550 is recommended.)
+            Currently, there are cases where the NVIDIA driver is incompatible, resulting in a segmentation fault. In such cases, please use the 580 version, which we have already tested.
 
     3. Reboot your machine to make the installed driver detected by the system.
     ```
@@ -96,9 +96,9 @@ To run the simulator, please follow the steps below.
     4. Open terminal and check if `nvidia-smi` command is available and outputs summary similar to the one presented below.
     ```
     $ nvidia-smi 
-    Fri Oct 14 01:41:05 2022       
+    Sat Oct 25 17:34:49 2025
     +-----------------------------------------------------------------------------+
-    | NVIDIA-SMI 515.65.01    Driver Version: 515.65.01    CUDA Version: 11.7     |
+    | NVIDIA-SMI 580.95.05    Driver Version: 580.95.05    CUDA Version: 13.0     |
     |-------------------------------+----------------------+----------------------+
     | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
     | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
