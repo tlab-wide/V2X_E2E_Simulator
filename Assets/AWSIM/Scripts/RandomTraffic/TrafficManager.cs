@@ -81,6 +81,42 @@ namespace AWSIM.TrafficSimulation
             npcVehicleSimulator?.ClearAll();
         }
 
+        /// <summary>
+        /// Remove all NPC vehicles within a specified radius from a point.
+        /// Vehicles are marked for despawn and will be removed in the next FixedUpdate.
+        /// </summary>
+        /// <param name="center">The center position to check from</param>
+        /// <param name="radius">The radius to check within</param>
+        /// <returns>Number of vehicles marked for removal</returns>
+        public int RemoveVehiclesInRadius(Vector3 center, float radius)
+        {
+            if (npcVehicleSimulator == null)
+            {
+                Debug.LogWarning("NPCVehicleSimulator is not initialized");
+                return 0;
+            }
+            
+            return npcVehicleSimulator.RemoveVehiclesInRadius(center, radius);
+        }
+
+        /// <summary>
+        /// Remove all NPC vehicles within a specified radius from a transform's position.
+        /// Vehicles are marked for despawn and will be removed in the next FixedUpdate.
+        /// </summary>
+        /// <param name="centerTransform">The transform whose position to check from</param>
+        /// <param name="radius">The radius to check within</param>
+        /// <returns>Number of vehicles marked for removal</returns>
+        public int RemoveVehiclesInRadius(Transform centerTransform, float radius)
+        {
+            if (centerTransform == null)
+            {
+                Debug.LogWarning("RemoveVehiclesInRadius: centerTransform is null");
+                return 0;
+            }
+            
+            return RemoveVehiclesInRadius(centerTransform.position, radius);
+        }
+
         void Initialize()
         {
             Random.InitState(seed);

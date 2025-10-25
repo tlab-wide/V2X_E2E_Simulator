@@ -15,7 +15,6 @@ namespace AWSIM.TrafficSimulation
     /// </summary>
     public class NPCVehicleSimulator : IDisposable
     {
-
         /// <summary>
         /// Get NPC vehicle states that are updated in simulation steps.<br/>
         /// </summary>
@@ -26,6 +25,7 @@ namespace AWSIM.TrafficSimulation
         /// Get or set EGO Vehicle that should be considered in the simulation.
         /// </summary>
         public Transform EGOVehicle { get; set; }
+
         public int maxVehicleCount;
 
         private List<NPCVehicleInternalState> vehicleStates;
@@ -154,6 +154,42 @@ namespace AWSIM.TrafficSimulation
             {
                 state.ShouldDespawn = true;
             }
+        }
+
+        /// <summary>
+        /// Mark vehicles within a specified radius from a transform's position for despawning.
+        /// </summary>
+        /// <param name="centerPosition">The transform whose position to check from</param>
+        /// <param name="radius">The radius to check within</param>
+        /// <returns>Number of vehicles marked for despawn</returns>
+        public int RemoveVehiclesInRadius(Vector3 centerPosition, float radius)
+        {
+            if (centerPosition == null)
+            {
+                Debug.LogWarning("RemoveVehiclesInRadius: centerTransform is null");
+                return 0;
+            }
+
+
+            int removedCount = 0;
+            float radiusSquared = radius * radius; // Use squared distance for performance
+
+            foreach (var state in vehicleStates)
+            {
+                if (state.ShouldDespawn)
+                    continue;
+
+                // Check distance using the vehicle's position
+                var distanceSquared = (state.Position - centerPosition).sqrMagnitude;
+
+                if (distanceSquared <= radiusSquared)
+                {
+                    state.ShouldDespawn = true;
+                    removedCount++;
+                }
+            }
+
+            return removedCount;
         }
 
         public void Dispose()
