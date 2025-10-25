@@ -105,6 +105,10 @@ nav:
       - WayPoint For Pedestrians and Cyclists : Components/WaypointPed/index.md
     - MultiSensorStepScanning: Components/MultiSensorStepScanning/index.md
     - RandomSpawnCharacters: Components/RandomSpawnCharacters/index.md
+    - NpcCarsSystem:
+      - TrafficManager: 
+        - GeneralInformation: Components/TrafficManager/index.md
+        - VehicleDespawnSystem: Components/NpcCars/index.md
   
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
