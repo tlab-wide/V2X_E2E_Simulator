@@ -8,24 +8,29 @@ This page is a tutorial for setting up  V2X_E2E Simulator in Unity project.
 
 ## Environment preparation
 
-### System setup
+### System setup (Ubuntu 22)
 
-=== "Ubuntu 22"
-    1. Make sure your machine meets the [required hardware specifications](../QuickStartDemo/#pc-specs).
-        - *NOTE: PC requirements may vary depending on simulation contents which may change as the simulator develops*
-    2. Prepare a desktop PC with Ubuntu 22.04 installed.
-    2. Install [Nvidia drivers and Vulkan Graphics API](../QuickStartDemo).
-    3. Install [git](https://git-scm.com/).
-    4. Set the ROS 2 middleware and the localhost only mode in `~/.profile` (or, in `~/.bash_profile` or `~/bash_login` if either of those exists) file:
+1. Make sure your machine meets the [required hardware specifications](../QuickStartDemo/#pc-specs).
+    - *NOTE: PC requirements may vary depending on simulation contents which may change as the simulator develops*
+
+2. Prepare a desktop PC with Ubuntu 22.04 installed.
+
+3. Install [Nvidia drivers and Vulkan Graphics API](../QuickStartDemo).
+
+4. Install [git](https://git-scm.com/).
+
+5. Set the ROS 2 middleware and the localhost only mode in `~/.profile` (or, in `~/.bash_profile` or `~/bash_login` if either of those exists) file:
+
     ``` bash
     export ROS_LOCALHOST_ONLY=1
     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     ```
 
-        !!! warning
-            A system restart is required for these changes to work.
+    !!! warning
+        A system restart is required for these changes to work.
 
-    4. Set the system optimizations by adding this code to the very bottom of your `~/.bashrc` file:
+6. Set the system optimizations by adding this code to the very bottom of your `~/.bashrc` file:
+
     ``` bash
     if [ ! -e /tmp/cycloneDDS_configured ]; then
         sudo sysctl -w net.core.rmem_max=2147483647
@@ -34,15 +39,25 @@ This page is a tutorial for setting up  V2X_E2E Simulator in Unity project.
     fi
     ```
 
-        !!! info
-            As a result, each time you run the terminal (bash prompt), your OS will be configured for the best ROS 2 performance. Make sure you open your terminal at least once before running any instance of the V2X_E2E Simulator (or the Editor running the V2X_E2E Simulator).
+    !!! info
+        As a result, each time you run the terminal (bash prompt), your OS will be configured for the best ROS 2 performance. Make sure you open your terminal at least once before running any instance of the V2X_E2E Simulator (or the Editor running the V2X_E2E Simulator).
 
-=== "Windows"
-    1. Make sure your machine meets the [required hardware specifications](../QuickStartDemo/#pc-specs).
-        - *NOTE: PC requirements may vary depending on simulation contents which may change as the simulator develops*
-    2. Prepare a desktop PC with Windows 10 or 11 (64 bit) installed.
-    3. Install [git](https://git-scm.com/).
-    4. Install [Microsoft Visual C++ Redistributable packages for Visual Studio 2015, 2017, 2019, and 2022](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#visual-studio-2015-2017-2019-and-2022) (X64 Architecture)
+
+
+
+
+
+7. install nvidia driver, The easiest way to be sure about your version is by using 'Software & Updates' in Ubuntu.
+
+    !!! warning
+
+        Currently, there are cases where the Nvidia driver version is incomptable,  resulting in Segmentation fault. In that case, please use the tested Nvidia driver version in our case is 580.
+
+
+
+
+    ![Software and Updates selected version](image-12.png)
+
 
 ### ROS 2
 
@@ -54,28 +69,11 @@ V2X_E2E Simulator comes with a *standalone* flavor of [`Ros2ForUnity`](../../Com
 
 
 
-=== "Ubuntu 22"
     - Make sure that the terminal which you are using to run Unity Hub, Editor, or V2X doesn't have ROS 2 sourced.
     - It is common to have ROS 2 sourced automatically with `~/.bashrc` or `~/.profile`. Make sure it is not obscuring your working environment:
         - Running Unity Hub from the Ubuntu GUI menu takes the environment configuration from `~/.profile`.
         - Running Unity Hub from the terminal uses the current terminal configuration from `~/.profile` and `~/.bashrc`.
         - Running Unity Editor from the UnityHub inherits the environment setup from the Unity Hub. 
-
-
-!!! warning
-
-    Currently, there are cases where the Nvidia driver version is too high, resulting in Segmentation fault. In that case, please lower the Nvidia driver version (550 is recommended.)
-
-
-The easiest way to be sure about your version is by using 'Software & Updates' in Ubuntu.
-
-![alt text](<Screenshot from 2024-12-04 14-18-59.png>)
-
-
-=== "Windows"
-    - Make sure your Windows environment variables are ROS 2 free.
-
-
 
 
 ### Unity installation
@@ -180,11 +178,16 @@ To properly run and use our project in Unity it is required to download map pack
 
 2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `V2X_E2E_<version>.unitypackage` file (or each version that you desire or download, in the image picture bleongs to V2X_E2E_v2_8_13.unitypackage).
 ![](image_10.png)
+<br>
 ![alt text](image-8.png)
+<br>
 ![](image_11.png)
+
 3. The package has been successfully imported under `Assets/V2X/Scenes/`directory.
-<!-- ![](image_12.png) -->
-![alt text](image-10.png)
+
+<div style="text-align: center;">
+  <img src="image-10.png" alt="alt text" width="1200">
+</div>
 
 !!! info
 
