@@ -24,13 +24,20 @@ This repository hosts the **V2X End-to-End Simulator**, designed to **evaluate c
 
 
 ## Extra Features
-* Cyclists
+* Cyclists support
 * Pseudo sensors (computationally lightweight sensors)
-* Additional patterns of movement
 * New types of ROS messages
 * Complete setup for an Autonomous Bus compatible with Autoware
-* Enhanced Logging System compatible with OpenStreetMap
-* Tools and techniques to improve the accuracy of 3D models by loading PCDs
+* Enhanced logging system compatible with OpenStreetMap
+* Tools and techniques to improve the accuracy of 3D models by loading PCD files
+* Multi-Sensor Step Scanning component that generates synchronized data from camera and LiDAR and creates corresponding ground truth positions
+* Pedestrian and cyclist movement patterns compatible with traffic lights and a collision avoidance system to prevent collisions with pedestrians and vehicles
+* Integration of the [UnitySensors](https://github.com/Field-Robotics-Japan/UnitySensors) package with HDRP support (not available in the original library)
+* Teleport feature on the Unity side for the ego vehicle
+* Traffic API updates to remove vehicles in specific scenarios and handle teleport situations
+* Automatic repetition of multiple configurations to test various camera and lidar setups (documentation for this feature is currently incomplete)
+
+
 
 
 <!-- ## Some notes
