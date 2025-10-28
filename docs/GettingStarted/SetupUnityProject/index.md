@@ -106,6 +106,11 @@ Follow the steps below to install Unity on your machine:
         You may see a window during this step that says you need to install the Editor first. The window provides two options: Open and Cancel.
         At this stage, the Open button does not function, so select Cancel to continue instructions.
 
+    !!! warning
+        If you see this message select the **Yes, for these and other files that might be found later**
+        ![alt text](image-14.png)
+        ![alt text](image-15.png)
+
     - Then, you will see this error (if you don't already have the exact version of Unity 6).
     ![alt text](image-4.png)
     - To fix this issue, install the correct version by clicking on the warning sign and selecting the shown version.
@@ -179,11 +184,19 @@ To properly run and use our project in Unity it is required to download map pack
 2. In Unity Editor, from the menu bar at the top, select `Assets -> Import Package -> Custom Package...` and navigate the `V2X_E2E_<version>.unitypackage` file (or each version that you desire or download, in the image picture bleongs to V2X_E2E_v2_8_13.unitypackage).
 ![](image_10.png)
 <br>
-![alt text](image-8.png)
+Select the version you downloaded from the link (it may differ from the one shown—you likely have a newer version)
 <br>
-![](image_11.png)
+![alt text](image-13.png)
+<br>
+Dont need to make any changes in this step and only press the import button
+<!-- ![alt text]() -->
+<!-- ![](image_11.png) -->
+<div style="text-align: center;">
+  <img src="image-14.png" alt="alt text" width="250">
+</div>
 
-3. The package has been successfully imported under `Assets/V2X/Scenes/`directory.
+
+3.The package has been successfully imported under `Assets/V2X/Scenes/`directory.
 
 <div style="text-align: center;">
   <img src="image-10.png" alt="alt text" width="1200">
