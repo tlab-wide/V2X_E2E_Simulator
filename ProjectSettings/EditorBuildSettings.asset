@@ -6,10 +6,22 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/AWSIM/Scenes/Main/AutowareSimulation.unity
-    guid: 9a19a6429a390f1428320cff9d4e1f10
+    path: Assets/V2X/Scenes/V2X_E2E_Simulator_v2.8.13.unity
+    guid: 45a700647d42e8632a93ed345de13697
   - enabled: 1
-    path: Assets/V2X/Scenes/Kashiwa 8.2.unity
-    guid: 03b7b63029f08acf78e05eaef197efce
+    path: Assets/V2X/Scenes/V2X_E2E_Simulator_v2.10.1_hamid_light.unity
+    guid: 6344930a6a6d2c167a00b592b34ce5e6
+  - enabled: 0
+    path: Assets/V2X/Scenes/V2X_E2E_Simulator_v2.8.12_hamid.unity
+    guid: 1cf3751f9ad4b9819b645d8c07ac66db
+  - enabled: 0
+    path: Assets/V2X/Scenes/V2X_E2E_Simulator_v2.8.14_hamid_bus.unity
+    guid: 67bbce8f843311b8d90302ac0005fb39
+  - enabled: 0
+    path: Assets/V2X/Scenes/V2X_E2E_Simulator_v2.8.15.unity
+    guid: a95abeddc87f3227a94f6dacc4003571
+  - enabled: 0
+    path: Assets/V2X/Scenes/V2X_E2E_Simulator_v2.9.0_hamids.unity
+    guid: 2000f6a9bfc4054c6bd2264062c9bbef
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
