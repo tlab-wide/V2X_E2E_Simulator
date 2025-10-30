@@ -108,7 +108,7 @@ Follow the steps below to install Unity on your machine:
 
     !!! warning
         If you see this message select the **Yes, for these and other files that might be found later**
-        ![alt text](image-14.png)
+        <!-- ![alt text](image-14.png) -->
         ![alt text](image-15.png)
 
     - Then, you will see this error (if you don't already have the exact version of Unity 6).
