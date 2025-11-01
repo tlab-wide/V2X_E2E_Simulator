@@ -15,7 +15,7 @@ The simulation provided in the **V2X_E2E_Simulator** demo is configured as follo
 | **Vehicle** | Lexus RX 450h |
 | **Environment** | Japan, Tokyo (Kashiwa) |
 | **Sensors** | GNSS ×1 <br> IMU ×1 <br> LiDAR ×1 <br> Traffic Camera ×1 |
-| **Traffic** | 5 different scenarios |
+| **Traffic** | Configurable via menu |
 | **ROS2 Version** | Humble |
 
 ---
@@ -28,27 +28,26 @@ An alternative build is also available for the **bus simulation**:
 | **Vehicle** | Bus |
 | **Environment** | Japan, Tokyo (Kashiwa) |
 | **Sensors** | GNSS ×1 <br> IMU ×1 <br> LiDAR ×3 <br> Traffic Camera ×1 |
-| **Traffic** | 5 different scenarios |
+| **Traffic** | Configurable via menu |
 | **ROS2 Version** | Humble |
 
 
 ### PC specs
 
-Please make sure that your machine meets the following requirements in order to run the simulation correctly:
+The following system requirements must be met for the simulation to function properly:
 
 |Required PC Specs||
 |:--|:--|
 |OS|Ubuntu 22.04|
-|CPU|6cores and 12thread or higher|
+|CPU|6 cores and 12 thread or higher|
 |GPU|RTX2080Ti or higher|
 |Nvidia Driver (Windows)|>=472.50|
-|Nvidia Driver (Ubuntu 22)|>=515.43.04|
+|Nvidia Driver (Ubuntu 22)|>=580|
 
 
 ### Localhost settings
 
-The simulation is based on the appropriate network setting, which allows for trouble-free communication of the **V2X_E2E_Simulator** simulation with the Autoware software.
-To apply required localhost settings please add the following lines to `~/.bashrc` file:
+The simulation relies on specific network configurations to ensure seamless communication between the **V2X_E2E_Simulator** and **Autoware**. To set up the necessary localhost environment, add the following lines to your `~/.bashrc` file:
 
 ``` bash
 if [ ! -e /tmp/cycloneDDS_configured ]; then
@@ -363,6 +362,29 @@ These topics publish the **ground truth** of **all objects** in the intersection
   - `/v2x/rsu4/traffic_signals`
 
 
+### **8. All intersection Cool4 Setup(DM)**
+- **Published Topic:**  
+  - `/v2x/rsu1/object_info`
+  - `/v2x/rsu1/object_info_noise`
+  - `/v2x/rsu1/object_info_noise/Cellular`
+  - `/v2x/rsu1/object_info_noise/DSRC`
+  - `/v2x/rsu2_1/object_info`
+  - `/v2x/rsu2_1/object_info_noise`
+  - `/v2x/rsu2_1/object_info_noise/Cellular`
+  - `/v2x/rsu2_1/object_info_noise/DSRC`
+  - `/v2x/rsu2_2/object_info`
+  - `/v2x/rsu2_2/object_info_noise`
+  - `/v2x/rsu2_2/object_info_noise/Cellular`
+  - `/v2x/rsu2_2/object_info_noise/DSRC`
+  - `/v2x/rsu3/object_info`
+  - `/v2x/rsu3/object_info_noise`
+  - `/v2x/rsu3/object_info_noise/Cellular`
+  - `/v2x/rsu3/object_info_noise/DSRC`
+  - `/v2x/rsu4/object_info`
+  - `/v2x/rsu4/object_info_noise`
+  - `/v2x/rsu4/object_info_noise/Cellular`
+  - `/v2x/rsu4/object_info_noise/DSRC`
+
 ## Scenarios
 
 There are **five scenarios** available in **V2X_E2E_Simulator version 7.8.2**.  
@@ -370,12 +392,12 @@ You can select a scenario using the **number keys (1-5) on the main keyboard**.
 (**Note:** The **numpad keys do not work** for scenario selection.)
 
 
-### **Available Scenarios**
-- (1):**Normal Traffic** – City traffic with **pedestrians and cyclists**.
-- (2)**Empty City** – No traffic or humans.  
-   . **Manual spawning** of vehicles is available using the **O key** at **Intersection #1**.  
-   . A **return gate** is placed along the way.
-- (3)**Manual Traffic with Pedestrians & Cyclists**  
+### **Available Scenarios (Selectable in menu)**
+- **Normal Traffic** – City traffic with **pedestrians and cyclists**.
+- **Empty City** – No traffic or humans.  
+   <!-- . **Manual spawning** of vehicles is available using the **O key** at **Intersection #1**.   -->
+   <!-- . A **return gate** is placed along the way. -->
+<!-- - (3)**Manual Traffic with Pedestrians & Cyclists**  
    . **Manual vehicle spawning** is available.  
    . **Pedestrians and cyclists** are present.  
    . A **return gate** is located in **Intersection #2**.
@@ -383,7 +405,7 @@ You can select a scenario using the **number keys (1-5) on the main keyboard**.
    . Normal **traffic, pedestrians, and cyclists**.  
    . A **return gate** is placed in **Intersection #1**.
 - (5)**High Pedestrian Density**  
-   . Extra **pedestrians** are present in **Intersection #4**.
+   . Extra **pedestrians** are present in **Intersection #4**. -->
 
 
 
