@@ -1,6 +1,5 @@
 using System;
 using AWSIM.TrafficSimulation;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 
 public class TestTrafficRemovingNpc : MonoBehaviour

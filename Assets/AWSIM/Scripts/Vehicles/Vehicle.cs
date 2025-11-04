@@ -70,6 +70,34 @@ namespace AWSIM
             NEUTRAL = 2,
             DRIVE = 3,
         }
+        
+        /// <summary>
+        /// Resets the vehicle's velocity and acceleration to zero (e.g., after teleportation).
+        /// </summary>
+        public void ResetMotionState()
+        {
+            // Reset physical velocity and angular velocity
+            m_rigidbody.linearVelocity = Vector3.zero;
+            m_rigidbody.angularVelocity = Vector3.zero;
+
+            // Reset the smoothed acceleration to zero
+            acceleration.DesiredValue = 0f;
+            // acceleration.Value = 0f; // Force immediate reset (bypass lag)
+
+            // Wake up the rigidbody in case it was sleeping
+            if (m_rigidbody.IsSleeping())
+                m_rigidbody.WakeUp();
+
+            // Optionally reset cached values used for acceleration/angular calculations
+            lastVelocity = Vector3.zero;
+            lastAngularVelocity = Vector3.zero;
+
+            // Recompute speed and local acceleration to reflect reset
+            Speed = 0f;
+            LocalAcceleration = Vector3.zero;
+            AngularVelocity = Vector3.zero;
+            AngularAcceleration = Vector3.zero;
+        }
 
         public enum TurnSignal
         {
@@ -529,4 +557,6 @@ namespace AWSIM
             }
         }
     }
+    
+    
 }

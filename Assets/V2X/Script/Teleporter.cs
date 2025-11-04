@@ -34,6 +34,10 @@ public class Teleporter : MonoBehaviour
         // Mark vehicle as being teleported to prevent re-triggering
         teleportingVehicles.Add(vehicle);
 
+        // Get Rigidbody reference
+        Rigidbody rb = vehicle.GetComponent<Rigidbody>();
+
+
         // Phase 1: Remove vehicles around teleport destination
         foreach (TrafficManager trafficManager in trafficManagers)
         {
@@ -43,19 +47,37 @@ public class Teleporter : MonoBehaviour
         // Wait for removal to complete
         yield return new WaitForSeconds(teleportDelay);
 
-        // we have to catch on fix update to move properly
-        yield return new WaitForFixedUpdate();
-        
-        // Phase 2: Teleport the vehicle
-        vehicle.transform.position = teleporter_pivot.position;
-        vehicle.transform.rotation = teleporter_pivot.rotation;
-        
-        Rigidbody rb = vehicle.GetComponent<Rigidbody>();
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
 
-        // Extra safety: wait a bit more
-        yield return new WaitForSeconds(0.5f);
+        // Wait for fixed update
+        yield return new WaitForFixedUpdate();
+        // Disable physics temporarily
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+        }
+
+        vehicle.transform.SetPositionAndRotation(teleporter_pivot.position, teleporter_pivot.rotation);
+        yield return new WaitForFixedUpdate();
+        // Reset vehicle state
+        vehicle.transform.SetPositionAndRotation(teleporter_pivot.position, teleporter_pivot.rotation);
+        yield return new WaitForFixedUpdate();
+
+        // Phase 2: Teleport the vehicle (do ALL at once)
+        vehicle.transform.SetPositionAndRotation(teleporter_pivot.position, teleporter_pivot.rotation);
+
+        // Re-enable physics and reset velocities
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+            rb.position = teleporter_pivot.position;
+            rb.rotation = teleporter_pivot.rotation;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        // Wait for physics to stabilize
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
 
         // Remove from tracking set
         teleportingVehicles.Remove(vehicle);

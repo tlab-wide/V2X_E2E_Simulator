@@ -7,7 +7,7 @@ namespace AWSIM
 {
     public class DemoUI : MonoBehaviour
     {
-        [SerializeField] Text versionText;
+        // [SerializeField] Text versionText;
         [SerializeField] Text fpsText;
 
         int frameCount;
@@ -18,7 +18,7 @@ namespace AWSIM
         {
             var version = Application.version;
             print(version);
-            versionText.text = "AWSIM v " + version;
+            // versionText.text = "AWSIM v " + version;
 
             frameCount = 0;
             lastTime = 0.0f;
