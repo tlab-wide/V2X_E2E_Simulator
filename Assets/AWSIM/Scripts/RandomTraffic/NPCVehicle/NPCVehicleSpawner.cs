@@ -119,7 +119,7 @@ namespace AWSIM.TrafficSimulation
             var ignoreGroundLayerMask = ~LayerMask.GetMask(Constants.Layers.Ground);
             return !Physics.CheckBox(
                 center,
-                localBounds.extents * 2f,
+                localBounds.extents * 5f,
                 rotation,
                 ignoreGroundLayerMask,
                 QueryTriggerInteraction.Ignore);

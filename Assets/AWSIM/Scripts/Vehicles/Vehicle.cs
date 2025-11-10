@@ -61,7 +61,7 @@ namespace AWSIM
     // - wheel radius (m)                               : Wheel settings
 
     // TODO: Write detailed documentation about the vehicle.
-    public class Vehicle : MonoBehaviour
+    public class Vehicle : MonoBehaviour,ISpeed
     {
         public enum Shift
         {
@@ -555,6 +555,11 @@ namespace AWSIM
                 foreach (var wheel in wheels)
                     wheel.UpdateWheelForce(perWheelAcceleration);
             }
+        }
+
+        public float GetSpeed()
+        {
+            return Speed;
         }
     }
     
