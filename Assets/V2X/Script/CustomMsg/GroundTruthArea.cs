@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics; // for [Conditional]
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -9,120 +8,80 @@ public sealed class GroundTruthArea : DetectionSensor
     [Tooltip("Only GameObjects on these layers will be tracked.")]
     public LayerMask layerMask;
 
-    // Fast membership set used by gameplay/runtime logic.
-    private readonly HashSet<GameObject> _inside = new HashSet<GameObject>();
+    [Tooltip("List of objects currently inside the area.")]
+    [SerializeField] private List<GameObject> _inside = new List<GameObject>();
+
     private BoxCollider _box;
-
-    /// <summary>Snapshot of objects currently inside the area (layer-filtered).</summary>
-    public IReadOnlyCollection<GameObject> Objects => _inside;
-
-    #if UNITY_EDITOR
-    [Header("Inspector Debug (Editor Only)")]
-    [Tooltip("Update the list only when this GameObject is selected in the Inspector.")]
-    [SerializeField] private bool onlyWhenSelected = true;
-
-    [SerializeField, Tooltip("Runtime view of objects currently inside (editor only).")]
-    private List<GameObject> _insideDebug = new List<GameObject>();
-    #endif
 
     private void Awake()
     {
         _box = GetComponent<BoxCollider>();
-        _box.isTrigger = true; // ensure trigger so OnTrigger callbacks fire
+        _box.isTrigger = true;
     }
 
     private void Start()
     {
-        // Seed with anything already inside at start.
-        var center = _box.bounds.center;
-        var halfExtents = _box.bounds.extents;
-        var hits = Physics.OverlapBox(center, halfExtents, transform.rotation, layerMask, QueryTriggerInteraction.Ignore);
-        for (int i = 0; i < hits.Length; i++)
+        // Find any objects already inside at the start
+        var bounds = _box.bounds;
+        var hits = Physics.OverlapBox(bounds.center, bounds.extents, transform.rotation, layerMask, QueryTriggerInteraction.Ignore);
+
+        foreach (var hit in hits)
         {
-            var go = hits[i].attachedRigidbody ? hits[i].attachedRigidbody.gameObject : hits[i].gameObject;
-            if (go && PassesMask(go)) _inside.Add(go);
+            var go = hit.attachedRigidbody ? hit.attachedRigidbody.gameObject : hit.gameObject;
+            if (go && IsInLayerMask(go) && !_inside.Contains(go))
+            {
+                _inside.Add(go);
+            }
         }
-        SyncDebugListEditorOnly();
     }
 
-    private bool PassesMask(GameObject go)
+    private bool IsInLayerMask(GameObject go)
     {
-        int bit = 1 << go.layer;
-        return (layerMask.value & bit) != 0;
+        return (layerMask.value & (1 << go.layer)) != 0;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         var go = other.attachedRigidbody ? other.attachedRigidbody.gameObject : other.gameObject;
-        if (go && PassesMask(go))
+        if (go && IsInLayerMask(go) && !_inside.Contains(go))
         {
             _inside.Add(go);
-            SyncDebugListEditorOnly();
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
         var go = other.attachedRigidbody ? other.attachedRigidbody.gameObject : other.gameObject;
-        if (go)
+        if (go && _inside.Contains(go))
         {
             _inside.Remove(go);
-            SyncDebugListEditorOnly();
         }
     }
 
     private void OnDisable()
     {
         _inside.Clear();
-        ClearDebugListEditorOnly();
     }
 
-    // --- Editor-only helpers (no cost in builds) ---
-
-    [Conditional("UNITY_EDITOR")]
-    private void SyncDebugListEditorOnly()
-    {
-        #if UNITY_EDITOR
-        if (onlyWhenSelected && UnityEditor.Selection.activeGameObject != gameObject)
-            return;
-
-        _insideDebug.Clear();
-        foreach (var go in _inside)
-            if (go) _insideDebug.Add(go);
-
-        // Sort for readability
-        _insideDebug.Sort((a, b) =>
-        {
-            if (!a && !b) return 0;
-            if (!a) return 1;
-            if (!b) return -1;
-            return string.Compare(a.name, b.name, System.StringComparison.Ordinal);
-        });
-        #endif
-    }
-
-    [Conditional("UNITY_EDITOR")]
-    private void ClearDebugListEditorOnly()
-    {
-        #if UNITY_EDITOR
-        _insideDebug?.Clear();
-        #endif
-    }
-
-    #if UNITY_EDITOR
-    // Handy button in the component's context menu while in Editor
-    [ContextMenu("Refresh Debug List (Editor Only)")]
-    private void RefreshDebugListContextMenu() => SyncDebugListEditorOnly();
-    #endif
     public override List<Transform> GetSeenObjects()
     {
-        // Clean out any nulls (objects that were destroyed without OnTriggerExit)
-        _inside.RemoveWhere(go => !go);
+        
+        // Remove destroyed references (but keep inactive ones for visibility)
+        _inside.RemoveAll(go => go == null);
+        
+        // Build a list of active ones only
+        var result = new List<Transform>();
+        for (int i = 0; i < _inside.Count; i++)
+        {
+            var go = _inside[i];
+            if (go != null && go.activeInHierarchy &&  !go.tag.Equals("Ego"))
+            {
+                result.Add(go.transform);
+            }
+        }
 
-        var result = new List<Transform>(_inside.Count);
-        foreach (var go in _inside)
-            result.Add(go.transform);
 
+        Debug.Log($"{this.gameObject.name} Ground Truth size message{result.Count}");
         return result;
     }
 }

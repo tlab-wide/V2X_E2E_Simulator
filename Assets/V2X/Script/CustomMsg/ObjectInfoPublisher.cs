@@ -104,7 +104,7 @@ public class ObjectInfoPublisher : MonoBehaviour
 
         var objectInfos = new List<dm_object_info_msgs.msg.ObjectInfo>();
 
-        foreach (var go in groundTruthArea.Objects)
+        foreach (var go in groundTruthArea.GetSeenObjects())
         {
             if (!go) continue;
             var info = BuildObjectInfo(go.transform, byNoise: !isGroundTruth);
