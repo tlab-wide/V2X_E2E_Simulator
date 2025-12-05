@@ -31,6 +31,9 @@ namespace AWSIM.TrafficSimulation
         [SerializeField, Tooltip("Ego vehicle handler. If not set, the manager creates a dummy ego. This reference is also set automatically when the Ego spawns via the traffic simulator.")]
         private GameObject _egoVehicle;
 
+        [SerializeField, Tooltip("TrafficLanes parent GameObject. This should contain all the TrafficLane components in the scene.")]
+        private GameObject trafficLanesObject;
+
         public GameObject egoVehicle
         {
             get
@@ -195,10 +198,14 @@ namespace AWSIM.TrafficSimulation
 
         private void verifyIntegrationEnvironmentElements()
         {
-            GameObject trafficLanesObject = GameObject.Find("TrafficLanes");
             if (trafficLanesObject == null)
             {
-                Debug.LogError("VerifyIntegrationEnvironmentElements error: Object 'TrafficLanes' not found in the scene.");
+                trafficLanesObject = GameObject.Find("TrafficLanes");
+                if (trafficLanesObject == null)
+                {
+                    Debug.LogError("VerifyIntegrationEnvironmentElements error: TrafficLanes GameObject is not assigned and could not be found in the scene. Please assign it in the Inspector.");
+                    return;
+                }
             }
 
             Transform[] children = trafficLanesObject.GetComponentsInChildren<Transform>();
@@ -237,6 +244,11 @@ namespace AWSIM.TrafficSimulation
             // Manage NPC spawning with the traffic simulators
 
             // Clear null elements in current list of traffic simulator
+            if (trafficSimulatorNodes == null)
+            {
+                Debug.LogError("TrafficSimulatorNodes is null. TrafficManager may not have initialized correctly. Check that TrafficLanes GameObject is assigned.");
+                return;
+            }
             trafficSimulatorNodes.RemoveAll(item => item == null);
 
             // Find out which lanes are used by multiple spawners

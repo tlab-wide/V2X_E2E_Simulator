@@ -183,7 +183,8 @@ namespace AWSIM.TrafficSimulation
                 var boxCastExtents = States[stateIndex].Extents * 0.5f;
                 boxCastExtents.y *= 2;
                 boxCastExtents.z = 0.1f;
-                boxCastExtents.x = 1.2f;
+                // boxCastExtents.x = 1.2f;
+                boxCastExtents.x = 1f; 
                 var endPoint = Waypoints[waypointOffset + waypointIndex];
 
                 var distance = Vector3.Distance(startPoint, endPoint);
@@ -278,7 +279,7 @@ namespace AWSIM.TrafficSimulation
         /// </summary>
         private struct RightOfWayCheckJob
         {
-            public static float minimumDistanceToIntersection = 18f;
+            public static float minimumDistanceToIntersection = 25f;
 
             public static float maximumOverrunStopPointForLaneRules = 1f;
 
