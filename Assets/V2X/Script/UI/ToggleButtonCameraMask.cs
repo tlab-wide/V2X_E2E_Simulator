@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,7 +6,7 @@ using UnityEngine.UI;
 public class ToggleButtonCameraMask : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Camera targetCamera;   // If left empty, falls back to Camera.main
+    [SerializeField] private List<Camera> targetCameras;   // If left empty, falls back to Camera.main
     [SerializeField] private TextMeshProUGUI buttonLabel;      // The UI.Text on your button
 
     [Header("Culling Masks")]
@@ -20,13 +21,21 @@ public class ToggleButtonCameraMask : MonoBehaviour
 
     private void Reset()
     {
-        if (targetCamera == null) targetCamera = Camera.main;
+        if (targetCameras == null || targetCameras.Count == 0)
+        {
+            targetCameras = new List<Camera>();
+            targetCameras.Add(Camera.main);
+        }
         if (buttonLabel == null) buttonLabel = GetComponentInChildren<TextMeshProUGUI>(true);
     }
 
     private void Awake()
     {
-        if (targetCamera == null) targetCamera = Camera.main;
+        if (targetCameras == null || targetCameras.Count == 0)
+        {
+            targetCameras = new List<Camera>();
+            targetCameras.Add(Camera.main);
+        }
     }
 
     private void Start()
@@ -47,30 +56,20 @@ public class ToggleButtonCameraMask : MonoBehaviour
 
     private void ApplyMask(bool useDefault)
     {
-        if (targetCamera == null)
+        if (targetCameras == null || targetCameras.Count == 0)
         {
-            Debug.LogWarning($"{nameof(ToggleButtonCameraMask)}: No Camera assigned and no main camera found.");
+            Debug.LogWarning($"{nameof(ToggleButtonCameraMask)}: No Camera assigned and no main camera found. or targetCameras is empty");
             return;
         }
 
-        targetCamera.cullingMask = useDefault ? defaultLayerMask : alternateLayerMask;
+        foreach (var targetCamera in targetCameras)
+        {
+            targetCamera.cullingMask = useDefault ? defaultLayerMask : alternateLayerMask;
+        }
 
         if (buttonLabel != null)
         {
             buttonLabel.text = useDefault ? "Bounding Box On" : "Bounding Box Off";
         }
-    }
-
-    // Optional helpers if you want to change masks at runtime from other scripts
-    public void SetDefaultMask(LayerMask mask)
-    {
-        defaultLayerMask = mask;
-        if (usingDefault) ApplyMask(true);
-    }
-
-    public void SetAlternateMask(LayerMask mask)
-    {
-        alternateLayerMask = mask;
-        if (!usingDefault) ApplyMask(false);
     }
 }

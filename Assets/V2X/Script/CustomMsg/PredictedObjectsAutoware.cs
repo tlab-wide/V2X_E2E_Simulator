@@ -209,7 +209,7 @@ public class PredictedObjectsAutoware : MonoBehaviour
                 }
                 else
                 {
-                    throw new Exception("Detected an object without lineOfSight component");
+                    throw new Exception($"Detected an object without lineOfSight component {seenObjects[j].name}");
                 }
                 FillCovariancesInPlace(predictedObject);
                 predictedObjects.Add(predictedObject);

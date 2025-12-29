@@ -128,8 +128,8 @@ public class ObjectInfo : MonoBehaviour
         // Debug.Log(rot);
         // Debug.Log($"{rot.x}, {rot.y},{rot.z} ,{rot.w}");
         // Debug.Log(firstSensor.rotation.eulerAngles.y);
-        Debug.Log("NEW test is the best");
-        Debug.Log(this.transform.rotation.eulerAngles);
+        // Debug.Log("NEW test is the best");
+        // Debug.Log(this.transform.rotation.eulerAngles);
 
 
         if (enableDelayedMessages)

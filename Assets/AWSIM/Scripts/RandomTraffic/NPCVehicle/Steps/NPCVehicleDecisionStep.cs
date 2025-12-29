@@ -66,7 +66,8 @@ namespace AWSIM.TrafficSimulation
             var distanceToStopPointByFrontVehicle = onlyGreaterThan(state.DistanceToFrontVehicle - MinFrontVehicleDistance, -MinFrontVehicleDistance);
             var distanceToStopPointByTrafficLight = CalculateTrafficLightDistance(state, suddenStopDistance);
             var distanceToStopPointByRightOfWay = CalculateYieldingDistance(state);
-            var distanceToStopPoint = Mathf.Min(distanceToStopPointByFrontVehicle, distanceToStopPointByTrafficLight, distanceToStopPointByRightOfWay);
+            var distanceToStopPointByZebra = state.IsZebraBlocked ? state.DistanceToZebraStop : float.MaxValue;
+            var distanceToStopPoint = Mathf.Min(distanceToStopPointByFrontVehicle, distanceToStopPointByTrafficLight, distanceToStopPointByRightOfWay, distanceToStopPointByZebra);
 
             state.IsStoppedByFrontVehicle = false;
             if (distanceToStopPointByFrontVehicle <= stopDistance)

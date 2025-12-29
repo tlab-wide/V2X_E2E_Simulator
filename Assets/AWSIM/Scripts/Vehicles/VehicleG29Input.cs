@@ -149,8 +149,6 @@ namespace AWSIM
                 {
                     Overridden = true;
                     NewControlMode = VehicleControlMode.MANUAL;
-                    ShiftInput = vehicle.AutomaticShift;
-                    TurnSignalInput = vehicle.Signal;
 
                     G29Linux.UploadEffect(0, 0);
                 }

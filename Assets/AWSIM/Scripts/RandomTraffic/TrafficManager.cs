@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,8 +12,6 @@ namespace AWSIM.TrafficSimulation
     /// </summary>
     public class TrafficManager : MonoBehaviour
     {
-        [SerializeField, Tooltip("Seed value for random generator.")]
-        public int seed;
         [Header("NPC Vehicle Settings")]
         [SerializeField] private NPCVehicleConfig vehicleConfig = NPCVehicleConfig.Default();
 
@@ -63,6 +62,46 @@ namespace AWSIM.TrafficSimulation
         private List<ITrafficSimulator> trafficSimulatorNodes;
         private Dictionary<NPCVehicleSpawnPoint, Dictionary<ITrafficSimulator, GameObject>> spawnLanes;
         private GameObject dummyEgo;
+        [Header("Spawn Config (optional)")]
+        [SerializeField, Tooltip("JSON path for saving/loading spawn config.")]
+        private string spawnConfigPath = "Assets/Configs/traffic_spawn.json";
+        private readonly Dictionary<string, float> lastSpawnTimeByLane = new Dictionary<string, float>(System.StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, float> spmByLane = new Dictionary<string, float>(System.StringComparer.OrdinalIgnoreCase);
+
+        public string GetSpawnConfigPath() => spawnConfigPath;
+
+        [ContextMenu("Save Spawn Config JSON")]
+        public void SaveSpawnConfigJson()
+        {
+            var data = BuildDataFromTrafficSims();
+            if (data == null) return;
+
+            string json = JsonUtility.ToJson(data, true);
+            string fullPath = ResolveJsonPath();
+            var dir = System.IO.Path.GetDirectoryName(fullPath);
+            if (!string.IsNullOrEmpty(dir) && !System.IO.Directory.Exists(dir))
+                System.IO.Directory.CreateDirectory(dir);
+            System.IO.File.WriteAllText(fullPath, json);
+            Debug.Log($"[TrafficManager] Saved spawn config to {fullPath}");
+#if UNITY_EDITOR
+            UnityEditor.AssetDatabase.Refresh();
+#endif
+        }
+
+        [ContextMenu("Load Spawn Config JSON")]
+        public void LoadSpawnConfigJson()
+        {
+            string fullPath = ResolveJsonPath();
+            var data = TrafficSpawnConfig.ReadJson(fullPath);
+            if (data == null)
+            {
+                Debug.LogWarning($"[TrafficManager] No data loaded from {fullPath}");
+                return;
+            }
+            ApplyDataToTrafficSims(data);
+            TrafficSpawnConfig.Load(data);
+            Debug.Log($"[TrafficManager] Loaded spawn config from {fullPath}");
+        }
 
         /// <summary>
         /// Adds traffic simulator to the manager
@@ -119,9 +158,19 @@ namespace AWSIM.TrafficSimulation
 
         void Initialize()
         {
-            Random.InitState(seed);
-
             spawnLanes = new Dictionary<NPCVehicleSpawnPoint, Dictionary<ITrafficSimulator, GameObject>>();
+            var built = BuildDataFromTrafficSims();
+            if (!string.IsNullOrEmpty(spawnConfigPath))
+            {
+                var data = TrafficSpawnConfig.ReadJson(ResolveJsonPath());
+                if (data != null)
+                {
+                    ApplyDataToTrafficSims(data);
+                    TrafficSpawnConfig.Load(data);
+                    built = data;
+                }
+            }
+            TrafficSpawnConfig.Load(built);
             dummyEgo = new GameObject("DummyEgo");
             if (_egoVehicle == null)
             {
@@ -183,14 +232,19 @@ namespace AWSIM.TrafficSimulation
             Initialize();
         }
 
-        public void Restart(int newSeed = 0, int newMaxVehicleCount = 10)
+        public void Restart(int newMaxVehicleCount = 10)
         {
             Dispose();
 
-            seed = newSeed;
             maxVehicleCount = newMaxVehicleCount;
 
             Initialize();
+        }
+
+        public void SetSpawnConfigPath(string path)
+        {
+            spawnConfigPath = path;
+            LoadSpawnConfigJson();
         }
 
         private void verifyIntegrationEnvironmentElements()
@@ -272,6 +326,18 @@ namespace AWSIM.TrafficSimulation
                     continue;
                 }
 
+                // Optional spawn rate limiting per lane
+                string laneName = spawnLoc.Key.Lane != null ? spawnLoc.Key.Lane.name : string.Empty;
+                if (spmByLane.TryGetValue(laneName, out var spm) && spm > 0f)
+                {
+                    float interval = 60f / Mathf.Max(0.0001f, spm);
+                    if (lastSpawnTimeByLane.TryGetValue(laneName, out var lastTime))
+                    {
+                        if (Time.time - lastTime < interval)
+                            continue;
+                    }
+                }
+
                 if (spawnLoc.Value.Count == 1)
                 {
                     var tsimAndPrefab = spawnLoc.Value.First();
@@ -301,6 +367,11 @@ namespace AWSIM.TrafficSimulation
                     }
                 }
 
+                if (spawnedVehicle != null && !string.IsNullOrEmpty(laneName))
+                {
+                    lastSpawnTimeByLane[laneName] = Time.time;
+                }
+
                 if (spawnedVehicle && spawnedVehicle.gameObject.tag == "Ego")
                 {
                     npcVehicleSimulator.EGOVehicle = spawnedVehicle.transform;
@@ -318,7 +389,7 @@ namespace AWSIM.TrafficSimulation
             {
                 if (state.ShouldDespawn)
                 {
-                    Object.DestroyImmediate(state.Vehicle.gameObject);
+                    UnityEngine.Object.DestroyImmediate(state.Vehicle.gameObject);
                 }
             }
             npcVehicleSimulator.RemoveInvalidVehicles();
@@ -329,6 +400,128 @@ namespace AWSIM.TrafficSimulation
             npcVehicleSimulator?.Dispose();
         }
 
+        private TrafficSpawnConfig.ConfigData BuildDataFromTrafficSims()
+        {
+            var data = new TrafficSpawnConfig.ConfigData();
+            spmByLane.Clear();
+
+            foreach (var sim in randomTrafficSims)
+            {
+                if (sim.spawnableLanes == null) continue;
+                foreach (var cfg in sim.spawnableLanes)
+                {
+                    if (cfg.lane == null) continue;
+                    data.spawnRates.Add(new TrafficSpawnConfig.SpawnRateEntry
+                    {
+                        lane = cfg.lane.name,
+                        spawnsPerMinute = cfg.spawnsPerMinute
+                    });
+                    spmByLane[cfg.lane.name] = cfg.spawnsPerMinute;
+                }
+                if (sim.branchWeights != null)
+                {
+                    foreach (var bwSet in sim.branchWeights)
+                    {
+                        if (bwSet.fromLane == null || bwSet.next == null) continue;
+                        var entry = new TrafficSpawnConfig.BranchEntry
+                        {
+                            fromLane = bwSet.fromLane.name,
+                            next = new List<TrafficSpawnConfig.BranchWeight>()
+                        };
+                        foreach (var bw in bwSet.next)
+                        {
+                            if (bw.nextLane == null || bw.weight <= 0f) continue;
+                            entry.next.Add(new TrafficSpawnConfig.BranchWeight
+                            {
+                                lane = bw.nextLane.name,
+                                weight = bw.weight
+                            });
+                        }
+                        if (entry.next.Count > 0)
+                            data.branchWeights.Add(entry);
+                    }
+                }
+            }
+
+            return data;
+        }
+
+        private void ApplyDataToTrafficSims(TrafficSpawnConfig.ConfigData data)
+        {
+            spmByLane.Clear();
+
+            var laneLookup = new Dictionary<string, TrafficLane>(System.StringComparer.OrdinalIgnoreCase);
+            foreach (var lane in FindObjectsOfType<TrafficLane>(includeInactive: true))
+            {
+                if (lane != null && !laneLookup.ContainsKey(lane.name))
+                    laneLookup.Add(lane.name, lane);
+            }
+
+            if (data.spawnRates != null)
+            {
+                for (int si = 0; si < randomTrafficSims.Length; si++)
+                {
+                    var sim = randomTrafficSims[si];
+                    if (sim.spawnableLanes != null)
+                    {
+                        for (int i = 0; i < sim.spawnableLanes.Length; i++)
+                        {
+                            var cfg = sim.spawnableLanes[i];
+                            if (cfg.lane == null) continue;
+                            var match = data.spawnRates.Find(sr => sr != null && sr.lane.Equals(cfg.lane.name, StringComparison.OrdinalIgnoreCase));
+                            if (match != null)
+                            {
+                                cfg.spawnsPerMinute = match.spawnsPerMinute;
+                                sim.spawnableLanes[i] = cfg;
+                                spmByLane[cfg.lane.name] = cfg.spawnsPerMinute;
+                            }
+                        }
+                    }
+                    randomTrafficSims[si] = sim;
+                }
+            }
+
+            if (data.branchWeights != null)
+            {
+                for (int si = 0; si < randomTrafficSims.Length; si++)
+                {
+                    var sim = randomTrafficSims[si];
+                    var branchList = new List<RandomTrafficSimulatorConfiguration.BranchWeightSet>();
+                    foreach (var bw in data.branchWeights)
+                    {
+                        if (bw == null || string.IsNullOrEmpty(bw.fromLane) || bw.next == null) continue;
+                        if (!laneLookup.TryGetValue(bw.fromLane, out var fromLane)) continue;
+                        var set = new RandomTrafficSimulatorConfiguration.BranchWeightSet
+                        {
+                            fromLane = fromLane,
+                            next = bw.next.Select(n =>
+                            {
+                                if (n == null || string.IsNullOrEmpty(n.lane) || n.weight <= 0f) return default;
+                                return new RandomTrafficSimulatorConfiguration.BranchWeight
+                                {
+                                    nextLane = laneLookup.TryGetValue(n.lane, out var nextLane) ? nextLane : null,
+                                    weight = n.weight
+                                };
+                            }).Where(x => x.nextLane != null && x.weight > 0f).ToArray()
+                        };
+                        if (set.next != null && set.next.Length > 0)
+                            branchList.Add(set);
+                    }
+                    sim.branchWeights = branchList.ToArray();
+                    randomTrafficSims[si] = sim;
+                }
+            }
+        }
+
+        private string ResolveJsonPath()
+        {
+            if (string.IsNullOrEmpty(spawnConfigPath))
+                return System.IO.Path.Combine(Application.dataPath, "..", "Assets/Configs/traffic_spawn.json");
+            if (System.IO.Path.IsPathRooted(spawnConfigPath))
+                return spawnConfigPath;
+            return System.IO.Path.Combine(Application.dataPath, "..", spawnConfigPath);
+        }
+
         private void DrawSpawnPoints()
         {
             Gizmos.color = Color.cyan;
@@ -336,7 +529,8 @@ namespace AWSIM.TrafficSimulation
             {
                 foreach (var lane in randomTrafficConf.spawnableLanes)
                 {
-                    Gizmos.DrawCube(lane.Waypoints[0], new Vector3(2.5f, 0.2f, 2.5f));
+                    if (lane.lane == null || lane.lane.Waypoints.Length == 0) continue;
+                    Gizmos.DrawCube(lane.lane.Waypoints[0], new Vector3(2.5f, 0.2f, 2.5f));
                 }
             }
 

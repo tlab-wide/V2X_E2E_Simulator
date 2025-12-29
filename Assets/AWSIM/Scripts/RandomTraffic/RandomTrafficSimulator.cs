@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 namespace AWSIM.TrafficSimulation
 {
@@ -11,9 +12,36 @@ namespace AWSIM.TrafficSimulation
         /// </summary>
         [Tooltip("NPCs to be spawned.")]
         public GameObject[] npcPrefabs;
-        
-        [Tooltip("TrafficLanes where NPC vehicles can spawn.")]
-        public TrafficLane[] spawnableLanes;
+
+        [Serializable]
+        public struct SpawnableLaneConfig
+        {
+            [Tooltip("Lane used for spawning.")]
+            public TrafficLane lane;
+            [Tooltip("Desired spawns per minute on this lane (0 = no limit).")]
+            public float spawnsPerMinute;
+        }
+
+        [Tooltip("TrafficLanes where NPC vehicles can spawn, with optional per-lane rates.")]
+        public SpawnableLaneConfig[] spawnableLanes;
+
+        [Serializable]
+        public struct BranchWeight
+        {
+            public TrafficLane nextLane;
+            public float weight;
+        }
+
+        [Serializable]
+        public struct BranchWeightSet
+        {
+            [Tooltip("Lane whose next branches are weighted.")]
+            public TrafficLane fromLane;
+            public BranchWeight[] next;
+        }
+
+        [Tooltip("Optional branch weights per lane; if empty, next lanes are chosen evenly.")]
+        public BranchWeightSet[] branchWeights;
 
         [Tooltip("Describes the lifetime of a traffic simulator instance by specifying how many vehicles this traffic simulator will spawn. Setting it makes the spawner live longer or shorter, while it can also be set to infinity if needed (endless lifetime).")]
         public int maximumSpawns;
@@ -66,17 +94,40 @@ namespace AWSIM.TrafficSimulation
         }
 
         public RandomTrafficSimulator(GameObject parent,
-            GameObject[]
-            prefabs,
-            TrafficLane[]
-            spawnableLanes,
-            NPCVehicleSimulator
-            vehicleSimulator,
+            GameObject[] prefabs,
+            RandomTrafficSimulatorConfiguration.SpawnableLaneConfig[] spawnableLanes,
+            NPCVehicleSimulator vehicleSimulator,
             int maxSpawns = 0)
         {
             maximumSpawns = maxSpawns;
             npcVehicleSimulator = vehicleSimulator;
             npcVehicleSpawner = new NPCVehicleSpawner(parent, prefabs, spawnableLanes);
+        }
+
+        // Legacy overload for tests/older callers using TrafficLane[].
+        public RandomTrafficSimulator(GameObject parent,
+            GameObject[] prefabs,
+            TrafficLane[] spawnableLanes,
+            NPCVehicleSimulator vehicleSimulator,
+            int maxSpawns = 0)
+            : this(parent, prefabs, ConvertToConfigs(spawnableLanes), vehicleSimulator, maxSpawns)
+        {
+        }
+
+        private static RandomTrafficSimulatorConfiguration.SpawnableLaneConfig[] ConvertToConfigs(TrafficLane[] lanes)
+        {
+            if (lanes == null) return Array.Empty<RandomTrafficSimulatorConfiguration.SpawnableLaneConfig>();
+            var list = new List<RandomTrafficSimulatorConfiguration.SpawnableLaneConfig>();
+            foreach (var lane in lanes)
+            {
+                if (lane == null) continue;
+                list.Add(new RandomTrafficSimulatorConfiguration.SpawnableLaneConfig
+                {
+                    lane = lane,
+                    spawnsPerMinute = 0f
+                });
+            }
+            return list.ToArray();
         }
 
         public void GetRandomSpawnInfo(out NPCVehicleSpawnPoint spawnPoint, out GameObject prefab)

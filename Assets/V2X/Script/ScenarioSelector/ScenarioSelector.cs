@@ -11,6 +11,8 @@ public class ScenarioSelector : MonoBehaviour
 
     [Header("Scenarios")]
     [SerializeField] private List<Transform> scenarios;
+    [Tooltip("Scenario index to activate on Start. Set -1 to skip auto-activation.")]
+    [SerializeField] private int defaultScenarioIndex = 1;
 
     [Header("Vehicles")]
     [SerializeField] private Transform bus;
@@ -40,7 +42,8 @@ public class ScenarioSelector : MonoBehaviour
     void Start()
     {
         DeactivateAllScenarios();
-        ActivateScenario(1);
+        if (defaultScenarioIndex >= 0)
+            ActivateScenario(defaultScenarioIndex);
 
         targetTransform = bus.gameObject.activeInHierarchy ? bus.transform : car.transform;
     }

@@ -603,7 +603,8 @@ public class LineOfSight : MonoBehaviour
     {
         Purple,
         Green,
-        Red
+        Red,
+        Unknown,
     }
 
 

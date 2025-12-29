@@ -38,14 +38,40 @@ namespace AWSIM.TrafficSimulation
         /// </summary>
         /// <param name="prefabs">NPC vehicle prefabs to be spawned.</param>
         /// <param name="spawnableLanes">Lanes where vehicles can spawn.</param>
+        public NPCVehicleSpawner(GameObject parentsObj, GameObject[] prefabs, RandomTrafficSimulatorConfiguration.SpawnableLaneConfig[] spawnableLanes)
+        {
+            this.NPCVehicleParentsObj = parentsObj;
+            this.prefabs = prefabs;
+            var lanes = new List<TrafficLane>();
+            foreach (var cfg in spawnableLanes)
+            {
+                if (cfg.lane != null)
+                    lanes.Add(cfg.lane);
+            }
+            this.spawnPoints = new NPCVehicleSpawnPoint[lanes.Count];
+            for (var i = 0; i < lanes.Count; i++)
+            {
+                this.spawnPoints[i] = new NPCVehicleSpawnPoint(lanes[i], 0);
+            }
+        }
+
+        /// <summary>
+        /// Initialize with plain traffic lanes (legacy support).
+        /// </summary>
         public NPCVehicleSpawner(GameObject parentsObj, GameObject[] prefabs, TrafficLane[] spawnableLanes)
         {
             this.NPCVehicleParentsObj = parentsObj;
             this.prefabs = prefabs;
-            this.spawnPoints = new NPCVehicleSpawnPoint[spawnableLanes.Length];
-            for (var i = 0; i < spawnableLanes.Length; i++)
+            var lanes = new List<TrafficLane>();
+            if (spawnableLanes != null)
             {
-                this.spawnPoints[i] = new NPCVehicleSpawnPoint(spawnableLanes[i], 0);
+                lanes.AddRange(spawnableLanes);
+            }
+            this.spawnPoints = new NPCVehicleSpawnPoint[lanes.Count];
+            for (var i = 0; i < lanes.Count; i++)
+            {
+                if (lanes[i] == null) continue;
+                this.spawnPoints[i] = new NPCVehicleSpawnPoint(lanes[i], 0);
             }
         }
 
@@ -54,14 +80,14 @@ namespace AWSIM.TrafficSimulation
         /// </summary>
         /// <returns>NPC vehicle prefab</returns>
         public GameObject GetRandomPrefab()
-            => prefabs[Random.Range(0, prefabs.Length)];
+            => prefabs[UnityEngine.Random.Range(0, prefabs.Length)];
 
         /// <summary>
         /// Get random spawn point.
         /// </summary>
         /// <returns>Spawn point</returns>
         public NPCVehicleSpawnPoint GetRandomSpawnPoint()
-            => spawnPoints[Random.Range(0, spawnPoints.Length)];
+            => spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
 
         /// <summary>
         /// Get a <see cref="NPCVehicleSpawnPoint"/> from spawnable lanes.
@@ -79,7 +105,7 @@ namespace AWSIM.TrafficSimulation
                 npcVehicleSpawnPoint = default;
                 return false;
             }
-            npcVehicleSpawnPoint = spawnablePoints[Random.Range(0, spawnablePoints.Count)];
+            npcVehicleSpawnPoint = spawnablePoints[UnityEngine.Random.Range(0, spawnablePoints.Count)];
             return true;
         }
 
@@ -119,7 +145,7 @@ namespace AWSIM.TrafficSimulation
             var ignoreGroundLayerMask = ~LayerMask.GetMask(Constants.Layers.Ground);
             return !Physics.CheckBox(
                 center,
-                localBounds.extents,
+                localBounds.extents * 5f,
                 rotation,
                 ignoreGroundLayerMask,
                 QueryTriggerInteraction.Ignore);

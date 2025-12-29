@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using AWSIM.TrafficSimulation;
@@ -10,36 +12,59 @@ namespace AWSIM
     public class TrafficSettingsUI : MonoBehaviour
     {
         [SerializeField] TrafficManager trafficManager;
-        [SerializeField] InputField seedInputField;
-        [SerializeField] InputField maxVehicleCountInputField;
+        [SerializeField] InputField trafficSpawnPathInputField;
+        [SerializeField] InputField pedestrianPathInputField;
         [SerializeField] GameObject appliedTextObj;
-
-        int seed = 0;
-        int count = 0;
 
         void Start()
         {
-            seed = trafficManager.seed;
-            count = trafficManager.maxVehicleCount;
-
-            seedInputField.text = seed.ToString();
-            maxVehicleCountInputField.text = count.ToString();
+            if (trafficManager != null && trafficSpawnPathInputField != null)
+            {
+                trafficSpawnPathInputField.text = trafficManager.GetSpawnConfigPath();
+            }
         }
 
-        public void RestartRandomTraffic()
+        public void ApplyPaths()
         {
-            if (seedInputField.text == string.Empty)
-                seedInputField.text = seed.ToString();
+            if (trafficManager != null && trafficSpawnPathInputField != null && !string.IsNullOrEmpty(trafficSpawnPathInputField.text))
+            {
+                trafficManager.SetSpawnConfigPath(trafficSpawnPathInputField.text);
+            }
 
-            if (maxVehicleCountInputField.text == string.Empty)
-                maxVehicleCountInputField.text = count.ToString();
-
-            seed = Int32.Parse(seedInputField.text);
-            count = Int32.Parse(maxVehicleCountInputField.text);
-
-            trafficManager.Restart(seed, count);
+            if (pedestrianPathInputField != null && !string.IsNullOrEmpty(pedestrianPathInputField.text))
+            {
+                ApplyPedestrianPath(pedestrianPathInputField.text);
+            }
 
             StartCoroutine(DisplayAppliedText());
+        }
+
+        private void ApplyPedestrianPath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            var loader = FindPathConfigLoader();
+            if (loader == null)
+            {
+                Debug.LogWarning("[TrafficSettingsUI] PathConfigLoader not found in scene; cannot apply pedestrian path.");
+                return;
+            }
+
+            var type = loader.GetType();
+            var setPath = type.GetMethod("SetJsonConfigPath");
+            var loadPaths = type.GetMethod("LoadPaths");
+            if (setPath != null)
+                setPath.Invoke(loader, new object[] { path });
+            if (loadPaths != null)
+                loadPaths.Invoke(loader, null);
+        }
+
+        private UnityEngine.Object FindPathConfigLoader()
+        {
+            // Look for any MonoBehaviour with type name "PathConfigLoader"
+            var all = Resources.FindObjectsOfTypeAll<MonoBehaviour>();
+            return all.FirstOrDefault(m => m != null && m.GetType().Name == "PathConfigLoader");
         }
 
         IEnumerator DisplayAppliedText()

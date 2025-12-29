@@ -61,7 +61,7 @@ namespace AWSIM
     // - wheel radius (m)                               : Wheel settings
 
     // TODO: Write detailed documentation about the vehicle.
-    public class Vehicle : MonoBehaviour
+    public class Vehicle : MonoBehaviour,ISpeed
     {
         public enum Shift
         {
@@ -99,6 +99,26 @@ namespace AWSIM
             AngularAcceleration = Vector3.zero;
         }
 
+        public void OnEnable()
+        {
+            // If re-enabled while still frozen, restore the constraints captured before sleep.
+            if (hasConstraintsBeforeSleep && m_rigidbody.constraints == RigidbodyConstraints.FreezeAll)
+                m_rigidbody.constraints = constraintsBeforeSleep;
+
+            // Ensure physics is re-enabled in case it was left kinematic by a teleport/deactivation.
+            if (m_rigidbody.isKinematic)
+                m_rigidbody.isKinematic = false;
+
+            // Reset sleep bookkeeping so we recompute correctly after reactivation.
+            lastSleep = false;
+            sleepTimer = 0f;
+            m_rigidbody.WakeUp();
+
+            // Re-apply wheel collider setup after reactivation.
+            frontAxle?.OnEnableWheels();
+            rearAxle?.OnEnableWheels();
+        }
+
         public enum TurnSignal
         {
             NONE = 0,
@@ -127,6 +147,12 @@ namespace AWSIM
             /// Right wheel of vehicle
             /// </summary>
             public Wheel RightWheel => rightWheel;
+
+            public void OnEnableWheels()
+            {
+                leftWheel?.ReinitializeForEnable();
+                rightWheel?.ReinitializeForEnable();
+            }
         }
 
         [Header("Vehicle Settings")]
@@ -312,6 +338,8 @@ namespace AWSIM
         Wheel[] wheels;
         Rigidbody m_rigidbody;
         Transform m_transform;
+        RigidbodyConstraints constraintsBeforeSleep;
+        bool hasConstraintsBeforeSleep;
 
         // Cache previous frame values.
         Vector3 lastVelocity;
@@ -328,6 +356,8 @@ namespace AWSIM
         {
             m_rigidbody = GetComponent<Rigidbody>();
             m_transform = transform;
+            constraintsBeforeSleep = m_rigidbody.constraints;
+            hasConstraintsBeforeSleep = true;
             wheels = new Wheel[] { frontAxle.LeftWheel, frontAxle.RightWheel, rearAxle.LeftWheel, rearAxle.RightWheel };
 
             // Set center of mass position.
@@ -348,6 +378,7 @@ namespace AWSIM
             // Initialize steer angle
             steerAngle = new FirstOrderLaggedFloat(steerAngleTimeConstant, 0.0f);
         }
+        
 
         // GroundSlipMultiplier changes the slip rate.
         private void OnTriggerEnter(Collider other)
@@ -488,6 +519,9 @@ namespace AWSIM
             {
                 if (isSleep == true && lastSleep == false)
                 {
+                    // Capture constraints right before sleeping so we can restore them on wake.
+                    constraintsBeforeSleep = m_rigidbody.constraints;
+                    hasConstraintsBeforeSleep = true;
                     sleepPositon = transform.position;
                     sleepRotation = transform.rotation;
                 }
@@ -506,7 +540,9 @@ namespace AWSIM
                 }
                 else
                 {
-                    m_rigidbody.constraints = RigidbodyConstraints.None;
+                    // Restore the constraints that were active before entering sleep.
+                    if (hasConstraintsBeforeSleep)
+                        m_rigidbody.constraints = constraintsBeforeSleep;
 
                     if (m_rigidbody.IsSleeping())
                     {
@@ -555,6 +591,11 @@ namespace AWSIM
                 foreach (var wheel in wheels)
                     wheel.UpdateWheelForce(perWheelAcceleration);
             }
+        }
+
+        public float GetSpeed()
+        {
+            return Speed;
         }
     }
     

@@ -10,35 +10,57 @@ namespace AWSIM
     /// </summary>
     public class VehicleInfomationUI : MonoBehaviour
     {
-        [SerializeField] public Vehicle vehicle;
+        [SerializeField] public List<Vehicle> vehicles;
         [SerializeField] Text speedText;
         [SerializeField] Text gearText;
 
+        public void AddVehicle(Vehicle vehicle)
+        {
+            vehicles.Add(vehicle);
+        }
+        public Vehicle GetActiveVehicle()
+        {
+            foreach (Vehicle vehicle in vehicles)
+            {
+                if (vehicle.gameObject.activeInHierarchy)
+                {
+                    return vehicle;
+                }
+            }
+            return null;
+        }
+        
         void Update()
         {
-            if (!vehicle) {
-                speedText.text = "";
-                gearText.text = "";
-                return;
-            }
-
-            speedText.text = "" + Mathf.Floor(vehicle.Speed * 3.6f);
-            gearText.text = "" + GetShiftString(vehicle.AutomaticShift);
-
-            static string GetShiftString(Vehicle.Shift shift)
+            foreach (var vehicle in vehicles)
             {
-                string shiftString = "";
-                if (shift == Vehicle.Shift.DRIVE)
-                    shiftString = "D";
-                else if (shift == Vehicle.Shift.NEUTRAL)
-                    shiftString = "N";
-                else if (shift == Vehicle.Shift.PARKING)
-                    shiftString = "P";
-                else
-                    shiftString = "R";
+                if(!vehicle.gameObject.activeInHierarchy) continue;
+                
+                if (!vehicle) {
+                    speedText.text = "";
+                    gearText.text = "";
+                    return;
+                }
 
-                return shiftString;
+                speedText.text = "" + Mathf.Floor(vehicle.Speed * 3.6f);
+                gearText.text = "" + GetShiftString(vehicle.AutomaticShift);
+
+                static string GetShiftString(Vehicle.Shift shift)
+                {
+                    string shiftString = "";
+                    if (shift == Vehicle.Shift.DRIVE)
+                        shiftString = "D";
+                    else if (shift == Vehicle.Shift.NEUTRAL)
+                        shiftString = "N";
+                    else if (shift == Vehicle.Shift.PARKING)
+                        shiftString = "P";
+                    else
+                        shiftString = "R";
+
+                    return shiftString;
+                }
             }
+            
         }
     }
 }

@@ -11,6 +11,8 @@ using Random = UnityEngine.Random;
 public class LogAutonomous : MonoBehaviour
 {
     [SerializeField] private string logPathCars;
+    [SerializeField] private string spawnSelectionLogPath = "AutonomousSpawnValidation.csv";
+    [SerializeField, Tooltip("Optional prefix for autonomous logs (applied to both CSV files).")] private string logFilePrefix = "Auto";
 
     // public int waitFrames = 30;
     public float waitTime = 0.005f;
@@ -20,12 +22,18 @@ public class LogAutonomous : MonoBehaviour
     private List<Transform> humanCollisions = new List<Transform>();
 
     private Rigidbody rb;
+    private bool spawnSelectionHeaderWritten;
+    private string _runLogPathCars;
+    private string _runSpawnSelectionLogPath;
 
     private void Awake()
     {
         rb = transform.GetComponent<Rigidbody>();
+        _runLogPathCars = BuildRunFilePath(logPathCars);
+        _runSpawnSelectionLogPath = BuildRunFilePath(spawnSelectionLogPath);
         // set up header of CSV files
         StartCoroutine(HandleCsvHeaderBus());
+        EnsureSpawnSelectionLogHeader();
         
         StartCoroutine(SaveLogs());
     }
@@ -79,7 +87,7 @@ public class LogAutonomous : MonoBehaviour
             rowLog += $"{time.Sec},{time.Nanosec} \n";
             
             
-            CsvEditorUtils.AppendStringToFile(logPathCars,rowLog);
+            CsvEditorUtils.AppendStringToFile(_runLogPathCars,rowLog);
             yield return new WaitForSeconds(waitTime);
             // yield return WaitForNFrame(waitFrames);
         }
@@ -121,11 +129,30 @@ public class LogAutonomous : MonoBehaviour
     
     private IEnumerator HandleCsvHeaderBus() //todo can be remove and use CsvEditorUtils
     {
-        if (logPathCars != "" && !File.Exists(logPathCars))
+        if (_runLogPathCars != "" && !File.Exists(_runLogPathCars))
         {
-            CsvEditorUtils.AppendStringToFile(logPathCars, "X,Y,Z,W rotation,X rotation,Y rotation,Z rotation, X velocity ,Y velocity, Z velocity,X acceleration,Y acceleration, Z acceleration, list of car collisions, list of human collisions , time ,nano \n");
+            CsvEditorUtils.AppendStringToFile(_runLogPathCars, "X,Y,Z,W rotation,X rotation,Y rotation,Z rotation, X velocity ,Y velocity, Z velocity,X acceleration,Y acceleration, Z acceleration, list of car collisions, list of human collisions , time ,nano \n");
         }
         yield return null;
+    }
+
+    private void EnsureSpawnSelectionLogHeader()
+    {
+        if (spawnSelectionHeaderWritten)
+            return;
+
+        if (string.IsNullOrEmpty(_runSpawnSelectionLogPath))
+        {
+            spawnSelectionHeaderWritten = true;
+            return;
+        }
+
+        if (!File.Exists(_runSpawnSelectionLogPath))
+        {
+            CsvEditorUtils.AppendStringToFile(_runSpawnSelectionLogPath, "midpoint_segment,spawn_lane,sample_index,distance_to_midpoint_m,estimated_time_s,target_time_s,reached_cruise,target_x,target_y,target_z,ros_time_sec,ros_time_nsec\n");
+        }
+
+        spawnSelectionHeaderWritten = true;
     }
     
     
@@ -237,6 +264,33 @@ public class LogAutonomous : MonoBehaviour
         }
     }
 
+    public void LogSpawnSelection(string midpointSegment, string spawnLane, int sampleIndex, float distanceToMidpoint, float estimatedTime, float targetTime, bool reachedCruise, Vector3 targetPosition)
+    {
+        EnsureSpawnSelectionLogHeader();
+        if (string.IsNullOrEmpty(_runSpawnSelectionLogPath))
+            return;
 
-    
+        builtin_interfaces.msg.Time time = SimulatorROS2Node.GetCurrentRosTime();
+        string row =
+            $"{midpointSegment},{spawnLane},{sampleIndex},{distanceToMidpoint},{estimatedTime},{targetTime},{(reachedCruise ? 1 : 0)},{targetPosition.x},{targetPosition.y},{targetPosition.z},{time.Sec},{time.Nanosec}\n";
+        CsvEditorUtils.AppendStringToFile(_runSpawnSelectionLogPath, row);
+    }
+
+    private string BuildRunFilePath(string basePath)
+    {
+        if (string.IsNullOrEmpty(basePath))
+            return string.Empty;
+
+        string directory = Path.GetDirectoryName(basePath);
+        string name = Path.GetFileNameWithoutExtension(basePath);
+        string ext = Path.GetExtension(basePath);
+        if (string.IsNullOrEmpty(ext))
+            ext = ".csv";
+        string prefix = string.IsNullOrEmpty(logFilePrefix) ? string.Empty : (logFilePrefix + "_");
+        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string runName = $"{prefix}{name}_{timestamp}{ext}";
+        if (string.IsNullOrEmpty(directory))
+            return runName;
+        return Path.Combine(directory, runName);
+    }
 }

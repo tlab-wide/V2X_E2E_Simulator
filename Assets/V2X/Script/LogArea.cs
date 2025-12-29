@@ -3,316 +3,377 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using AWSIM;
-using Unity.VisualScripting;
 using UnityEngine;
-using Object = System.Object;
-using String = std_msgs.msg.String;
 
+/// <summary>
+/// Monitors and logs the positions and states of NPCs (vehicles and pedestrians) within a defined trigger area.
+/// Writes log data to CSV files for later analysis.
+/// </summary>
 [RequireComponent(typeof(BoxCollider))]
 public class LogArea : MonoBehaviour
 {
+    #region Serialized Fields
+    
+    [Header("Log File Paths")]
     [SerializeField] private string logPathHumans;
     [SerializeField] private string logPathCars;
 
+    [Header("Tracking Settings")]
+    [SerializeField] private bool checkHumans = true;
+    [SerializeField] private bool checkCars = true;
 
-    [SerializeField] private bool checkHumans;
-    [SerializeField] private bool checkCars;
-
+    [Header("Performance Settings")]
+    [Tooltip("Wait time between log saves in seconds (only used when ultraMode is false)")]
     [SerializeField] private float waitTime = 0.05f;
+    
+    [Tooltip("Number of frames to wait between log saves (only used when ultraMode is true)")]
     [SerializeField] private int waitForFrame = 2;
+    
+    [Tooltip("When enabled, uses frame-based timing instead of time-based")]
     [SerializeField] private bool ultraMode = true;
 
+    [Header("Dependencies")]
     [SerializeField] private CheckpointJumper checkpointJumper;
     
-    private ILogIndex logIndexBus;
+    [Header("Layer Settings")]
+    [Tooltip("Layer used for vehicle detection")]
+    [SerializeField] private LayerMask vehicleLayer;
     
-    [SerializeField]private List<Transform> humanTransforms = new List<Transform>();
-    [SerializeField]private List<Transform> carTransforms = new List<Transform>();
+    #endregion
 
+    #region Private Fields
+    
+    private ILogIndex _logIndexBus;
+    private List<Transform> _humanTransforms = new List<Transform>();
+    private List<Transform> _carTransforms = new List<Transform>();
+    private string _runLogPathHumans;
+    private string _runLogPathCars;
+    
+    #endregion
 
-    private string myVariable;
-
-    // Start is called before the first frame update
-    void Start()
+    #region Unity Lifecycle Methods
+    
+    private void Start()
     {
-        logIndexBus = checkpointJumper != null ? checkpointJumper : null;
-        
-        // set up header of CSV files
-        StartCoroutine(HandleCsvHeader());
+        _logIndexBus = checkpointJumper;
 
-        StartCoroutine(SaveLogs(waitTime, ultraMode));
-    }
+        _runLogPathHumans = BuildRunFilePath(logPathHumans);
+        _runLogPathCars = BuildRunFilePath(logPathCars);
 
-
-    private void OnTriggerExit(Collider other)
-    {
-        // Debug.Log("entered");
-        // Debug.Log(other.name);
-
-        // Debug.Log(other.name);
-        if (other.gameObject.GetComponentInParent<NPCVehicle>() != null)
-        {
-            carTransforms.Remove(other.gameObject.GetComponentInParent<NPCVehicle>().transform);
-        }
-        else if (other.gameObject.GetComponentInParent<NPCPedestrian>() != null)
-        {
-            humanTransforms.Remove(other.gameObject.GetComponentInParent<NPCPedestrian>().transform);
-        }
-        else if (other.GameObject().layer == 6) //6 layer is Vehicle
-        {
-            //just for bus
-            Rigidbody rigidbody = FindRigidbodyInHierarchy(other.GameObject());
-            if (rigidbody != null)
-            {
-                carTransforms.Remove(rigidbody.transform);
-            }
-        }
+        StartCoroutine(InitializeCsvFiles());
+        StartCoroutine(LoggingLoop(waitTime, ultraMode));
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // Debug.Log($"bug bus : {other.name}");
-        
-        if (checkCars && other.gameObject.GetComponentInParent<NPCVehicle>() != null)
+        if (checkCars && TryGetNPCVehicle(other, out Transform vehicleTransform))
         {
-            carTransforms.Add(other.gameObject.GetComponentInParent<NPCVehicle>().transform);
+            AddUniqueTransform(_carTransforms, vehicleTransform);
         }
-        else if (checkHumans && other.gameObject.GetComponentInParent<NPCPedestrian>() != null)
+        else if (checkHumans && TryGetNPCPedestrian(other, out Transform pedestrianTransform))
         {
-            if (!humanTransforms.Contains(other.gameObject.GetComponentInParent<NPCPedestrian>().transform))
-            {
-                // LineOfSight lineOfSightComponent = transform.GetComponent<LineOfSight>();
-                humanTransforms.Add(other.gameObject.GetComponentInParent<NPCPedestrian>().transform);
-            }
+            AddUniqueTransform(_humanTransforms, pedestrianTransform);
         }
-        else if (other.GameObject().layer == 6) //6 layer is Vehicle
+        else if (IsVehicleLayer(other))
         {
-            //just for bus
-            Rigidbody rigidbody = FindRigidbodyInHierarchy(other.GameObject());
+            // Handle special case for bus or other vehicles with Rigidbody
+            Rigidbody rigidbody = FindRigidbodyInHierarchy(other.gameObject);
             if (rigidbody != null)
             {
-                if (!carTransforms.Contains(rigidbody.transform))
-                {
-                    carTransforms.Add(rigidbody.transform);
-                }
+                AddUniqueTransform(_carTransforms, rigidbody.transform);
             }
         }
     }
 
-
-    // Call this method with the collider's gameObject to find the Rigidbody in its ancestors
-    public Rigidbody FindRigidbodyInHierarchy(GameObject childObject)
+    private void OnTriggerExit(Collider other)
     {
-        // Check if the current gameObject has a Rigidbody
-        Rigidbody rb = childObject.GetComponent<Rigidbody>();
-
-        // If found, return the Rigidbody
-        if (rb != null)
+        if (TryGetNPCVehicle(other, out Transform vehicleTransform))
         {
-            return rb;
+            _carTransforms.Remove(vehicleTransform);
+        }
+        else if (TryGetNPCPedestrian(other, out Transform pedestrianTransform))
+        {
+            _humanTransforms.Remove(pedestrianTransform);
+        }
+        else if (IsVehicleLayer(other))
+        {
+            Rigidbody rigidbody = FindRigidbodyInHierarchy(other.gameObject);
+            if (rigidbody != null)
+            {
+                _carTransforms.Remove(rigidbody.transform);
+            }
+        }
+    }
+    
+    #endregion
+
+    #region Collision Detection Helpers
+    
+    private bool TryGetNPCVehicle(Collider collider, out Transform vehicleTransform)
+    {
+        NPCVehicle vehicle = collider.gameObject.GetComponentInParent<NPCVehicle>();
+        vehicleTransform = vehicle?.transform;
+        return vehicle != null;
+    }
+
+    private bool TryGetNPCPedestrian(Collider collider, out Transform pedestrianTransform)
+    {
+        NPCPedestrian pedestrian = collider.gameObject.GetComponentInParent<NPCPedestrian>();
+        pedestrianTransform = pedestrian?.transform;
+        if (pedestrian == null)
+        {
+            WaypointFollower waypointFollower = collider.gameObject.GetComponentInParent<WaypointFollower>();
+            pedestrianTransform = waypointFollower?.transform;
+            return waypointFollower != null;
+        }
+        return false;
+    }
+
+    private bool IsVehicleLayer(Collider collider)
+    {
+        return ((1 << collider.gameObject.layer) & vehicleLayer) != 0;
+    }
+
+    private void AddUniqueTransform(List<Transform> list, Transform transform)
+    {
+        if (!list.Contains(transform))
+        {
+            list.Add(transform);
+        }
+    }
+    
+    #endregion
+
+    #region Velocity Calculation
+    
+    /// <summary>
+    /// Calculates velocity components for a transform.
+    /// Returns velocity vector (x, y, z) and total speed amount.
+    /// </summary>
+    private (Vector3 velocity, float speedAmount) GetVelocity(Transform transform)
+    {
+        ISpeed speedComponent = transform.GetComponent<ISpeed>();
+        
+        if (speedComponent == null)
+        {
+            return (Vector3.zero, 0f);
         }
 
-        // If there's no parent, return null (reached the top of the hierarchy without finding a Rigidbody)
+        float speedAmount = speedComponent.GetSpeed();
+        
+        // Calculate velocity components using the forward vector
+        Vector3 forward = transform.forward;
+        Vector3 velocity = forward * speedAmount;
+        
+        return (velocity, speedAmount);
+    }
+    
+    #endregion
+
+    #region Rigidbody Search
+    
+    /// <summary>
+    /// Recursively searches up the GameObject hierarchy to find a Rigidbody component.
+    /// </summary>
+    /// <param name="childObject">The starting GameObject to search from</param>
+    /// <returns>The first Rigidbody found in the hierarchy, or null if none exists</returns>
+    private Rigidbody FindRigidbodyInHierarchy(GameObject childObject)
+    {
+        Rigidbody rigidbody = childObject.GetComponent<Rigidbody>();
+        
+        if (rigidbody != null)
+        {
+            return rigidbody;
+        }
+
         if (childObject.transform.parent == null)
         {
             return null;
         }
 
-        // Recursively check the parent
         return FindRigidbodyInHierarchy(childObject.transform.parent.gameObject);
     }
+    
+    #endregion
 
-
-    private IEnumerator SaveLogs(float waitingTime, bool ultraMode = false)
+    #region Logging System
+    
+    /// <summary>
+    /// Main logging coroutine that periodically saves transform data to CSV files.
+    /// </summary>
+    private IEnumerator LoggingLoop(float waitingTime, bool useUltraMode)
     {
-        // this line can be remove, but i rather to wait one step in start of logSystem
-        yield return WaitForNFrame(UnityEngine.Random.Range(20, 30));
+        // Wait for initial setup to complete
+        yield return WaitForNFrames(UnityEngine.Random.Range(20, 30));
 
-        if (!ultraMode)
+        while (true)
         {
-            while (true)
+            LogTransforms(_carTransforms, _runLogPathCars);
+            LogTransforms(_humanTransforms, _runLogPathHumans);
+
+            if (useUltraMode)
             {
-                for (int i = 0; i < carTransforms.Count; i++)
-                {
-                    string row = dataRowGenerator(carTransforms[i]);
-                    if (row.Equals(""))
-                    {
-                        Debug.Log($"removing {i}");
-                        carTransforms.RemoveAt(i);
-                        i--;
-                        continue;
-                    }
-
-                    AppendStringToFile(logPathCars, row);
-                }
-
-
-                for (int i = 0; i < humanTransforms.Count; i++)
-                {
-                    string row = dataRowGenerator(humanTransforms[i]);
-                    if (row.Equals(""))
-                    {
-                        Debug.Log($"removing {i}");
-                        humanTransforms.RemoveAt(i);
-                        i--;
-                        continue;
-                    }
-
-                    AppendStringToFile(logPathHumans, row);
-                }
-
-                // foreach (Transform human in humanTransforms)
-                // {
-                //     string row = dataRowGenerator(human);
-                //     ;
-                //     // $"{human.name},{human.position.x},{human.position.y},{human.position.z},{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff},{Time.frameCount}\n";
-                //     AppendStringToFile(logPathHumans, row);
-                // }
-
+                yield return WaitForNFrames(waitForFrame);
+            }
+            else
+            {
                 yield return new WaitForSeconds(waitingTime);
             }
         }
-        else
+    }
+
+    /// <summary>
+    /// Logs all transforms in the provided list to the specified file path.
+    /// Removes any null or destroyed transforms from the list.
+    /// </summary>
+    private void LogTransforms(List<Transform> transforms, string filePath)
+    {
+        for (int i = transforms.Count - 1; i >= 0; i--)
         {
-            while (true)
+            string dataRow = GenerateDataRow(transforms[i]);
+            
+            if (string.IsNullOrEmpty(dataRow))
             {
-                // foreach (Transform car in carTransforms)
-                // {
-                //     string row = dataRowGenerator(car);
-                //     AppendStringToFile(logPathCars, row);
-                // }
-                //
-                //
-                // foreach (Transform human in humanTransforms)
-                // {
-                //     string row = dataRowGenerator(human);
-                //     // $"{human.name},{human.position.x},{human.position.y},{human.position.z},{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff},{Time.frameCount}\n";
-                //     AppendStringToFile(logPathHumans, row);
-                // }
-
-                for (int i = 0; i < carTransforms.Count; i++)
-                {
-                    string row = dataRowGenerator(carTransforms[i]);
-                    if (row.Equals("")) // it means object has dead
-                    {
-                        Debug.Log($"removing {i}");
-                        carTransforms.RemoveAt(i);
-                        i--;
-                        continue;
-                    }
-
-                    AppendStringToFile(logPathCars, row);
-                }
-
-
-                for (int i = 0; i < humanTransforms.Count; i++)
-                {
-                    string row = dataRowGenerator(humanTransforms[i]);
-                    if (row.Equals(""))
-                    {
-                        Debug.Log($"removing {i}");
-                        humanTransforms.RemoveAt(i);
-                        i--;
-                        continue;
-                    }
-
-                    AppendStringToFile(logPathHumans, row);
-                }
-
-                yield return WaitForNFrame(waitForFrame);
+                Debug.Log($"Removing destroyed object at index {i}");
+                transforms.RemoveAt(i);
+                continue;
             }
+
+            AppendToFile(filePath, dataRow);
         }
     }
 
-    private string dataRowGenerator(Transform transform)
+    /// <summary>
+    /// Generates a CSV data row for the given transform.
+    /// </summary>
+    /// <returns>A CSV-formatted string, or empty string if the transform is invalid</returns>
+    private string GenerateDataRow(Transform transform)
+    {
+        if (!IsTransformValid(transform))
+        {
+            return string.Empty;
+        }
+
+        LineOfSight lineOfSight = transform.GetComponent<LineOfSight>();
+        lineOfSight?.checkImmidiately();
+
+        builtin_interfaces.msg.Time rosTime = SimulatorROS2Node.GetCurrentRosTime();
+        Vector3 position = GetRosPosition(transform.position);
+        Quaternion rotation = ROS2Utility.UnityToRosRotation(transform.rotation);
+        int busState = _logIndexBus?.GetIndex() ?? 0;
+        
+        // Get velocity data
+        var (velocity, speedAmount) = GetVelocity(transform);
+
+        if (lineOfSight == null)
+        {
+            return FormatDataRow(
+                transform.name,
+                position,
+                rotation,
+                rosTime,
+                boxState: LineOfSight.BoxState.Unknown,
+                sensorData: string.Empty,
+                busState,
+                velocity,
+                speedAmount
+            );
+        }
+
+        string sensorData = BuildSensorData(lineOfSight);
+        LineOfSight.BoxState boxState = lineOfSight.GetCarBoxState();
+
+        return FormatDataRow(
+            transform.name,
+            position,
+            rotation,
+            rosTime,
+            boxState,
+            sensorData,
+            busState,
+            velocity,
+            speedAmount
+        );
+    }
+
+    private bool IsTransformValid(Transform transform)
     {
         try
         {
-            // if (transform is null || transform.GetComponent<LineOfSight>() is null)
-            if (transform is null)
+            if (transform == null)
             {
-                Debug.LogWarning($"{transform.name} is null and can not save log");
-                return "";
+                Debug.LogWarning("Transform is null, cannot save log");
+                return false;
             }
+            return true;
         }
         catch (Exception e)
         {
-            Debug.LogWarning("Object removed");
-            return "";
-        }
-
-
-        LineOfSight lineOfSightComponent = transform.GetComponent<LineOfSight>();
-        lineOfSightComponent?.checkImmidiately(); //to ensure state of jumpers
-        string row;
-
-        //time
-        builtin_interfaces.msg.Time rosTime = SimulatorROS2Node.GetCurrentRosTime();
-
-
-        //set position
-        var pos = ROS2Utility.UnityToRosPosition(transform.position);
-        pos = pos + AWSIM.Environment.Instance.MgrsOffsetPosition;
-
-
-        //rotation base on bus todo check correctness
-        Quaternion r = ROS2Utility.UnityToRosRotation(transform.rotation);
-
-
-        int stateBus = logIndexBus?.GetIndex() ?? 0;
-        
-        if (lineOfSightComponent is null)
-        {
-            
-            row =
-                $"{transform.name},{pos.x},{pos.y},{pos.z},{r.w},{r.x},{r.y},{r.z},{rosTime.Sec},{rosTime.Nanosec},{Time.frameCount},,,{stateBus}\n";
-        }
-        else
-        {
-            List<MockDetectionSensor> sensors = lineOfSightComponent.GetObservableSensors();
-            string sensorsNames = "";
-            for (int i = 0; i < sensors.Count; i++)
-            {
-                sensorsNames += sensors[i].getName()+ $"*{lineOfSightComponent.GetNumberOfDetectedPoint(sensors[i])}*" + "|";
-            }
-
-
-            row =
-                $"{transform.name},{pos.x},{pos.y},{pos.z},{r.w},{r.x},{r.y},{r.z},{rosTime.Sec},{rosTime.Nanosec} ,{Time.frameCount},{lineOfSightComponent.GetCarBoxState()},{sensorsNames},{stateBus}\n";
-        }
-
-
-        return row;
-    }
-
-    public IEnumerator WaitForNFrame(int n)
-    {
-        for (int i = 0; i < n; i++)
-        {
-            yield return null;
+            Debug.LogWarning("Object was destroyed: " + e.Message);
+            return false;
         }
     }
 
-    public static void AppendStringToFile(string filePath, string content)
+    private Vector3 GetRosPosition(Vector3 unityPosition)
     {
-        using (StreamWriter writer = new StreamWriter(filePath, true))
-        {
-            writer.Write(content);
-        }
+        Vector3 rosPosition = ROS2Utility.UnityToRosPosition(unityPosition);
+        return rosPosition + AWSIM.Environment.Instance.MgrsOffsetPosition;
     }
 
-    private IEnumerator HandleCsvHeader()
+    private string BuildSensorData(LineOfSight lineOfSight)
     {
-        if (checkCars && !string.IsNullOrEmpty(logPathCars))
+        List<MockDetectionSensor> sensors = lineOfSight.GetObservableSensors();
+        List<string> sensorEntries = new List<string>();
+
+        foreach (MockDetectionSensor sensor in sensors)
         {
-            EnsureFileExistsWithHeader(logPathCars,
-                "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names,Index\n");
+            int detectionCount = lineOfSight.GetNumberOfDetectedPoint(sensor);
+            sensorEntries.Add($"{sensor.getName()}*{detectionCount}*");
         }
 
-        if (checkHumans && !string.IsNullOrEmpty(logPathHumans))
+        return string.Join("|", sensorEntries);
+    }
+
+    private string FormatDataRow(
+        string name,
+        Vector3 position,
+        Quaternion rotation,
+        builtin_interfaces.msg.Time rosTime,
+        LineOfSight.BoxState boxState,
+        string sensorData,
+        int busState,
+        Vector3 velocity,
+        float speedAmount)
+    {
+        return $"{name}," +
+               $"{position.x},{position.y},{position.z}," +
+               $"{rotation.w},{rotation.x},{rotation.y},{rotation.z}," +
+               $"{rosTime.Sec},{rosTime.Nanosec}," +
+               $"{Time.frameCount}," +
+               $"{boxState}," +
+               $"{sensorData}," +
+               $"{busState}," +
+               $"{velocity.x},{velocity.y},{velocity.z},{speedAmount}\n";
+    }
+    
+    #endregion
+
+    #region File I/O
+    
+    private IEnumerator InitializeCsvFiles()
+    {
+        const string CsvHeader = "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation," +
+                                 "Time_sec,Time_nano,Frame,Box_State,Sensor Names,Index," +
+                                 "X Speed,Y Speed,Z Speed,Speed Amount\n";
+
+        if (checkCars && !string.IsNullOrEmpty(_runLogPathCars))
         {
-            EnsureFileExistsWithHeader(logPathHumans,
-                "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation,Time_sec,Time_nano,Frame,Box_State,Sensor Names,Index\n");
+            EnsureFileExistsWithHeader(_runLogPathCars, CsvHeader);
+        }
+
+        if (checkHumans && !string.IsNullOrEmpty(_runLogPathHumans))
+        {
+            EnsureFileExistsWithHeader(_runLogPathHumans, CsvHeader);
         }
 
         yield return null;
@@ -320,17 +381,61 @@ public class LogArea : MonoBehaviour
 
     private void EnsureFileExistsWithHeader(string filePath, string header)
     {
-        // Make sure the directory exists
         string directory = Path.GetDirectoryName(filePath);
-        if (!Directory.Exists(directory))
+        
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
         {
             Directory.CreateDirectory(directory);
         }
 
-        // Create the file and write header if it doesn’t exist
         if (!File.Exists(filePath))
         {
             File.WriteAllText(filePath, header);
         }
     }
+
+    private static void AppendToFile(string filePath, string content)
+    {
+        try
+        {
+            using (StreamWriter writer = new StreamWriter(filePath, true))
+            {
+                writer.Write(content);
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to write to file {filePath}: {e.Message}");
+        }
+    }
+    
+    #endregion
+
+    #region Utility Methods
+    private string BuildRunFilePath(string basePath)
+    {
+        if (string.IsNullOrEmpty(basePath))
+            return string.Empty;
+
+        string directory = Path.GetDirectoryName(basePath);
+        string name = Path.GetFileNameWithoutExtension(basePath);
+        string ext = Path.GetExtension(basePath);
+        if (string.IsNullOrEmpty(ext))
+            ext = ".csv";
+        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string runName = $"{name}_{timestamp}{ext}";
+        if (string.IsNullOrEmpty(directory))
+            return runName;
+        return Path.Combine(directory, runName);
+    }
+    
+    private IEnumerator WaitForNFrames(int frameCount)
+    {
+        for (int i = 0; i < frameCount; i++)
+        {
+            yield return null;
+        }
+    }
+    
+    #endregion
 }

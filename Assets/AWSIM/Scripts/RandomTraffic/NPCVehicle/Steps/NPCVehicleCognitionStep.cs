@@ -183,11 +183,17 @@ namespace AWSIM.TrafficSimulation
                 var boxCastExtents = States[stateIndex].Extents * 0.5f;
                 boxCastExtents.y *= 2;
                 boxCastExtents.z = 0.1f;
-                boxCastExtents.x = 1.2f;
+                // boxCastExtents.x = 1.2f;
+                boxCastExtents.x = 1f; 
                 var endPoint = Waypoints[waypointOffset + waypointIndex];
 
                 var distance = Vector3.Distance(startPoint, endPoint);
                 var direction = (endPoint - startPoint).normalized;
+                if (distance <= Mathf.Epsilon || direction == Vector3.zero)
+                {
+                    Commands[index] = new BoxcastCommand();
+                    return; // skip invalid direction to avoid LookRotation warning
+                }
                 var rotation = Quaternion.LookRotation(direction);
                 Commands[index] = new BoxcastCommand(
                     startPoint,
@@ -1129,6 +1135,11 @@ namespace AWSIM.TrafficSimulation
             }.Execute();
 
             Profiler.EndSample();
+            Profiler.BeginSample("Cognition.ZebraCrossing");
+
+            UpdateZebraCrossingAwareness(states);
+
+            Profiler.EndSample();
         }
 
         public void ShowGizmos(IReadOnlyList<NPCVehicleInternalState> states, bool showYieldingPhase, bool showObstacleChecking)
@@ -1195,6 +1206,8 @@ namespace AWSIM.TrafficSimulation
                         var command = boxcastCommands[commandIndex];
                         var startPoint = command.center;
                         var direction = command.direction;
+                        if (direction == Vector3.zero)
+                            continue; // avoid LookRotation warning when direction is invalid
                         var distance = hasHit
                             ? hitInfo.distance
                             : command.distance;
@@ -1211,6 +1224,37 @@ namespace AWSIM.TrafficSimulation
                             break;
                     }
                 }
+            }
+        }
+
+        private static void UpdateZebraCrossingAwareness(IReadOnlyList<NPCVehicleInternalState> states)
+        {
+            foreach (var state in states)
+            {
+                state.IsZebraBlocked = false;
+                state.DistanceToZebraStop = float.MaxValue;
+                state.ZebraAreaName = null;
+
+                if (state.ShouldDespawn)
+                    continue;
+
+                if (ZebraCrossingArea.TryGetBlockedStop(state.FrontCenterPosition, state.Forward, out var distance, out var area))
+                {
+                    state.IsZebraBlocked = true;
+                    state.DistanceToZebraStop = distance;
+                    state.ZebraAreaName = area != null ? area.name : null;
+                    if (!state.WasZebraBlocked && area != null && area.EnableDebugLogs)
+                    {
+                        Debug.Log($"[NPC Zebra] Vehicle '{state.Vehicle.name}' stopping for zebra '{area.name}' at ~{distance:F1}m.");
+                    }
+                }
+
+                if (state.WasZebraBlocked && !state.IsZebraBlocked && !string.IsNullOrEmpty(state.ZebraAreaName))
+                {
+                    Debug.Log($"[NPC Zebra] Vehicle '{state.Vehicle.name}' cleared zebra '{state.ZebraAreaName}'.");
+                }
+
+                state.WasZebraBlocked = state.IsZebraBlocked;
             }
         }
     }

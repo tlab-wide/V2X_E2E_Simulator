@@ -67,6 +67,24 @@ namespace AWSIM
             wheelCollider.motorTorque = 0.00001f;
         }
 
+        /// <summary>
+        /// Re-apply critical collider setup when the vehicle is re-enabled.
+        /// </summary>
+        public void ReinitializeForEnable()
+        {
+            if (wheelCollider == null)
+                wheelCollider = GetComponent<WheelCollider>();
+
+            wheelCollider.ConfigureVehicleSubsteps(1000.0f, 1, 1);
+
+            if (vehicleRigidbody == null)
+                vehicleRigidbody = wheelCollider.attachedRigidbody;
+
+            // Keep a tiny torque to prevent the wheel collider from idling incorrectly.
+            if (Mathf.Approximately(wheelCollider.motorTorque, 0f))
+                wheelCollider.motorTorque = 0.00001f;
+        }
+
         // for wheel rotation visual fields.
         float wheelPitchAngle = 0;
         float lastSteerAngle = 0;
