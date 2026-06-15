@@ -23,6 +23,9 @@ public class LineOfSight : MonoBehaviour
 
     
 
+    /// <summary>Set to false to hide all bounding boxes scene-wide (toggled by the UI button).</summary>
+    public static bool ShowBoxes = true;
+
     private List<MockDetectionSensor> observableSensor = new List<MockDetectionSensor>();
     private Dictionary<MockDetectionSensor, int> observableSensorWitCount = new Dictionary<MockDetectionSensor, int>();
     private UUID uuid;
@@ -514,6 +517,21 @@ public class LineOfSight : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Immediately force the cube renderer to match ShowBoxes without waiting for the next coroutine tick.
+    /// Called by ToggleButtonCameraMask when the user presses the button.
+    /// </summary>
+    public void ApplyBoxVisibility()
+    {
+        if (cube == null) return;
+        var skinnedMesh = cube.GetComponent<SkinnedMeshRenderer>();
+        Renderer r = skinnedMesh != null ? (Renderer)skinnedMesh : cube.GetComponent<MeshRenderer>();
+        if (r == null) return;
+        var mat = r.material;
+        mat.SetFloat("AntiTransparency", ShowBoxes ? (boxState == BoxState.Red ? 2f : 2f) : 0f);
+        r.material = mat;
+    }
+
     public void setColor(float antiTransparency, BoxState boxState)
     {
         bool isItSkinnedMesh = true;
@@ -533,7 +551,8 @@ public class LineOfSight : MonoBehaviour
             material = skinnedMesh.material;
         }
 
-        material.SetFloat("AntiTransparency", antiTransparency * 2);
+        float effectiveTransparency = ShowBoxes ? antiTransparency : 0f;
+        material.SetFloat("AntiTransparency", effectiveTransparency * 2);
 
 
         switch (boxState)
