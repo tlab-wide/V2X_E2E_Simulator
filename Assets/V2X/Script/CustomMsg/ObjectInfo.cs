@@ -579,17 +579,8 @@ public class ObjectInfo : MonoBehaviour
         // Object ID construction
         ulong objectId = 0;
 
-
-        if (isGroundTruth)
-        {
-            // Bits 63-62: "01" (Recognition by Cooperative Roadside Equipment)
-            objectId |= (1UL << 63); // Set bit 63 to 1 (0b10 in bits 63-62)
-        }
-        else
-        {
-            // Bits 63-62: "01" (Recognition by Cooperative Roadside Equipment)
-            objectId |= (1UL << 62); // Set bit 62 to 1 (0b01 in bits 63-62)
-        }
+        // Bits 63-62: "10" (Recognition by Cooperative Roadside Equipment)
+        objectId |= 1UL << 63; // bit 63 = 1, bit 62 = 0  →  "10"
 
 
         // Bits 61-56: All "0" (Reserved, already zero-initialized)
