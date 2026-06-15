@@ -92,24 +92,24 @@ nav:
       - Pseudo Sensor: Components/PseudoSensors/PseudoSensors/index.md
       - Noise Setting: Components/PseudoSensors/NoiseSetting/index.md
       - RSU: Components/RSU/RSU/index.md
-    - Vehicle: 
+    - Vehicle:
       - Add New Vehicle: Components/Vehicle/AddNewVehicle/index.md
-    # - Environment: Components/Environment/index.md
-    # - Traffic: Components/Traffic/index.md
+    - Traffic System:
+      - Traffic Manager: Components/TrafficManager/index.md
+      - Random Traffic Simulator: Components/Traffic/index.md
+      - Traffic Spawn Config: Components/TrafficSpawnConfig/index.md
+      - Zebra Crossing: Components/ZebraCrossing/index.md
+      - Vehicle Despawn System: Components/NpcCars/index.md
     - PCD Scanner:
       - PCD Scanner Component: Components/PCDScanner/Component/index.md
       - PCD Scanner Package (old): Components/PCDScanner/Package/index.md
     - Loggers: Components/Logger/index.md
-    - Pedestrian & Cyclist: 
+    - Pedestrian & Cyclist:
       - General: Components/Pedestrian/index.md
-      - WayPoint For Pedestrians and Cyclists : Components/WaypointPed/index.md
+      - Waypoint & Spawning System: Components/WaypointPed/index.md
     - MultiSensorStepScanning: Components/MultiSensorStepScanning/index.md
     - RandomSpawnCharacters: Components/RandomSpawnCharacters/index.md
-    - Teleport : Components/Teleport/index.md
-    - NpcCarsSystem:
-      - TrafficManager: 
-        - GeneralInformation: Components/TrafficManager/index.md
-        - VehicleDespawnSystem: Components/NpcCars/index.md
+    - Teleport: Components/Teleport/index.md
   
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
