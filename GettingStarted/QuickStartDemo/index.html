@@ -1,0 +1,3227 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../..">
+      
+      
+        <link rel="next" href="../SetupUnityProject/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Quick Start Demo - V2X E2E simulator</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../main.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#quick-start-demo" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="V2X E2E simulator" class="md-header__button md-logo" aria-label="V2X E2E simulator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            V2X E2E simulator
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Quick Start Demo
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="V2X E2E simulator" class="md-nav__button md-logo" aria-label="V2X E2E simulator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    V2X E2E simulator
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start Demo
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start Demo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#demo-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-vehicle-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Vehicle Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bus-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bus Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pc-specs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PC specs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#localhost-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Localhost settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#start-the-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Start the demo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Start the demo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-the-v2x_e2e_simulator-simulation-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the V2X_E2E_Simulator simulation demo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simulation-environment-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation Environment Images
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Simulation Environment Images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lexus-simulation-in-e2e-v2x-simulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexus Simulation in E2E V2X Simulator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bus-simulation-in-e2e-v2x-simulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bus Simulation in E2E V2X Simulator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controlling-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controlling Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Controlling Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-basic-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Basic Controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-driving-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Driving Controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-teleport-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Teleport Feature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-manual-object-creation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Manual Object Creation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rsu-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSU Section
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RSU Section">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rsu-data-visualization-in-rviz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSU Data Visualization in Rviz
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rsu-data-visualization-in-rviz-autoware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSU Data Visualization in Rviz (Autoware)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RSU Data Visualization in Rviz (Autoware)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rsu-data-when-the-car-is-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSU Data - When the Car is Present
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rsu-data-when-the-car-is-absent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSU Data - When the Car is Absent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#topic-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Topic List
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Topic List">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-objects-sensed-by-bus-onboard-perception-sensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Objects Sensed by Bus Onboard Perception Sensors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-netsim-compatible-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. NetSim-Compatible Topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-autoware-compatible-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Autoware-Compatible Topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-cool4-dm-format-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cool4 DM Format Topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-dm-format-topics-for-intersection-2-in-kashiwa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. DM Format Topics for Intersection #2 in Kashiwa
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. DM Format Topics for Intersection #2 in Kashiwa">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#published-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Published Topics:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-ground-truth-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Ground Truth Topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-v2x-traffic-signal-information-for-autoware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. V2X Traffic Signal Information for Autoware
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-all-intersection-cool4-setupdm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. All intersection Cool4 Setup(DM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-scenarios-selectable-in-menu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Scenarios (Selectable in menu)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steps-to-lunch-autoware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps to Lunch Autoware
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SetupUnityProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup Unity Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LoadPCD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Load PCD in Unity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Introduction
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Introduction/AutowareAwsimAndV2X/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autoware, Awsim and Our project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Introduction/CombinationWithAutoware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CombinationWithAutoware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ProjectGuide/KashiwaScenes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kashiwa Scenes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ProjectGuide/GitBranch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Branch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ProjectGuide/ExternalLibraries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External Libraries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pseudo Sensor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Pseudo Sensor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/PseudoSensors/PseudoSensorsSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/PseudoSensors/PseudoSensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pseudo Sensor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/PseudoSensors/NoiseSetting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Noise Setting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/RSU/RSU/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RSU
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vehicle
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Vehicle
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/Vehicle/AddNewVehicle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add New Vehicle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traffic System
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Traffic System
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/TrafficManager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traffic Manager
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/Traffic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Random Traffic Simulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/TrafficSpawnConfig/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traffic Spawn Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/ZebraCrossing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zebra Crossing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/NpcCars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vehicle Despawn System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCD Scanner
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    PCD Scanner
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/PCDScanner/Component/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCD Scanner Component
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/PCDScanner/Package/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCD Scanner Package (old)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/Logger/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loggers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pedestrian & Cyclist
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Pedestrian & Cyclist
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/Pedestrian/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    General
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/WaypointPed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Waypoint & Spawning System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/MultiSensorStepScanning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MultiSensorStepScanning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/RandomSpawnCharacters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RandomSpawnCharacters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Components/Teleport/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teleport
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NetSim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NetSim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TroubleShooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TroubleShooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../inProgressSections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    In progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../License/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Contact/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contact
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#demo-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-vehicle-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Vehicle Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bus-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bus Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pc-specs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PC specs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#localhost-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Localhost settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#start-the-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Start the demo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Start the demo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-the-v2x_e2e_simulator-simulation-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the V2X_E2E_Simulator simulation demo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simulation-environment-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation Environment Images
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Simulation Environment Images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lexus-simulation-in-e2e-v2x-simulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexus Simulation in E2E V2X Simulator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bus-simulation-in-e2e-v2x-simulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bus Simulation in E2E V2X Simulator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controlling-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controlling Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Controlling Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-basic-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Basic Controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-driving-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Driving Controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-teleport-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Teleport Feature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-manual-object-creation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Manual Object Creation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rsu-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSU Section
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RSU Section">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rsu-data-visualization-in-rviz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSU Data Visualization in Rviz
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rsu-data-visualization-in-rviz-autoware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSU Data Visualization in Rviz (Autoware)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RSU Data Visualization in Rviz (Autoware)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rsu-data-when-the-car-is-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSU Data - When the Car is Present
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rsu-data-when-the-car-is-absent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSU Data - When the Car is Absent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#topic-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Topic List
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Topic List">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-objects-sensed-by-bus-onboard-perception-sensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Objects Sensed by Bus Onboard Perception Sensors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-netsim-compatible-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. NetSim-Compatible Topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-autoware-compatible-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Autoware-Compatible Topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-cool4-dm-format-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cool4 DM Format Topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-dm-format-topics-for-intersection-2-in-kashiwa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. DM Format Topics for Intersection #2 in Kashiwa
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. DM Format Topics for Intersection #2 in Kashiwa">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#published-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Published Topics:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-ground-truth-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Ground Truth Topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-v2x-traffic-signal-information-for-autoware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. V2X Traffic Signal Information for Autoware
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-all-intersection-cool4-setupdm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. All intersection Cool4 Setup(DM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-scenarios-selectable-in-menu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Scenarios (Selectable in menu)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steps-to-lunch-autoware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps to Lunch Autoware
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Getting started
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="quick-start-demo">Quick Start Demo</h1>
+<p>This section provides a quick start tutorial for the V2X_E2E_Simulator on Ubuntu. Most of this documentation is based on the <a href="https://tier4.github.io/AWSIM/GettingStarted/QuickStartDemo/">AWSIM documentation</a>.</p>
+<h3 id="demo-configuration">Demo configuration</h3>
+<h4 id="standard-vehicle-configuration"><strong>Standard Vehicle Configuration</strong></h4>
+<p>The simulation provided in the <strong>V2X_E2E_Simulator</strong> demo is configured as follows:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>V2X_E2E_Simulator Demo Settings</strong></th>
+<th style="text-align: left;"><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Vehicle</strong></td>
+<td style="text-align: left;">Lexus RX 450h</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Environment</strong></td>
+<td style="text-align: left;">Japan, Tokyo (Kashiwa)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sensors</strong></td>
+<td style="text-align: left;">GNSS ×1 <br> IMU ×1 <br> LiDAR ×1 <br> Traffic Camera ×1</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Traffic</strong></td>
+<td style="text-align: left;">Configurable via menu</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ROS2 Version</strong></td>
+<td style="text-align: left;">Humble</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="bus-configuration"><strong>Bus Configuration</strong></h4>
+<p>An alternative build is also available for the <strong>bus simulation</strong>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>V2X_E2E_Simulator Demo Settings</strong></th>
+<th style="text-align: left;"><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Vehicle</strong></td>
+<td style="text-align: left;">Bus</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Environment</strong></td>
+<td style="text-align: left;">Japan, Tokyo (Kashiwa)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sensors</strong></td>
+<td style="text-align: left;">GNSS ×1 <br> IMU ×1 <br> LiDAR ×3 <br> Traffic Camera ×1</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Traffic</strong></td>
+<td style="text-align: left;">Configurable via menu</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ROS2 Version</strong></td>
+<td style="text-align: left;">Humble</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pc-specs">PC specs</h3>
+<p>The following system requirements must be met for the simulation to function properly:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Required PC Specs</th>
+<th style="text-align: left;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">OS</td>
+<td style="text-align: left;">Ubuntu 22.04</td>
+</tr>
+<tr>
+<td style="text-align: left;">CPU</td>
+<td style="text-align: left;">6 cores and 12 thread or higher</td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU</td>
+<td style="text-align: left;">RTX2080Ti or higher</td>
+</tr>
+<tr>
+<td style="text-align: left;">Nvidia Driver (Windows)</td>
+<td style="text-align: left;">&gt;=472.50</td>
+</tr>
+<tr>
+<td style="text-align: left;">Nvidia Driver (Ubuntu 22)</td>
+<td style="text-align: left;">&gt;=580</td>
+</tr>
+</tbody>
+</table>
+<h3 id="localhost-settings">Localhost settings</h3>
+<p>The simulation relies on specific network configurations to ensure seamless communication between the <strong>V2X_E2E_Simulator</strong> and <strong>Autoware</strong>. To set up the necessary localhost environment, add the following lines to your <code>~/.bashrc</code> file:</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-e<span class="w"> </span>/tmp/cycloneDDS_configured<span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span>sudo<span class="w"> </span>sysctl<span class="w"> </span>-w<span class="w"> </span>net.core.rmem_max<span class="o">=</span><span class="m">2147483647</span>
+<span class="w">    </span>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>lo<span class="w"> </span>multicast<span class="w"> </span>on
+<span class="w">    </span>touch<span class="w"> </span>/tmp/cycloneDDS_configured
+<span class="k">fi</span>
+</code></pre></div>
+<p>and these lines to <code>~/.profile</code> <strong>or in either of files:</strong> <code>~/.bash_profile</code> <em>or</em> <code>~/.bash_login</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">ROS_LOCALHOST_ONLY</span><span class="o">=</span><span class="m">1</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">RMW_IMPLEMENTATION</span><span class="o">=</span>rmw_cyclonedds_cpp
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A system restart is required for these changes to work.</p>
+</div>
+<h2 id="start-the-demo">Start the demo</h2>
+<h3 id="running-the-v2x_e2e_simulator-simulation-demo">Running the <strong>V2X_E2E_Simulator</strong> simulation demo</h3>
+<p>To run the simulator, please follow the steps below.</p>
+<ol>
+<li>
+<p>Install Nvidia GPU driver (Skip if already installed).</p>
+<ol>
+<li>Add Nvidia driver to apt repository
+<div class="highlight"><pre><span></span><code>sudo add-apt-repository ppa:graphics-drivers/ppa
+sudo apt update
+</code></pre></div></li>
+<li>
+<p>Install the recommended version of the driver.
+<div class="highlight"><pre><span></span><code>sudo ubuntu-drivers autoinstall
+</code></pre></div></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Currently, there are cases where the NVIDIA driver is incompatible, resulting in a segmentation fault. In such cases, please use the 580 version, which we have already tested.</p>
+</div>
+</li>
+<li>
+<p>Reboot your machine to make the installed driver detected by the system.
+<div class="highlight"><pre><span></span><code>sudo reboot
+</code></pre></div></p>
+</li>
+<li>Open terminal and check if <code>nvidia-smi</code> command is available and outputs summary similar to the one presented below.
+<div class="highlight"><pre><span></span><code>$ nvidia-smi 
+Sat Oct 25 17:34:49 2025
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05    Driver Version: 580.95.05    CUDA Version: 13.0     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  NVIDIA GeForce ...  Off  | 00000000:01:00.0  On |                  N/A |
+| 37%   31C    P8    30W / 250W |    188MiB / 11264MiB |      3%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|    0   N/A  N/A      1151      G   /usr/lib/xorg/Xorg                133MiB |
+|    0   N/A  N/A      1470      G   /usr/bin/gnome-shell               45MiB |
++-----------------------------------------------------------------------------+
+</code></pre></div></li>
+</ol>
+</li>
+<li>
+<p>Install Vulkan Graphics Library (Skip if already installed).</p>
+<ol>
+<li>Update the environment.
+<div class="highlight"><pre><span></span><code>sudo apt update
+</code></pre></div></li>
+<li>Install the library.
+<div class="highlight"><pre><span></span><code>sudo apt install libvulkan1
+</code></pre></div></li>
+</ol>
+</li>
+<li>
+<p>Download and Run <strong>V2X_E2E_Simulator</strong> Demo binary.</p>
+<ol>
+<li>
+<p>Download the desired build (Bus or lexus).</p>
+<p><a class="md-button md-button--primary" href="https://drive.google.com/file/d/1QbQizozZh1kLVYYlNSFUGBXGt8CajAbM/view?usp=drive_link">Download V2X_E2E_Simulator Demo for Bus ubuntu</a></p>
+<p><a class="md-button md-button--primary" href="https://drive.google.com/file/d/1q4WkCwwlp-LZb3iQLhD1qAB0R6S9IKbU/view?usp=drive_link">Download V2X_E2E_Simulator Demo for Lexus ubuntu</a></p>
+</li>
+<li>
+<p>Unzip the downloaded file.</p>
+</li>
+<li>
+<p>Make the <code>*.x86_64</code> file executable.</p>
+<p>Rightclick the <code>*.x86_64</code> file and check the <code>Execute</code> checkbox</p>
+<p><img alt="" src="Image_1.png" /></p>
+<p>or execute the command below.</p>
+<div class="highlight"><pre><span></span><code>chmod +x &lt;path to V2X folder&gt;/{file_name}.x86_64
+</code></pre></div>
+</li>
+<li>
+<p>Launch <code>*.x86_64</code>.
+    <div class="highlight"><pre><span></span><code>./&lt;path to V2X folder&gt;/{file_name}.x86_64
+</code></pre></div></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It may take some time for the application to start the so please wait until image similar to the one presented below is visible in your application window.</p>
+</div>
+<p><img alt="" src="Image_0.png" /></p>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="simulation-environment-images">Simulation Environment Images</h3>
+<h4 id="lexus-simulation-in-e2e-v2x-simulator"><strong>Lexus Simulation in E2E V2X Simulator</strong></h4>
+<p><img alt="Lexus Simulation" src="image_lexus.png" /><br />
+<em>Figure: Lexus vehicle in the simulation environment.</em></p>
+<h4 id="bus-simulation-in-e2e-v2x-simulator"><strong>Bus Simulation in E2E V2X Simulator</strong></h4>
+<p><img alt="Bus Simulation" src="image_bus.png" /><br />
+<em>Figure: Bus vehicle in the simulation environment.</em></p>
+<h3 id="controlling-features">Controlling Features</h3>
+<p>Without using <strong>Autoware</strong>, you can manually control the cars to create your desired scenario.</p>
+<h4 id="1-basic-controls"><strong>1. Basic Controls</strong></h4>
+<ul>
+<li><strong>D</strong> (Drive) → Press to enable driving mode.  </li>
+<li><strong>P</strong> (Park) → Press to stop the vehicle.  </li>
+<li><strong>R</strong> (Reverse) → Press to drive in reverse mode.  </li>
+</ul>
+<h4 id="2-driving-controls"><strong>2. Driving Controls</strong></h4>
+<ul>
+<li>After pressing <strong>D</strong> (Drive), use the <strong>arrow keys</strong> to move around the city.  </li>
+</ul>
+<h4 id="3-teleport-feature"><strong>3. Teleport Feature</strong></h4>
+<ul>
+<li>There are <strong>four predefined teleport locations</strong> in the scene.  </li>
+<li>The car can teleport <strong>only when in Drive mode</strong> and must have <strong>at least a small amount of speed</strong>.  </li>
+<li>Use the following keys to teleport to different locations on the map:  </li>
+<li><strong>Q</strong>, <strong>E</strong>, <strong>F</strong>, <strong>X</strong> → Teleport to four different places in the city.  </li>
+</ul>
+<h4 id="4-manual-object-creation"><strong>4. Manual Object Creation</strong></h4>
+<ul>
+<li>Use button <strong>O</strong> to spawn cars in scenarios where this feature is available</li>
+</ul>
+<p><img alt="Keyboard" src="Keyboard.jpg" /><br />
+<em>Figure: Defualt keys for extra functionalities</em></p>
+<h3 id="rsu-section">RSU Section</h3>
+<p>You can retrieve <strong>RSU (Roadside Unit) data</strong> and drive the car <strong>without using Autoware</strong>.  </p>
+<h4 id="rsu-data-visualization-in-rviz"><strong>RSU Data Visualization in Rviz</strong></h4>
+<p>To visualize RSU data, you need <strong>Rviz</strong> with support for custom message visualization.  </p>
+<ul>
+<li>If you <strong>already have an Rviz configuration</strong> that supports custom messages, you can use it directly.  </li>
+<li>If you <strong>do not have the required Rviz configuration</strong>, install <strong>Autoware</strong> and use its <strong>default Rviz settings</strong> for proper visualization.  </li>
+</ul>
+<h4 id="rsu-data-visualization-in-rviz-autoware"><strong>RSU Data Visualization in Rviz (Autoware)</strong></h4>
+<p>The following images illustrate how <strong>RSU data</strong> appears in Rviz (Autoware):</p>
+<h5 id="rsu-data-when-the-car-is-present"><strong>RSU Data - When the Car is Present</strong></h5>
+<p><img alt="RSU Data - In Place" src="image_rsu_inplace.png" /><br />
+<em>Figure: RSU data visualization when the car is close to the crossroad.</em></p>
+<h5 id="rsu-data-when-the-car-is-absent"><strong>RSU Data - When the Car is Absent</strong></h5>
+<p><img alt="RSU Data - Not In Place" src="image_rsu_not_inplace.png" /><br />
+<em>Figure: RSU data visualization when the car is not present at the crossroad.</em></p>
+<hr />
+<h2 id="topic-list">Topic List</h2>
+<p>In <strong>V2X_E2E_Simulator version 7.8.1</strong>, the following topics are published.</p>
+<p>Some topics are <strong>AWSIM default topics</strong>, which you can check in the <a href="https://tier4.github.io/AWSIM/Components/ROS2/ROS2TopicAndServiceList/">AWSIM documentation</a>.</p>
+<hr />
+<h3 id="1-objects-sensed-by-bus-onboard-perception-sensors"><strong>1. Objects Sensed by Bus Onboard Perception Sensors</strong></h3>
+<p>These objects are detected by the <strong>Bus pseudo sensor</strong>, which consists of a <strong>4-LiDAR setup</strong> and <strong>more than 10 cameras</strong>.</p>
+<ul>
+<li><strong>Published Topic:</strong>  </li>
+<li><code>/OBU/Sensing</code></li>
+</ul>
+<hr />
+<h3 id="2-netsim-compatible-topics"><strong>2. NetSim-Compatible Topics</strong></h3>
+<p>These topics represent <strong>all detected objects at each intersection</strong> and are used as <strong>input for NetSim</strong>.</p>
+<p>The message type <strong><code>CooperativeObjectsMessage</code></strong> comes from <code>autoware_auto_perception_msgs.msg</code>, which is a compatible type with <strong>Autoware</strong>. In the Autoware architecture, this message is typically created by one of the internal nodes. However, in our simulation, we replicate the detection algorithm and send this message directly from the simulator. </p>
+<p>Therefore, if we use this feature, we can ignore or disable the camera responsible for generating the corresponding message. Our policy for using this message is <strong>hybrid</strong>—it can be used either in combination with other real sensors or as a standalone pseudo sensor.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>Topic Name</strong></th>
+<th style="text-align: left;"><strong>Intersection</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/v2x/rsu1/net_sim</code></td>
+<td style="text-align: left;">Ganken Intersection</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/rsu2/net_sim</code></td>
+<td style="text-align: left;">Kakeiken Intersection</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/rsu3/net_sim</code></td>
+<td style="text-align: left;">Daisan Kidoutai</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/rsu4/net_sim</code></td>
+<td style="text-align: left;">Wakashiba Intersection</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="3-autoware-compatible-topics"><strong>3. Autoware-Compatible Topics</strong></h3>
+<p>These topics are <strong>used as direct inputs to Autoware</strong> for testing.
+The message type <strong><code>PredictedObjects</code></strong> comes from <code>autoware_auto_perception_msgs.msg</code>, which is a default message type of <strong>Autoware</strong> and <strong>AWSIM</strong>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>Topic Name</strong></th>
+<th style="text-align: left;"><strong>Intersection</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/v2x/rsu1/predicted_object</code></td>
+<td style="text-align: left;">Ganken Intersection</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/rsu2/predicted_object</code></td>
+<td style="text-align: left;">Kakeiken Intersection</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/rsu3/predicted_object</code></td>
+<td style="text-align: left;">Daisan Kidoutai</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/rsu4/predicted_object</code></td>
+<td style="text-align: left;">Wakashiba Intersection</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="4-cool4-dm-format-topics"><strong>4. Cool4 DM Format Topics</strong></h3>
+<p>These topics provide <strong>the same detected objects in Cool4 DM format</strong>.<br />
+(<strong>Currently, only Intersection 1 and 2 have DM-compatible RSUs</strong>).
+The message type <strong><code>ObjectInfoArray</code></strong> comes from <code>dm_object_info_msgs.msg</code>. This message is not compatible with <strong>Autoware</strong> and was created to work with  the <strong>DM protocol</strong>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>Topic Name</strong></th>
+<th style="text-align: left;"><strong>Intersection</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/v2x/object_info_1</code></td>
+<td style="text-align: left;">Ganken Intersection</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/object_info_1_noise</code></td>
+<td style="text-align: left;">Ganken Intersection (with noise)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/object_info_2</code></td>
+<td style="text-align: left;">Kakeiken Intersection</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/object_info_2_noise</code></td>
+<td style="text-align: left;">Kakeiken Intersection (with noise)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-dm-format-topics-for-intersection-2-in-kashiwa"><strong>5. DM Format Topics for Intersection #2 in Kashiwa</strong></h3>
+<p>For <strong>Intersection #2 in Kashiwa</strong>, detected objects from <strong>each sensor</strong> are also published in <strong>DM format</strong>.<br />
+The <strong>rsu number</strong> and <strong>sensor number</strong> help distinguish different sensors.<br />
+- <code>/object_info</code> → Detected objects <strong>without noise</strong><br />
+- <code>/object_info_noise</code> → Detected objects <strong>with noise</strong><br />
+- <code>/object_info_noise/Cellular</code> → Detected objects <strong>with noise and delay based on network types</strong></p>
+<h4 id="published-topics"><strong>Published Topics:</strong></h4>
+<div class="highlight"><pre><span></span><code>/v2x/rsu12020002/sensor1/object_info
+/v2x/rsu12020002/sensor1/object_info_noise
+/v2x/rsu12020002/sensor1/object_info_noise/Cellular
+/v2x/rsu12020002/sensor1/object_info_noise/DSRC
+/v2x/rsu12020002/sensor2/object_info
+/v2x/rsu12020002/sensor2/object_info_noise
+/v2x/rsu12020002/sensor2/object_info_noise/Cellular
+/v2x/rsu12020002/sensor2/object_info_noise/DSRC
+/v2x/rsu12020002/sensor3/object_info
+/v2x/rsu12020002/sensor3/object_info_noise
+/v2x/rsu12020002/sensor3/object_info_noise/Cellular
+/v2x/rsu12020002/sensor3/object_info_noise/DSRC
+/v2x/rsu12020002/sensor4/object_info
+/v2x/rsu12020002/sensor4/object_info_noise
+/v2x/rsu12020002/sensor4/object_info_noise/Cellular
+/v2x/rsu12020002/sensor4/object_info_noise/DSRC
+/v2x/rsu12020002/sensor5/object_info
+/v2x/rsu12020002/sensor5/object_info_noise
+/v2x/rsu12020002/sensor5/object_info_noise/Cellular
+/v2x/rsu12020002/sensor5/object_info_noise/DSRC
+/v2x/rsu12020003/sensor1/object_info
+/v2x/rsu12020003/sensor1/object_info_noise
+/v2x/rsu12020003/sensor1/object_info_noise/Cellular
+/v2x/rsu12020003/sensor1/object_info_noise/DSRC
+/v2x/rsu12020003/sensor2/object_info
+/v2x/rsu12020003/sensor2/object_info_noise
+/v2x/rsu12020003/sensor2/object_info_noise/Cellular
+/v2x/rsu12020003/sensor2/object_info_noise/DSRC
+/v2x/rsu12020003/sensor3/object_info
+/v2x/rsu12020003/sensor3/object_info_noise
+/v2x/rsu12020003/sensor3/object_info_noise/Cellular
+/v2x/rsu12020003/sensor3/object_info_noise/DSRC
+/v2x/rsu12020003/sensor4/object_info
+/v2x/rsu12020003/sensor4/object_info_noise
+/v2x/rsu12020003/sensor4/object_info_noise/Cellular
+/v2x/rsu12020003/sensor4/object_info_noise/DSRC
+/v2x/rsu12020003/sensor5/object_info
+/v2x/rsu12020003/sensor5/object_info_noise
+/v2x/rsu12020003/sensor5/object_info_noise/Cellular
+/v2x/rsu12020003/sensor5/object_info_noise/DSRC
+</code></pre></div>
+<hr />
+<h3 id="6-ground-truth-topics"><strong>6. Ground Truth Topics</strong></h3>
+<p>These topics publish the <strong>ground truth</strong> of <strong>all objects</strong> in the intersection.</p>
+<ul>
+<li><code>/v2x/rsu_all/object_info_groundtruth</code></li>
+<li><code>/v2x/rsu_all/object_info_groundtruth_noise</code></li>
+<li><code>/v2x/rsu_all/object_info_groundtruth_noise/Cellular</code></li>
+<li><code>/v2x/rsu_all/object_info_groundtruth_noise/DSRC</code></li>
+</ul>
+<hr />
+<h3 id="7-v2x-traffic-signal-information-for-autoware"><strong>7. V2X Traffic Signal Information for Autoware</strong></h3>
+<ul>
+<li><strong>Published Topic:</strong>  </li>
+<li><code>/v2x/traffic_signals</code> </li>
+<li><code>/v2x/rsu1/traffic_signals</code></li>
+<li><code>/v2x/rsu2/traffic_signals</code></li>
+<li><code>/v2x/rsu3/traffic_signals</code></li>
+<li><code>/v2x/rsu4/traffic_signals</code></li>
+</ul>
+<h3 id="8-all-intersection-cool4-setupdm"><strong>8. All intersection Cool4 Setup(DM)</strong></h3>
+<ul>
+<li><strong>Published Topic:</strong>  </li>
+<li><code>/v2x/rsu1/object_info</code></li>
+<li><code>/v2x/rsu1/object_info_noise</code></li>
+<li><code>/v2x/rsu1/object_info_noise/Cellular</code></li>
+<li><code>/v2x/rsu1/object_info_noise/DSRC</code></li>
+<li><code>/v2x/rsu2_1/object_info</code></li>
+<li><code>/v2x/rsu2_1/object_info_noise</code></li>
+<li><code>/v2x/rsu2_1/object_info_noise/Cellular</code></li>
+<li><code>/v2x/rsu2_1/object_info_noise/DSRC</code></li>
+<li><code>/v2x/rsu2_2/object_info</code></li>
+<li><code>/v2x/rsu2_2/object_info_noise</code></li>
+<li><code>/v2x/rsu2_2/object_info_noise/Cellular</code></li>
+<li><code>/v2x/rsu2_2/object_info_noise/DSRC</code></li>
+<li><code>/v2x/rsu3/object_info</code></li>
+<li><code>/v2x/rsu3/object_info_noise</code></li>
+<li><code>/v2x/rsu3/object_info_noise/Cellular</code></li>
+<li><code>/v2x/rsu3/object_info_noise/DSRC</code></li>
+<li><code>/v2x/rsu4/object_info</code></li>
+<li><code>/v2x/rsu4/object_info_noise</code></li>
+<li><code>/v2x/rsu4/object_info_noise/Cellular</code></li>
+<li><code>/v2x/rsu4/object_info_noise/DSRC</code></li>
+</ul>
+<h2 id="scenarios">Scenarios</h2>
+<p>There are <strong>five scenarios</strong> available in <strong>V2X_E2E_Simulator version 7.8.2</strong>.<br />
+You can select a scenario using the <strong>number keys (1-5) on the main keyboard</strong>.<br />
+(<strong>Note:</strong> The <strong>numpad keys do not work</strong> for scenario selection.)</p>
+<h3 id="available-scenarios-selectable-in-menu"><strong>Available Scenarios (Selectable in menu)</strong></h3>
+<ul>
+<li><strong>Normal Traffic</strong> – City traffic with <strong>pedestrians and cyclists</strong>.</li>
+<li><strong>Empty City</strong> – No traffic or humans.<br />
+   <!-- . **Manual spawning** of vehicles is available using the **O key** at **Intersection #1**.   --></li>
+</ul>
+<!-- . A **return gate** is placed along the way. -->
+<!-- - (3)**Manual Traffic with Pedestrians & Cyclists**  
+   . **Manual vehicle spawning** is available.  
+   . **Pedestrians and cyclists** are present.  
+   . A **return gate** is located in **Intersection #2**.
+- (4)**Standard City Traffic**  
+   . Normal **traffic, pedestrians, and cyclists**.  
+   . A **return gate** is placed in **Intersection #1**.
+- (5)**High Pedestrian Density**  
+   . Extra **pedestrians** are present in **Intersection #4**. -->
+
+<h2 id="steps-to-lunch-autoware">Steps to Lunch Autoware</h2>
+<ol>
+<li><strong>Download and Extract Map Files</strong><br />
+   Download the <code>map files (pcd, osm)</code> and unzip them.</li>
+</ol>
+<p><a class="md-button md-button--primary" href="https://drive.google.com/file/d/1sPpqLBxyWCifsDPViqgYgX3b91Fwh6JK/view?usp=drive_link">Download Map Files (pcd, osm)</a></p>
+<ol>
+<li>
+<p><strong>Ensure Compatibility with Autoware</strong><br />
+   This version of the <strong>E2E V2X Simulator</strong> is compatible with <strong>Autoware version 2024.05</strong>.<br />
+   Check this link for <strong>Autoware 2024.05</strong>: <a href="https://github.com/autowarefoundation/autoware/releases/tag/2024.05">Autoware 2024.05 Release</a>.</p>
+</li>
+<li>
+<p><strong>Modify Parameters for Bus Autoware</strong><br />
+   To work with <strong>Bus Autoware</strong>, you need to modify the vehicle parameters and sensor setup.<br />
+   By default, the parameters are set for the <strong>Lexus</strong>, but you need to add the <strong>bus configuration</strong> separately.</p>
+</li>
+<li>
+<p><strong>Download and Configure Bus-Specific Files</strong><br />
+   In order to work with <strong>Bus Autoware</strong>, you need to download the bus vehicle parameters and the bus sensor kit setup.</p>
+</li>
+<li>
+<p><strong>Bus Vehicle Parameters</strong>: 
+    <a class="md-button md-button--primary" href="https://drive.google.com/file/d/1x_ro7XKXHiObi-Tiy-BKj4Z2xExc8vSw/view?usp=drive_link">Download Bus Vehicle Parameters</a></p>
+</li>
+<li>
+<p><strong>Bus Sensor Kit</strong>:
+   <a class="md-button md-button--primary" href="https://drive.google.com/file/d/1vJ-aszM0l5tHfYoezstcA7cOfBINmxjt/view?usp=drive_link">Download Bus Sensor Kit</a></p>
+</li>
+</ol>
+<p><strong>Place the downloaded files in the following directories:</strong>
+   - <code>autoware/src/vehicle/sample_vehicle_launch/sample_vehicle_description/config</code>
+   - <code>autoware/src/param/autoware_individual_params/individual_params/config/default/awsim_sensor_kit</code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../.." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Home
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../SetupUnityProject/" class="md-footer__link md-footer__link--next" aria-label="Next: Setup Unity Project">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Setup Unity Project
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.path", "navigation.footer", "content.tabs.link", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

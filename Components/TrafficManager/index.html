@@ -1,0 +1,3013 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../Vehicle/AddNewVehicle/">
+      
+      
+        <link rel="next" href="../Traffic/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Traffic Manager - V2X E2E simulator</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../main.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#traffic-manager-system" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="V2X E2E simulator" class="md-header__button md-logo" aria-label="V2X E2E simulator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            V2X E2E simulator
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Traffic Manager
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="V2X E2E simulator" class="md-nav__button md-logo" aria-label="V2X E2E simulator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    V2X E2E simulator
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GettingStarted/QuickStartDemo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start Demo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GettingStarted/SetupUnityProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup Unity Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LoadPCD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Load PCD in Unity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Introduction
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Introduction/AutowareAwsimAndV2X/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autoware, Awsim and Our project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Introduction/CombinationWithAutoware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CombinationWithAutoware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ProjectGuide/KashiwaScenes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kashiwa Scenes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ProjectGuide/GitBranch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Branch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ProjectGuide/ExternalLibraries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External Libraries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pseudo Sensor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Pseudo Sensor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PseudoSensors/PseudoSensorsSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PseudoSensors/PseudoSensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pseudo Sensor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PseudoSensors/NoiseSetting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Noise Setting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RSU/RSU/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RSU
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vehicle
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Vehicle
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Vehicle/AddNewVehicle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add New Vehicle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traffic System
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Traffic System
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traffic Manager
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traffic Manager
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inspector-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspector Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Inspector Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#npc-vehicle-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NPC Vehicle Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spawn-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spawn Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#npcvehicleconfig-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NPCVehicleConfig Parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spawn-configuration-json" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spawn Configuration (JSON)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spawn Configuration (JSON)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#context-menu-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context Menu Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-lane-rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Lane Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#removevehiclesinradius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RemoveVehiclesInRadius
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simulation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Simulation Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-update-cycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed Update Cycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spawn-decision-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spawn Decision Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#npc-vehicle-simulation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NPC Vehicle Simulation Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NPC Vehicle Simulation Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-cognition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Cognition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Visualization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traffic-light-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traffic Light Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intersection-right-of-way" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intersection Right-of-Way
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lifecycle Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialization-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization (Start)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restart
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#destroy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Destroy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scene-setup-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scene Setup Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extensibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Traffic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Random Traffic Simulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TrafficSpawnConfig/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traffic Spawn Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ZebraCrossing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zebra Crossing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NpcCars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vehicle Despawn System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCD Scanner
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    PCD Scanner
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PCDScanner/Component/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCD Scanner Component
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PCDScanner/Package/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCD Scanner Package (old)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Logger/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loggers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pedestrian & Cyclist
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Pedestrian & Cyclist
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Pedestrian/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    General
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WaypointPed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Waypoint & Spawning System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MultiSensorStepScanning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MultiSensorStepScanning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RandomSpawnCharacters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RandomSpawnCharacters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Teleport/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teleport
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NetSim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NetSim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TroubleShooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TroubleShooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../inProgressSections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    In progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../License/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Contact/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contact
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inspector-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspector Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Inspector Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#npc-vehicle-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NPC Vehicle Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spawn-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spawn Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#npcvehicleconfig-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NPCVehicleConfig Parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spawn-configuration-json" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spawn Configuration (JSON)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spawn Configuration (JSON)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#context-menu-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context Menu Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-lane-rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Lane Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#removevehiclesinradius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RemoveVehiclesInRadius
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simulation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Simulation Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-update-cycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed Update Cycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spawn-decision-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spawn Decision Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#npc-vehicle-simulation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NPC Vehicle Simulation Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NPC Vehicle Simulation Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-cognition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Cognition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Visualization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traffic-light-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traffic Light Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intersection-right-of-way" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intersection Right-of-Way
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lifecycle Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialization-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization (Start)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restart
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#destroy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Destroy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scene-setup-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scene Setup Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extensibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../PseudoSensors/PseudoSensorsSetup/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Components
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Traffic System
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="traffic-manager-system">Traffic Manager System</h1>
+<div class="admonition info">
+<p class="admonition-title">Overview</p>
+<p>The <strong>Traffic Manager</strong> is the central orchestrator for all NPC vehicle simulation. It manages multiple traffic simulators, controls spawn rate and density, enforces ego-vehicle safety distances, and handles the full lifecycle of NPC vehicles — from instantiation to despawn.</p>
+</div>
+<hr />
+<h2 id="core-architecture">Core Architecture</h2>
+<div class="highlight"><pre><span></span><code>graph TD
+    TM[TrafficManager] --&gt; RTS[RandomTrafficSimulator ×N]
+    TM --&gt; ROTS[RouteTrafficSimulator ×N]
+    TM --&gt; NS[NPCVehicleSimulator]
+    NS --&gt; COG[Cognition Step]
+    NS --&gt; DEC[Decision Step]
+    NS --&gt; CTR[Control Step]
+    NS --&gt; VIS[Visualization Step]
+    TM --&gt; TSC[TrafficSpawnConfig]
+    TSC --&gt; JSON[(traffic_spawn.json)]
+</code></pre></div>
+<h3 id="system-components">System Components</h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Traffic Simulators</label><label for="__tabbed_1_2">NPC Vehicle Simulator</label><label for="__tabbed_1_3">TrafficSpawnConfig</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>The manager supports two simulator types running simultaneously:</p>
+<ul>
+<li><strong>RandomTrafficSimulator</strong> — spawns vehicles randomly across a set of lanes, with optional per-lane rates and branch weights. See <a href="../Traffic/">Random Traffic</a>.</li>
+<li><strong>RouteTrafficSimulator</strong> — spawns vehicles that follow a fixed multi-lane route.</li>
+</ul>
+<p>Both implement <code>ITrafficSimulator</code>, giving the manager a uniform interface for spawn requests.</p>
+</div>
+<div class="tabbed-block">
+<p>The core physics engine that steps all active NPC vehicles each <code>FixedUpdate</code>:</p>
+<div class="highlight"><pre><span></span><code>graph LR
+    A[Cognition] --&gt; B[Decision]
+    B --&gt; C[Control]
+    C --&gt; D[Visualization]
+</code></pre></div>
+<p>The pipeline runs burst-compiled parallel jobs for the cognition step, enabling real-time simulation of 40+ vehicles.</p>
+</div>
+<div class="tabbed-block">
+<p>A static configuration layer loaded from <code>Assets/Configs/traffic_spawn.json</code>. It provides per-lane spawn rates and weighted branch probabilities to both <code>TrafficManager</code> and the lane-change logic. See <a href="../TrafficSpawnConfig/">TrafficSpawnConfig</a>.</p>
+</div>
+</div>
+</div>
+<hr />
+<h2 id="inspector-reference">Inspector Reference</h2>
+<h3 id="npc-vehicle-settings">NPC Vehicle Settings</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vehicleConfig</code></td>
+<td>See below</td>
+<td>Motion parameters for all NPC vehicles</td>
+</tr>
+<tr>
+<td><code>vehicleLayerMask</code></td>
+<td>—</td>
+<td>Layer for vehicle-to-vehicle raycasting</td>
+</tr>
+<tr>
+<td><code>groundLayerMask</code></td>
+<td>—</td>
+<td>Layer for ground-following raycasts</td>
+</tr>
+<tr>
+<td><code>maxVehicleCount</code></td>
+<td>40</td>
+<td>Maximum simultaneous NPC vehicles</td>
+</tr>
+<tr>
+<td><code>spawnDistanceToEgo</code></td>
+<td>50 m</td>
+<td>Minimum distance from ego vehicle to any spawn point</td>
+</tr>
+<tr>
+<td><code>egoVehicle</code></td>
+<td>—</td>
+<td>Reference to the ego. If unset, a dummy is created automatically.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="spawn-config">Spawn Config</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spawnConfigPath</code></td>
+<td><code>Assets/Configs/traffic_spawn.json</code></td>
+<td>Path to load/save spawn rates and branch weights</td>
+</tr>
+</tbody>
+</table>
+<h3 id="debug">Debug</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>showGizmos</code></td>
+<td>Master toggle for all debug gizmos</td>
+</tr>
+<tr>
+<td><code>showYieldingPhase</code></td>
+<td>Visualise intersection yield states</td>
+</tr>
+<tr>
+<td><code>showObstacleChecking</code></td>
+<td>Visualise obstacle detection rays</td>
+</tr>
+<tr>
+<td><code>showSpawnPoints</code></td>
+<td>Draw cyan cubes at all spawn lane starts</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="npcvehicleconfig-parameters">NPCVehicleConfig Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Acceleration</code></td>
+<td>3 m/s²</td>
+<td>Normal forward acceleration</td>
+</tr>
+<tr>
+<td><code>Deceleration</code></td>
+<td>2 m/s²</td>
+<td>Gentle braking</td>
+</tr>
+<tr>
+<td><code>SuddenDeceleration</code></td>
+<td>4 m/s²</td>
+<td>Obstacle braking</td>
+</tr>
+<tr>
+<td><code>AbsoluteDeceleration</code></td>
+<td>20 m/s²</td>
+<td>Physics-limit emergency braking</td>
+</tr>
+<tr>
+<td><code>SpeedLimitSource</code></td>
+<td><code>FixedSpeedLimit</code></td>
+<td><code>LaneletSpeedLimit</code> or <code>FixedSpeedLimit</code></td>
+</tr>
+<tr>
+<td><code>FixedSpeedLimit</code></td>
+<td>13.89 m/s (50 km/h)</td>
+<td>Used when source is Fixed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="spawn-configuration-json">Spawn Configuration (JSON)</h2>
+<p><code>TrafficManager</code> can save and load a JSON file that controls per-lane spawn rates and branch weights. This makes it easy to tune traffic density without reopening the Unity Editor.</p>
+<h3 id="context-menu-actions">Context Menu Actions</h3>
+<p>Right-click on the <code>TrafficManager</code> component in the Inspector:</p>
+<ul>
+<li><strong>Save Spawn Config JSON</strong> — writes current rates/weights from all simulators to the JSON file.</li>
+<li><strong>Load Spawn Config JSON</strong> — reads the JSON file and applies it to all simulators.</li>
+</ul>
+<p>The config is also loaded automatically at scene start if the file exists.</p>
+<h3 id="json-format">JSON Format</h3>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;spawnRates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;lane&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lane_A1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;spawnsPerMinute&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">6.0</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;lane&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lane_B2&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;spawnsPerMinute&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3.5</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;branchWeights&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;fromLane&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lane_A1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;next&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;lane&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lane_B1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;lane&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lane_B2&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<ul>
+<li>Lane names are <strong>case-insensitive</strong>.</li>
+<li><code>spawnsPerMinute = 0</code> disables rate limiting for that lane.</li>
+<li>Weights are normalised automatically; only ratios matter.</li>
+</ul>
+<h3 id="per-lane-rate-limiting">Per-Lane Rate Limiting</h3>
+<p>When a spawn rate is set for a lane, <code>TrafficManager</code> tracks the last spawn time per lane and skips spawn attempts until the interval has elapsed:</p>
+<div class="arithmatex">\[
+\text{interval (s)} = \frac{60}{\text{spawnsPerMinute}}
+\]</div>
+<hr />
+<h2 id="removevehiclesinradius">RemoveVehiclesInRadius</h2>
+<p>The Teleporter calls this method before moving the ego vehicle to its new spawn position. All NPC vehicles within <code>radius</code> metres of <code>center</code> are marked for despawn and removed on the next <code>FixedUpdate</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// By world position</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trafficManager</span><span class="p">.</span><span class="n">RemoveVehiclesInRadius</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="n">radius</span><span class="p">);</span>
+
+<span class="c1">// By transform</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trafficManager</span><span class="p">.</span><span class="n">RemoveVehiclesInRadius</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span><span class="w"> </span><span class="n">radius</span><span class="p">);</span>
+</code></pre></div>
+<p>Returns the number of vehicles removed.</p>
+<hr />
+<h2 id="simulation-pipeline">Simulation Pipeline</h2>
+<h3 id="fixed-update-cycle">Fixed Update Cycle</h3>
+<div class="highlight"><pre><span></span><code>sequenceDiagram
+    participant TM as TrafficManager
+    participant TS as Traffic Simulators
+    participant NS as NPCVehicleSimulator
+
+    TM-&gt;&gt;TS: GetRandomSpawnInfo() for each simulator
+    TS--&gt;&gt;TM: spawnPoint + prefab
+    TM-&gt;&gt;TM: Group by spawn point
+    TM-&gt;&gt;TM: Filter: ego proximity check
+    TM-&gt;&gt;TM: Filter: per-lane rate limit
+    TM-&gt;&gt;TM: Collision check (IsSpawnable)
+    TM-&gt;&gt;NS: Register new vehicle
+    TM-&gt;&gt;NS: StepOnce(deltaTime)
+    NS-&gt;&gt;NS: Cognition → Decision → Control → Visualization
+    TM-&gt;&gt;TM: Despawn marked vehicles
+</code></pre></div>
+<h3 id="spawn-decision-logic">Spawn Decision Logic</h3>
+<div class="highlight"><pre><span></span><code>graph TD
+    A[Spawn request] --&gt; B{Distance to ego ≥ 50m?}
+    B -- No --&gt; SKIP[Skip this frame]
+    B -- Yes --&gt; C{Rate limit elapsed?}
+    C -- No --&gt; SKIP
+    C -- Yes --&gt; D{Single simulator on lane?}
+    D -- Yes --&gt; E[IsSpawnable check]
+    D -- No --&gt; F[Priority sort → highest wins]
+    F --&gt; E
+    E -- Clear --&gt; G[Spawn vehicle]
+    E -- Blocked --&gt; SKIP
+</code></pre></div>
+<hr />
+<h2 id="npc-vehicle-simulation-pipeline">NPC Vehicle Simulation Pipeline</h2>
+<h3 id="step-1-cognition">Step 1 — Cognition</h3>
+<p>Runs as burst-compiled parallel jobs. Each vehicle gathers:</p>
+<ul>
+<li>Ground existence (vehicle must be above valid surface)</li>
+<li>Next lane and waypoint</li>
+<li>Traffic light state and passability</li>
+<li>Right-of-way at intersections</li>
+<li>Curve detection (upcoming sharp turns → reduce speed)</li>
+<li>Front obstacle distance</li>
+</ul>
+<h3 id="step-2-decision">Step 2 — Decision</h3>
+<p>Determines each vehicle's immediate action:</p>
+<table>
+<thead>
+<tr>
+<th>Speed Mode</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NORMAL</code></td>
+<td>Open road, green light</td>
+</tr>
+<tr>
+<td><code>SLOW</code></td>
+<td>Approaching curve or distant obstacle</td>
+</tr>
+<tr>
+<td><code>STOP</code></td>
+<td>Red light, pedestrian crossing, intersection yield</td>
+</tr>
+<tr>
+<td><code>SUDDEN_STOP</code></td>
+<td>Close obstacle, blocked crossing</td>
+</tr>
+<tr>
+<td><code>ABSOLUTE_STOP</code></td>
+<td>Emergency physics limit</td>
+</tr>
+</tbody>
+</table>
+<p>The decision step also checks <code>ZebraCrossingArea.TryGetBlockedStop()</code> to yield to pedestrians at crosswalks. See <a href="../ZebraCrossing/">Zebra Crossing</a>.</p>
+<h3 id="step-3-control">Step 3 — Control</h3>
+<p>Updates vehicle kinematics:</p>
+<ul>
+<li>Speed adjusted toward target via acceleration/deceleration ramp</li>
+<li>Steering computed from angle to next waypoint</li>
+<li>Position and rotation applied to the Unity transform</li>
+</ul>
+<h3 id="step-4-visualization">Step 4 — Visualization</h3>
+<ul>
+<li>Applies computed transform to the NPC GameObject</li>
+<li>Updates turn signal state based on upcoming lane</li>
+</ul>
+<hr />
+<h2 id="traffic-light-integration">Traffic Light Integration</h2>
+<p>Follows the Vienna Convention:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>NPC Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🟢 Green</td>
+<td>Proceed normally</td>
+</tr>
+<tr>
+<td>🟡 Yellow</td>
+<td>Stop if distance allows; otherwise commit</td>
+</tr>
+<tr>
+<td>🔴 Red</td>
+<td>Stop at stop line</td>
+</tr>
+</tbody>
+</table>
+<p>Yellow light decision:</p>
+<div class="highlight"><pre><span></span><code>if distance_to_light &lt; sudden_stop_distance:
+    commit (cannot stop safely)
+else:
+    stop
+</code></pre></div>
+<hr />
+<h2 id="intersection-right-of-way">Intersection Right-of-Way</h2>
+<p>NPC vehicles use a yield phase system at intersections:</p>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ENTERING_INTERSECTION</code></td>
+<td>Evaluating whether to yield</td>
+</tr>
+<tr>
+<td><code>LEFT_HAND_RULE_ENTERING</code></td>
+<td>Yielding to right-hand traffic</td>
+</tr>
+<tr>
+<td><code>LANES_RULES_ENTERING</code></td>
+<td>Yielding based on configured lane priorities</td>
+</tr>
+<tr>
+<td><code>INTERSECTION_BLOCKED</code></td>
+<td>Waiting because cross traffic is present</td>
+</tr>
+<tr>
+<td><code>FORCING_PRIORITY</code></td>
+<td>Override to break a deadlock</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="lifecycle-management">Lifecycle Management</h2>
+<h3 id="initialization-start">Initialization (<code>Start</code>)</h3>
+<div class="highlight"><pre><span></span><code>graph TD
+    A[Start] --&gt; B[Load spawn config JSON if exists]
+    B --&gt; C[Create NPCVehicleSimulator]
+    C --&gt; D[verifyIntegrationEnvironmentElements]
+    D --&gt; E[Instantiate RandomTrafficSimulators]
+    E --&gt; F[Instantiate RouteTrafficSimulators]
+    F --&gt; G[Set up ego vehicle reference]
+</code></pre></div>
+<h3 id="restart">Restart</h3>
+<div class="highlight"><pre><span></span><code><span class="n">trafficManager</span><span class="p">.</span><span class="n">Restart</span><span class="p">(</span><span class="n">newMaxVehicleCount</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span>
+</code></pre></div>
+<p>Disposes all current state, re-runs initialization with the new parameters.</p>
+<h3 id="destroy">Destroy</h3>
+<p>On <code>OnDestroy</code>, the manager calls <code>TrafficSpawnConfig.ExportBranchDecisionCsv()</code> to write the full branch decision statistics to <code>Assets/Configs/traffic_branch_decisions.csv</code>. See <a href="../TrafficSpawnConfig/">TrafficSpawnConfig</a> for the CSV format.</p>
+<hr />
+<h2 id="scene-setup-checklist">Scene Setup Checklist</h2>
+<div class="admonition check">
+<p class="admonition-title">Required before Play</p>
+<ul>
+<li>[ ] A GameObject named <strong><code>TrafficLanes</code></strong> exists in the scene.</li>
+<li>[ ] All <code>TrafficLane</code> child objects have <strong>unique names</strong>.</li>
+<li>[ ] At least one <code>TrafficLane</code> has <strong><code>intersectionLane = true</code></strong>.</li>
+<li>[ ] <code>TrafficManager.vehicleLayerMask</code> and <code>groundLayerMask</code> are assigned.</li>
+<li>[ ] At least one <code>RandomTrafficSimulatorConfiguration</code> entry is configured.</li>
+</ul>
+</div>
+<p>These are validated at startup. Errors appear in the Console with descriptive messages.</p>
+<hr />
+<h2 id="extensibility">Extensibility</h2>
+<p>Custom simulators can be added at runtime via:</p>
+<div class="highlight"><pre><span></span><code><span class="n">trafficManager</span><span class="p">.</span><span class="n">AddTrafficSimulator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MyCustomSimulator</span><span class="p">(...));</span>
+</code></pre></div>
+<p>Any class implementing <code>ITrafficSimulator</code> integrates automatically with the priority system and spawn loop.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../Vehicle/AddNewVehicle/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Add New Vehicle">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Add New Vehicle
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../Traffic/" class="md-footer__link md-footer__link--next" aria-label="Next: Random Traffic Simulator">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Random Traffic Simulator
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.path", "navigation.footer", "content.tabs.link", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
