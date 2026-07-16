@@ -110,7 +110,8 @@ nav:
     - MultiSensorStepScanning: Components/MultiSensorStepScanning/index.md
     - RandomSpawnCharacters: Components/RandomSpawnCharacters/index.md
     - Teleport: Components/Teleport/index.md
-  
+    - Camera View Tab: Components/CameraView/index.md
+
   - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
   - In progress: inProgressSections/index.md
