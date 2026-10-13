@@ -9,28 +9,28 @@
       
       
       
-        <link rel="prev" href="../Components/CameraView/">
+        <link rel="prev" href="../../DMProtocols/CooL4/Topics/">
       
       
-        <link rel="next" href="../TroubleShooting/">
+        <link rel="next" href="../../ProjectGuide/KashiwaScenes/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>NetSim - V2X E2E simulator</title>
+        <title>Web Viewer - V2X E2E simulator</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,9 +49,9 @@
       
     
     
-      <link rel="stylesheet" href="../main.css">
+      <link rel="stylesheet" href="../../main.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#netsim" class="md-skip">
+        <a href="#web-viewer" class="md-skip">
           Skip to content
         </a>
       
@@ -87,6 +87,18 @@
     
       <div data-md-color-scheme="default" data-md-component="outdated" hidden>
         
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You are not reading the latest release of these docs (the "dev" version follows the develop branch).
+  <a href="../../..">
+    <strong>Go to the latest release.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
       </div>
     
     
@@ -96,7 +108,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="V2X E2E simulator" class="md-header__button md-logo" aria-label="V2X E2E simulator" data-md-component="logo">
+    <a href="../.." title="V2X E2E simulator" class="md-header__button md-logo" aria-label="V2X E2E simulator" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -116,7 +128,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              NetSim
+              Web Viewer
             
           </span>
         </div>
@@ -222,7 +234,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="V2X E2E simulator" class="md-nav__button md-logo" aria-label="V2X E2E simulator" data-md-component="logo">
+    <a href="../.." title="V2X E2E simulator" class="md-nav__button md-logo" aria-label="V2X E2E simulator" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -240,7 +252,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -319,7 +331,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../GettingStarted/QuickStartDemo/" class="md-nav__link">
+      <a href="../../GettingStarted/QuickStartDemo/" class="md-nav__link">
         
   
   
@@ -347,7 +359,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../GettingStarted/SetupUnityProject/" class="md-nav__link">
+      <a href="../../GettingStarted/SetupUnityProject/" class="md-nav__link">
         
   
   
@@ -375,7 +387,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../LoadPCD/" class="md-nav__link">
+      <a href="../../LoadPCD/" class="md-nav__link">
         
   
   
@@ -462,7 +474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Introduction/AutowareAwsimAndV2X/" class="md-nav__link">
+      <a href="../../Introduction/AutowareAwsimAndV2X/" class="md-nav__link">
         
   
   
@@ -490,7 +502,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Introduction/CombinationWithAutoware/" class="md-nav__link">
+      <a href="../../Introduction/CombinationWithAutoware/" class="md-nav__link">
         
   
   
@@ -577,7 +589,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DMProtocols/" class="md-nav__link">
+      <a href="../../DMProtocols/" class="md-nav__link">
         
   
   
@@ -654,7 +666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DMProtocols/CooL4/" class="md-nav__link">
+      <a href="../../DMProtocols/CooL4/" class="md-nav__link">
         
   
   
@@ -682,7 +694,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DMProtocols/CooL4/ObjectInfo/" class="md-nav__link">
+      <a href="../../DMProtocols/CooL4/ObjectInfo/" class="md-nav__link">
         
   
   
@@ -710,7 +722,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DMProtocols/CooL4/SignalInfo/" class="md-nav__link">
+      <a href="../../DMProtocols/CooL4/SignalInfo/" class="md-nav__link">
         
   
   
@@ -738,7 +750,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DMProtocols/CooL4/Topics/" class="md-nav__link">
+      <a href="../../DMProtocols/CooL4/Topics/" class="md-nav__link">
         
   
   
@@ -778,6 +790,219 @@
       
   
   
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tools
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Viewer
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#topic-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Topic panel
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#map-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Map layers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coordinates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coordinates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-another-map-or-intersections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using another map or intersections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
   
   
     
@@ -794,10 +1019,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -815,8 +1040,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -833,7 +1058,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ProjectGuide/KashiwaScenes/" class="md-nav__link">
+      <a href="../../ProjectGuide/KashiwaScenes/" class="md-nav__link">
         
   
   
@@ -861,7 +1086,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ProjectGuide/GitBranch/" class="md-nav__link">
+      <a href="../../ProjectGuide/GitBranch/" class="md-nav__link">
         
   
   
@@ -889,7 +1114,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ProjectGuide/ExternalLibraries/" class="md-nav__link">
+      <a href="../../ProjectGuide/ExternalLibraries/" class="md-nav__link">
         
   
   
@@ -937,10 +1162,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
@@ -958,8 +1183,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -986,10 +1211,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
         
           
-          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
             
   
   
@@ -1007,8 +1232,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1025,7 +1250,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/PseudoSensors/PseudoSensorsSetup/" class="md-nav__link">
+      <a href="../../Components/PseudoSensors/PseudoSensorsSetup/" class="md-nav__link">
         
   
   
@@ -1053,7 +1278,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/PseudoSensors/PseudoSensors/" class="md-nav__link">
+      <a href="../../Components/PseudoSensors/PseudoSensors/" class="md-nav__link">
         
   
   
@@ -1081,7 +1306,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/PseudoSensors/NoiseSetting/" class="md-nav__link">
+      <a href="../../Components/PseudoSensors/NoiseSetting/" class="md-nav__link">
         
   
   
@@ -1109,7 +1334,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/RSU/RSU/" class="md-nav__link">
+      <a href="../../Components/RSU/RSU/" class="md-nav__link">
         
   
   
@@ -1155,10 +1380,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
         
           
-          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
             
   
   
@@ -1176,8 +1401,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1194,7 +1419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/Vehicle/AddNewVehicle/" class="md-nav__link">
+      <a href="../../Components/Vehicle/AddNewVehicle/" class="md-nav__link">
         
   
   
@@ -1240,10 +1465,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
         
           
-          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
             
   
   
@@ -1261,8 +1486,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1279,7 +1504,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/TrafficManager/" class="md-nav__link">
+      <a href="../../Components/TrafficManager/" class="md-nav__link">
         
   
   
@@ -1307,7 +1532,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/Traffic/" class="md-nav__link">
+      <a href="../../Components/Traffic/" class="md-nav__link">
         
   
   
@@ -1335,7 +1560,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/TrafficSpawnConfig/" class="md-nav__link">
+      <a href="../../Components/TrafficSpawnConfig/" class="md-nav__link">
         
   
   
@@ -1363,7 +1588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/ZebraCrossing/" class="md-nav__link">
+      <a href="../../Components/ZebraCrossing/" class="md-nav__link">
         
   
   
@@ -1391,7 +1616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/NpcCars/" class="md-nav__link">
+      <a href="../../Components/NpcCars/" class="md-nav__link">
         
   
   
@@ -1437,10 +1662,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4" >
         
           
-          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_4" id="__nav_7_4_label" tabindex="0">
             
   
   
@@ -1458,8 +1683,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1476,7 +1701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/PCDScanner/Component/" class="md-nav__link">
+      <a href="../../Components/PCDScanner/Component/" class="md-nav__link">
         
   
   
@@ -1504,7 +1729,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/PCDScanner/Package/" class="md-nav__link">
+      <a href="../../Components/PCDScanner/Package/" class="md-nav__link">
         
   
   
@@ -1540,7 +1765,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/Logger/" class="md-nav__link">
+      <a href="../../Components/Logger/" class="md-nav__link">
         
   
   
@@ -1578,10 +1803,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" >
         
           
-          <label class="md-nav__link" for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
             
   
   
@@ -1599,8 +1824,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_6">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1617,7 +1842,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/Pedestrian/" class="md-nav__link">
+      <a href="../../Components/Pedestrian/" class="md-nav__link">
         
   
   
@@ -1645,7 +1870,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/WaypointPed/" class="md-nav__link">
+      <a href="../../Components/WaypointPed/" class="md-nav__link">
         
   
   
@@ -1681,7 +1906,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/MultiSensorStepScanning/" class="md-nav__link">
+      <a href="../../Components/MultiSensorStepScanning/" class="md-nav__link">
         
   
   
@@ -1709,7 +1934,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/RandomSpawnCharacters/" class="md-nav__link">
+      <a href="../../Components/RandomSpawnCharacters/" class="md-nav__link">
         
   
   
@@ -1737,7 +1962,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/Teleport/" class="md-nav__link">
+      <a href="../../Components/Teleport/" class="md-nav__link">
         
   
   
@@ -1765,7 +1990,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Components/CameraView/" class="md-nav__link">
+      <a href="../../Components/CameraView/" class="md-nav__link">
         
   
   
@@ -1797,278 +2022,10 @@
       
   
   
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    NetSim
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    NetSim
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#download-netsim" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Download NetSim
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dependencies
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Dependencies">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ros-dependency" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ROS dependency
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Build
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#run" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Run
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Configure
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Configure">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#network-simulation-configurations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Network Simulation Configurations
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#topic-configurations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Topic Configurations
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#network-heatmap" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Network Heatmap
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#custom-messages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Custom Messages
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Custom Messages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#custom-message-format-requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Custom Message Format Requirements
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#modification-to-netsim-codebase" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Modification to NetSim Codebase
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#modification-to-netsim-config-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Modification to NetSim Config Files
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#modification-to-cmakeliststxt" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Modification to CMakeLists.txt
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#modification-to-packagexml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Modification to package.xml
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#build-netsim" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Build NetSim
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
   
   
     <li class="md-nav__item">
-      <a href="../TroubleShooting/" class="md-nav__link">
+      <a href="../../TroubleShooting/" class="md-nav__link">
         
   
   
@@ -2095,7 +2052,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inProgressSections/" class="md-nav__link">
+      <a href="../../inProgressSections/" class="md-nav__link">
         
   
   
@@ -2122,7 +2079,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../License/" class="md-nav__link">
+      <a href="../../License/" class="md-nav__link">
         
   
   
@@ -2149,7 +2106,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Contact/" class="md-nav__link">
+      <a href="../../Contact/" class="md-nav__link">
         
   
   
@@ -2196,10 +2153,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#download-netsim" class="md-nav__link">
+  <a href="#start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Download NetSim
+        Start
       
     </span>
   </a>
@@ -2207,38 +2164,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dependencies" class="md-nav__link">
+  <a href="#how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dependencies
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Dependencies">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ros-dependency" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ROS dependency
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Build
+        How it works
       
     </span>
   </a>
@@ -2246,10 +2175,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#run" class="md-nav__link">
+  <a href="#topic-panel" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Run
+        Topic panel
       
     </span>
   </a>
@@ -2257,49 +2186,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure" class="md-nav__link">
+  <a href="#map-layers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configure
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Configure">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#network-simulation-configurations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Network Simulation Configurations
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#topic-configurations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Topic Configurations
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#network-heatmap" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Network Heatmap
+        Map layers
       
     </span>
   </a>
@@ -2307,85 +2197,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#custom-messages" class="md-nav__link">
+  <a href="#coordinates" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Custom Messages
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Custom Messages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#custom-message-format-requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Custom Message Format Requirements
+        Coordinates
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#modification-to-netsim-codebase" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#using-another-map-or-intersections" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Modification to NetSim Codebase
+        Using another map or intersections
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#modification-to-netsim-config-files" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Modification to NetSim Config Files
+        Troubleshooting
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#modification-to-cmakeliststxt" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Modification to CMakeLists.txt
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#modification-to-packagexml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Modification to package.xml
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#build-netsim" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Build NetSim
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2407,6 +2247,46 @@
   
 
 
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Tools
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
               
               <article class="md-content__inner md-typeset">
                 
@@ -2414,136 +2294,168 @@
 
 
 
-<h1 id="netsim">NetSim</h1>
-<p>This package is a network simulator. It is designed to create simulated packet loss and delay in the incoming message topics and simulate the network status.</p>
-<h2 id="download-netsim">Download NetSim</h2>
-<ul>
-<li><a href="https://drive.google.com/file/d/1EciTv2D9Imiq3SrnpVihSfwbYY8Jbg9I/view?usp=drive_link">NetSim</a></li>
-</ul>
-<h2 id="dependencies">Dependencies</h2>
-<h3 id="ros-dependency">ROS dependency</h3>
-<ul>
-<li><a href="https://docs.ros.org/en/humble/">ROS2 humble</a></li>
-<li><a href="https://github.com/tier4/autoware_auto_msgs">autoware_auto_msgs</a></li>
-<li><a href="https://drive.google.com/file/d/1DFmr8T9k_tHY_9cgSxPmSqWQ43SQW-nX/view?usp=drive_link">v2x_msgs</a></li>
-<li><a href="https://github.com/p-ranav/csv2">csv2</a></li>
-</ul>
-<h2 id="build">Build</h2>
-<ul>
-<li>
-<p>Install ROS2 and clone the <code>v2x_msgs</code> and <code>autoware_auto_msgs</code> into the <code>src</code> directory of a ROS2 workspace.</p>
-</li>
-<li>
-<p>Clone the repository into your ROS2 workspace's <code>src</code> folder:
-<div class="highlight"><pre><span></span><code><span class="go">git clone --recurse-submodules git@github.com:hoosh-ir/net_sim.git</span>
-</code></pre></div></p>
-</li>
-<li>Source your ROS2 Humble:
-<div class="highlight"><pre><span></span><code><span class="go">source /opt/ros/humble/setup.bash</span>
-</code></pre></div></li>
-<li>From the root of your workspace, use <code>colcon</code> to build the package:
-<div class="highlight"><pre><span></span><code><span class="go">colcon build --symlink-install</span>
-</code></pre></div></li>
-</ul>
-<h2 id="run">Run</h2>
-<ul>
-<li>From the root of your workspace, source your ROS2 workspace:
-<div class="highlight"><pre><span></span><code><span class="go">. install/setup.bash</span>
-</code></pre></div></li>
-<li>Configure the network simulator by modifying the parameters in the config file <code>config/net_sim_conf.yaml</code>.</li>
-<li>Launch the application:
-<div class="highlight"><pre><span></span><code><span class="go">ros2 launch net_sim net_simulator.launch.py</span>
-</code></pre></div></li>
-</ul>
-<h2 id="configure">Configure</h2>
-<h3 id="network-simulation-configurations">Network Simulation Configurations</h3>
-<p>The <code>net_sim_conf.yaml</code> file located at <code>config</code> provides various configurations for the network simulator. Below, you'll find a list of the options:</p>
-<ul>
-<li>
-<p><code>network_status_type</code>: This parameter determines the type of the network status and can take the following values:</p>
-<ul>
-<li><code>0</code> (None): This value determines there are no delays or packet losses for the incoming topics.</li>
-<li><code>1</code> (Constant): In this mode, the simulator creates constant delay and packet loss for the message topics.</li>
-<li><code>2</code> (Heatmap): In this mode, the simulator reads a CSV file associated with a given network heatmap and creates delays and packet losses for the incoming message topics based on the heatmap values.</li>
-</ul>
-</li>
-<li>
-<p><code>const_network_delay</code>: This parameter determines the amount of constant delay (in milliseconds) to create for the incoming messages (Used only when the <code>network_status_type</code> is set to <code>1</code>).</p>
-</li>
-<li>
-<p><code>const_network_packet_loss</code>: This parameter determines the amount of constant packet loss (in percent) to create for the incoming messages (Used only when the <code>network_status_type</code> is set to <code>1</code>).</p>
-</li>
-<li>
-<p><code>prediction_network_status_file</code>: This parameter gives the absolute address of the heatmap file for the object prediction topic (Used only when the <code>network_status_type</code> is set to <code>2</code>).</p>
-</li>
-<li>
-<p><code>prediction_network_status_involved_stations</code>: This parameter lists the IDs of the RSUs involved in the heatmap file for the object prediction topic (Used only when the <code>network_status_type</code> is set to <code>2</code>).</p>
-</li>
-<li>
-<p><code>traffic_signal_network_status_file</code>: This parameter gives the absolute address of the heatmap file for the traffic signal topic (Used only when the <code>network_status_type</code> is set to <code>2</code>).</p>
-</li>
-<li>
-<p><code>traffic_signal_network_status_involved_stations</code>: This parameter lists the IDs of the RSUs involved in the heatmap file for the traffic signal topic (Used only when the <code>network_status_type</code> is set to <code>2</code>).</p>
-</li>
-<li>
-<p><code>freespace_network_status_file</code>: This parameter gives the absolute address of the heatmap file for the freespace topic (Used only when the <code>network_status_type</code> is set to <code>2</code>).</p>
-</li>
-<li>
-<p><code>freespace_network_status_involved_stations</code>: This parameter lists the IDs of the RSUs involved in the heatmap file for the freespace topic (Used only when the <code>network_status_type</code> is set to <code>2</code>).</p>
-</li>
-</ul>
-<h3 id="topic-configurations">Topic Configurations</h3>
-<p>Similarly, the <code>topic_conf.yaml</code> file in the <code>config</code> folder, provides the means to configure the package for the input/output topics. The parameters are listed below:</p>
-<ul>
-<li><code>input_objects_topic</code></li>
-<li><code>output_objects_topic</code></li>
-<li><code>input_signals_topic</code></li>
-<li><code>output_signals_topic</code></li>
-<li><code>input_freespaces_topic</code></li>
-<li><code>output_freespaces_topic</code></li>
-<li><code>vehicle_pose_topic</code></li>
-</ul>
-<h2 id="network-heatmap">Network Heatmap</h2>
-<p>When simulating the network status based on some given heatmap file, the provided file must abide by the format rules below:</p>
-<ul>
-<li>The heatmap file must be a COMMA-SEPARATED VALUES file</li>
-<li>The heatmap file must NOT include any descriptive headers</li>
-<li>The values must be in the order <code>x,y,z,rsu_1_delay,rsu_1_packet_loss,rsu_2_delay,rsu_2_packet_loss,...</code></li>
-</ul>
-<p>You can refer to a sample heatmap file located in the <code>sample</code> folder.</p>
-<h2 id="custom-messages">Custom Messages</h2>
-<p>You can assign NetSim custom messages of your own. For this purpose, you need to adjust a few things in the NetSim codebase and rebuild it.</p>
-<p>In the following sections, we'll explain the requirements and modifications to custom messages.</p>
-<h3 id="custom-message-format-requirements">Custom Message Format Requirements</h3>
-<p>Let's assume you have a message type other than those supported by NetSim. Let's name this message <code>CustomMessage</code>. To simulate the network passing such messages, you need to create a cooperative message type containing your <code>CustomMessage</code>. We call that <code>CooperativeCustomMessage</code>. The fields inside <code>CooperativeCustomMessage</code> must include:</p>
-<div class="highlight"><pre><span></span><code>uint64 station_id
-uint64 sensor_type
-geometry_msgs/PoseStamped station_pose
-custom_package/CustomMessage custom_message
+<h1 id="web-viewer">Web Viewer</h1>
+<p>The web viewer is a local web page that answers two questions while the simulator runs:</p>
+<ol>
+<li><strong>Which topics are live?</strong> Every topic the simulator publishes is listed with its status, rate and last-message age.</li>
+<li><strong>What do they say?</strong> Everything except raw sensor data is drawn on the Kashiwa Lanelet2 map: DM object info, DM signal info with remaining time, V2X and Autoware traffic signals, Autoware objects and the ego vehicle.</li>
+</ol>
+<p>It lives in <code>tools/web-viewer/</code> and runs on the simulator machine only.</p>
+<p><img alt="Web viewer: topic health, the bus route with signal states, and the inspector" src="overview.png" /></p>
+<h2 id="start">Start</h2>
+<div class="highlight"><pre><span></span><code><span class="go">cd V2X_E2E_Simulator</span>
+<span class="go">tools/web-viewer/run.sh</span>
 </code></pre></div>
-<p><code>station_id</code> is the ID of the RSU (or OBU) sending the message, <code>sensor_type</code> is the type of the sensor used to obtain the messages (not yet defined). <code>station_pose</code> is the whole pose of the transmitting RSU (or OBU) and <code>custom_message</code> is your desired message.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <code>CustomMessage</code> type can be any of the ROS built-in message types or from any <code>custom_package</code> created by third parties.</p>
-</div>
-<h3 id="modification-to-netsim-codebase">Modification to NetSim Codebase</h3>
-<p>To have NetSim transmit the external message types, you need to make NetSim identify, subscribe to and publish them. We've provided the means for you just to make slight alterations.</p>
-<p>In the source code, under <code>src</code>, you need to modify the <code>net_simulator.cpp</code> file. There are three sections identifiable by the phrase <code>Custom message section</code>. Under each section, there are commented code snippets. You need to uncomment and modify them according to the name of your package and message type.</p>
+<p>Then open <strong>http://localhost:8080</strong>. Start the simulator before or after; the viewer picks up topics as they appear.</p>
+<p><code>run.sh</code> does the setup:</p>
 <ul>
-<li>The first section includes the message types. Modify according to your package and message type names</li>
-<li>The second section defines the variables needed to simulate the message. In this section, be wary of the name you pass to the network reporter node ("custom_message" by default). This name must repeat in <code>config/net_sim_conf.yaml</code>. Also, make sure you pass the proper input and output topic names to the sender ("/output_custom_message" by default) and the receiver ("/input_custom_message" by default) nodes.</li>
-<li>The last section passes the created ROS nodes to the multithreaded executor.</li>
+<li>sources ROS 2 Humble and the <a href="https://github.com/tlab-wide/v2x_e2e_msgs">v2x_e2e_msgs</a> workspace, which it expects at <code>../v2x_e2e_msgs/install</code> next to the simulator folder. Override this with <code>MSGS_SETUP=/path/to/install/setup.bash</code>.</li>
+<li>uses the simulator's middleware settings: <code>RMW_IMPLEMENTATION=rmw_cyclonedds_cpp</code> and <code>ROS_LOCALHOST_ONLY=1</code>.</li>
+<li>on the first run, creates <code>tools/web-viewer/.venv</code> with <code>aiohttp</code>, leaving the system Python untouched.</li>
 </ul>
-<h3 id="modification-to-netsim-config-files">Modification to NetSim Config Files</h3>
-<p>After uncommenting and modifying commented code snippets, you need to modify <code>config/net_sim_conf.yaml</code>. Again, we've provided two commented sections (search "Custom message section" in the file) for you to uncomment and modify according to your needs.</p>
-<h3 id="modification-to-cmakeliststxt">Modification to CMakeLists.txt</h3>
-<p>In the CMakeLists.txt, refer to <code>Custom message section</code>s:
-- In the first section, add your <code>CustomMessage</code> and <code>CooperativeCustomMessage</code> packages as needed.
-- In the second section, link your custom packages to NetSim's libraries.</p>
-<h3 id="modification-to-packagexml">Modification to package.xml</h3>
-<p>In <code>package.xml</code> refer to the <code>Custom message section</code>, uncomment its section and modify it according to the names of your <code>CustomMessage</code> and <code>CooperativeCustomMessage</code> packages. </p>
-<h3 id="build-netsim">Build NetSim</h3>
-<p>After the above steps, rebuild NetSim to reflect the changes made. Make sure to place your <code>CustomMessage</code> and <code>CooperativeCustomMessage</code> packages in the same workspace as <code>net_sim</code> to build together. Follow the build instructions to build the workspace.</p>
+<p>Options: <code>--port 9000</code> changes the port. The server binds to <code>127.0.0.1</code>, so the page cannot be opened from another computer.</p>
+<h2 id="how-it-works">How it works</h2>
+<div class="highlight"><pre><span></span><code> Simulator ──ROS 2──► server/main.py  (one Python process, rclpy + aiohttp)
+                       ├─ monitor.py   discovers topics every second, subscribes to each non-raw topic,
+                       │               measures rate / last-message age, keeps the latest message
+                       ├─ decoders.py  turns the latest messages into map features (≤ 10 Hz),
+                       │               only for the topics ticked in the page
+                       └─ WebSocket /ws ──► browser: topic list (1 Hz) + map layers (≤ 10 Hz)
+</code></pre></div>
+<p>No Foxglove, rosbridge or other ROS packages are needed. The server subscribes with <em>best effort</em> QoS, which matches both reliable and best-effort publishers. Raw sensor types (<code>PointCloud2</code>, <code>Image</code>, <code>CameraInfo</code>, <code>LaserScan</code>, <code>Imu</code>, <code>NavSatFix</code>, …) are listed but never subscribed to.</p>
+<h2 id="topic-panel">Topic panel</h2>
+<p>Topics are grouped into DM signal info, DM object info, traffic signals, Autoware objects, ego vehicle, control, clock and other.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Status</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">🟢 live</td>
+<td style="text-align: left;">Messages are arriving; the rate is measured over the last 3 s.</td>
+</tr>
+<tr>
+<td style="text-align: left;">🟠 stale</td>
+<td style="text-align: left;">Messages arrived before but have stopped (the age is shown).</td>
+</tr>
+<tr>
+<td style="text-align: left;">🔵 no data yet</td>
+<td style="text-align: left;">A publisher exists but nothing has been received.</td>
+</tr>
+<tr>
+<td style="text-align: left;">⚫ offline</td>
+<td style="text-align: left;">No publisher any more (e.g. the simulator was stopped).</td>
+</tr>
+<tr>
+<td style="text-align: left;">🔴 type missing</td>
+<td style="text-align: left;">The message type is not in the sourced workspace, so the topic cannot be decoded.</td>
+</tr>
+</tbody>
+</table>
+<p>Tick a topic to draw it on the map. Click its name to see its type, publishers, rate, message count, bandwidth and a summary of the last message. Delayed copies (<code>…/DSRC</code>, <code>…/Cellular</code>) and the per-intersection <code>…/signal_info</code> topics start unticked, because they duplicate other topics. Your choices are remembered in the browser.</p>
+<h2 id="map-layers">Map layers</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Data</th>
+<th style="text-align: left;">Topic types</th>
+<th style="text-align: left;">How it is placed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Lanelet2 map</td>
+<td style="text-align: left;"><code>maps/lanelet2.geojson</code></td>
+<td style="text-align: left;">Lanes, lane borders, crosswalks, stop lines and traffic-light positions</td>
+</tr>
+<tr>
+<td style="text-align: left;">DM object info</td>
+<td style="text-align: left;"><code>dm_object_info_msgs/ObjectInfoArray</code></td>
+<td style="text-align: left;">Latitude/longitude and heading from the message, drawn as boxes of the reported size</td>
+</tr>
+<tr>
+<td style="text-align: left;">DM signal info</td>
+<td style="text-align: left;"><code>dm_signal_info_msgs/SignalInfoArray</code></td>
+<td style="text-align: left;">One lamp per approach (方路) at its intersection, from <code>config/cool4_intersections.json</code>. Zoom in (≥ 17) to see remaining seconds and pedestrian signals.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Traffic signals</td>
+<td style="text-align: left;"><code>v2x_msgs/V2XSignals</code>, Autoware <code>TrafficSignalArray</code> / <code>TrafficLightGroupArray</code></td>
+<td style="text-align: left;">At the Lanelet2 traffic light with that regulatory-element or way ID</td>
+</tr>
+<tr>
+<td style="text-align: left;">Autoware objects</td>
+<td style="text-align: left;"><code>PredictedObjects</code>, <code>DetectedObjects</code>, <code>TrackedObjects</code></td>
+<td style="text-align: left;">Map frame (<code>map</code>, <code>obj</code>) converted to lat/lon. Ego-relative frames such as <code>bus</code> are placed with the ego pose.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Ego vehicle</td>
+<td style="text-align: left;"><code>/awsim/ground_truth/vehicle/pose</code> and other <code>PoseStamped</code> / <code>Odometry</code> topics in the map frame</td>
+<td style="text-align: left;">Cyan box</td>
+</tr>
+</tbody>
+</table>
+<p>Each topic has its own colour (the swatch in the list). Layers of topics that are not live are dimmed. Click any object or signal to open the inspector. It shows the decoded fields: for example the object ID split into RSU / sensor / object number, the CooL4 light colour and the full remaining-time schedule.</p>
+<p><img alt="Intersection 科警研 zoomed in: signal lamps with remaining seconds, DM and Autoware objects" src="intersection.png" /></p>
+<p><strong>Background map (online)</strong> overlays GSI tiles when the machine has internet. Everything else, including the Lanelet2 map, works offline.</p>
+<h2 id="coordinates">Coordinates</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Source</th>
+<th style="text-align: left;">Conversion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">DM messages</td>
+<td style="text-align: left;">Already WGS84 (1e-7 deg)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Autoware / AWSIM <code>map</code> frame</td>
+<td style="text-align: left;">Local coordinates of MGRS square 54SVE: <code>UTM(EPSG:32654) = map_xy + (400000, 3900000)</code>. <code>build_map.py</code> derives this offset from the Lanelet2 <code>local_x</code>/<code>local_y</code> tags (residual 0 m).</td>
+</tr>
+<tr>
+<td style="text-align: left;">Ego-relative frames</td>
+<td style="text-align: left;">Rotated and translated with the latest ego pose</td>
+</tr>
+</tbody>
+</table>
+<h2 id="using-another-map-or-intersections">Using another map or intersections</h2>
+<ul>
+<li><strong>Map:</strong> <code>python3 tools/web-viewer/scripts/build_map.py /path/to/lanelet2_map.osm</code> regenerates <code>maps/lanelet2.geojson</code> and <code>maps/lanelet2_meta.json</code>.</li>
+<li><strong>CooL4 signals:</strong> edit <code>config/cool4_intersections.json</code>. Each intersection has its CRP ID, its centre (<code>[lon, lat]</code>) and the bearing of each approach in degrees clockwise from north. The Kashiwa values match the <a href="../../DMProtocols/CooL4/SignalInfo/">Signal Info</a> mapping.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Symptom</th>
+<th style="text-align: left;">Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">"No topics yet"</td>
+<td style="text-align: left;">Is the simulator running? Are <code>ROS_DOMAIN_ID</code> and <code>ROS_LOCALHOST_ONLY</code> the same in both terminals?</td>
+</tr>
+<tr>
+<td style="text-align: left;">A topic shows <em>type missing</em></td>
+<td style="text-align: left;">The type is not in the sourced <code>v2x_e2e_msgs</code> build. Rebuild the workspace, or point <code>MSGS_SETUP</code> to one that has it.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Autoware objects in a relative frame are not drawn</td>
+<td style="text-align: left;">The ego pose topic <code>/awsim/ground_truth/vehicle/pose</code> must be live; the topic summary says so.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Port already in use</td>
+<td style="text-align: left;"><code>run.sh --port 9000</code></td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -2575,7 +2487,7 @@ custom_package/CustomMessage custom_message
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../Components/CameraView/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Camera View Tab">
+          <a href="../../DMProtocols/CooL4/Topics/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Topic List">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2585,20 +2497,20 @@ custom_package/CustomMessage custom_message
                 Previous
               </span>
               <div class="md-ellipsis">
-                Camera View Tab
+                Topic List
               </div>
             </div>
           </a>
         
         
           
-          <a href="../TroubleShooting/" class="md-footer__link md-footer__link--next" aria-label="Next: TroubleShooting">
+          <a href="../../ProjectGuide/KashiwaScenes/" class="md-footer__link md-footer__link--next" aria-label="Next: Kashiwa Scenes">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                TroubleShooting
+                Kashiwa Scenes
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -2635,10 +2547,10 @@ custom_package/CustomMessage custom_message
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.path", "navigation.footer", "content.tabs.link", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.path", "navigation.footer", "content.tabs.link", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       
