@@ -59,19 +59,15 @@ namespace AWSIM
             [Tooltip("CRP ID (交差点 ID) of the intersection.")]
             public uint crpId;
 
-            [Tooltip("Topic with only this intersection. Leave empty to publish it on the aggregated topic only.")]
-            public string topic;
-
             public SignalGroup[] signals;
 
             public Intersection() { }
 
-            public Intersection(string label, string trafficIntersectionName, uint crpId, string topic, params SignalGroup[] signals)
+            public Intersection(string label, string trafficIntersectionName, uint crpId, params SignalGroup[] signals)
             {
                 this.label = label;
                 this.trafficIntersectionName = trafficIntersectionName;
                 this.crpId = crpId;
-                this.topic = topic;
                 this.signals = signals;
             }
         }
@@ -108,7 +104,7 @@ namespace AWSIM
             Depth = 1,
         };
 
-        // Publishers of the aggregated topic (index 0) and of each intersection topic, with their delayed copies.
+        // Publisher of the topic and of its delayed copies.
         readonly Dictionary<string, IPublisher<SignalInfoArray>> publishers = new Dictionary<string, IPublisher<SignalInfoArray>>();
         readonly Dictionary<string, List<MessageDelay<SignalInfoArray>>> messageDelays = new Dictionary<string, List<MessageDelay<SignalInfoArray>>>();
 
@@ -128,11 +124,6 @@ namespace AWSIM
             }
 
             CreatePublishers(topic);
-            foreach (var intersection in intersections)
-            {
-                if (!string.IsNullOrEmpty(intersection.topic))
-                    CreatePublishers(intersection.topic);
-            }
         }
 
         // A GameObject can carry several TrafficIntersection components (e.g. a disabled alternative setup);
@@ -183,12 +174,7 @@ namespace AWSIM
             var time = ObjectInfo.GetITSTimeInMilliseconds();
             var all = new List<DMSignalInfo>();
             foreach (var intersection in intersections)
-            {
-                var infos = BuildSignalInfos(intersection, time);
-                all.AddRange(infos);
-                if (!string.IsNullOrEmpty(intersection.topic))
-                    Publish(intersection.topic, infos);
-            }
+                all.AddRange(BuildSignalInfos(intersection, time));
             Publish(topic, all);
         }
 
@@ -356,28 +342,28 @@ namespace AWSIM
         /// </summary>
         static List<Intersection> KashiwaDefaults() => new List<Intersection>
         {
-            new Intersection("東大前 (UTokyo)", "crossroad 14", 0x00000001, "/v2x/todaimae/signal_info",
+            new Intersection("東大前 (UTokyo)", "crossroad 14", 0x00000001,
                 new SignalGroup("方路1 east (駅→東大 right turn)", false, 0, 0x11, 0x12, 0x13),
                 new SignalGroup("方路2 west", false, 2, 0x21, 0x22, 0x23),
                 new SignalGroup("方路3 north (東大→駅 left turn)", false, 1, 0x33, 0x31, 0x32),
                 new SignalGroup("Pedestrian crossing 方路3", true, 10, 0x30),
                 new SignalGroup("Pedestrian crossing 方路1, 2", true, 11, 0x10, 0x20)),
 
-            new Intersection("がん研 (Ganken)", "crossroad1", 0x000c1001, "/v2x/rsu1/signal_info",
+            new Intersection("がん研 (Ganken)", "crossroad1", 0x000c1001,
                 new SignalGroup("Pedestrian crossing 方路1, 3", true, 11, 0x10, 0x30),
                 new SignalGroup("方路1 east", false, 0, 0x11, 0x12, 0x13),
                 new SignalGroup("Pedestrian crossing 方路2", true, 10, 0x20),
                 new SignalGroup("方路2 south (駅→東大 left turn)", false, 1, 0x22, 0x23, 0x21),
                 new SignalGroup("方路3 west (東大→駅 right turn)", false, 2, 0x33, 0x31, 0x32)),
 
-            new Intersection("科警研 (Kakeiken)", "crossroad2", 0x000c3001, "/v2x/rsu2/signal_info",
+            new Intersection("科警研 (Kakeiken)", "crossroad2", 0x000c3001,
                 new SignalGroup("Pedestrian crossing 方路1", true, 10, 0x10),
                 new SignalGroup("方路1 east (駅→東大 right turn)", false, 1, 0x11, 0x12, 0x13),
                 new SignalGroup("Pedestrian crossing 方路2, 3", true, 11, 0x20, 0x30),
                 new SignalGroup("方路2 south", false, 0, 0x22, 0x23, 0x21),
                 new SignalGroup("方路3 north (東大→駅 left turn)", false, 2, 0x33, 0x31, 0x32)),
 
-            new Intersection("若柴 (Wakashiba)", "crossroad3", 0x00000002, "/v2x/rsu4/signal_info",
+            new Intersection("若柴 (Wakashiba)", "crossroad3", 0x00000002,
                 new SignalGroup("方路1 north", false, 0, 0x11, 0x12, 0x13, 0x14),
                 new SignalGroup("方路2 east", false, 1, 0x22, 0x23, 0x24, 0x21),
                 new SignalGroup("方路3 south (駅→東大 left turn)", false, 0, 0x33, 0x34, 0x31, 0x32),
@@ -385,7 +371,7 @@ namespace AWSIM
                 new SignalGroup("Pedestrian crossing 方路2, 4", true, 10, 0x20, 0x40),
                 new SignalGroup("Pedestrian crossing 方路1, 3", true, 11, 0x10, 0x30)),
 
-            new Intersection("駅前 (Station)", "crossroad4", 0x000c2001, "/v2x/rsu5/signal_info",
+            new Intersection("駅前 (Station)", "crossroad4", 0x000c2001,
                 new SignalGroup("Pedestrian crossing 方路1", true, 10, 0x10),
                 new SignalGroup("方路1 east (駅→東大 right turn)", false, 1, 0x11, 0x12, 0x13),
                 new SignalGroup("Pedestrian crossing 方路2, 3", true, 11, 0x20, 0x30),

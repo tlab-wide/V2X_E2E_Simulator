@@ -9,11 +9,6 @@ Type: `dm_signal_info_msgs/msg/SignalInfoArray`. Publisher: **DM Signal Info Pub
 | Topic | Content |
 |:--|:--|
 | `/signal_info` | **All five intersections** in one array. This is the topic DM consumes. |
-| `/v2x/todaimae/signal_info` | 東大前 (UTokyo), CRP 1, `crossroad 14` |
-| `/v2x/rsu1/signal_info` | がん研 (Ganken), CRP 790529, `crossroad1` |
-| `/v2x/rsu2/signal_info` | 科警研 (Kakeiken), CRP 798721, `crossroad2` |
-| `/v2x/rsu4/signal_info` | 若柴 (Wakashiba), CRP 2, `crossroad3` |
-| `/v2x/rsu5/signal_info` | 駅前 (Station), CRP 794625, `crossroad4` |
 
 Delayed copies (for example `/signal_info/DSRC`) are published only when **Enable Delayed Messages** is on (off by default).
 

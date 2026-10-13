@@ -19,7 +19,7 @@ The simulator already publishes Autoware-compatible topics (`PredictedObjects`, 
   cyclists               │                                             │
                          │  TrafficIntersection ──► DMSignalInfo-      │
   Traffic lights ───────►│  (lighting sequences)    Publisher ─────────┼──► dm_signal_info_msgs/SignalInfoArray
-                         │                                             │     /signal_info, /v2x/rsuN/signal_info
+                         │                                             │     /signal_info
                          │  (unchanged) PredictedObjects, V2XSignals, …┼──► Autoware / V2X topics
                          └─────────────────────────────────────────────┘
 ```

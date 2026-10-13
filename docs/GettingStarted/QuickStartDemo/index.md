@@ -362,8 +362,7 @@ These topics publish the **ground truth** of **all objects** in the intersection
 Signal state with remaining time for the five intersections on the bus route, in the **CooL4 DM format** (`dm_signal_info_msgs/SignalInfoArray`). Published all the time by the **DM Signal Info Publisher** prefab.
 
 - **Published Topic:**  
-  - `/signal_info` (all intersections)
-  - `/v2x/todaimae/signal_info`, `/v2x/rsu1/signal_info`, `/v2x/rsu2/signal_info`, `/v2x/rsu4/signal_info`, `/v2x/rsu5/signal_info`
+  - `/signal_info` (all five intersections in one message)
 
 See [DM Protocols → CooL4 → Signal Info](../../DMProtocols/CooL4/SignalInfo/index.md) for details.
 

@@ -33,8 +33,6 @@ function isEnabled(row) {
   if (!row.renderable) return false;
   if (row.name in state.prefs.enabled) return state.prefs.enabled[row.name];
   if (/\/(DSRC|Cellular)$/.test(row.name)) return false;          // delayed copies are off by default
-  if (row.category === 'DM signal info' && row.name !== '/signal_info' && state.topics.has('/signal_info'))
-    return false;                                                   // /signal_info already has every intersection
   return true;
 }
 function escapeHtml(s) {

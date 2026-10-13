@@ -116,8 +116,7 @@ const Overlays = (() => {
 
   function enabledTopics(layerKind) {
     const rows = [...state.topics.values()].filter(r => isEnabled(r) && state.layers.get(r.name)?.layer === layerKind);
-    // /signal_info first: it carries every intersection
-    return rows.sort((a, b) => (a.name !== '/signal_info') - (b.name !== '/signal_info') || a.name.localeCompare(b.name));
+    return rows.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   function rebuildIndexes() {

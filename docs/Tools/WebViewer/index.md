@@ -71,7 +71,7 @@ Below the problems, topics are grouped by category: DM signal info, DM object in
 | 🔴 type missing | The message type is not in the sourced workspace, so the topic cannot be decoded. |
 | half green | (branches) some, but not all, topics below are live |
 
-Tick a topic to draw it on the map. Click its name to see its type, publishers, rate, message count, bandwidth and a summary of the last message. Delayed copies (`…/DSRC`, `…/Cellular`) and the per-intersection `…/signal_info` topics start unticked, because they duplicate other topics.
+Tick a topic to draw it on the map. Click its name to see its type, publishers, rate, message count, bandwidth and a summary of the last message. Delayed copies (`…/DSRC`, `…/Cellular`) start unticked, because they duplicate other topics.
 
 ![Sidebar: problems on top, then the topic tree](sidebar.png)
 
@@ -108,7 +108,7 @@ Flashing lights blink. Zoomed out (below 17.3) the heads show bulbs only; below 
 
 **Where the state comes from**, in order of preference:
 
-1. **CooL4 DM signal info**: the SignalInfo whose `crp_id` matches the intersection and whose `signal_id_list` contains one of the head's `dm_signal_ids`. `/signal_info` is preferred over the per-intersection topics. Only DM carries the **remaining time** (`min_time_to_change`); "—" means the light never changes (countdown stopped).
+1. **CooL4 DM signal info**: the SignalInfo whose `crp_id` matches the intersection and whose `signal_id_list` contains one of the head's `dm_signal_ids`. Only DM carries the **remaining time** (`min_time_to_change`); "—" means the light never changes (countdown stopped).
 2. **V2X / Autoware traffic signals** (vehicle heads only): the signal whose ID is one of the head's `lanelet_regulatory_elements` or `lanelet_light_ways`. These messages have no remaining time, so no seconds are shown.
 
 A head with no data is greyed out; a head fed by a topic that is not live is dimmed with a dashed border. Click a head to see both sources side by side: the DM light, remaining time and full schedule, and the V2X/Autoware elements.

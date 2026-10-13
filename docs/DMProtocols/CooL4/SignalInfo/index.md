@@ -25,7 +25,6 @@ All five signalised intersections on the Kashiwa-no-ha bus route are published *
  │     3. build SignalInfo { crp_id, signal_id_list, time, …, signal_light_info_list }
  ▼
  /signal_info                       SignalInfoArray, all intersections   (consumed by DM)
- /v2x/rsu1/signal_info …            SignalInfoArray, one intersection each
  [/…/DSRC, /…/Cellular]             delayed / lossy copies (optional)
 ```
 
@@ -125,7 +124,7 @@ The IDs below follow *東大_柏の葉実験環境について_信号情報に�
 
 Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/intersectionsFixed/`) and the lighting-sequence group the state comes from. Pedestrian groups follow the vehicle phase they run with: a crosswalk is green together with the traffic that runs parallel to it.
 
-### 東大前 (UTokyo) — CRP `0x00000001` (1) — `crossroad 14` — `/v2x/todaimae/signal_info`
+### 東大前 (UTokyo) — CRP `0x00000001` (1) — `crossroad 14`
 
 | Signal group | Approach | Group | Signal IDs (hex) | Signal IDs (dec) | Source |
 |:--|:--|:--|:--|:--|:--|
@@ -135,7 +134,7 @@ Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/interse
 | crossing 方路3 | pedestrian | 10 | 0x30 | 48 | spec |
 | crossing 方路1, 2 | pedestrian | 11 | 0x10 0x20 | 16 32 | spec |
 
-### がん研 (Ganken) — CRP `0x000c1001` (790529) — `crossroad1` / RSU1 — `/v2x/rsu1/signal_info`
+### がん研 (Ganken) — CRP `0x000c1001` (790529) — `crossroad1` / RSU1
 
 | Signal group | Approach | Group | Signal IDs (hex) | Signal IDs (dec) | Source |
 |:--|:--|:--|:--|:--|:--|
@@ -145,7 +144,7 @@ Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/interse
 | 方路2, south (駅→東大 turns left) | vehicle | 1 | 0x22 0x23 0x21 | 34 35 33 | sheet |
 | 方路3, west (東大→駅 turns right) | vehicle | 2 | 0x33 0x31 0x32 | 51 49 50 | sheet |
 
-### 科警研 (Kakeiken) — CRP `0x000c3001` (798721) — `crossroad2` / RSU2 — `/v2x/rsu2/signal_info`
+### 科警研 (Kakeiken) — CRP `0x000c3001` (798721) — `crossroad2` / RSU2
 
 | Signal group | Approach | Group | Signal IDs (hex) | Signal IDs (dec) | Source |
 |:--|:--|:--|:--|:--|:--|
@@ -155,7 +154,7 @@ Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/interse
 | 方路2, south | vehicle | 0 | 0x22 0x23 0x21 | 34 35 33 | sheet |
 | 方路3, north (東大→駅 turns left) | vehicle | 2 | 0x33 0x31 0x32 | 51 49 50 | sheet |
 
-### 若柴 (Wakashiba) — CRP `0x00000002` (2) — `crossroad3` / RSU4 — `/v2x/rsu4/signal_info`
+### 若柴 (Wakashiba) — CRP `0x00000002` (2) — `crossroad3` / RSU4
 
 | Signal group | Approach | Group | Signal IDs (hex) | Signal IDs (dec) | Source |
 |:--|:--|:--|:--|:--|:--|
@@ -169,7 +168,7 @@ Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/interse
 !!! note "若柴 in the field"
     The sheet notes that the IDs a bus should look at here (方路3 and 方路4) were not output during the L2 bus runs, and that the L4 bus currently refers to the opposite side. The simulator always publishes all four approaches. To reproduce the field behaviour, delete the 方路3 / 方路4 entries in the Inspector.
 
-### 駅前 (Station) — CRP `0x000c2001` (794625) — `crossroad4` / RSU5 — `/v2x/rsu5/signal_info`
+### 駅前 (Station) — CRP `0x000c2001` (794625) — `crossroad4` / RSU5
 
 | Signal group | Approach | Group | Signal IDs (hex) | Signal IDs (dec) | Source |
 |:--|:--|:--|:--|:--|:--|
@@ -195,7 +194,7 @@ The resulting leg layout matches every diagram in the sheet. It also matches the
 The publisher is a single component, `DMSignalInfoPublisher` (`Assets/V2X/Script/CustomMsg/DMSignalInfoPublisher.cs`). It is shipped ready-configured as a prefab:
 
 1. Drag **`Assets/V2X/Prefabs/DM/DM Signal Info Publisher.prefab`** into the scene, for example under `RSUs/Publishers`.
-2. Save the scene and press Play. `/signal_info` and the per-intersection topics appear right away.
+2. Save the scene and press Play. `/signal_info` appears right away.
 
 It does not depend on an RSU GameObject being active. The intersections are found by GameObject name when play starts, so it works with the RSU objects disabled.
 
@@ -204,7 +203,7 @@ It does not depend on an RSU GameObject being active. The intersections are foun
 | Field | Default | Description |
 |:--|:--|:--|
 | **Hz** | 10 | Publishing rate (1–50 Hz) |
-| **Topic** | `/signal_info` | Aggregated topic with all intersections. This is the one DM subscribes to. |
+| **Topic** | `/signal_info` | All intersections in one `SignalInfoArray`. This is the topic DM subscribes to. |
 | **Pad Signal Id List** | on | Pad `signal_id_list` with `0` to 8 elements (ROS2DMI style) |
 | **Intersections** | Kashiwa route | One entry per intersection (see below) |
 | **Enable Delayed Messages** | off | Also publish `/DSRC`, `/Cellular`, … copies ([network model](../index.md#delayed-copies-network-model)) |
@@ -219,7 +218,6 @@ Each **Intersection** entry has:
 | **Traffic Intersection** | Optional direct reference. When empty, the intersection is looked up by **Traffic Intersection Name**. |
 | **Traffic Intersection Name** | GameObject name of the `TrafficIntersection`, e.g. `crossroad1` |
 | **Crp Id** | CRP ID as an unsigned integer (`0x000c1001` = 790529) |
-| **Topic** | Per-intersection topic. Leave empty to publish this intersection on the aggregated topic only. |
 | **Signals** | Signal groups. Each has a **Label**, **Is Pedestrian**, the lighting-sequence **Traffic Light Group** (0–3 vehicle, 10–13 pedestrian) and the **Signal Ids**. |
 
 !!! tip "Restoring the defaults"
@@ -233,11 +231,12 @@ Each **Intersection** entry has:
 
 ## Example output
 
-The values below are illustrative; the timestamp is shortened. This is がん研, 方路1, 10 s into the cycle:
+The values below are illustrative; the timestamp is shortened. The array holds every signal group of the five intersections; shown here is がん研, 方路1, 10 s into the cycle:
 
 ```console
-$ ros2 topic echo /v2x/rsu1/signal_info --once
+$ ros2 topic echo /signal_info --once
 array:
+- ...                       # 東大前 (CRP 1) groups come first
 - crp_id:
     value: 790529
   signal_id_list:
@@ -301,6 +300,6 @@ array:
 
 | Topic | Type | Content |
 |:--|:--|:--|
-| `/signal_info`, `/v2x/rsuN/signal_info`, `/v2x/todaimae/signal_info` | `dm_signal_info_msgs/SignalInfoArray` | **This page.** CooL4 format, all intersections, with remaining time. |
+| `/signal_info` | `dm_signal_info_msgs/SignalInfoArray` | **This page.** CooL4 format, all intersections, with remaining time. |
 | `/v2x/traffic_signals`, `/v2x/rsuN/traffic_signals` | `v2x_msgs/V2XSignals` | Autoware `TrafficSignalArray` wrapped with the RSU station ID. Lanelet2 regulatory-element IDs, no remaining time. Published by `CustomV2I` + `CustomV2IPublisher` on active RSU objects. |
 | `/v2x/traffic_signals_Awsim` | `autoware_perception_msgs/TrafficLightGroupArray` | Original AWSIM `V2I` output (lights within 150 m of the ego). Disabled in the Kashiwa scene. |
