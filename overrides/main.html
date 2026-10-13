@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block outdated %}
+  You are not reading the latest release of these docs (the "dev" version follows the develop branch).
+  <a href="{{ '../' ~ base_url }}">
+    <strong>Go to the latest release.</strong>
+  </a>
+{% endblock %}

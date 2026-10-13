@@ -3,6 +3,7 @@ site_name: V2X E2E simulator
 theme:
   language: en 
   name: material
+  custom_dir: overrides
   palette:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
@@ -59,6 +60,7 @@ markdown_extensions:
 extra:
   version:
     provider: mike
+    default: latest
 
 extra_javascript:
     - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

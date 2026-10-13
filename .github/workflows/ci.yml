@@ -1,11 +1,11 @@
 name: ci
 # Versioned documentation with mike:
 #  - a version tag (v*) publishes that version and moves the "latest" alias to it
-#  - a push to Kashiwa publishes the in-development docs as "dev"
+#  - a push to the develop branch publishes the in-development docs as "dev"
 on:
   push:
     branches:
-      - Kashiwa
+      - develop
     tags:
       - 'v*'
 permissions:
@@ -39,5 +39,5 @@ jobs:
           mike deploy --push --update-aliases "${GITHUB_REF_NAME}" latest
           mike set-default --push latest
       - name: Deploy development docs
-        if: github.ref == 'refs/heads/Kashiwa'
-        run: mike deploy --push dev
+        if: github.ref == 'refs/heads/develop'
+        run: mike deploy --push --title "dev (develop branch)" dev
