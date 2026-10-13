@@ -269,7 +269,7 @@ The message type **`PredictedObjects`** comes from `autoware_auto_perception_msg
 
 ### **3. Cool4 DM Format Topics**
 These topics provide **the detected objects in CooL4 DM format** (`dm_object_info_msgs/ObjectInfoArray`). This message is not compatible with **Autoware**; it was created for the **DM protocol**.
-The sensors are at **Intersection #2 (Kakeiken)**, on two RSUs (`0x12020002`, `0x12020003`).
+The RSU sensors are at Ganken (`0x12020001`), Kakeiken (`0x12020002`, `0x12020003`), the midblock between Kakeiken and Wakashiba (`0x12020004`) and Wakashiba (`0x12020005`). All topics are published at 10 Hz.
 
 | **Topic Name** | **Content** |
 |:--|:--|

@@ -176,7 +176,8 @@ sensors:
 | Field | Meaning |
 |:--|:--|
 | `type` | `RSU_CAMERA` or `RSU_LIDAR` (`MockSensorType`) |
-| `enabled` | Active in the scene. The 10 sensors of the Kakeiken CooL4 setup are enabled; the others belong to disabled setups and are shown only with **Disabled sensors** ticked. |
+| `enabled` | Active in the scene. The sensors of the four RSU groups (Ganken, Kakeiken, Midblock, Wakashiba) are enabled; disabled ones are shown only with **Disabled sensors** ticked. |
+| `group` | The RSU sensor group under `RSUs/Pseudo Sensors setup` |
 | `position`, `heading_deg`, `pitch_deg` | World pose of the sensor (heading clockwise from north) |
 | `h_fov_deg`, `v_fov_deg` | **Half-angles**, as `MockSensor` uses them (it detects \|yaw\| ≤ `Hfov`), so the drawn sector is 2 × `h_fov_deg` wide |
 | `range_m` | `MockSensor.maxDistance` |

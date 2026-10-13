@@ -16,22 +16,31 @@ The delayed copies use the general profiles of the `NetworkSimulator` (see [Dela
 
 ## Object information
 
-Type: `dm_object_info_msgs/msg/ObjectInfoArray`. Publisher: `ObjectInfo` (`RSUs/Publishers/CooL4 Object Info (DM)`). QoS: best effort, volatile, keep-last 1. The actual rate is twice the **Hz** field, about 20 Hz ([why](../ObjectInfo/index.md#publishing-rate)). Details: [Object Info](../ObjectInfo/index.md).
+Type: `dm_object_info_msgs/msg/ObjectInfoArray`. Publisher: `ObjectInfo` (`RSUs/Publishers/CooL4 Object Info (DM)`). QoS: best effort, volatile, keep-last 1. Rate: 10 Hz ([publishing rate](../ObjectInfo/index.md#publishing-rate)). Details: [Object Info](../ObjectInfo/index.md).
 
-All sensors are at 科警研 (Kakeiken), on two RSUs: `0x12020002` and `0x12020003`. "With noise" means position, rotation, size and existence noise; the ground truth has none.
+"With noise" means position, rotation, size and existence noise; the ground truth has none. The RSUs:
+
+| RSU | RSU ID | Sensors (sensor ID) |
+|:--|:--|:--|
+| がん研 (Ganken), `RSU1_Ganken_CooL4` | `0x12020001` | 4 LiDARs `RSU_Lidar 1`–`4` (1–4) |
+| 科警研 (Kakeiken), `RSU2_Kakeiken_CooL4` | `0x12020002` | Pole 6, 7, 9: camera 6 (1), camera 7 (2), LiDAR 7 (3), camera 9 (4), LiDAR 9 (5) |
+| 科警研 (Kakeiken), `RSU2_Kakeiken_CooL4` | `0x12020003` | Pole 2, 3, 8: camera 2 (1), LiDAR 2 (2), camera 3 (3), LiDAR 3 (4), camera 8 (5) |
+| Midblock between 科警研 and 若柴, `RSU3_Midblock` | `0x12020004` | 1 LiDAR (1) |
+| 若柴 (Wakashiba), `RSU4_Wakashiba` | `0x12020005` | cameras c1–c4 (1–4), LiDAR s1 (5) |
+
 
 ### All RSUs in one message
 
 | Topic | Content |
 |:--|:--|
-| `/v2x/object_info` | Every object seen by any of the 10 sensors, with noise. Each object lists the sensors (RSU ID + sensor ID) that saw it. |
+| `/v2x/object_info` | Every object seen by any RSU sensor (all five RSUs above), with noise. Each object lists the sensors (RSU ID + sensor ID) that saw it. |
 | `/v2x/object_info/DSRC` | Same, delayed 100 ms with 5 % packet loss |
 | `/v2x/object_info/Cellular` | Same, delayed 400 ms |
 | `/v2x/object_info_groundtruth` | The same objects without noise |
 
 ### One topic pair per sensor (tracking research)
 
-No delayed copies.
+Only the 10 Kakeiken sensors; no delayed copies.
 
 | Topic prefix | RSU ID | Sensor |
 |:--|:--|:--|

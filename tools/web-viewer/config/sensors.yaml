@@ -15,63 +15,71 @@ sensors:
     group: 'RSU1_Ganken_CooL4'
     near: 'がん研 (Ganken)'        # 17 m from the centre
     sensor_id: 1
-    rsu_ids: []
+    rsu_ids: [0x12020001]
     position: {lat: 35.9006120, lon: 139.9388610, z_m: 25.43}
     heading_deg: 35.5
     pitch_deg: -13.8
     h_fov_deg: 30
     v_fov_deg: 11
     range_m: 60
-    topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU_camera 1'
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU_Lidar 1'
 
   - name: 'RSU_Lidar 2'
     type: RSU_LIDAR
     enabled: true
     group: 'RSU1_Ganken_CooL4'
     near: 'がん研 (Ganken)'        # 19 m from the centre
-    sensor_id: 1
-    rsu_ids: []
+    sensor_id: 2
+    rsu_ids: [0x12020001]
     position: {lat: 35.9005860, lon: 139.9388821, z_m: 24.08}
     heading_deg: 230.0
     pitch_deg: -13.0
     h_fov_deg: 30
     v_fov_deg: 11
     range_m: 60
-    topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU_camera 2'
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU_Lidar 2'
 
   - name: 'RSU_Lidar 3'
     type: RSU_LIDAR
     enabled: true
     group: 'RSU1_Ganken_CooL4'
     near: 'がん研 (Ganken)'        # 16 m from the centre
-    sensor_id: 1
-    rsu_ids: []
+    sensor_id: 3
+    rsu_ids: [0x12020001]
     position: {lat: 35.9006930, lon: 139.9391440, z_m: 23.89}
     heading_deg: 230.0
     pitch_deg: -13.0
     h_fov_deg: 30
     v_fov_deg: 11
     range_m: 60
-    topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU_camera 3'
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU_Lidar 3'
 
   - name: 'RSU_Lidar 4'
     type: RSU_LIDAR
     enabled: true
     group: 'RSU1_Ganken_CooL4'
     near: 'がん研 (Ganken)'        # 16 m from the centre
-    sensor_id: 1
-    rsu_ids: []
+    sensor_id: 4
+    rsu_ids: [0x12020001]
     position: {lat: 35.9007420, lon: 139.9391500, z_m: 24.02}
     heading_deg: 50.0
     pitch_deg: -13.0
     h_fov_deg: 30
     v_fov_deg: 11
     range_m: 60
-    topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU_camera 4'
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU_Lidar 4'
 
   - name: 'RSU_camera 2'
     type: RSU_CAMERA
@@ -213,12 +221,32 @@ sensors:
       - /v2x/rsu12020003/sensor4/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Lidar 3'
 
+  - name: 'RSU_camera 9'
+    type: RSU_CAMERA
+    enabled: true
+    group: 'RSU2_Kakeiken_CooL4'
+    near: '科警研 (Kakeiken)'        # 18 m from the centre
+    sensor_id: 4
+    rsu_ids: [0x12020002]
+    position: {lat: 35.8960458, lon: 139.9420172, z_m: 23.91}
+    heading_deg: 334.8
+    pitch_deg: -35.0
+    h_fov_deg: 42.4
+    v_fov_deg: 22.65
+    range_m: 50
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
+      - /v2x/rsu12020002/sensor4/object_info
+      - /v2x/rsu12020002/sensor4/object_info_groundtruth
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 9'
+
   - name: 'RSU_Lidar 9'
     type: RSU_LIDAR
     enabled: true
     group: 'RSU2_Kakeiken_CooL4'
     near: '科警研 (Kakeiken)'        # 18 m from the centre
-    sensor_id: 4
+    sensor_id: 5
     rsu_ids: [0x12020002]
     position: {lat: 35.8960476, lon: 139.9420196, z_m: 23.85}
     heading_deg: 334.8
@@ -252,26 +280,6 @@ sensors:
       - /v2x/rsu12020003/sensor5/object_info
       - /v2x/rsu12020003/sensor5/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 8'
-
-  - name: 'RSU_camera 9'
-    type: RSU_CAMERA
-    enabled: true
-    group: 'RSU2_Kakeiken_CooL4'
-    near: '科警研 (Kakeiken)'        # 18 m from the centre
-    sensor_id: 5
-    rsu_ids: [0x12020002]
-    position: {lat: 35.8960458, lon: 139.9420172, z_m: 23.91}
-    heading_deg: 334.8
-    pitch_deg: -35.0
-    h_fov_deg: 42.4
-    v_fov_deg: 22.65
-    range_m: 50
-    topics:
-      - /v2x/object_info
-      - /v2x/object_info_groundtruth
-      - /v2x/rsu12020002/sensor4/object_info
-      - /v2x/rsu12020002/sensor4/object_info_groundtruth
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 9'
 
   - name: 'RSU_Lidar 9'
     type: RSU_CAMERA
@@ -327,14 +335,16 @@ sensors:
     group: 'RSU3_Midblock'
     near: 'midblock (若柴 (Wakashiba) is the nearest intersection)'        # 324 m from the centre
     sensor_id: 1
-    rsu_ids: []
+    rsu_ids: [0x12020004]
     position: {lat: 35.8979020, lon: 139.9458899, z_m: 21.26}
     heading_deg: 314.4
     pitch_deg: -0.0
     h_fov_deg: 45
     v_fov_deg: 50
     range_m: 120
-    topics: []
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU3_Midblock/RSU_Lidar'
 
   - name: 'RSU_cam_cross4_c1'
@@ -343,14 +353,16 @@ sensors:
     group: 'RSU4_Wakashiba'
     near: '若柴 (Wakashiba)'        # 20 m from the centre
     sensor_id: 1
-    rsu_ids: []
+    rsu_ids: [0x12020005]
     position: {lat: 35.8977388, lon: 139.9495201, z_m: 22.79}
     heading_deg: 273.1
     pitch_deg: 0.0
     h_fov_deg: 180
     v_fov_deg: 70
     range_m: 15
-    topics: []
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_camera (4) _ 1 _ 360'
 
   - name: 'RSU_cam_cross4_c2'
@@ -358,15 +370,17 @@ sensors:
     enabled: true
     group: 'RSU4_Wakashiba'
     near: '若柴 (Wakashiba)'        # 25 m from the centre
-    sensor_id: 1
-    rsu_ids: []
+    sensor_id: 2
+    rsu_ids: [0x12020005]
     position: {lat: 35.8979958, lon: 139.9497331, z_m: 21.76}
     heading_deg: 5.9
     pitch_deg: 0.0
     h_fov_deg: 180
     v_fov_deg: 70
     range_m: 15
-    topics: []
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_camera (4) _2 _ 360'
 
   - name: 'RSU_cam_cross4_c3'
@@ -374,45 +388,51 @@ sensors:
     enabled: true
     group: 'RSU4_Wakashiba'
     near: '若柴 (Wakashiba)'        # 21 m from the centre
-    sensor_id: 1
-    rsu_ids: []
+    sensor_id: 3
+    rsu_ids: [0x12020005]
     position: {lat: 35.8978999, lon: 139.9492465, z_m: 21.41}
     heading_deg: 89.8
     pitch_deg: -0.0
     h_fov_deg: 180
     v_fov_deg: 70
     range_m: 50
-    topics: []
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_camera (4) _ 4_camera'
-
-  - name: 'RSU_cross4_s1'
-    type: RSU_LIDAR
-    enabled: true
-    group: 'RSU4_Wakashiba'
-    near: '若柴 (Wakashiba)'        # 20 m from the centre
-    sensor_id: 1
-    rsu_ids: []
-    position: {lat: 35.8979323, lon: 139.9492515, z_m: 21.92}
-    heading_deg: 95.2
-    pitch_deg: 0.6
-    h_fov_deg: 180
-    v_fov_deg: 180
-    range_m: 121
-    topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_sensor (4) _ 3 Lidar'
 
   - name: 'RSU_cam_cross4_c4'
     type: RSU_CAMERA
     enabled: true
     group: 'RSU4_Wakashiba'
     near: '若柴 (Wakashiba)'        # 21 m from the centre
-    sensor_id: 2
-    rsu_ids: []
+    sensor_id: 4
+    rsu_ids: [0x12020005]
     position: {lat: 35.8979095, lon: 139.9492485, z_m: 22.22}
     heading_deg: 120.4
     pitch_deg: -0.0
     h_fov_deg: 180
     v_fov_deg: 70
     range_m: 50
-    topics: []
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_camera (4)'
+
+  - name: 'RSU_cross4_s1'
+    type: RSU_LIDAR
+    enabled: true
+    group: 'RSU4_Wakashiba'
+    near: '若柴 (Wakashiba)'        # 20 m from the centre
+    sensor_id: 5
+    rsu_ids: [0x12020005]
+    position: {lat: 35.8979323, lon: 139.9492515, z_m: 21.92}
+    heading_deg: 95.2
+    pitch_deg: 0.6
+    h_fov_deg: 180
+    v_fov_deg: 180
+    range_m: 121
+    topics:
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_sensor (4) _ 3 Lidar'

@@ -11,9 +11,9 @@ Object information describes the position and state of objects on and around the
  Pseudo sensors (MockSensor: LiDAR / camera FOV + line-of-sight checks), each with a sensor ID
           │  GetSeenObjects()
           ▼
- ObjectInfo component                                            every 1 / (2 × Hz) s
-          │  1. collect every object seen by its sensors, and by the sensors of its
-          │     Sources (other ObjectInfo components, each with its own RSU ID); ego excluded
+ ObjectInfo component                                            every 1 / Hz s
+          │  1. collect every object seen by its sensors, by the sensors of its Sources (other
+          │     ObjectInfo components) and of its Rsu Sensors groups, each with its RSU ID; ego excluded
           │  2. build one ObjectInfo per object, twice:
           │       with noise    → topic              e.g. /v2x/object_info
           │       ground truth  → topicGroundTruth   e.g. /v2x/object_info_groundtruth
@@ -83,7 +83,7 @@ The simulator plays roadside units, so it always uses **`10`**. It splits the 30
 
 - **RSU ID**: the `Rsu Id` field of the component the sensor belongs to, a hex string such as `0x12020002`. A combined publisher keeps each source's RSU ID.
 - **Sensor ID**: the `Sensor Id` of the `MockSensor` that saw the object.
-- **Object number**: assigned once per object (keyed by the object's UUID) from one counter shared by all `ObjectInfo` components: 1, 2, 3, … So the same object has the same number on every topic, in every intersection, and two objects alive at the same time never share one (the counter wraps after 65 535 objects).
+- **Object number**: a random number (1–65 535) drawn once per object (keyed by the object's UUID) from one table shared by all `ObjectInfo` components. So the same object has the same number on every topic and at every intersection, and a number is never given to two objects (the table starts over after 65 535 objects).
 
 `information_source_list` holds one such ID per sensor that saw the object, sorted by RSU ID and then sensor ID. `id` copies the first one. It changes only when the set of sensors that see the object changes so that a different sensor comes first.
 
@@ -93,7 +93,7 @@ The simulator plays roadside units, so it always uses **`10`**. It splits the 30
 
 ## Publishing rate
 
-The **Hz** field sets half the publishing rate. `ObjectInfo.Update()` publishes every `1 / (2 × Hz)` seconds, so `Hz = 10` produces about **20 Hz**, and `Hz = 1` produces about **2 Hz**. Verify with `ros2 topic hz`.
+The **Hz** field is the publishing rate: `ObjectInfo.Update()` publishes every `1 / Hz` seconds of simulation time, carrying the remainder over so the average stays at **Hz** even when the frame rate does not divide it. All publishers of the Kashiwa scene use **10 Hz**. Verify with `ros2 topic hz`.
 
 QoS: best effort, volatile, keep-last 1.
 
@@ -109,7 +109,8 @@ QoS: best effort, volatile, keep-last 1.
 |:--|:--|
 | **Sensors** | Pseudo sensors whose detections are merged into this component's output (reported with this component's **Rsu Id**) |
 | **Sources** | Other `ObjectInfo` components whose sensors are merged in as well, each reported with that component's **Rsu Id**. Used for one message covering several RSUs. |
-| **Hz** | Half of the publishing rate (see [Publishing rate](#publishing-rate)) |
+| **Rsu Sensors** | Further RSUs (an **Rsu Id** and its **Sensors**) merged into this message only. For RSUs that do not publish their own topics. |
+| **Hz** | Publishing rate (see [Publishing rate](#publishing-rate)) |
 | **Topic** | Noisy output |
 | **Topic Ground Truth** | Noise-free output. Set it to `None` or leave it empty to disable. |
 | **Rsu Id** | 32-bit device ID as a hex string, used in the object IDs |
@@ -124,11 +125,23 @@ QoS: best effort, volatile, keep-last 1.
 
 ## Setup in the Kashiwa scene
 
-Under `RSUs/Publishers/CooL4 Object Info (DM)` in `V2X_E2E_Simulator_v3.1.1.unity`, all at 科警研 (Kakeiken):
+Under `RSUs/Publishers/CooL4 Object Info (DM)` in `V2X_E2E_Simulator_v3.1.1.unity`, all at 10 Hz:
 
 | Publisher | Topics | Use |
 |:--|:--|:--|
-| **All RSUs** | `/v2x/object_info`, `/v2x/object_info/DSRC`, `/v2x/object_info/Cellular`, `/v2x/object_info_groundtruth` | Every object seen by the 10 sensors below, with each sensor's RSU ID (`0x12020002` or `0x12020003`). This is the DM-style output, with network-delayed copies. |
-| **Pole 6 … Pole 8 Camera** (10 publishers, one per sensor) | `/v2x/rsu<RSU ID>/sensor<N>/object_info`, `…/object_info_groundtruth` | One sensor each, without delayed copies. For tracking research. |
+| **all_rsu_publisher** | `/v2x/object_info`, `/v2x/object_info/DSRC`, `/v2x/object_info/Cellular`, `/v2x/object_info_groundtruth` | Every object seen by any RSU sensor below, with each sensor's RSU ID. The 10 Kakeiken sensors come in through **Sources**, the other RSUs through **Rsu Sensors**. This is the DM-style output, with network-delayed copies. |
+| **indivisual_publisher/…** (10 publishers, one per Kakeiken sensor) | `/v2x/rsu<RSU ID>/sensor<N>/object_info`, `…/object_info_groundtruth` | One sensor each, without delayed copies. For tracking research. |
+
+The RSUs and their sensors:
+
+| RSU | RSU ID | Sensors (sensor ID) |
+|:--|:--|:--|
+| がん研 (Ganken), `RSU1_Ganken_CooL4` | `0x12020001` | 4 LiDARs `RSU_Lidar 1`–`4` (1–4) |
+| 科警研 (Kakeiken), `RSU2_Kakeiken_CooL4` | `0x12020002` | Pole 6, 7, 9: camera 6 (1), camera 7 (2), LiDAR 7 (3), camera 9 (4), LiDAR 9 (5) |
+| 科警研 (Kakeiken), `RSU2_Kakeiken_CooL4` | `0x12020003` | Pole 2, 3, 8: camera 2 (1), LiDAR 2 (2), camera 3 (3), LiDAR 3 (4), camera 8 (5) |
+| Midblock between 科警研 and 若柴, `RSU3_Midblock` | `0x12020004` | 1 LiDAR (1) |
+| 若柴 (Wakashiba), `RSU4_Wakashiba` | `0x12020005` | cameras c1–c4 (1–4), LiDAR s1 (5) |
+
+A pseudo sensor only detects objects when it is listed in the active scenario (**Cooperative Autonomous Driving** → *Rsu Lidar* / *Rsu Cameras*), which runs the line-of-sight checks. Add new RSU sensors there as well.
 
 See the [Topic List](../Topics/index.md) for every topic name.

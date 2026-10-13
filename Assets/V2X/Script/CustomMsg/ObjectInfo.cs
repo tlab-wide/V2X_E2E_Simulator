@@ -22,6 +22,18 @@ public class ObjectInfo : MonoBehaviour
              "Each object keeps the RSU ID of the publisher whose sensor saw it.")]
     [SerializeField] private List<ObjectInfo> sources = new List<ObjectInfo>();
 
+    // Sensors of one RSU, identified by its RSU ID.
+    [Serializable]
+    public class RsuSensors
+    {
+        public string rsuId = "0x12020001";
+        public List<DetectionSensor> sensors = new List<DetectionSensor>();
+    }
+
+    [Tooltip("Sensors of further RSUs that are published only in this message (they have no ObjectInfo of their own).")]
+    [SerializeField] private List<RsuSensors> rsuSensors = new List<RsuSensors>();
+
+    [Tooltip("Publishing rate (messages per second).")]
     [SerializeField] private float Hz = 10;
 
     // [SerializeField] private ulong stationID = 24;
@@ -54,16 +66,17 @@ public class ObjectInfo : MonoBehaviour
     private NoiseSetting.Noise probabilityNoise;
 
 
-    // Object numbers (bits 47-32 of the object ID), shared by every ObjectInfo so the same object has the same
-    // number on every topic. Assigned in order, so no two live objects share one (wraps after 65535 objects).
+    // Object numbers (bits 47-32 of the object ID): a random number per object, shared by every ObjectInfo so the
+    // same object has the same number on every topic. A number is never given to two objects.
     private static readonly Dictionary<string, ushort> objectNumbers = new Dictionary<string, ushort>();
-    private static ushort lastObjectNumber;
+    private static readonly HashSet<ushort> usedObjectNumbers = new HashSet<ushort>();
+    private static readonly System.Random objectNumberRandom = new System.Random();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetObjectNumbers()
     {
         objectNumbers.Clear();
-        lastObjectNumber = 0;
+        usedObjectNumbers.Clear();
     }
 
     // A sensor together with the RSU ID it reports under.
@@ -203,18 +216,21 @@ public class ObjectInfo : MonoBehaviour
     private List<Watcher> CollectWatchers()
     {
         var watchers = new List<Watcher>();
-        void Add(ObjectInfo publisher)
+        void Add(string rsuId, List<DetectionSensor> list)
         {
-            uint rsu = Convert.ToUInt32(publisher.rsuId, 16);
-            if (publisher.sensors == null) return;
-            foreach (var sensor in publisher.sensors)
+            if (list == null) return;
+            uint rsu = Convert.ToUInt32(rsuId, 16);
+            foreach (var sensor in list)
                 if (sensor != null && !watchers.Exists(w => w.sensor == sensor && w.rsu == rsu))
                     watchers.Add(new Watcher { sensor = sensor, rsu = rsu });
         }
-        Add(this);
+        Add(rsuId, sensors);
         foreach (var source in sources)
             if (source != null && source != this)
-                Add(source);
+                Add(source.rsuId, source.sensors);
+        foreach (var group in rsuSensors)
+            if (group != null)
+                Add(group.rsuId, group.sensors);
         return watchers;
     }
 
@@ -444,11 +460,11 @@ public class ObjectInfo : MonoBehaviour
         // timer += Time.fixedDeltaTime;
 
 
-        var interval = 1.0f / (Hz * 2);
+        var interval = 1.0f / Hz;
         if (timer + 0.00001f < interval)
             return;
 
-        timer = 0;
+        timer = Mathf.Min(timer - interval, interval);   // keep the remainder so the average rate is Hz
 
         CheckMockSensors();
     }
@@ -547,14 +563,20 @@ public class ObjectInfo : MonoBehaviour
     }
 
 
-    // Object number of the object with this UUID; a new object gets the next free number.
+    // Object number of the object with this UUID; a new object gets a random number (1 … 65535) not used before.
     private static ushort GetObjectNumber(byte[] uuid)
     {
         string uuidKey = BitConverter.ToString(uuid);
         if (objectNumbers.TryGetValue(uuidKey, out var number))
             return number;
 
-        number = lastObjectNumber = (ushort)(lastObjectNumber % ushort.MaxValue + 1);   // 1 … 65535
+        if (usedObjectNumbers.Count >= ushort.MaxValue)     // all numbers used: start over
+        {
+            objectNumbers.Clear();
+            usedObjectNumbers.Clear();
+        }
+        do number = (ushort)objectNumberRandom.Next(1, ushort.MaxValue + 1);
+        while (!usedObjectNumbers.Add(number));
         objectNumbers[uuidKey] = number;
         return number;
     }

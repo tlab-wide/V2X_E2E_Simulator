@@ -85,7 +85,7 @@ The signalised intersections of the Kashiwa scene (`Enviroment copy/intersection
 
 `<i>` numbers the heads of the same approach (1, 2, …, clockwise around the centre). Examples: `Kakeiken_V_0x21-0x23_1` is the first vehicle head for traffic entering 科警研 from 方路2 (signal IDs 0x21–0x23). `Wakashiba_P_0x40_2` is the second pedestrian head of the crosswalk across 若柴 方路4.
 
-The RSU sensor groups under `RSUs/Pseudo Sensors setup` follow the RSU numbers of the route: `RSU1_Ganken`, `RSU2_Kakeiken`, `RSU3_Midblock` (between 科警研 and 若柴), `RSU4_Wakashiba`, plus the variants `RSU1_Ganken_CooL4`, `RSU2_Kakeiken_CooL4` and `RSU2_Kakeiken_Alt`.
+The RSU sensor groups under `RSUs/Pseudo Sensors setup` follow the RSU numbers of the route: `RSU1_Ganken_CooL4` (RSU ID `0x12020001`), `RSU2_Kakeiken_CooL4` (`0x12020002`, `0x12020003`), `RSU3_Midblock` (`0x12020004`, between 科警研 and 若柴) and `RSU4_Wakashiba` (`0x12020005`). Sensor IDs are unique within each RSU.
 
 Names are used as references in a few places. Keep them in sync when renaming:
 - `DMSignalInfoPublisher` → **Traffic Intersection Name** of each intersection
