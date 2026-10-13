@@ -2548,7 +2548,7 @@
 
 <h1 id="vehicle-despawn-system">Vehicle Despawn System</h1>
 <h2 id="overview">Overview</h2>
-<p>The Vehicle Despawn System removes NPC vehicles within a specified radius. This is used during bus teleportation to prevent collisions.</p>
+<p>The Vehicle Despawn System removes NPC vehicles within a specified radius. It is used before moving the ego vehicle (Bus or Lexus) to a new position, to prevent collisions with NPCs at the destination. In-code callers are the <a href="../Teleport/">Teleporter</a> gate and <code>ScenarioSelector</code> (Q/E/F/X start points); <code>TestTrafficRemovingNpc</code> is a manual test component.</p>
 <h2 id="how-it-works">How It Works</h2>
 <p>The system uses a two-phase approach:</p>
 <ol>
@@ -2556,7 +2556,7 @@
 <li><strong>Despawn Phase</strong>: Flagged vehicles are destroyed in the next <code>FixedUpdate()</code></li>
 </ol>
 <h3 id="system-flow">System Flow</h3>
-<div class="highlight"><pre><span></span><code>Game Code (TestTrafficRemovingNpc)
+<div class="highlight"><pre><span></span><code>Game Code (Teleporter, ScenarioSelector, TestTrafficRemovingNpc)
     ↓
 TrafficManager.RemoveVehiclesInRadius()
     ↓
@@ -2592,32 +2592,35 @@ TrafficManager.FixedUpdate() → Despawn()
 <p><img alt="alt text" src="image-2.png" /></p>
 <p><strong>Inspector Parameters</strong>:
 - <strong>Traffic Manager</strong>: Reference to the TrafficManager in the scene
-- <strong>Center Transform</strong>: The center point for vehicle removal (typically the bus transform)
+- <strong>Center Transform</strong>: The center point for vehicle removal (e.g. the ego vehicle transform)
 - <strong>Radius</strong>: Distance in meters from center point
 - <strong>Remove Key</strong>: Keyboard key to trigger removal (default: R)</p>
 <h2 id="api-reference">API Reference</h2>
 <h3 id="removevehiclesinradius">RemoveVehiclesInRadius</h3>
-<p><strong>Method</strong>: <code>TrafficManager.RemoveVehiclesInRadius()</code></p>
+<p><strong>Overloads</strong>:
+- <code>TrafficManager.RemoveVehiclesInRadius(Vector3 center, float radius)</code>
+- <code>TrafficManager.RemoveVehiclesInRadius(Transform centerTransform, float radius)</code> - uses <code>centerTransform.position</code>; logs a warning and returns <code>0</code> if the transform is null</p>
 <p><strong>Parameters</strong>:
-- <code>center</code> (Transform) - Center point of removal area
+- <code>center</code> / <code>centerTransform</code> - Center point of removal area
 - <code>radius</code> (float) - Radius in meters</p>
-<p><strong>Returns</strong>: <code>int</code> - Number of vehicles marked for removal</p>
+<p><strong>Returns</strong>: <code>int</code> - Number of vehicles marked for removal (vehicles already marked are not counted again). Returns <code>0</code> with a warning if the <code>NPCVehicleSimulator</code> is not initialized.</p>
+<p>The call affects only the NPCs of the <code>TrafficManager</code> it is called on. If the scene has several TrafficManagers, call it on each (the Teleporter and <code>ScenarioSelector</code> do this).</p>
 <h2 id="implementation-details">Implementation Details</h2>
 <h3 id="distance-calculation">Distance Calculation</h3>
 <p>The system uses squared distance (<code>sqrMagnitude</code>) for performance:
-<div class="highlight"><pre><span></span><code><span class="kt">float</span><span class="w"> </span><span class="n">sqrDistance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">vehiclePosition</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">center</span><span class="p">.</span><span class="n">position</span><span class="p">).</span><span class="n">sqrMagnitude</span><span class="p">;</span>
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sqrDistance</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">radius</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">radius</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="kt">var</span><span class="w"> </span><span class="n">distanceSquared</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="n">Position</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">centerPosition</span><span class="p">).</span><span class="n">sqrMagnitude</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">distanceSquared</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">radiusSquared</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="n">vehicleState</span><span class="p">.</span><span class="n">ShouldDespawn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></p>
 <h3 id="despawn-timing">Despawn Timing</h3>
-<p>Vehicles are not destroyed immediately. Destruction occurs in the next <code>FixedUpdate()</code> cycle (typically ~0.02 seconds later).</p>
+<p>Vehicles are not destroyed immediately. Destruction occurs at the end of the next <code>TrafficManager.FixedUpdate()</code> (typically ~0.02 seconds later).</p>
 <h2 id="testing">Testing</h2>
 <ol>
 <li>Add <code>TestTrafficRemovingNpc</code> component to any GameObject</li>
 <li>Assign the TrafficManager reference from the scene</li>
-<li>Set the center transform (bus or target location)</li>
+<li>Set the center transform (ego vehicle or target location)</li>
 <li>Configure the radius (recommended: 20-30m)</li>
 <li>Enter Play mode and press <strong>R</strong> key to test removal</li>
 </ol>
@@ -2625,7 +2628,7 @@ TrafficManager.FixedUpdate() → Despawn()
 <ul>
 <li><strong>Time Complexity</strong>: O(n) where n is the number of active vehicles</li>
 <li><strong>Optimization</strong>: Uses squared distance to avoid expensive square root calculations</li>
-<li><strong>Recommended Radius</strong>: 20-30m for bus spawning</li>
+<li><strong>Recommended Radius</strong>: 20-30m when clearing an area around a spawn point</li>
 </ul>
 <h2 id="common-issues">Common Issues</h2>
 <p><strong>Vehicles still visible after pressing the key</strong>
@@ -2640,11 +2643,11 @@ TrafficManager.FixedUpdate() → Despawn()
 <h2 id="notes">Notes</h2>
 <ul>
 <li>The test component uses <code>FixedUpdate()</code> with <code>Input.GetKeyDown()</code> for testing purposes</li>
-<li>In production, call <code>RemoveVehiclesInRadius()</code> before teleporting or spawning buses</li>
+<li>In production, call <code>RemoveVehiclesInRadius()</code> before teleporting or spawning the ego vehicle</li>
 <li>Vehicles marked for despawn remain in the scene until next physics update</li>
 </ul>
 <hr />
-<p><strong>Related</strong>: Traffic Spawning System, Bus Teleportation System</p>
+<p><strong>Related</strong>: Traffic Spawning System, <a href="../Teleport/">Teleporter</a></p>
 
 
 

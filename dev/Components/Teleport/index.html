@@ -1981,10 +1981,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#npc-clearance" class="md-nav__link">
+  <a href="#teleport-sequence-and-npc-clearance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        NPC Clearance
+        Teleport Sequence and NPC Clearance
       
     </span>
   </a>
@@ -2386,10 +2386,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#npc-clearance" class="md-nav__link">
+  <a href="#teleport-sequence-and-npc-clearance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        NPC Clearance
+        Teleport Sequence and NPC Clearance
       
     </span>
   </a>
@@ -2605,6 +2605,10 @@
 <h1 id="teleporter-component">Teleporter Component</h1>
 <h2 id="overview">Overview</h2>
 <p>The <code>Teleporter</code> component is a trigger-based system that automatically relocates the ego (autonomous) vehicle to a new spawn position whenever it exits through a designated trigger volume. It handles NPC clearance at the destination, optional delays, and logs the spawn selection data for analysis.</p>
+<div class="admonition note">
+<p class="admonition-title">No hotkeys</p>
+<p>The Teleporter gate is triggered only by the ego vehicle entering its collider; it has no keyboard shortcuts. The Q/E/F/X keys described in the <a href="../../GettingStarted/QuickStartDemo/">QuickStart</a> belong to a different feature (<code>ScenarioSelector</code> start points).</p>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Key Design Goal</p>
 <p>The Teleporter is designed for <strong>repeatable, controlled experiments</strong>: by targeting a midpoint lane segment with a randomized arrival time, each run places the ego vehicle at a different distance from a point of interest while keeping the scenario statistically comparable.</p>
@@ -2619,7 +2623,7 @@
 <p>This strategy guarantees that the ego vehicle is placed at a realistic driving distance from the point of interest — far enough to observe natural traffic behaviour before reaching it.</p>
 </div>
 <div class="tabbed-block">
-<p>Picks a random <code>Transform</code> from a hand-placed list of <code>RandomSpawnPoint</code> entries. Each entry can optionally override the rotation with a custom Euler angle.</p>
+<p>Picks a random <code>Transform</code> from a hand-placed list of <code>RandomSpawnPoint</code> entries. Only valid entries (non-null entry with an assigned <code>point</code>) are considered. Each entry can optionally override the rotation with a custom Euler angle.</p>
 <p>Use this strategy when you need full manual control over spawn positions without any ETA logic.</p>
 </div>
 </div>
@@ -2630,7 +2634,7 @@
 <p>The Teleporter walks through all <code>LaneSpawnSource</code> entries and samples each lane at regular intervals defined by <code>spawnSubdivisionSpacing</code> (default 10 m):</p>
 <div class="highlight"><pre><span></span><code>Lane waypoints → cumulative distance table → sample every N metres
 </code></pre></div>
-<p>If <code>includeSegmentEndpoints</code> is enabled, the start and end of each lane are also included as candidates.</p>
+<p>If <code>includeSegmentEndpoints</code> is enabled, sampling starts at the lane start (0 m) and the lane end (lane length) is always added as a candidate, even when the length is not a multiple of the spacing. If it is disabled, sampling starts at <code>spawnSubdivisionSpacing</code> and the lane end is only included when it falls on a sample. The spacing is clamped to at least 1 m.</p>
 <p>For each sample, the component caches:</p>
 <ul>
 <li>World position (interpolated along the lane waypoints)</li>
@@ -2643,7 +2647,7 @@ cost(next_lane)  = cost(current_lane) + next_lane_length
 ...
 stop when midpointSegment is reached
 </code></pre></div>
-<p>Candidates with no reachable path to the midpoint are excluded.</p>
+<p>Candidates with no reachable path to the midpoint are excluded, as are candidates on the midpoint lane itself that lie past the target point.</p>
 <h3 id="eta-calculation">ETA Calculation</h3>
 <p>Travel time is estimated with a two-phase kinematic model (acceleration + cruise):</p>
 <div class="arithmatex">\[
@@ -2664,8 +2668,17 @@ t = \begin{cases}
 </code></pre></div>
 <p>The candidate with the smallest <code>|ETA - t_target|</code> is selected.</p>
 <hr />
-<h2 id="npc-clearance">NPC Clearance</h2>
-<p>Before moving the ego vehicle, the Teleporter calls <code>RemoveVehiclesInRadius()</code> on every active <code>TrafficManager</code> in the scene, clearing all NPC vehicles within <code>clearanceRadius</code> of the destination. After clearing, it waits for <code>teleportDelay</code> seconds (plus an optional random <code>spawnDelayRange</code>) to let the physics settle before the actual teleport.</p>
+<h2 id="teleport-sequence-and-npc-clearance">Teleport Sequence and NPC Clearance</h2>
+<p>When a <code>Vehicle</code> enters the trigger, the Teleporter runs one coroutine per vehicle in this order:</p>
+<ol>
+<li><strong>Pick the destination</strong> with the selected spawn strategy. If no candidate is found (empty <code>laneSpawnSources</code>, missing or unreachable <code>midpointSegment</code>, or no valid random points), it logs the warning <code>Teleporter: No spawn candidate available. Aborting teleport.</code> and does nothing.</li>
+<li><strong>Optional random delay</strong> drawn from <code>spawnDelayRange</code> (only if <code>spawnDelayRange.y &gt; 0</code>). The ego vehicle keeps driving during this delay.</li>
+<li><strong>Clear NPCs</strong>: calls <code>RemoveVehiclesInRadius(destination, clearanceRadius)</code> on every <code>TrafficManager</code> found in the scene at <code>Awake</code>. Clearing happens after the random delay, right before the teleport, so NPCs have little time to drive back into the cleared area.</li>
+<li><strong>Wait <code>teleportDelay</code></strong> seconds so the marked NPCs are despawned (see <a href="../NpcCars/">NPC Cars</a>).</li>
+<li><strong>Move the ego</strong>: sets the Rigidbody kinematic and sets the pose over several <code>FixedUpdate</code> steps.</li>
+<li><strong>Log</strong> the selection via <code>LogAutonomous.LogSpawnSelection()</code> (if the vehicle has that component).</li>
+<li><strong>Restore physics</strong>: Rigidbody non-kinematic, position/rotation set, linear and angular velocity zeroed. After two more <code>FixedUpdate</code> steps the vehicle can trigger the gate again.</li>
+</ol>
 <div class="highlight"><pre><span></span><code>sequenceDiagram
     participant T as Trigger Volume
     participant TP as Teleporter
@@ -2673,15 +2686,19 @@ t = \begin{cases}
     participant EGO as Ego Vehicle
 
     T-&gt;&gt;TP: OnTriggerEnter (ego vehicle)
-    TP-&gt;&gt;TP: SelectSpawnCandidate()
-    TP-&gt;&gt;TM: RemoveVehiclesInRadius(dest, radius)
-    TM--&gt;&gt;TP: vehicles cleared
-    TP-&gt;&gt;TP: Wait teleportDelay (+ random delay)
-    TP-&gt;&gt;EGO: Disable Rigidbody (kinematic=true)
-    TP-&gt;&gt;EGO: SetPositionAndRotation(dest)
-    TP-&gt;&gt;EGO: Reset velocities, re-enable physics
+    TP-&gt;&gt;TP: SelectSpawnCandidate() (abort if none)
+    TP-&gt;&gt;TP: Wait random delay (spawnDelayRange, optional)
+    TP-&gt;&gt;TM: RemoveVehiclesInRadius(dest, clearanceRadius)
+    TP-&gt;&gt;TP: Wait teleportDelay
+    TP-&gt;&gt;EGO: Rigidbody kinematic = true
+    TP-&gt;&gt;EGO: SetPositionAndRotation(dest) over FixedUpdates
     TP-&gt;&gt;TP: LogSpawnSelection()
+    TP-&gt;&gt;EGO: kinematic = false, zero velocities
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Disabling the gate</p>
+<p>If the Teleporter is disabled while a teleport is in progress, <code>OnDisable</code> makes the affected vehicles' Rigidbodies non-kinematic again and clears the in-progress set, so new teleports are allowed once it is re-enabled.</p>
+</div>
 <hr />
 <h2 id="inspector-reference">Inspector Reference</h2>
 <h3 id="teleport-timing">Teleport Timing</h3>
@@ -2707,7 +2724,7 @@ t = \begin{cases}
 <tr>
 <td><code>spawnDelayRange</code></td>
 <td><code>(0, 0)</code></td>
-<td>Extra random delay: X = min, Y = max. Set Y &gt; 0 to enable.</td>
+<td>Random delay before NPC clearance: X = min, Y = max. Set Y &gt; 0 to enable. The ego keeps driving during this delay.</td>
 </tr>
 </tbody>
 </table>
@@ -2791,14 +2808,22 @@ t = \begin{cases}
 <tbody>
 <tr>
 <td><code>randomSpawnPoints</code></td>
-<td>List of <code>Transform</code> entries used by the <code>RandomPoint</code> strategy</td>
+<td>List of entries used by the <code>RandomPoint</code> strategy, each with a <code>point</code> (<code>Transform</code>)</td>
 </tr>
 <tr>
 <td><code>useCustomRotation</code></td>
 <td>Per-entry toggle to override rotation with <code>customEulerRotation</code></td>
 </tr>
+<tr>
+<td><code>customEulerRotation</code></td>
+<td>Euler angles (degrees) used when <code>useCustomRotation</code> is enabled</td>
+</tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Custom rotation of (0, 0, 0)</p>
+<p>A <code>customEulerRotation</code> of exactly <code>(0, 0, 0)</code> is treated as "not set": the point's own rotation is used even if <code>useCustomRotation</code> is enabled. To face world +Z, use a tiny non-zero value (e.g. <code>(0, 0.01, 0)</code>) or rotate the point's <code>Transform</code> instead.</p>
+</div>
 <hr />
 <h2 id="spawn-selection-logging">Spawn Selection Logging</h2>
 <p>After every teleport, the Teleporter calls <code>LogSpawnSelection()</code> on the ego vehicle's <code>LogAutonomous</code> component (if present). This writes one row to the spawn selection CSV:</p>
@@ -2811,43 +2836,45 @@ t = \begin{cases}
 </thead>
 <tbody>
 <tr>
-<td><code>timestamp</code></td>
-<td>Simulation time of teleport</td>
-</tr>
-<tr>
 <td><code>midpoint_segment</code></td>
-<td>Name of the target midpoint lane</td>
+<td>Name of the target midpoint lane (<code>None</code> if not assigned)</td>
 </tr>
 <tr>
 <td><code>spawn_lane</code></td>
-<td>Name of the selected spawn lane (or <code>"RandomPoint"</code>)</td>
+<td>Name of the selected spawn lane (or <code>RandomPoint</code>)</td>
 </tr>
 <tr>
 <td><code>sample_index</code></td>
-<td>Index of the sample point on the spawn lane</td>
+<td>Index of the sample point on the spawn lane (for <code>RandomPoint</code>: index in <code>randomSpawnPoints</code>)</td>
 </tr>
 <tr>
-<td><code>distance_to_midpoint</code></td>
+<td><code>distance_to_midpoint_m</code></td>
 <td>Dijkstra path distance to midpoint (m)</td>
 </tr>
 <tr>
-<td><code>estimated_time</code></td>
+<td><code>estimated_time_s</code></td>
 <td>Kinematic ETA to midpoint (s)</td>
 </tr>
 <tr>
-<td><code>target_time</code></td>
+<td><code>target_time_s</code></td>
 <td>Randomly drawn target arrival time (s)</td>
 </tr>
 <tr>
 <td><code>reached_cruise</code></td>
-<td>Whether cruise speed was reached before the midpoint</td>
+<td><code>1</code> if cruise speed is reached before the midpoint, else <code>0</code></td>
 </tr>
 <tr>
-<td><code>spawn_x/y/z</code></td>
-<td>World position of the teleport destination</td>
+<td><code>target_x</code>, <code>target_y</code>, <code>target_z</code></td>
+<td>Teleport destination in ROS map coordinates (MGRS local), the same frame as the ego log</td>
+</tr>
+<tr>
+<td><code>ros_time_sec</code>, <code>ros_time_nsec</code></td>
+<td>ROS time of the teleport</td>
 </tr>
 </tbody>
 </table>
+<p>For the <code>RandomPoint</code> strategy, <code>distance_to_midpoint_m</code>, <code>estimated_time_s</code> and <code>target_time_s</code> are <code>0</code> and <code>reached_cruise</code> is <code>0</code>.</p>
+<p>The file is named <code>&lt;logFilePrefix&gt;_&lt;name&gt;_yyyyMMdd_HHmmss.csv</code>, where <code>&lt;name&gt;</code> comes from <code>spawnSelectionLogPath</code> (default <code>AutonomousSpawnValidation.csv</code>) and <code>logFilePrefix</code> defaults to <code>Auto</code>. The file is created in the directory of <code>spawnSelectionLogPath</code>, which is created automatically if missing.</p>
 <p>See <a href="../Logger/">Loggers</a> for details on the full CSV output.</p>
 <hr />
 <h2 id="scene-setup">Scene Setup</h2>
@@ -2867,9 +2894,10 @@ t = \begin{cases}
 <h3 id="step-3-tune-the-arrival-window">Step 3 — Tune the Arrival Window</h3>
 <p>Set <code>targetArrivalWindow</code> to the range of arrival times you want to study. For example:</p>
 <ul>
-<li><code>(10, 60)</code> s → vehicle always arrives between 10 and 60 seconds after spawn</li>
+<li><code>(10, 60)</code> s → the selected spawn has an estimated arrival time close to a random value between 10 and 60 s (limited by the available candidates)</li>
 <li><code>(0, 0)</code> → vehicle always spawns as close to the midpoint as possible</li>
 </ul>
+<p>To see which arrival times your lanes can actually produce, add the <strong>TeleporterDebug</strong> component to any GameObject and assign the Teleporter (if left empty, it uses the first Teleporter found). When the component is enabled it logs to the Console each source lane's length, the total length, and the range of ETAs from the closest to the farthest spawn sample to the midpoint target. Choose a <code>targetArrivalWindow</code> inside that range. <code>TeleporterDebug</code> is editor-only; it does nothing in player builds.</p>
 <div align="center">
     <img src="image.png" alt="Teleporter in the scene" style="max-width:100%; height:auto;" /><br/>
     <em>Figure 1: Final vehicle position after teleport</em>
@@ -2891,7 +2919,7 @@ t = \begin{cases}
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Midpoint Must Be Reachable</p>
-<p>If no candidate has a connected path to the <code>midpointSegment</code>, the teleport is aborted. Verify lane connections with the <strong>TrafficManager gizmo</strong> (enable <code>showSpawnPoints</code> in the Inspector).</p>
+<p>If no candidate has a connected path (via <code>NextLanes</code>) to the <code>midpointSegment</code>, the teleport is aborted with the warning <code>No spawn candidate available. Aborting teleport.</code> and the ego keeps driving. <code>TeleporterDebug</code> reports <code>Could not compute distance to midpoint</code> in this case.</p>
 </div>
 <div class="admonition info">
 <p class="admonition-title">Re-trigger Prevention</p>
