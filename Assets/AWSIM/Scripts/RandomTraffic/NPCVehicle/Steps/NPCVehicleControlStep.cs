@@ -35,16 +35,17 @@ namespace AWSIM.TrafficSimulation
             if (state.ShouldDespawn)
                 return;
 
+            var speedLimit = GetTargetSpeedLimit(state);
             float targetSpeed;
             float acceleration;
             switch (state.SpeedMode)
             {
                 case NPCVehicleSpeedMode.NORMAL:
-                    targetSpeed = state.CurrentFollowingLane.SpeedLimit;
+                    targetSpeed = speedLimit;
                     acceleration = config.Acceleration;
                     break;
                 case NPCVehicleSpeedMode.SLOW:
-                    targetSpeed = Mathf.Min(NPCVehicleConfig.SlowSpeed, state.CurrentFollowingLane.SpeedLimit);
+                    targetSpeed = Mathf.Min(NPCVehicleConfig.SlowSpeed, speedLimit);
                     acceleration = config.Deceleration;
                     break;
                 case NPCVehicleSpeedMode.SUDDEN_STOP:
@@ -64,6 +65,19 @@ namespace AWSIM.TrafficSimulation
             }
 
             state.Speed = Mathf.MoveTowards(state.Speed, targetSpeed, acceleration * deltaTime);
+        }
+
+        private float GetTargetSpeedLimit(NPCVehicleInternalState state)
+        {
+            switch (config.SpeedLimitSource)
+            {
+                case NPCVehicleSpeedLimitSource.LaneletSpeedLimit:
+                    return state.CurrentFollowingLane.SpeedLimit;
+                case NPCVehicleSpeedLimitSource.FixedSpeedLimit:
+                    return Mathf.Max(0f, config.SpeedLimit);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         /// <summary>

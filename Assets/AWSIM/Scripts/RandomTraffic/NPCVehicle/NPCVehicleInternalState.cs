@@ -74,6 +74,12 @@ namespace AWSIM.TrafficSimulation
         public Transform DominatingVehicle { get; set; }
         public bool IsStoppedByFrontVehicle { get; set; }
 
+        // Zebra crossing awareness
+        public bool IsZebraBlocked { get; set; }
+        public float DistanceToZebraStop { get; set; } = float.MaxValue;
+        public string ZebraAreaName { get; set; }
+        public bool WasZebraBlocked { get; set; }
+
         public Vector3 Forward =>
             Quaternion.AngleAxis(Yaw, Vector3.up) * Vector3.forward;
 
@@ -248,7 +254,7 @@ namespace AWSIM.TrafficSimulation
             TrafficLane nextLane;
             if (Route == null || Route.Count == 0 || routeIndex + 1 == Route.Count)
             {
-                nextLane = RandomTrafficUtils.GetRandomElement(lastLane.NextLanes);
+                nextLane = TrafficSpawnConfig.ChooseNextLane(lastLane, lastLane.NextLanes);
             }
             else
             {
@@ -289,7 +295,11 @@ namespace AWSIM.TrafficSimulation
                     y = 0f,
                     z = vehicle.Bounds.min.z
                 },
-                Width = vehicle.Bounds.size.x
+                Width = vehicle.Bounds.size.x,
+                DistanceToZebraStop = float.MaxValue,
+                IsZebraBlocked = false,
+                ZebraAreaName = null,
+                WasZebraBlocked = false
             };
             state.FollowingLanes.Add(lane);
             return state;

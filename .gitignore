@@ -72,3 +72,7 @@ crashlytics-build.properties
 # JetBrains
 /.idea/
 
+
+# Run output of the traffic branch-decision statistics (TrafficManager.OnDestroy)
+Assets/Configs/traffic_branch_decisions.csv
+Assets/Configs/traffic_branch_decisions.csv.meta

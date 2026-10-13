@@ -1,0 +1,40 @@
+{
+    "spawnRates": [
+        {
+            "lane": "lanelet1079",
+            "spawnsPerMinute": 1.940000057220459
+        },
+        {
+            "lane": "lanelet779",
+            "spawnsPerMinute": 5.150000095367432
+        },
+        {
+            "lane": "lanelet1185",
+            "spawnsPerMinute": 3.799999952316284
+        }
+    ],
+    "branchWeights": [
+        {
+            "fromLane": "lanelet1034",
+            "next": [
+                {
+                    "lane": "lanelet1088",
+                    "weight": 0.33000001311302187
+                },
+                {
+                    "lane": "lanelet1089",
+                    "weight": 0.6700000166893005
+                }
+            ]
+        },
+        {
+            "fromLane": "lanelet1101",
+            "next": [
+                {
+                    "lane": "lanelet1102",
+                    "weight": 1.0
+                }
+            ]
+        }
+    ]
+}
