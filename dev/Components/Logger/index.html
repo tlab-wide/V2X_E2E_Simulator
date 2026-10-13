@@ -1845,10 +1845,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#file-paths-and-multi-run-support" class="md-nav__link">
+  <a href="#output-files" class="md-nav__link">
     <span class="md-ellipsis">
       
-        File Paths and Multi-Run Support
+        Output Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changes-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes / Migration
       
     </span>
   </a>
@@ -2375,10 +2386,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#file-paths-and-multi-run-support" class="md-nav__link">
+  <a href="#output-files" class="md-nav__link">
     <span class="md-ellipsis">
       
-        File Paths and Multi-Run Support
+        Output Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changes-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes / Migration
       
     </span>
   </a>
@@ -2501,18 +2523,44 @@
 </tr>
 </tbody>
 </table>
+<p>Logging starts after a short random delay (20–30 frames). Each sample writes one row per tracked object.</p>
 <hr />
 <h3 id="detection-logic">Detection Logic</h3>
 <p><code>LogArea</code> uses <code>OnTriggerEnter</code> / <code>OnTriggerExit</code> to add and remove objects from its tracking lists:</p>
-<ul>
-<li>Objects with an <code>NPCVehicle</code> component → tracked as <strong>cars</strong></li>
-<li>Objects with an <code>NPCPedestrian</code> component → tracked as <strong>humans</strong></li>
-<li>Objects on the vehicle layer with a <code>Rigidbody</code> (e.g., buses with compound colliders) → also tracked as cars</li>
-</ul>
-<p>The component checks separately for humans (<code>checkHumans</code>) and cars (<code>checkCars</code>), both enabled by default.</p>
+<table>
+<thead>
+<tr>
+<th>Object</th>
+<th>Detected by</th>
+<th>Tracked as</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NPC vehicle</td>
+<td><code>NPCVehicle</code> component (in the collider's parents)</td>
+<td>car</td>
+<td><code>checkCars</code></td>
+</tr>
+<tr>
+<td>Pedestrian</td>
+<td><code>NPCPedestrian</code> or <code>WaypointFollower</code> component (in the collider's parents)</td>
+<td>human</td>
+<td><code>checkHumans</code></td>
+</tr>
+<tr>
+<td>Other vehicle (e.g. the ego bus)</td>
+<td>Collider on a layer in <code>vehicleLayer</code>, with a <code>Rigidbody</code> in its hierarchy</td>
+<td>car</td>
+<td><code>checkCars</code></td>
+</tr>
+</tbody>
+</table>
+<p>Destroyed objects are removed from the lists automatically at the next sample.</p>
 <hr />
 <h3 id="sensor-column">Sensor Column</h3>
-<p>The <strong>Sensor</strong> column in the CSV contains a pipe-separated (<code>|</code>) list of sensor names that had direct line-of-sight to the NPC at the time of logging. This is populated by the <code>LineOfSight</code> / <code>LineOfSightManager</code> system.</p>
+<p>The <strong>Sensor Names</strong> column contains the sensors that can currently observe the object, as reported by its <code>LineOfSight</code> component. Each entry has the form <code>name*points*</code> (sensor name and number of detected points), and entries are joined by <code>|</code>. The column is empty for objects without a <code>LineOfSight</code> component.</p>
 <div style="text-align: center;">
   <img src="image-2.png" alt="Color code legend" width="500">
 </div>
@@ -2542,22 +2590,22 @@
 <tr>
 <td><code>logPathHumans</code></td>
 <td>—</td>
-<td>Output CSV path for human NPC data</td>
+<td>Base path of the human CSV (a timestamped file is created per run, see <a href="#output-files">Output Files</a>)</td>
 </tr>
 <tr>
 <td><code>logPathCars</code></td>
 <td>—</td>
-<td>Output CSV path for vehicle NPC data</td>
+<td>Base path of the vehicle CSV (timestamped per run)</td>
 </tr>
 <tr>
 <td><code>checkHumans</code></td>
 <td>true</td>
-<td>Track pedestrian NPCs</td>
+<td>Track pedestrians (<code>NPCPedestrian</code> / <code>WaypointFollower</code>) and create the human file</td>
 </tr>
 <tr>
 <td><code>checkCars</code></td>
 <td>true</td>
-<td>Track vehicle NPCs</td>
+<td>Track <code>NPCVehicle</code>s and vehicle-layer bodies and create the car file</td>
 </tr>
 <tr>
 <td><code>waitTime</code></td>
@@ -2577,67 +2625,93 @@
 <tr>
 <td><code>checkpointJumper</code></td>
 <td>—</td>
-<td>Reference for checkpoint/run index in filenames</td>
+<td><code>CheckpointJumper</code> (implements <code>ILogIndex</code>) whose current index is written to the <code>Index</code> column</td>
 </tr>
 <tr>
 <td><code>vehicleLayer</code></td>
 <td>—</td>
-<td>Layer mask for vehicle detection</td>
+<td>Layer mask for detecting vehicles that are not <code>NPCVehicle</code>s (e.g. the bus)</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h3 id="csv-column-reference-cars-and-humans">CSV Column Reference — Cars and Humans</h3>
+<p>Both files have the same 20 columns; only the first header differs (<code>Car ID</code> in the car file, <code>Human ID</code> in the human file).</p>
 <table>
 <thead>
 <tr>
+<th>#</th>
 <th>Column</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>timestamp_ros</code></td>
-<td>ROS time (seconds)</td>
+<td>1</td>
+<td><code>Car ID</code> / <code>Human ID</code></td>
+<td><code>NPCVehicle.VehicleID</code> for NPC vehicles; <code>ScenarioHumanId</code> for pedestrians (assigned on first log if missing). Empty for rows without either (e.g. the ego bus)</td>
 </tr>
 <tr>
-<td><code>timestamp_sys</code></td>
-<td>System wall-clock time</td>
+<td>2</td>
+<td><code>Name</code></td>
+<td>GameObject name</td>
 </tr>
 <tr>
-<td><code>frame</code></td>
+<td>3–5</td>
+<td><code>X</code>, <code>Y</code>, <code>Z</code></td>
+<td>Position in ROS coordinates plus the MGRS offset (m)</td>
+</tr>
+<tr>
+<td>6–9</td>
+<td><code>W rotation</code>, <code>X rotation</code>, <code>Y rotation</code>, <code>Z rotation</code></td>
+<td>Orientation as a ROS quaternion</td>
+</tr>
+<tr>
+<td>10–11</td>
+<td><code>Time_sec</code>, <code>Time_nano</code></td>
+<td>ROS simulation time (seconds, nanoseconds)</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>SystemTimeMs</code></td>
+<td>Host wall-clock time, UTC Unix milliseconds</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>Frame</code></td>
 <td>Unity frame count</td>
 </tr>
 <tr>
-<td><code>id</code></td>
-<td>NPC identifier (vehicle name or <code>ScenarioHumanId</code>)</td>
+<td>14</td>
+<td><code>Box_State</code></td>
+<td><code>LineOfSight</code> box state; <code>Unknown</code> if the object has no <code>LineOfSight</code></td>
 </tr>
 <tr>
-<td><code>pos_x</code>, <code>pos_y</code>, <code>pos_z</code></td>
-<td>World position</td>
+<td>15</td>
+<td><code>Sensor Names</code></td>
+<td><code>name*points*</code> entries joined by <code>|</code> (see above)</td>
 </tr>
 <tr>
-<td><code>rot_x</code>, <code>rot_y</code>, <code>rot_z</code></td>
-<td>World Euler rotation</td>
+<td>16</td>
+<td><code>Index</code></td>
+<td>Current index of <code>checkpointJumper</code> (<code>ILogIndex</code>); 0 if unset</td>
 </tr>
 <tr>
-<td><code>speed</code></td>
-<td>Scalar speed (m/s)</td>
+<td>17–19</td>
+<td><code>X Speed</code>, <code>Y Speed</code>, <code>Z Speed</code></td>
+<td><code>transform.forward × speed</code> (Unity world axes, not ROS)</td>
 </tr>
 <tr>
-<td><code>vel_x</code>, <code>vel_y</code>, <code>vel_z</code></td>
-<td>Velocity vector</td>
-</tr>
-<tr>
-<td><code>box_state</code></td>
-<td>Checkpoint / scenario state from <code>CheckpointJumper</code></td>
-</tr>
-<tr>
-<td><code>sensor_*</code></td>
-<td>Pipe-separated sensor names with line-of-sight</td>
+<td>20</td>
+<td><code>Speed Amount</code></td>
+<td>Scalar speed from the object's <code>ISpeed</code> component (m/s); 0 if it has none</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Numbers are always written with <code>.</code> as decimal separator, regardless of the system locale.</p>
+</div>
 <hr />
 <h2 id="logautonomous">LogAutonomous</h2>
 <h3 id="what-it-does_1">What It Does</h3>
@@ -2654,49 +2728,66 @@
 
 <hr />
 <h3 id="ego-vehicle-state-log">Ego Vehicle State Log</h3>
-<p>Every frame, LogAutonomous writes one row with:</p>
+<p>Every <code>waitTime</code> seconds (default 0.005 s, i.e. effectively every frame) LogAutonomous appends one row:</p>
 <table>
 <thead>
 <tr>
+<th>#</th>
 <th>Column</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>timestamp</code></td>
-<td>Simulation time (ROS seconds + nanoseconds)</td>
+<td>1–3</td>
+<td><code>X</code>, <code>Y</code>, <code>Z</code></td>
+<td>Ego position in ROS coordinates plus the MGRS offset (m)</td>
 </tr>
 <tr>
-<td><code>pos_x</code>, <code>pos_y</code>, <code>pos_z</code></td>
-<td>Ego position in world space</td>
+<td>4–7</td>
+<td><code>W rotation</code>, <code>X rotation</code>, <code>Y rotation</code>, <code>Z rotation</code></td>
+<td>Ego orientation as a ROS quaternion</td>
 </tr>
 <tr>
-<td><code>rot_x</code>, <code>rot_y</code>, <code>rot_z</code></td>
-<td>Ego Euler rotation</td>
+<td>8–10</td>
+<td><code>X velocity</code>, <code>Y velocity</code>, <code>Z velocity</code></td>
+<td><code>Rigidbody</code> linear velocity in the ROS frame (m/s); 0 if there is no <code>Rigidbody</code></td>
 </tr>
 <tr>
-<td><code>vel_x</code>, <code>vel_y</code>, <code>vel_z</code></td>
-<td>Velocity from Rigidbody</td>
+<td>11–13</td>
+<td><code>X acceleration</code>, <code>Y acceleration</code>, <code>Z acceleration</code></td>
+<td>Change of velocity since the previous row divided by the elapsed time, ROS frame (m/s²); 0 on the first row</td>
 </tr>
 <tr>
-<td><code>accel_x</code>, <code>accel_y</code>, <code>accel_z</code></td>
-<td>Acceleration (velocity delta)</td>
+<td>14</td>
+<td><code>list of car collisions</code></td>
+<td>Names of bodies in physical contact (<code>OnCollisionEnter</code>), joined by <code>|</code></td>
 </tr>
 <tr>
-<td><code>collision_cars</code></td>
-<td>Semicolon-separated names of colliding vehicles</td>
+<td>15</td>
+<td><code>list of human collisions</code></td>
+<td>Names of bodies inside the ego's trigger colliders (<code>OnTriggerEnter</code>), joined by <code>|</code></td>
 </tr>
 <tr>
-<td><code>collision_humans</code></td>
-<td>Semicolon-separated names of colliding pedestrians</td>
+<td>16–17</td>
+<td><code>time</code>, <code>nano</code></td>
+<td>ROS simulation time (seconds, nanoseconds)</td>
+</tr>
+<tr>
+<td>18</td>
+<td><code>system_time_ms</code></td>
+<td>Host wall-clock time, UTC Unix milliseconds</td>
 </tr>
 </tbody>
 </table>
-<p>Collision lists are populated by Unity <code>OnCollisionEnter</code> / <code>OnTriggerEnter</code> callbacks and cleared each frame.</p>
+<p>Both collision lists only consider colliders on the <code>Vehicle</code> layer (layer 6) and store the object owning the nearest <code>Rigidbody</code>. Entries are removed on <code>OnCollisionExit</code> / <code>OnTriggerExit</code> (not cleared every frame); an empty list is written as a single space.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some header names contain surrounding spaces (e.g. <code>X velocity</code>, <code>time</code>). Trim header names when parsing. Numbers are always written with <code>.</code> as decimal separator.</p>
+</div>
 <hr />
 <h3 id="spawn-selection-log">Spawn Selection Log</h3>
-<p>After each teleport, the <a href="../Teleport/">Teleporter</a> calls <code>LogSpawnSelection()</code> on this component, which appends a row to a separate spawn-selection CSV file.</p>
+<p>After each teleport, the <a href="../Teleport/">Teleporter</a> calls <code>LogSpawnSelection()</code> on the vehicle's <code>LogAutonomous</code>, which appends a row to a separate spawn-selection CSV file.</p>
 <table>
 <thead>
 <tr>
@@ -2706,40 +2797,40 @@
 </thead>
 <tbody>
 <tr>
-<td><code>timestamp</code></td>
-<td>Time of teleport</td>
-</tr>
-<tr>
 <td><code>midpoint_segment</code></td>
-<td>Name of the target midpoint lane</td>
+<td>Name of the target midpoint lane (<code>None</code> if not set)</td>
 </tr>
 <tr>
 <td><code>spawn_lane</code></td>
-<td>Lane chosen for the spawn (or <code>"RandomPoint"</code>)</td>
+<td>Lane chosen for the spawn (or <code>RandomPoint</code>)</td>
 </tr>
 <tr>
 <td><code>sample_index</code></td>
 <td>Index of the sampled point on the spawn lane</td>
 </tr>
 <tr>
-<td><code>distance_to_midpoint</code></td>
-<td>Dijkstra path distance to the midpoint (m)</td>
+<td><code>distance_to_midpoint_m</code></td>
+<td>Path distance to the midpoint (m)</td>
 </tr>
 <tr>
-<td><code>estimated_time</code></td>
+<td><code>estimated_time_s</code></td>
 <td>Kinematic ETA to midpoint (s)</td>
 </tr>
 <tr>
-<td><code>target_time</code></td>
+<td><code>target_time_s</code></td>
 <td>Randomly drawn target arrival time (s)</td>
 </tr>
 <tr>
 <td><code>reached_cruise</code></td>
-<td>Whether cruise speed was reached before the midpoint</td>
+<td><code>1</code> if cruise speed is reached before the midpoint, else <code>0</code></td>
 </tr>
 <tr>
-<td><code>spawn_x</code>, <code>spawn_y</code>, <code>spawn_z</code></td>
-<td>World position of the teleport destination</td>
+<td><code>target_x</code>, <code>target_y</code>, <code>target_z</code></td>
+<td>Teleport destination in ROS map coordinates (ROS + MGRS offset, same frame as the ego log)</td>
+</tr>
+<tr>
+<td><code>ros_time_sec</code>, <code>ros_time_nsec</code></td>
+<td>ROS simulation time of the teleport</td>
 </tr>
 </tbody>
 </table>
@@ -2750,35 +2841,83 @@
 <thead>
 <tr>
 <th>Field</th>
+<th>Default</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>outputFile</code></td>
-<td>Base path for the ego state CSV</td>
+<td><code>logPathCars</code></td>
+<td>—</td>
+<td>Base path of the ego state CSV</td>
 </tr>
 <tr>
-<td><code>spawnLogFile</code></td>
-<td>Base path for the spawn selection CSV</td>
+<td><code>spawnSelectionLogPath</code></td>
+<td><code>AutonomousSpawnValidation.csv</code></td>
+<td>Base path of the spawn selection CSV</td>
 </tr>
 <tr>
-<td><code>filePrefix</code></td>
-<td>Optional prefix for multi-run experiments</td>
+<td><code>logFilePrefix</code></td>
+<td><code>Auto</code></td>
+<td>Prefix added to both file names (empty = no prefix)</td>
 </tr>
 <tr>
-<td><code>logRate</code></td>
-<td>How often to write state rows (frames or seconds)</td>
+<td><code>waitTime</code></td>
+<td>0.005 s</td>
+<td>Interval between ego state rows</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="file-paths-and-multi-run-support">File Paths and Multi-Run Support</h2>
-<p>Both LogArea and LogAutonomous support <strong>run-indexed filenames</strong> via <code>CheckpointJumper</code>. When <code>CheckpointJumper</code> advances to a new run index, the logging components create a new file with the run number appended, so each scenario run produces an independent CSV rather than appending to a single large file.</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>All output goes to the <code>SimulationOutput/</code> directory by default. This directory is listed in <code>.gitignore</code> and is not committed to the repository.</p>
+<h2 id="output-files">Output Files</h2>
+<p>Each run creates <strong>new timestamped files</strong>; nothing is appended to files from earlier runs. The timestamp is the local start time of the component.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Field</th>
+<th>Resulting file</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LogArea</td>
+<td><code>logPathHumans</code>, <code>logPathCars</code></td>
+<td><code>&lt;dir&gt;/&lt;basename&gt;_yyyyMMdd_HHmmss&lt;ext&gt;</code></td>
+</tr>
+<tr>
+<td>LogAutonomous</td>
+<td><code>logPathCars</code></td>
+<td><code>&lt;dir&gt;/&lt;logFilePrefix&gt;_&lt;basename&gt;_yyyyMMdd_HHmmss&lt;ext&gt;</code></td>
+</tr>
+<tr>
+<td>LogAutonomous</td>
+<td><code>spawnSelectionLogPath</code></td>
+<td><code>&lt;dir&gt;/&lt;logFilePrefix&gt;_&lt;basename&gt;_yyyyMMdd_HHmmss&lt;ext&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>&lt;ext&gt;</code> defaults to <code>.csv</code> if the base path has no extension. An empty base path disables that file.</li>
+<li>The output directory is created automatically.</li>
+<li>Relative paths are resolved against the process working directory: the project root in the Editor, the launch directory for a player build.</li>
+<li>LogAutonomous logs a warning on write errors and keeps logging.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>SimulationOutput/</code> is <strong>not</strong> git-ignored. Keep log output out of commits manually (or write it outside the repository).</p>
 </div>
+<hr />
+<h2 id="changes-migration">Changes / Migration</h2>
+<p>Analysis scripts written for older versions need updating:</p>
+<ul>
+<li><strong>LogArea columns shifted:</strong> a leading <code>Car ID</code> / <code>Human ID</code> column and a <code>SystemTimeMs</code> column (after <code>Time_nano</code>) were added. Select columns by header name rather than position.</li>
+<li><strong>One file per run:</strong> LogArea and LogAutonomous no longer append to a fixed path; each run writes new <code>_yyyyMMdd_HHmmss</code> files (LogAutonomous files also get the <code>logFilePrefix</code>). Read the newest file or glob all runs.</li>
+<li><strong>LogAutonomous acceleration</strong> is now the real acceleration (m/s²); previously the acceleration columns duplicated the velocity.</li>
+<li><strong>NPCPedestrian</strong> humans are now logged by LogArea (previously only <code>WaypointFollower</code> humans).</li>
+<li><strong>LogAutonomous</strong> gained a trailing <code>system_time_ms</code> column and the spawn-selection log.</li>
+<li>Numbers are written locale-independently (<code>.</code> decimal separator).</li>
+</ul>
 
 
 
