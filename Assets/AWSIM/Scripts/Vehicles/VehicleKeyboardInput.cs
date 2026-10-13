@@ -83,8 +83,7 @@ namespace AWSIM
                 {
                     Overridden = true;
                     NewControlMode = VehicleControlMode.MANUAL;
-                    ShiftInput = vehicle.AutomaticShift;
-                    TurnSignalInput = vehicle.Signal;
+                    // Keep the player's requested gear/turn-signal instead of reverting to the vehicle's current state.
                 }
 
                 // TODO: Implement switches to other overrides.

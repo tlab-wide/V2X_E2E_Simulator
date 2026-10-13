@@ -413,7 +413,7 @@ namespace AWSIM
 
                     if (request.IsEgo) {
                         egoFollowCamera.target = instance.transform;
-                        vehicleInformationUI.vehicle = instance.GetComponent<Vehicle>();
+                        vehicleInformationUI.AddVehicle( instance.GetComponent<Vehicle>());
                     }
                 }
             }, null);

@@ -149,6 +149,8 @@ namespace AWSIM
                 {
                     Overridden = true;
                     NewControlMode = VehicleControlMode.MANUAL;
+                    // The wheel only sets gear/turn signal on button presses, so start from the vehicle's
+                    // current state; otherwise the default (PARKING) would be applied while moving.
                     ShiftInput = vehicle.AutomaticShift;
                     TurnSignalInput = vehicle.Signal;
 

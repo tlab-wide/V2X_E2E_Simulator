@@ -11,6 +11,8 @@ public class ScenarioSelector : MonoBehaviour
 
     [Header("Scenarios")]
     [SerializeField] private List<Transform> scenarios;
+    [Tooltip("Scenario index to activate on Start. Set -1 to skip auto-activation.")]
+    [SerializeField] private int defaultScenarioIndex = 1;
 
     [Header("Vehicles")]
     [SerializeField] private Transform bus;
@@ -26,8 +28,6 @@ public class ScenarioSelector : MonoBehaviour
     [SerializeField] private float clearanceRadius = 10f;
     [SerializeField] private float teleportDelay = 0.5f;
 
-    private Transform targetTransform;
-
     // Cache all active TrafficManagers (like in Teleporter)
     private List<TrafficManager> trafficManagers;
     private HashSet<Transform> teleporting = new HashSet<Transform>();
@@ -40,9 +40,16 @@ public class ScenarioSelector : MonoBehaviour
     void Start()
     {
         DeactivateAllScenarios();
-        ActivateScenario(1);
+        if (defaultScenarioIndex >= 0)
+            ActivateScenario(defaultScenarioIndex);
+    }
 
-        targetTransform = bus.gameObject.activeInHierarchy ? bus.transform : car.transform;
+    // The vehicle can be switched at runtime (Bus / Lexus dropdown), so pick the active one on every key press.
+    private Transform ActiveVehicle()
+    {
+        if (bus != null && bus.gameObject.activeInHierarchy) return bus;
+        if (car != null && car.gameObject.activeInHierarchy) return car;
+        return null;
     }
 
     // --- Public API ----------------------------------------------------------
@@ -50,14 +57,18 @@ public class ScenarioSelector : MonoBehaviour
     public void Teleport(Transform vehicle, Transform destination)
     {
         if (vehicle == null || destination == null) return;
-        StartCoroutine(TeleportWithClearance(vehicle.GetComponent<Vehicle>(), destination.position, destination.rotation));
+        var v = vehicle.GetComponent<Vehicle>();
+        if (v == null) return;
+        StartCoroutine(TeleportWithClearance(v, destination.position, destination.rotation));
     }
 
     // If you want to feed a raw position/rotation instead of a Transform:
     public void Teleport(Transform vehicle, Vector3 position, Quaternion rotation)
     {
         if (vehicle == null) return;
-        StartCoroutine(TeleportWithClearance(vehicle.GetComponent<Vehicle>() , position, rotation));
+        var v = vehicle.GetComponent<Vehicle>();
+        if (v == null) return;
+        StartCoroutine(TeleportWithClearance(v, position, rotation));
     }
     // ------------------------------------------------------------------------
 
@@ -151,22 +162,22 @@ public class ScenarioSelector : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            Teleport(targetTransform, startPoint1);
+            Teleport(ActiveVehicle(), startPoint1);
         }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Teleport(targetTransform, startPoint2);
+            Teleport(ActiveVehicle(), startPoint2);
         }
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            Teleport(targetTransform, startPoint3);
+            Teleport(ActiveVehicle(), startPoint3);
         }
 
         if (Input.GetKeyDown(KeyCode.X))
         {
-            Teleport(targetTransform, startPoint4);
+            Teleport(ActiveVehicle(), startPoint4);
         }
     }
 

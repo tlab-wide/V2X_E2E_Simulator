@@ -21,7 +21,7 @@ The simulation provided in the **V2X_E2E_Simulator** demo is configured as follo
 ---
 
 #### **Bus Configuration**
-An alternative build is also available for the **bus simulation**:
+An alternative configuration is available for the **bus simulation**:
 
 | **V2X_E2E_Simulator Demo Settings** | **Details** |
 |:--|:--|
@@ -30,6 +30,9 @@ An alternative build is also available for the **bus simulation**:
 | **Sensors** | GNSS ×1 <br> IMU ×1 <br> LiDAR ×3 <br> Traffic Camera ×1 |
 | **Traffic** | Configurable via menu |
 | **ROS2 Version** | Humble |
+
+!!! note
+    In the current version, the Bus and the Lexus are both in the same scene. Choose the ego vehicle at runtime from the vehicle dropdown in the UI (see [Vehicle selection](#vehicle-selection)).
 
 
 ### PC specs
@@ -135,6 +138,9 @@ To run the simulator, please follow the steps below.
         [Download V2X_E2E_Simulator Demo for Bus ubuntu](https://drive.google.com/file/d/1QbQizozZh1kLVYYlNSFUGBXGt8CajAbM/view?usp=drive_link){.md-button .md-button--primary}
 
         [Download V2X_E2E_Simulator Demo for Lexus ubuntu](https://drive.google.com/file/d/1q4WkCwwlp-LZb3iQLhD1qAB0R6S9IKbU/view?usp=drive_link){.md-button .md-button--primary}
+
+        !!! note
+            In the current version, both vehicles are in one scene and you can switch between them at runtime with the vehicle dropdown (see [Vehicle selection](#vehicle-selection)). A build of the current version therefore contains both vehicles.
     
     2. Unzip the downloaded file.
 
@@ -180,21 +186,30 @@ To run the simulator, please follow the steps below.
 
 Without using **Autoware**, you can manually control the cars to create your desired scenario.
 
-#### **1. Basic Controls**  
+#### **Vehicle selection**
+- Choose the ego vehicle (**Bus** or **Lexus**) from the vehicle dropdown in the UI.
+- The selected vehicle is activated and the other one is deactivated. The Bus is active when the simulator starts.
+- Keyboard driving, teleport and the speed/gear display always apply to the currently active vehicle.
+
+#### **1. Basic Controls (gear)**  
 - **D** (Drive) → Press to enable driving mode.  
 - **P** (Park) → Press to stop the vehicle.  
 - **R** (Reverse) → Press to drive in reverse mode.  
+- **N** (Neutral) → Press to shift to neutral.  
 
 #### **2. Driving Controls**  
-- After pressing **D** (Drive), use the **arrow keys** to move around the city.  
+- After pressing **D** (Drive), use the **arrow keys** to move around the city (Up = accelerate, Down = brake, Left/Right = steer).  
+- Turn signals: **1** = left, **2** = right, **3** = hazard, **4** = off (main keyboard number keys).  
+- When the vehicle is driven by **Autoware**, pressing an arrow key takes over control (the control mode switches to manual). The gear you select with the keyboard is kept; it is not reset to the vehicle's previous gear.  
 
-#### **2. Teleport Feature**  
-- There are **four predefined teleport locations** in the scene.  
-- The car can teleport **only when in Drive mode** and must have **at least a small amount of speed**.  
-- Use the following keys to teleport to different locations on the map:  
-  - **Q**, **E**, **F**, **X** → Teleport to four different places in the city.  
-#### **3. Manual Object Creation**
-- Use button **O** to spawn cars in scenarios where this feature is available
+#### **3. Teleport Feature**  
+- There are **four predefined start points** in the scene.  
+- Use the following keys to teleport the **currently active vehicle** (Bus or Lexus):  
+  - **Q**, **E**, **F**, **X** → Teleport to start points 1, 2, 3 and 4.  
+- Before moving the vehicle, NPC vehicles near the destination are removed (within `clearanceRadius`, 15 m in the scene) and the teleport waits `teleportDelay` (1 s in the scene).  
+
+#### **4. Manual Object Creation**
+- Use button **O** to spawn objects in scenarios where this feature is available (`SpawnerOnWaypoint`).
 
 ![Keyboard](Keyboard.jpg)  
 *Figure: Defualt keys for extra functionalities*
@@ -378,14 +393,16 @@ See [DM Protocols → CooL4 → Signal Info](../../DMProtocols/CooL4/SignalInfo/
 
 ## Scenarios
 
-There are **five scenarios** available in **V2X_E2E_Simulator version 7.8.2**.  
-You can select a scenario using the **number keys (1-5) on the main keyboard**.  
-(**Note:** The **numpad keys do not work** for scenario selection.)
+Select the scenario from the **Scenario dropdown** in the UI. The number keys are not used for scenario selection (keys **1**–**4** control the turn signals).
 
+The dropdown entry index is passed to `ScenarioSelector.ActivateScenario`, which activates that scenario and deactivates all others. On start, `ScenarioSelector` activates `defaultScenarioIndex` (set it to `-1` to start with no scenario active).
 
 ### **Available Scenarios (Selectable in menu)**
-- **Normal Traffic** – City traffic with **pedestrians and cyclists**.
-- **Empty City** – No traffic or humans.  
+
+| Index | Dropdown entry | Description |
+|:--|:--|:--|
+| 0 | **No traffic** | Empty city: no NPC vehicles or humans. |
+| 1 | **NormalTraffics** (default) | City traffic with **pedestrians and cyclists**. Pedestrians and cyclists are spawned from a JSON file; see [Path Spawn Config (JSON)](../../Components/PathSpawnConfig/index.md). |
    <!-- . **Manual spawning** of vehicles is available using the **O key** at **Intersection #1**.   -->
    <!-- . A **return gate** is placed along the way. -->
 <!-- - (3)**Manual Traffic with Pedestrians & Cyclists**  
