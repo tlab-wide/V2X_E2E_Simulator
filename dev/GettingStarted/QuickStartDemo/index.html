@@ -528,10 +528,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-basic-controls" class="md-nav__link">
+  <a href="#vehicle-selection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Basic Controls
+        Vehicle selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-basic-controls-gear" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Basic Controls (gear)
       
     </span>
   </a>
@@ -550,10 +561,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-teleport-feature" class="md-nav__link">
+  <a href="#3-teleport-feature" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Teleport Feature
+        3. Teleport Feature
       
     </span>
   </a>
@@ -561,10 +572,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-manual-object-creation" class="md-nav__link">
+  <a href="#4-manual-object-creation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Manual Object Creation
+        4. Manual Object Creation
       
     </span>
   </a>
@@ -2656,10 +2667,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-basic-controls" class="md-nav__link">
+  <a href="#vehicle-selection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Basic Controls
+        Vehicle selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-basic-controls-gear" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Basic Controls (gear)
       
     </span>
   </a>
@@ -2678,10 +2700,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-teleport-feature" class="md-nav__link">
+  <a href="#3-teleport-feature" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Teleport Feature
+        3. Teleport Feature
       
     </span>
   </a>
@@ -2689,10 +2711,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-manual-object-creation" class="md-nav__link">
+  <a href="#4-manual-object-creation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Manual Object Creation
+        4. Manual Object Creation
       
     </span>
   </a>
@@ -3039,7 +3061,7 @@
 </table>
 <hr />
 <h4 id="bus-configuration"><strong>Bus Configuration</strong></h4>
-<p>An alternative build is also available for the <strong>bus simulation</strong>:</p>
+<p>An alternative configuration is available for the <strong>bus simulation</strong>:</p>
 <table>
 <thead>
 <tr>
@@ -3070,6 +3092,10 @@
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the current version, the Bus and the Lexus are both in the same scene. Choose the ego vehicle at runtime from the vehicle dropdown in the UI (see <a href="#vehicle-selection">Vehicle selection</a>).</p>
+</div>
 <h3 id="pc-specs">PC specs</h3>
 <p>The following system requirements must be met for the simulation to function properly:</p>
 <table>
@@ -3187,6 +3213,10 @@ Sat Oct 25 17:34:49 2025
 <p>Download the desired build (Bus or lexus).</p>
 <p><a class="md-button md-button--primary" href="https://drive.google.com/file/d/1QbQizozZh1kLVYYlNSFUGBXGt8CajAbM/view?usp=drive_link">Download V2X_E2E_Simulator Demo for Bus ubuntu</a></p>
 <p><a class="md-button md-button--primary" href="https://drive.google.com/file/d/1q4WkCwwlp-LZb3iQLhD1qAB0R6S9IKbU/view?usp=drive_link">Download V2X_E2E_Simulator Demo for Lexus ubuntu</a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the current version, both vehicles are in one scene and you can switch between them at runtime with the vehicle dropdown (see <a href="#vehicle-selection">Vehicle selection</a>). A build of the current version therefore contains both vehicles.</p>
+</div>
 </li>
 <li>
 <p>Unzip the downloaded file.</p>
@@ -3221,26 +3251,35 @@ Sat Oct 25 17:34:49 2025
 <em>Figure: Bus vehicle in the simulation environment.</em></p>
 <h3 id="controlling-features">Controlling Features</h3>
 <p>Without using <strong>Autoware</strong>, you can manually control the cars to create your desired scenario.</p>
-<h4 id="1-basic-controls"><strong>1. Basic Controls</strong></h4>
+<h4 id="vehicle-selection"><strong>Vehicle selection</strong></h4>
+<ul>
+<li>Choose the ego vehicle (<strong>Bus</strong> or <strong>Lexus</strong>) from the vehicle dropdown in the UI.</li>
+<li>The selected vehicle is activated and the other one is deactivated. The Bus is active when the simulator starts.</li>
+<li>Keyboard driving, teleport and the speed/gear display always apply to the currently active vehicle.</li>
+</ul>
+<h4 id="1-basic-controls-gear"><strong>1. Basic Controls (gear)</strong></h4>
 <ul>
 <li><strong>D</strong> (Drive) → Press to enable driving mode.  </li>
 <li><strong>P</strong> (Park) → Press to stop the vehicle.  </li>
 <li><strong>R</strong> (Reverse) → Press to drive in reverse mode.  </li>
+<li><strong>N</strong> (Neutral) → Press to shift to neutral.  </li>
 </ul>
 <h4 id="2-driving-controls"><strong>2. Driving Controls</strong></h4>
 <ul>
-<li>After pressing <strong>D</strong> (Drive), use the <strong>arrow keys</strong> to move around the city.  </li>
+<li>After pressing <strong>D</strong> (Drive), use the <strong>arrow keys</strong> to move around the city (Up = accelerate, Down = brake, Left/Right = steer).  </li>
+<li>Turn signals: <strong>1</strong> = left, <strong>2</strong> = right, <strong>3</strong> = hazard, <strong>4</strong> = off (main keyboard number keys).  </li>
+<li>When the vehicle is driven by <strong>Autoware</strong>, pressing an arrow key takes over control (the control mode switches to manual). The gear you select with the keyboard is kept; it is not reset to the vehicle's previous gear.  </li>
 </ul>
-<h4 id="2-teleport-feature"><strong>2. Teleport Feature</strong></h4>
+<h4 id="3-teleport-feature"><strong>3. Teleport Feature</strong></h4>
 <ul>
-<li>There are <strong>four predefined teleport locations</strong> in the scene.  </li>
-<li>The car can teleport <strong>only when in Drive mode</strong> and must have <strong>at least a small amount of speed</strong>.  </li>
-<li>Use the following keys to teleport to different locations on the map:  </li>
-<li><strong>Q</strong>, <strong>E</strong>, <strong>F</strong>, <strong>X</strong> → Teleport to four different places in the city.  </li>
+<li>There are <strong>four predefined start points</strong> in the scene.  </li>
+<li>Use the following keys to teleport the <strong>currently active vehicle</strong> (Bus or Lexus):  </li>
+<li><strong>Q</strong>, <strong>E</strong>, <strong>F</strong>, <strong>X</strong> → Teleport to start points 1, 2, 3 and 4.  </li>
+<li>Before moving the vehicle, NPC vehicles near the destination are removed (within <code>clearanceRadius</code>, 15 m in the scene) and the teleport waits <code>teleportDelay</code> (1 s in the scene).  </li>
 </ul>
-<h4 id="3-manual-object-creation"><strong>3. Manual Object Creation</strong></h4>
+<h4 id="4-manual-object-creation"><strong>4. Manual Object Creation</strong></h4>
 <ul>
-<li>Use button <strong>O</strong> to spawn cars in scenarios where this feature is available</li>
+<li>Use button <strong>O</strong> to spawn objects in scenarios where this feature is available (<code>SpawnerOnWaypoint</code>).</li>
 </ul>
 <p><img alt="Keyboard" src="Keyboard.jpg" /><br />
 <em>Figure: Defualt keys for extra functionalities</em></p>
@@ -3432,15 +3471,35 @@ The <strong>rsu number</strong> and <strong>sensor number</strong> help distingu
 <li><code>/v2x/rsu4/object_info_noise/DSRC</code></li>
 </ul>
 <h2 id="scenarios">Scenarios</h2>
-<p>There are <strong>five scenarios</strong> available in <strong>V2X_E2E_Simulator version 7.8.2</strong>.<br />
-You can select a scenario using the <strong>number keys (1-5) on the main keyboard</strong>.<br />
-(<strong>Note:</strong> The <strong>numpad keys do not work</strong> for scenario selection.)</p>
+<p>Select the scenario from the <strong>Scenario dropdown</strong> in the UI. The number keys are not used for scenario selection (keys <strong>1</strong>–<strong>4</strong> control the turn signals).</p>
+<p>The dropdown entry index is passed to <code>ScenarioSelector.ActivateScenario</code>, which activates that scenario and deactivates all others. On start, <code>ScenarioSelector</code> activates <code>defaultScenarioIndex</code> (set it to <code>-1</code> to start with no scenario active).</p>
 <h3 id="available-scenarios-selectable-in-menu"><strong>Available Scenarios (Selectable in menu)</strong></h3>
-<ul>
-<li><strong>Normal Traffic</strong> – City traffic with <strong>pedestrians and cyclists</strong>.</li>
-<li><strong>Empty City</strong> – No traffic or humans.<br />
-   <!-- . **Manual spawning** of vehicles is available using the **O key** at **Intersection #1**.   --></li>
-</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Index</th>
+<th style="text-align: left;">Dropdown entry</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;"><strong>No traffic</strong></td>
+<td style="text-align: left;">Empty city: no NPC vehicles or humans.</td>
+</tr>
+<tr>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;"><strong>NormalTraffics</strong> (default)</td>
+<td style="text-align: left;">City traffic with <strong>pedestrians and cyclists</strong>. Pedestrians and cyclists are spawned from a JSON file; see <a href="../../Components/PathSpawnConfig/">Path Spawn Config (JSON)</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><!-- . **Manual spawning** of vehicles is available using the **O key** at **Intersection #1**.   --></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
 <!-- . A **return gate** is placed along the way. -->
 <!-- - (3)**Manual Traffic with Pedestrians & Cyclists**  
    . **Manual vehicle spawning** is available.  
