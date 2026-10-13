@@ -331,6 +331,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../GettingStarted/Download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../GettingStarted/QuickStartDemo/" class="md-nav__link">
         
   
@@ -2311,7 +2339,7 @@
 
 
 <h1 id="cool4-dm-topic-list">CooL4 DM Topic List</h1>
-<p>All CooL4 DM topics of the Kashiwa scene (<code>V2X_E2E_Simulator_v3.1.0.unity</code>), with the scene's default settings. "Delayed copies" are the <code>/DSRC</code> (100 ms, 5 % loss) and <code>/Cellular</code> (400 ms) variants described in <a href="../#delayed-copies-network-model">Delayed copies</a>.</p>
+<p>All CooL4 DM topics of the Kashiwa scene (<code>V2X_E2E_Simulator_v3.1.1.unity</code>), with the scene's default settings. "Delayed copies" are the <code>/DSRC</code> (100 ms, 5 % loss) and <code>/Cellular</code> (400 ms) variants described in <a href="../#delayed-copies-network-model">Delayed copies</a>.</p>
 <h2 id="signal-information">Signal information</h2>
 <p>Type: <code>dm_signal_info_msgs/msg/SignalInfoArray</code>. Publisher: <strong>DM Signal Info Publisher</strong> prefab. Rate: 10 Hz. QoS: reliable, volatile, keep-last 1. Details: <a href="../SignalInfo/">Signal Info</a>.</p>
 <table>
@@ -2327,28 +2355,16 @@
 <td style="text-align: left;"><strong>All five intersections</strong> in one array. This is the topic DM consumes.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>/v2x/todaimae/signal_info</code></td>
-<td style="text-align: left;">東大前 (UTokyo), CRP 1, <code>crossroad 14</code></td>
+<td style="text-align: left;"><code>/signal_info/DSRC</code></td>
+<td style="text-align: left;">Same, delayed 100 ms with 5 % packet loss</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>/v2x/rsu1/signal_info</code></td>
-<td style="text-align: left;">がん研 (Ganken), CRP 790529, <code>crossroad1</code></td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>/v2x/rsu2/signal_info</code></td>
-<td style="text-align: left;">科警研 (Kakeiken), CRP 798721, <code>crossroad2</code></td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>/v2x/rsu4/signal_info</code></td>
-<td style="text-align: left;">若柴 (Wakashiba), CRP 2, <code>crossroad3</code></td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>/v2x/rsu5/signal_info</code></td>
-<td style="text-align: left;">駅前 (Station), CRP 794625, <code>crossroad4</code></td>
+<td style="text-align: left;"><code>/signal_info/Cellular</code></td>
+<td style="text-align: left;">Same, delayed 400 ms</td>
 </tr>
 </tbody>
 </table>
-<p>Delayed copies (for example <code>/signal_info/DSRC</code>) are published only when <strong>Enable Delayed Messages</strong> is on (off by default).</p>
+<p>The delayed copies use the general profiles of the <code>NetworkSimulator</code> (see <a href="../#delayed-copies-network-model">Delayed copies</a>); turn them off with <strong>Enable Delayed Messages</strong> on the DM Signal Info Publisher.</p>
 <h2 id="object-information">Object information</h2>
 <p>Type: <code>dm_object_info_msgs/msg/ObjectInfoArray</code>. Publisher: <code>ObjectInfo</code>. QoS: best effort, volatile, keep-last 1. The actual rate is twice the <strong>Hz</strong> field (<a href="../ObjectInfo/#publishing-rate">why</a>). Details: <a href="../ObjectInfo/">Object Info</a>.</p>
 <p>Every source publishes a pair: <code>…/object_info</code> (ground truth) and <code>…/object_info_noise</code> (with sensor noise). Delayed copies are made from the noisy topic, for example <code>…/object_info_noise/DSRC</code>.</p>

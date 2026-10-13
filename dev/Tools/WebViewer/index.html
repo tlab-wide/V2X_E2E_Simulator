@@ -331,6 +331,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../GettingStarted/Download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../GettingStarted/QuickStartDemo/" class="md-nav__link">
         
   
@@ -2561,7 +2589,7 @@
 </tr>
 </tbody>
 </table>
-<p>Tick a topic to draw it on the map. Click its name to see its type, publishers, rate, message count, bandwidth and a summary of the last message. Delayed copies (<code>…/DSRC</code>, <code>…/Cellular</code>) and the per-intersection <code>…/signal_info</code> topics start unticked, because they duplicate other topics.</p>
+<p>Tick a topic to draw it on the map. Click its name to see its type, publishers, rate, message count, bandwidth and a summary of the last message. Delayed copies (<code>…/DSRC</code>, <code>…/Cellular</code>) start unticked, because they duplicate other topics.</p>
 <p><img alt="Sidebar: problems on top, then the topic tree" src="sidebar.png" /></p>
 <h2 id="map-layers">Map layers</h2>
 <table>
@@ -2637,7 +2665,7 @@
 <p>Flashing lights blink. Zoomed out (below 17.3) the heads show bulbs only; below 15.8 they are hidden.</p>
 <p><strong>Where the state comes from</strong>, in order of preference:</p>
 <ol>
-<li><strong>CooL4 DM signal info</strong>: the SignalInfo whose <code>crp_id</code> matches the intersection and whose <code>signal_id_list</code> contains one of the head's <code>dm_signal_ids</code>. <code>/signal_info</code> is preferred over the per-intersection topics. Only DM carries the <strong>remaining time</strong> (<code>min_time_to_change</code>); "—" means the light never changes (countdown stopped).</li>
+<li><strong>CooL4 DM signal info</strong>: the SignalInfo whose <code>crp_id</code> matches the intersection and whose <code>signal_id_list</code> contains one of the head's <code>dm_signal_ids</code>. Only DM carries the <strong>remaining time</strong> (<code>min_time_to_change</code>); "—" means the light never changes (countdown stopped).</li>
 <li><strong>V2X / Autoware traffic signals</strong> (vehicle heads only): the signal whose ID is one of the head's <code>lanelet_regulatory_elements</code> or <code>lanelet_light_ways</code>. These messages have no remaining time, so no seconds are shown.</li>
 </ol>
 <p>A head with no data is greyed out; a head fed by a topic that is not live is dimmed with a dashed border. Click a head to see both sources side by side: the DM light, remaining time and full schedule, and the V2X/Autoware elements.</p>
@@ -2647,7 +2675,7 @@
 <div class="highlight"><pre><span></span><code><span class="nt">intersections</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">科警研 (Kakeiken)</span>
 <span class="w">    </span><span class="nt">crp_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">798721</span><span class="w">            </span><span class="c1"># 0x000c3001</span>
-<span class="w">    </span><span class="nt">unity_intersection</span><span class="p">:</span><span class="w"> </span><span class="s">'crossroad2'</span>
+<span class="w">    </span><span class="nt">unity_intersection</span><span class="p">:</span><span class="w"> </span><span class="s">'Kakeiken'</span>
 <span class="w">    </span><span class="nt">center</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">lat</span><span class="p">:</span><span class="w"> </span><span class="nv">35.896047</span><span class="p p-Indicator">,</span><span class="nt"> lon</span><span class="p">:</span><span class="w"> </span><span class="nv">139.94182</span><span class="p p-Indicator">}</span>
 <span class="w">    </span><span class="nt">approaches</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w">                  </span><span class="c1"># 方路2</span>
@@ -2673,7 +2701,7 @@
 <li><strong>Re-deriving positions:</strong> <code>python3 tools/web-viewer/scripts/build_signal_config.py /path/to/lanelet2_map.osm</code> fills only approaches without heads. <code>--force</code> recomputes all of them, overwriting hand edits.</li>
 </ul>
 <h2 id="sensors">Sensors</h2>
-<p>The RSU pseudo sensors (<code>MockSensor</code>) are listed in <code>config/sensors.yaml</code>, extracted from the Kashiwa scene (<code>V2X_E2E_Simulator_v3.1.0.unity</code>). Each sensor is drawn as an icon (C = camera, L = lidar) with its coverage sector. The icon gets a green halo when one of its object-info topics is live. Labels appear from zoom 18. Click a sensor for all its settings and the live status of its topics.</p>
+<p>The RSU pseudo sensors (<code>MockSensor</code>) are listed in <code>config/sensors.yaml</code>, extracted from the Kashiwa scene (<code>V2X_E2E_Simulator_v3.1.1.unity</code>). Each sensor is drawn as an icon (C = camera, L = lidar) with its coverage sector. The icon gets a green halo when one of its object-info topics is live. Labels appear from zoom 18. Click a sensor for all its settings and the live status of its topics.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">sensors</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">'RSU_camera</span><span class="nv"> </span><span class="s">5'</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RSU_CAMERA</span>
@@ -2753,7 +2781,7 @@
 </table>
 <h2 id="using-another-map-or-intersections">Using another map or intersections</h2>
 <ul>
-<li><strong>Map:</strong> <code>python3 tools/web-viewer/scripts/build_map.py /path/to/lanelet2_map.osm</code> regenerates <code>maps/lanelet2.geojson</code> and <code>maps/lanelet2_meta.json</code>.</li>
+<li><strong>Map:</strong> <code>python3 tools/web-viewer/scripts/build_map.py /path/to/lanelet2_map.osm</code> (the Kashiwa map is in <code>kashiwa_pcdmap_forV2X_E2E_7.8.zip</code>, see <a href="../../GettingStarted/Download/">Download</a>) regenerates <code>maps/lanelet2.geojson</code> and <code>maps/lanelet2_meta.json</code>.</li>
 <li><strong>Signal heads:</strong> edit <code>config/traffic_lights.yaml</code> (see <a href="#signal-heads">Signal heads</a>). The CRP and signal IDs match the <a href="../../DMProtocols/CooL4/SignalInfo/">Signal Info</a> mapping.</li>
 <li><strong>Sensors:</strong> edit <code>config/sensors.yaml</code> (see <a href="#sensors">Sensors</a>).</li>
 </ul>
