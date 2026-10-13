@@ -2528,14 +2528,19 @@
 <h2 id="overview">Overview</h2>
 <p><code>TrafficSpawnConfig</code> is a static utility that loads traffic configuration from a JSON file and makes it available to the traffic simulation system at runtime. It controls two things:</p>
 <ol>
-<li><strong>Per-lane spawn rates</strong> — how many vehicles per minute each lane should spawn.</li>
+<li><strong>Per-lane spawn rates</strong> — the maximum number of vehicles per minute each lane may spawn (enforced by <code>TrafficManager</code>).</li>
 <li><strong>Branch weights</strong> — the probability of NPC vehicles turning onto each downstream lane.</li>
 </ol>
+<p>The state is <strong>static and global</strong>: it is shared by all <code>TrafficManager</code>s, and the last one to initialize (or load a config) wins.</p>
 <p>It also records every lane-change decision made during a simulation run and exports them as a CSV on session end, allowing you to verify that configured probabilities match observed behaviour.</p>
 <hr />
 <h2 id="the-json-configuration-file">The JSON Configuration File</h2>
 <p>Default path: <code>Assets/Configs/traffic_spawn.json</code></p>
-<p>This path is configurable on the <code>TrafficManager</code> component (<code>spawnConfigPath</code> field). The file is loaded automatically at scene start if it exists.</p>
+<p>This path is configurable on the <code>TrafficManager</code> component (<code>spawnConfigPath</code> field) and at runtime from the Traffic Settings UI. A relative path is resolved against the project root (<code>Application.dataPath/..</code>); an absolute path is used as-is. The file is loaded automatically at scene start if it exists; otherwise a warning is logged and the Inspector values of the random traffic simulators are used.</p>
+<div class="admonition warning">
+<p class="admonition-title">Player builds</p>
+<p>In a player build, <code>Application.dataPath/..</code> is the build folder, so the default file must be placed at <code>&lt;build folder&gt;/Assets/Configs/traffic_spawn.json</code> (or an absolute path must be set).</p>
+</div>
 <h3 id="full-example">Full Example</h3>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">"spawnRates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -2574,15 +2579,16 @@
 <tr>
 <td><code>lane</code></td>
 <td>string</td>
-<td>Lane name (case-insensitive). Must match the lane's GameObject name exactly.</td>
+<td>Lane GameObject name (compared case-insensitively).</td>
 </tr>
 <tr>
 <td><code>spawnsPerMinute</code></td>
 <td>float</td>
-<td>Target spawn frequency. <code>0</code> disables rate limiting for this lane.</td>
+<td>Maximum spawn frequency: enforces a minimum interval of <code>60 / spawnsPerMinute</code> s between spawns on this lane. It is not a guaranteed rate. <code>0</code> disables rate limiting for this lane.</td>
 </tr>
 </tbody>
 </table>
+<p>Only spawnable lanes listed in the file get a rate limit while the file is loaded; unlisted lanes are not rate-limited.</p>
 <h4 id="branchweights"><code>branchWeights</code></h4>
 <table>
 <thead>
@@ -2606,10 +2612,11 @@
 <tr>
 <td><code>next[].weight</code></td>
 <td>float</td>
-<td>Relative probability weight. Values are normalised automatically.</td>
+<td>Relative probability weight. Values are normalised automatically; entries with weight ≤ 0 are ignored.</td>
 </tr>
 </tbody>
 </table>
+<p>Branch weights from the file <strong>replace</strong> the Inspector <code>branchWeights</code> of every random traffic simulator.</p>
 <div class="admonition note">
 <p class="admonition-title">Normalisation</p>
 <p>Weights do not need to sum to 1. The system normalises them internally. A weight of <code>2.0</code> for lane B and <code>1.0</code> for lane C means B is chosen 67% of the time.</p>
@@ -2640,10 +2647,14 @@
 <span class="n">trafficManager</span><span class="p">.</span><span class="n">SaveSpawnConfigJson</span><span class="p">();</span>
 <span class="n">trafficManager</span><span class="p">.</span><span class="n">LoadSpawnConfigJson</span><span class="p">();</span>
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Every load (<code>TrafficSpawnConfig.Load</code>, including <code>SetSpawnConfigPath</code>, <strong>Load Spawn Config JSON</strong> and <code>Restart</code>) clears the branch decision statistics collected so far.</p>
+</div>
 <hr />
 <h2 id="branch-decision-statistics">Branch Decision Statistics</h2>
-<p>Every time a vehicle makes a lane-change decision, <code>TrafficSpawnConfig</code> records it internally. On <code>TrafficManager.OnDestroy()</code>, these statistics are written to a CSV file.</p>
-<p>Default output path: <code>Assets/Configs/traffic_branch_decisions.csv</code></p>
+<p>Every time <code>ChooseNextLane</code> picks a next lane, <code>TrafficSpawnConfig</code> records it internally, aggregated per <code>(from_lane, to_lane, selection_mode)</code>. In <code>TrafficManager.OnDestroy()</code> (after the NPC vehicle simulator is disposed), these statistics are written to a CSV file. Export errors are logged as warnings.</p>
+<p>Default output path: <code>Assets/Configs/traffic_branch_decisions.csv</code> (relative to the project root). Ratios and averages are written with 6 decimals using the invariant culture (<code>.</code> as decimal separator), independent of the system locale.</p>
 <h3 id="csv-column-reference">CSV Column Reference</h3>
 <table>
 <thead>
@@ -2687,11 +2698,11 @@
 </tr>
 <tr>
 <td><code>avg_configured_weight</code></td>
-<td>Average weight configured for this transition</td>
+<td>Average configured weight of the chosen lane, after normalisation over <strong>all</strong> <code>next</code> entries of <code>fromLane</code> in the config. <code>0</code> for uniform modes.</td>
 </tr>
 <tr>
 <td><code>avg_effective_probability</code></td>
-<td>Average probability at decision time</td>
+<td>Average probability the chosen lane actually had at decision time: its weight divided by the sum of weights of the configured lanes present in the current <code>NextLanes</code> (<code>weighted</code>), or <code>1 / NextLanes.Count</code> (uniform modes).</td>
 </tr>
 </tbody>
 </table>
@@ -2706,44 +2717,48 @@
 <tbody>
 <tr>
 <td><code>weighted</code></td>
-<td>Branch weight was found and used</td>
+<td>Weights for <code>fromLane</code> matched at least one current next lane and were used</td>
+</tr>
+<tr>
+<td><code>uniform_not_loaded</code></td>
+<td>No config is loaded — uniform random</td>
 </tr>
 <tr>
 <td><code>uniform_no_config</code></td>
-<td>Config was not loaded — fallback to uniform random</td>
+<td>Config loaded, but it has no weights for this <code>fromLane</code></td>
 </tr>
 <tr>
 <td><code>uniform_no_matching_weights</code></td>
-<td>Config loaded but no weights for this lane</td>
+<td>Weights exist for <code>fromLane</code>, but none of their lanes is in the current <code>NextLanes</code></td>
 </tr>
 <tr>
 <td><code>uniform_weighted_fallback</code></td>
-<td>Weighted selection failed — fell back to uniform</td>
+<td>Weighted draw did not select a lane (floating-point rounding edge case) — uniform random</td>
 </tr>
 </tbody>
 </table>
 <h3 id="using-the-csv">Using the CSV</h3>
-<p>Compare <code>avg_configured_weight</code> against <code>observed_ratio_from_lane_mode</code> to verify that the configured weights are producing the expected routing ratios. Over a long run, these should converge.</p>
-<p>Example — expected vs. observed for the config <code>{ B: 3.0, C: 1.0 }</code>:</p>
+<p>For <code>weighted</code> rows, compare <code>avg_effective_probability</code> against <code>observed_ratio_from_lane_mode</code> to verify that the configured weights produce the expected routing ratios. Over a long run, these should converge. <code>avg_configured_weight</code> equals <code>avg_effective_probability</code> only when all configured next lanes are available.</p>
+<p>Example — expected vs. observed for the config <code>{ B: 3.0, C: 1.0 }</code> (illustrative values):</p>
 <table>
 <thead>
 <tr>
 <th>to_lane</th>
-<th>configured_weight</th>
-<th>expected_ratio</th>
-<th>observed_ratio</th>
+<th>avg_configured_weight</th>
+<th>avg_effective_probability</th>
+<th>observed_ratio_from_lane_mode</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Lane_B</td>
-<td>3.0</td>
+<td>0.75</td>
 <td>0.75</td>
 <td>0.742</td>
 </tr>
 <tr>
 <td>Lane_C</td>
-<td>1.0</td>
+<td>0.25</td>
 <td>0.25</td>
 <td>0.258</td>
 </tr>
@@ -2761,23 +2776,27 @@
 <tbody>
 <tr>
 <td><code>TryGetSpawnRate(laneName, out rate)</code></td>
-<td>Query configured spawn rate for a lane</td>
+<td>Query the stored spawn rate for a lane. Not used by spawning (<code>TrafficManager</code> keeps its own per-lane lookup).</td>
 </tr>
 <tr>
 <td><code>ChooseNextLane(fromLane, options)</code></td>
-<td>Weighted random selection from a list of next lanes</td>
+<td>Weighted random selection from a list of next lanes (records the decision)</td>
 </tr>
 <tr>
-<td><code>ExportBranchDecisionCsv(path)</code></td>
-<td>Write the decision statistics CSV immediately</td>
+<td><code>ExportBranchDecisionCsv(path = null)</code></td>
+<td>Write the decision statistics CSV immediately; returns the full path</td>
 </tr>
 <tr>
-<td><code>Load(ConfigData)</code></td>
-<td>Load from a pre-parsed config object</td>
+<td><code>Load(ConfigData)</code> / <code>Load(jsonPath)</code></td>
+<td>Load from a pre-parsed config object or a JSON file (clears previous state and statistics)</td>
 </tr>
 <tr>
 <td><code>ReadJson(path)</code></td>
-<td>Parse a JSON file and return a <code>ConfigData</code> object</td>
+<td>Parse a JSON file and return a <code>ConfigData</code> object (<code>null</code> if missing or invalid)</td>
+</tr>
+<tr>
+<td><code>VerboseBranchLogging</code></td>
+<td>Static flag, <code>false</code> by default. When <code>true</code>, every weighted decision logs two lines to the Console.</td>
 </tr>
 </tbody>
 </table>

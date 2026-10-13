@@ -2502,7 +2502,12 @@
 <span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">spawnsPerMinute</span><span class="p">;</span><span class="w">   </span><span class="c1">// 0 = no rate limit</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Every <code>FixedUpdate</code>, the simulator requests a random spawn point from this list and hands it to the <code>TrafficManager</code>. If the lane is occupied or too close to the ego vehicle, the spawn is deferred to the next frame.</p>
+<p>Every <code>FixedUpdate</code>, the simulator picks a random spawn point from this list and hands it to the <code>TrafficManager</code>. If the spawn is not possible (lane occupied, too close to the ego vehicle, rate limit not elapsed, <code>maxVehicleCount</code> reached), it is skipped; on the next frame a new random lane is picked. The chosen prefab is kept until it is actually spawned, so large vehicles are not starved by small ones.</p>
+<p>Entries with no lane assigned are ignored. A simulator with <strong>no valid spawnable lane</strong> is treated as disabled.</p>
+<div class="admonition warning">
+<p class="admonition-title">Upgrading older scenes</p>
+<p><code>spawnableLanes</code> used to be a plain <code>TrafficLane[]</code>. Scenes saved with that format show empty <code>{lane, spawnsPerMinute}</code> entries after the upgrade and must be relinked in the Inspector.</p>
+</div>
 <h3 id="maximum-spawns">Maximum Spawns</h3>
 <p>Setting <code>maximumSpawns &gt; 0</code> gives the simulator a finite lifetime: it deactivates itself after spawning that many vehicles. This is useful for scripted scenarios where you want exactly N cars on a route.</p>
 <div class="highlight"><pre><span></span><code>maximumSpawns = 0  →  unlimited (run forever)
@@ -2527,7 +2532,7 @@ maximumSpawns = N  →  deactivate after N spawns
 <h2 id="branch-weights">Branch Weights</h2>
 <p>By default, when a vehicle reaches the end of its current lane and has multiple <code>NextLanes</code> to choose from, the next lane is picked uniformly at random. <strong>Branch weights</strong> let you bias that choice.</p>
 <h3 id="configuring-in-the-inspector">Configuring in the Inspector</h3>
-<p>Each <code>RandomTrafficSimulatorConfiguration</code> exposes a <code>branchWeights</code> array:</p>
+<p>Each <code>RandomTrafficSimulatorConfiguration</code> exposes a <code>branchWeights</code> array (entries with an unassigned lane or a weight ≤ 0 are ignored):</p>
 <div class="highlight"><pre><span></span><code>BranchWeightSet:
   fromLane: Lane_A1
   next:
@@ -2550,6 +2555,15 @@ maximumSpawns = N  →  deactivate after N spawns
 <span class="p">}</span>
 </code></pre></div>
 <p>Weights are normalised automatically; only their ratios matter.</p>
+<div class="admonition note">
+<p class="admonition-title">Branch weights are global</p>
+<ul>
+<li>Branch weights are stored in the static <a href="../TrafficSpawnConfig/">TrafficSpawnConfig</a>, keyed by <code>fromLane</code>. They apply to <strong>every</strong> NPC vehicle choosing a next lane from that lane, regardless of which simulator spawned it. If two simulators define the same <code>fromLane</code>, the later entry wins.</li>
+<li>When a spawn config JSON is loaded, its <code>branchWeights</code> <strong>replace</strong> the Inspector branch weights.</li>
+<li>With several <code>TrafficManager</code>s, the last one to initialize (or load a config) defines the weights.</li>
+<li>Next lanes that have no weight are never chosen while at least one listed lane is available. If none of the listed lanes is among the current <code>NextLanes</code>, the choice falls back to uniform.</li>
+</ul>
+</div>
 <hr />
 <h2 id="per-lane-spawn-rates">Per-Lane Spawn Rates</h2>
 <p>Each lane entry has a <code>spawnsPerMinute</code> field. <code>TrafficManager</code> converts this to a minimum interval between spawns on that lane:</p>
@@ -2557,6 +2571,10 @@ maximumSpawns = N  →  deactivate after N spawns
 \text{interval} = \frac{60}{\text{spawnsPerMinute}} \text{ seconds}
 \]</div>
 <p>If <code>spawnsPerMinute = 0</code>, there is no rate limit and vehicles spawn as fast as the lane clears.</p>
+<div class="admonition info">
+<p class="admonition-title">Maximum rate, not a guaranteed rate</p>
+<p><code>spawnsPerMinute</code> is a cap: it enforces a minimum interval between spawns on that lane. The observed rate is usually lower, because the lane is picked at random among the simulator's lanes and a spawn also needs free space at the spawn point, fewer than <code>maxVehicleCount</code> vehicles, and enough distance to the ego vehicle.</p>
+</div>
 <p>Spawn rates can also be loaded from the same JSON file:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">"spawnRates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -2582,7 +2600,7 @@ maximumSpawns = N  →  deactivate after N spawns
 </tr>
 <tr>
 <td><code>spawnableLanes</code></td>
-<td>Lanes + optional spawn rates</td>
+<td><code>SpawnableLaneConfig</code> entries: lane + optional <code>spawnsPerMinute</code></td>
 </tr>
 <tr>
 <td><code>branchWeights</code></td>
@@ -2603,7 +2621,7 @@ maximumSpawns = N  →  deactivate after N spawns
 <p>Once spawned, an NPC vehicle is handed off to <code>NPCVehicleSimulator</code>, which runs the <strong>Cognition → Decision → Control</strong> pipeline each <code>FixedUpdate</code>. Route extension works as follows:</p>
 <div class="highlight"><pre><span></span><code>flowchart TD
     A[Vehicle reaches end of lane] --&gt; B{Next lanes available?}
-    B -- Yes --&gt; C[ChooseNextLane via TrafficSpawnConfig weights]
+    B -- Yes --&gt; C[TrafficSpawnConfig.ChooseNextLane: weighted or uniform]
     B -- No --&gt; D[Mark for despawn]
     C --&gt; E[Continue driving]
 </code></pre></div>

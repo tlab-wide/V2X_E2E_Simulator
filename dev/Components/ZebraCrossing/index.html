@@ -2633,13 +2633,14 @@
     DS-&gt;&gt;DS: distanceToStop = Min(frontVehicle, trafficLight, rightOfWay, zebraStop)
     DS-&gt;&gt;ST: SpeedMode = STOP (or SUDDEN_STOP / ABSOLUTE_STOP)
 
-    P-&gt;&gt;ZA: OnTriggerExit
+    P-&gt;&gt;ZA: OnTriggerExit (or occupant destroyed / deactivated)
     ZA-&gt;&gt;ZA: Remove root from occupantRoots
     CS-&gt;&gt;ZA: TryGetBlockedStop → blocked=false
     CS-&gt;&gt;ST: IsZebraBlocked = false
-    CS-&gt;&gt;ST: WasZebraBlocked = false (log "cleared" if debug enabled)
-    DS-&gt;&gt;ST: SpeedMode resumes NORMAL
+    CS-&gt;&gt;ST: WasZebraBlocked = false
+    DS-&gt;&gt;ST: SpeedMode follows the remaining stop conditions
 </code></pre></div>
+<p>The zebra occupancy is evaluated in the <strong>cognition</strong> step; the <strong>decision</strong> step only consumes the stored distance.</p>
 <h3 id="where-the-code-lives">Where the Code Lives</h3>
 <table>
 <thead>
@@ -2652,6 +2653,10 @@
 <tr>
 <td><code>ZebraCrossingArea.OnTriggerEnter/Exit</code></td>
 <td>Maintains the set of current occupants</td>
+</tr>
+<tr>
+<td><code>ZebraCrossingArea.IsOccupied</code></td>
+<td>Drops occupants that were destroyed or deactivated inside the trigger (they never receive <code>OnTriggerExit</code>)</td>
 </tr>
 <tr>
 <td><code>NPCVehicleCognitionStep.UpdateZebraCrossingAwareness()</code></td>
@@ -2691,15 +2696,16 @@
 <tr>
 <td><code>ZebraAreaName</code></td>
 <td><code>string</code></td>
-<td>Name of the matched <code>ZebraCrossingArea</code> (for debug logging)</td>
+<td>Name of the matched <code>ZebraCrossingArea</code>, <code>null</code> if not blocked</td>
 </tr>
 <tr>
 <td><code>WasZebraBlocked</code></td>
 <td><code>bool</code></td>
-<td>Previous frame's value — used to detect the cleared transition</td>
+<td>Previous frame's value — used to log the first frame of a stop</td>
 </tr>
 </tbody>
 </table>
+<p>All fields are reset at the start of every cognition update and re-filled only if a blocked crossing is found.</p>
 <h3 id="how-the-stop-distance-is-used">How the Stop Distance Is Used</h3>
 <p>In <code>NPCVehicleDecisionStep</code>, the zebra stop distance competes with all other stop conditions:</p>
 <div class="highlight"><pre><span></span><code><span class="kt">var</span><span class="w"> </span><span class="n">distanceToStopPointByZebra</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">IsZebraBlocked</span>
@@ -2735,7 +2741,7 @@
 <td><code>STOP</code></td>
 </tr>
 <tr>
-<td><code>distance ≤ slowDownDistance</code></td>
+<td><code>distance ≤ slowDownDistance</code> or vehicle is turning</td>
 <td><code>SLOW</code></td>
 </tr>
 <tr>
@@ -2748,6 +2754,7 @@
 <div class="arithmatex">\[
 d_\text{stoppable} = \frac{v^2}{2 \cdot a}
 \]</div>
+<p>plus a fixed margin (<code>MinStopDistance</code> = 1.5 m: ×1 for absolute, ×2 for sudden, ×3 for normal stop; <code>slowDownDistance</code> = <code>stopDistance</code> + 4 × 1.5 m).</p>
 <p>So a faster NPC vehicle needs more distance to stop and may enter <code>SUDDEN_STOP</code> or <code>ABSOLUTE_STOP</code> if the crossing is detected late.</p>
 <hr />
 <h2 id="zebracrossingarea">ZebraCrossingArea</h2>
@@ -2759,6 +2766,14 @@ d_\text{stoppable} = \frac{v^2}{2 \cdot a}
 <li>Attach the <strong>ZebraCrossingArea</strong> script.</li>
 <li>Assign a <strong>Stop Point</strong> transform — place this just before the stop line where vehicles should halt.</li>
 </ol>
+<div class="admonition warning">
+<p class="admonition-title">Rigidbody required</p>
+<p>Unity only sends trigger events if the occupant or the area has a <strong>Rigidbody</strong> (kinematic is fine). Without one, occupants are never detected.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">One stop point per approach direction</p>
+<p>Each area has a single stop point, and detection is purely geometric (distance and angle to the stop point, no lane matching). An area therefore serves one approach direction; for a two-way road, add one area with its own stop point per direction.</p>
+</div>
 <h3 id="occupant-detection">Occupant Detection</h3>
 <p>The area automatically identifies the following types:</p>
 <table>
@@ -2775,28 +2790,28 @@ d_\text{stoppable} = \frac{v^2}{2 \cdot a}
 </tr>
 <tr>
 <td><code>SimpleCyclistMovement</code></td>
-<td>Component name search in parent hierarchy</td>
+<td>Full type name match on a <code>MonoBehaviour</code> in the parent hierarchy</td>
 </tr>
 <tr>
 <td><code>BicycleMoveRotate</code></td>
-<td>Component name search in parent hierarchy</td>
+<td>Full type name match on a <code>MonoBehaviour</code> in the parent hierarchy</td>
 </tr>
 <tr>
-<td><code>ClearWaypointFollower</code></td>
-<td>Component name search in parent hierarchy</td>
+<td><code>V2X.Paths.ClearWaypointFollower</code></td>
+<td>Full type name match on a <code>MonoBehaviour</code> in the parent hierarchy</td>
 </tr>
 <tr>
-<td><code>WaypointFollower</code></td>
-<td>Component name search in parent hierarchy</td>
+<td><code>WaypointFollower</code> (global namespace)</td>
+<td>Full type name match on a <code>MonoBehaviour</code> in the parent hierarchy</td>
 </tr>
 </tbody>
 </table>
-<p>The occupant's <strong>root transform</strong> is stored (not the collider's transform), so compound colliders on a single character count as one occupant.</p>
+<p>The occupant's <strong>root transform</strong> (<code>transform.root</code>) is stored, not the collider's transform, so compound colliders on a single character count as one occupant. Occupants parented under a common scene object share that root and therefore count as a single occupant.</p>
 <h3 id="whitelist-filtering">Whitelist Filtering</h3>
 <p>If a <code>ZebraCrossingConfig</code> parent is present with non-empty lists, only occupants matching the whitelist are counted:</p>
 <ul>
-<li><strong><code>allowedPrefabs</code></strong> — matched by normalized name (removes <code>(Clone)</code> suffix).</li>
-<li><strong><code>allowedRootNameSubstrings</code></strong> — matched by case-insensitive substring of the root name.</li>
+<li><strong><code>allowedPrefabs</code></strong> — exact match of the normalized names (<code>(Clone)</code>, <code>(clone)</code>, <code>_clone</code>, <code>_Clone</code> removed, then trimmed).</li>
+<li><strong><code>allowedRootNameSubstrings</code></strong> — case-insensitive substring of the normalized root name.</li>
 </ul>
 <p>If both lists are empty, all detected types are allowed.</p>
 <h3 id="inspector-fields">Inspector Fields</h3>
@@ -2832,14 +2847,14 @@ d_\text{stoppable} = \frac{v^2}{2 \cdot a}
 <tr>
 <td><code>enableDebugLogs</code></td>
 <td>false</td>
-<td>Log occupancy changes and stop decisions to the Console</td>
+<td>Log occupancy changes, ignored colliders and stop decisions to the Console</td>
 </tr>
 </tbody>
 </table>
 <h3 id="static-query-api">Static Query API</h3>
-<p>NPC vehicles call this once per <code>FixedUpdate</code> during the decision step:</p>
+<p>It is called once per <code>FixedUpdate</code> by the cognition step for every NPC vehicle not marked for despawn:</p>
 <div class="highlight"><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="n">blocked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ZebraCrossingArea</span><span class="p">.</span><span class="n">TryGetBlockedStop</span><span class="p">(</span>
-<span class="w">    </span><span class="n">vehiclePosition</span><span class="p">,</span><span class="w">   </span><span class="c1">// vehicle's world position</span>
+<span class="w">    </span><span class="n">vehiclePosition</span><span class="p">,</span><span class="w">   </span><span class="c1">// vehicle's front-center world position</span>
 <span class="w">    </span><span class="n">vehicleForward</span><span class="p">,</span><span class="w">    </span><span class="c1">// vehicle's forward direction (Y is ignored)</span>
 <span class="w">    </span><span class="k">out</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">distance</span><span class="p">,</span><span class="w">           </span><span class="c1">// distance to the stop point (minus buffer)</span>
 <span class="w">    </span><span class="k">out</span><span class="w"> </span><span class="n">ZebraCrossingArea</span><span class="w"> </span><span class="n">area</span><span class="w">    </span><span class="c1">// the matched area, or null</span>
@@ -2847,10 +2862,10 @@ d_\text{stoppable} = \frac{v^2}{2 \cdot a}
 </code></pre></div>
 <p>The method checks all active, occupied <code>ZebraCrossingArea</code> instances and returns the closest one that:</p>
 <ol>
-<li>Is within <code>maxDetectionDistance</code></li>
-<li>Falls within the <code>forwardAngleTolerance</code> cone in front of the vehicle</li>
+<li>Has its stop point within <code>maxDetectionDistance</code> (horizontal distance)</li>
+<li>Has its stop point within the <code>forwardAngleTolerance</code> cone in front of the vehicle</li>
 </ol>
-<p>If <code>blocked == true</code>, the NPC sets its speed mode to <code>STOP</code> and uses <code>distance</code> as the stopping distance.</p>
+<p><code>distance</code> is the horizontal distance to the stop point minus <code>stopBuffer</code>, clamped to ≥ 0. If <code>blocked == true</code>, the cognition step stores it in <code>DistanceToZebraStop</code>; the decision step then includes it in the minimum stop distance, which yields <code>STOP</code>, <code>SUDDEN_STOP</code> or <code>ABSOLUTE_STOP</code> (or <code>SLOW</code> while still far away) depending on speed.</p>
 <h3 id="gizmo-visualization">Gizmo Visualization</h3>
 <p>When the GameObject is selected in the Scene view:</p>
 <ul>
@@ -2858,11 +2873,14 @@ d_\text{stoppable} = \frac{v^2}{2 \cdot a}
 <li><strong>Red wireframe</strong> — crossing is occupied</li>
 <li><strong>Cyan sphere</strong> — stop point position</li>
 </ul>
-<p>Enable <code>enableDebugLogs</code> to see occupant enter/exit events in the Console, plus two extra NPC-level log messages per crossing event:</p>
+<p>Enable <code>enableDebugLogs</code> to see occupant enter/exit events in the Console, plus an NPC-level message when a vehicle starts stopping:</p>
 <div class="highlight"><pre><span></span><code>[NPC Zebra] Vehicle 'Bus_01' stopping for zebra 'CrosswalkNorth' at ~12.3m.
-[NPC Zebra] Vehicle 'Bus_01' cleared zebra 'CrosswalkNorth'.
 </code></pre></div>
-<p>The first message fires the first frame an NPC detects the blocking state (<code>WasZebraBlocked</code> transition <code>false → true</code>). The second fires when the crossing clears (<code>true → false</code>).</p>
+<p>This message fires on the first frame an NPC detects the blocking state (<code>WasZebraBlocked</code> transition <code>false → true</code>). The code also contains a "cleared zebra" message, but it never fires in the current implementation (<code>ZebraAreaName</code> is reset to <code>null</code> before the check), so nothing is logged when the crossing clears.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With <code>enableDebugLogs</code> on, <code>TryGetBlockedStop</code> also logs a <code>[ZebraCrossingArea] Blocked ...</code> line for every vehicle matching the area, every frame — use it only for short debugging sessions.</p>
+</div>
 <hr />
 <h2 id="zebracrossingconfig">ZebraCrossingConfig</h2>
 <h3 id="purpose">Purpose</h3>

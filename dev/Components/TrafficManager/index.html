@@ -1482,10 +1482,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#npc-vehicle-settings" class="md-nav__link">
     <span class="md-ellipsis">
       
         NPC Vehicle Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traffic-simulators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traffic Simulators
       
     </span>
   </a>
@@ -2462,10 +2484,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#npc-vehicle-settings" class="md-nav__link">
     <span class="md-ellipsis">
       
         NPC Vehicle Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traffic-simulators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traffic Simulators
       
     </span>
   </a>
@@ -2892,15 +2936,40 @@
     B --&gt; C[Control]
     C --&gt; D[Visualization]
 </code></pre></div>
-<p>The pipeline runs burst-compiled parallel jobs for the cognition step, enabling real-time simulation of 40+ vehicles.</p>
+<p>The cognition step uses Unity Job System parallel jobs (<code>IJobParallelFor</code>) and batched physics queries (<code>RaycastCommand</code> / <code>BoxcastCommand</code>) for ground, obstacle and curve checks.</p>
 </div>
 <div class="tabbed-block">
-<p>A static configuration layer loaded from <code>Assets/Configs/traffic_spawn.json</code>. It provides per-lane spawn rates and weighted branch probabilities to both <code>TrafficManager</code> and the lane-change logic. See <a href="../TrafficSpawnConfig/">TrafficSpawnConfig</a>.</p>
+<p>A static configuration layer filled from <code>Assets/Configs/traffic_spawn.json</code> (or from the Inspector data when the file is missing). It holds the branch weights used by the next-lane choice of every NPC vehicle and records branch-decision statistics. Per-lane spawn rates are enforced by <code>TrafficManager</code> itself. See <a href="../TrafficSpawnConfig/">TrafficSpawnConfig</a>.</p>
 </div>
 </div>
 </div>
 <hr />
 <h2 id="inspector-reference">Inspector Reference</h2>
+<h3 id="general">General</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>seed</code></td>
+<td>0</td>
+<td>Seed for Unity's random generator. <code>Random.InitState(seed)</code> is called at the start of every initialization, so the same seed reproduces the same random choices (prefabs, spawn lanes, branch decisions) as long as the scene is otherwise deterministic.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Setting the seed</p>
+<ul>
+<li><strong>Inspector:</strong> <code>seed</code> field on the <code>TrafficManager</code> component.</li>
+<li><strong>JSON configuration</strong> (passed on the command line in player builds, or via <code>useJsonConfig</code> in the Editor): the <code>RandomTrafficSeed</code> key of the <code>AutowareSimulation</code> configuration file is written to <code>TrafficManager.seed</code> (and <code>MaxVehicleCount</code> to <code>maxVehicleCount</code>) in <code>Awake</code>, before the manager initializes.</li>
+<li><strong>Script:</strong> <code>Restart(newSeed, newMaxVehicleCount)</code> (see <a href="#restart">Restart</a>).</li>
+</ul>
+</div>
 <h3 id="npc-vehicle-settings">NPC Vehicle Settings</h3>
 <table>
 <thead>
@@ -2934,12 +3003,36 @@
 <tr>
 <td><code>spawnDistanceToEgo</code></td>
 <td>50 m</td>
-<td>Minimum distance from ego vehicle to any spawn point</td>
+<td>Minimum 2D distance from the ego vehicle to a spawn point</td>
 </tr>
 <tr>
 <td><code>egoVehicle</code></td>
 <td>—</td>
 <td>Reference to the ego. If unset, a dummy is created automatically.</td>
+</tr>
+<tr>
+<td><code>trafficLanesObject</code></td>
+<td>—</td>
+<td>Parent GameObject containing all <code>TrafficLane</code> components. If unset, the manager falls back to <code>GameObject.Find("TrafficLanes")</code>. If neither exists, an error is logged and lane verification is skipped.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="traffic-simulators">Traffic Simulators</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>randomTrafficSims</code></td>
+<td><code>RandomTrafficSimulatorConfiguration</code> entries. See <a href="../Traffic/">Random Traffic</a>.</td>
+</tr>
+<tr>
+<td><code>routeTrafficSims</code></td>
+<td><code>RouteTrafficSimulatorConfiguration</code> entries (fixed route).</td>
 </tr>
 </tbody>
 </table>
@@ -2956,7 +3049,7 @@
 <tr>
 <td><code>spawnConfigPath</code></td>
 <td><code>Assets/Configs/traffic_spawn.json</code></td>
-<td>Path to load/save spawn rates and branch weights</td>
+<td>Path to load/save spawn rates and branch weights. A relative path is resolved against the project root (<code>Application.dataPath/..</code>); an absolute path is used as-is.</td>
 </tr>
 </tbody>
 </table>
@@ -3020,13 +3113,13 @@
 </tr>
 <tr>
 <td><code>SpeedLimitSource</code></td>
-<td><code>FixedSpeedLimit</code></td>
-<td><code>LaneletSpeedLimit</code> or <code>FixedSpeedLimit</code></td>
+<td><code>LaneletSpeedLimit</code></td>
+<td><code>LaneletSpeedLimit</code> (use the current lane's speed limit) or <code>FixedSpeedLimit</code></td>
 </tr>
 <tr>
-<td><code>FixedSpeedLimit</code></td>
+<td><code>SpeedLimit</code></td>
 <td>13.89 m/s (50 km/h)</td>
-<td>Used when source is Fixed</td>
+<td>Fixed speed limit, used only when <code>SpeedLimitSource</code> is <code>FixedSpeedLimit</code></td>
 </tr>
 </tbody>
 </table>
@@ -3039,7 +3132,19 @@
 <li><strong>Save Spawn Config JSON</strong> — writes current rates/weights from all simulators to the JSON file.</li>
 <li><strong>Load Spawn Config JSON</strong> — reads the JSON file and applies it to all simulators.</li>
 </ul>
-<p>The config is also loaded automatically at scene start if the file exists.</p>
+<p>The config is also loaded automatically at scene start if the file exists (otherwise a warning is logged and the Inspector values are used). At runtime, <code>SetSpawnConfigPath(path)</code> changes the path and loads it immediately; the <strong>Traffic Settings</strong> UI (<code>TrafficSettingsUI</code>) uses <code>GetSpawnConfigPath()</code> / <code>SetSpawnConfigPath()</code> for this.</p>
+<div class="admonition warning">
+<p class="admonition-title">Player builds</p>
+<p>A relative path is resolved against <code>Application.dataPath/..</code>. In a player build that is the build folder, so the default file must be copied to <code>&lt;build folder&gt;/Assets/Configs/traffic_spawn.json</code> (or use an absolute path).</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">What a loaded file overrides</p>
+<ul>
+<li><code>branchWeights</code> from the file <strong>replace</strong> the Inspector branch weights of every random traffic simulator.</li>
+<li><code>spawnRates</code> overwrite <code>spawnsPerMinute</code> only for lanes listed in the file. Rate limiting is rebuilt from the file, so spawnable lanes not listed in it are not rate-limited while that file is loaded.</li>
+<li><code>TrafficSpawnConfig</code> is static: with several <code>TrafficManager</code>s, the last one to initialize or load defines the global branch weights.</li>
+</ul>
+</div>
 <h3 id="json-format">JSON Format</h3>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">"spawnRates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -3067,9 +3172,13 @@
 <div class="arithmatex">\[
 \text{interval (s)} = \frac{60}{\text{spawnsPerMinute}}
 \]</div>
+<div class="admonition info">
+<p class="admonition-title">Maximum rate, not a guaranteed rate</p>
+<p><code>spawnsPerMinute</code> only enforces a minimum interval between spawns on a lane. The actual rate is usually lower, because each frame a simulator picks one of its lanes at random and the spawn also requires a free spawn area, <code>maxVehicleCount</code> not reached, and enough distance to the ego vehicle.</p>
+</div>
 <hr />
 <h2 id="removevehiclesinradius">RemoveVehiclesInRadius</h2>
-<p>The Teleporter calls this method before moving the ego vehicle to its new spawn position. All NPC vehicles within <code>radius</code> metres of <code>center</code> are marked for despawn and removed on the next <code>FixedUpdate</code>.</p>
+<p>The Teleporter (and the ScenarioSelector) call this method before moving the ego vehicle to its new spawn position. All NPC vehicles within <code>radius</code> metres of <code>center</code> are marked for despawn and removed on the next <code>FixedUpdate</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// By world position</span>
 <span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trafficManager</span><span class="p">.</span><span class="n">RemoveVehiclesInRadius</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="n">radius</span><span class="p">);</span>
 
@@ -3085,20 +3194,21 @@
     participant TS as Traffic Simulators
     participant NS as NPCVehicleSimulator
 
-    TM-&gt;&gt;TS: GetRandomSpawnInfo() for each simulator
+    TM-&gt;&gt;TS: GetRandomSpawnInfo() for each enabled simulator
     TS--&gt;&gt;TM: spawnPoint + prefab
     TM-&gt;&gt;TM: Group by spawn point
     TM-&gt;&gt;TM: Filter: ego proximity check
     TM-&gt;&gt;TM: Filter: per-lane rate limit
     TM-&gt;&gt;TM: Collision check (IsSpawnable)
-    TM-&gt;&gt;NS: Register new vehicle
+    TM-&gt;&gt;TS: Spawn() (checks maximumSpawns, maxVehicleCount)
+    TS-&gt;&gt;NS: Register new vehicle
     TM-&gt;&gt;NS: StepOnce(deltaTime)
     NS-&gt;&gt;NS: Cognition → Decision → Control → Visualization
     TM-&gt;&gt;TM: Despawn marked vehicles
 </code></pre></div>
 <h3 id="spawn-decision-logic">Spawn Decision Logic</h3>
 <div class="highlight"><pre><span></span><code>graph TD
-    A[Spawn request] --&gt; B{Distance to ego ≥ 50m?}
+    A[Spawn request] --&gt; B{Distance to ego ≥ spawnDistanceToEgo?}
     B -- No --&gt; SKIP[Skip this frame]
     B -- Yes --&gt; C{Rate limit elapsed?}
     C -- No --&gt; SKIP
@@ -3106,13 +3216,16 @@
     D -- Yes --&gt; E[IsSpawnable check]
     D -- No --&gt; F[Priority sort → highest wins]
     F --&gt; E
-    E -- Clear --&gt; G[Spawn vehicle]
+    E -- Clear --&gt; H{Vehicle count &lt; maxVehicleCount?}
     E -- Blocked --&gt; SKIP
+    H -- Yes --&gt; G[Spawn vehicle]
+    H -- No --&gt; SKIP
 </code></pre></div>
+<p>A <code>RandomTrafficSimulator</code> is only queried while it is enabled, has at least one valid spawnable lane, and has not reached <code>maximumSpawns</code>. A simulator whose spawnable lanes are all unassigned is treated as disabled.</p>
 <hr />
 <h2 id="npc-vehicle-simulation-pipeline">NPC Vehicle Simulation Pipeline</h2>
 <h3 id="step-1-cognition">Step 1 — Cognition</h3>
-<p>Runs as burst-compiled parallel jobs. Each vehicle gathers:</p>
+<p>Uses Unity Job System jobs and batched physics queries. Each vehicle gathers:</p>
 <ul>
 <li>Ground existence (vehicle must be above valid surface)</li>
 <li>Next lane and waypoint</li>
@@ -3120,6 +3233,7 @@
 <li>Right-of-way at intersections</li>
 <li>Curve detection (upcoming sharp turns → reduce speed)</li>
 <li>Front obstacle distance</li>
+<li>Occupied zebra crossings ahead, via <code>ZebraCrossingArea.TryGetBlockedStop()</code> (see <a href="../ZebraCrossing/">Zebra Crossing</a>)</li>
 </ul>
 <h3 id="step-2-decision">Step 2 — Decision</h3>
 <p>Determines each vehicle's immediate action:</p>
@@ -3153,7 +3267,7 @@
 </tr>
 </tbody>
 </table>
-<p>The decision step also checks <code>ZebraCrossingArea.TryGetBlockedStop()</code> to yield to pedestrians at crosswalks. See <a href="../ZebraCrossing/">Zebra Crossing</a>.</p>
+<p>The decision step takes the minimum of the stop distances for the front vehicle, traffic light, right-of-way and an occupied zebra crossing (computed in the cognition step) and picks the speed mode from it. See <a href="../ZebraCrossing/">Zebra Crossing</a>.</p>
 <h3 id="step-3-control">Step 3 — Control</h3>
 <p>Updates vehicle kinematics:</p>
 <ul>
@@ -3209,24 +3323,32 @@ else:
 </thead>
 <tbody>
 <tr>
+<td><code>NONE</code></td>
+<td>Not yielding</td>
+</tr>
+<tr>
 <td><code>ENTERING_INTERSECTION</code></td>
-<td>Evaluating whether to yield</td>
+<td>Approaching an intersection; evaluating whether to yield (no stop)</td>
 </tr>
 <tr>
-<td><code>LEFT_HAND_RULE_ENTERING</code></td>
-<td>Yielding to right-hand traffic</td>
+<td><code>AT_INTERSECTION</code></td>
+<td>Inside the intersection; evaluating whether to yield (no stop)</td>
 </tr>
 <tr>
-<td><code>LANES_RULES_ENTERING</code></td>
-<td>Yielding based on configured lane priorities</td>
+<td><code>LANES_RULES_ENTERING_INTERSECTION</code> / <code>LANES_RULES_AT_INTERSECTION</code></td>
+<td>Yielding based on the lanes' right-of-way rules</td>
+</tr>
+<tr>
+<td><code>LEFT_HAND_RULE_ENTERING_INTERSECTION</code> / <code>LEFT_HAND_RULE_AT_INTERSECTION</code></td>
+<td>Yielding under the left-hand rule to another nearby vehicle</td>
 </tr>
 <tr>
 <td><code>INTERSECTION_BLOCKED</code></td>
-<td>Waiting because cross traffic is present</td>
+<td>Waiting before entering because the intersection is busy</td>
 </tr>
 <tr>
 <td><code>FORCING_PRIORITY</code></td>
-<td>Override to break a deadlock</td>
+<td>Yielding inside the intersection to a vehicle that is forcing its priority</td>
 </tr>
 </tbody>
 </table>
@@ -3234,32 +3356,39 @@ else:
 <h2 id="lifecycle-management">Lifecycle Management</h2>
 <h3 id="initialization-start">Initialization (<code>Start</code>)</h3>
 <div class="highlight"><pre><span></span><code>graph TD
-    A[Start] --&gt; B[Load spawn config JSON if exists]
-    B --&gt; C[Create NPCVehicleSimulator]
+    A[Start] --&gt; S["Random.InitState(seed)"]
+    S --&gt; B[Build config from Inspector; load spawn config JSON if it exists]
+    B --&gt; T[TrafficSpawnConfig.Load]
+    T --&gt; G[Set up ego vehicle reference / dummy ego]
+    G --&gt; C[Create NPCVehicleSimulator]
     C --&gt; D[verifyIntegrationEnvironmentElements]
     D --&gt; E[Instantiate RandomTrafficSimulators]
     E --&gt; F[Instantiate RouteTrafficSimulators]
-    F --&gt; G[Set up ego vehicle reference]
 </code></pre></div>
+<p>A missing lanes parent does not stop initialization (only the lane verification is skipped). If the manager is not initialized (simulator list not created), <code>FixedUpdate</code> logs an error and returns instead of throwing.</p>
 <h3 id="restart">Restart</h3>
-<div class="highlight"><pre><span></span><code><span class="n">trafficManager</span><span class="p">.</span><span class="n">Restart</span><span class="p">(</span><span class="n">newMaxVehicleCount</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><span class="n">trafficManager</span><span class="p">.</span><span class="n">Restart</span><span class="p">(</span><span class="n">newSeed</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">newMaxVehicleCount</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span>
 </code></pre></div>
-<p>Disposes all current state, re-runs initialization with the new parameters.</p>
+<p>Disposes all current state, sets <code>seed</code> and <code>maxVehicleCount</code>, and re-runs initialization (including reloading the spawn config). Both parameters have defaults (<code>newSeed = 0</code>, <code>newMaxVehicleCount = 10</code>), so omitted arguments reset those values rather than keeping the current ones.</p>
 <h3 id="destroy">Destroy</h3>
-<p>On <code>OnDestroy</code>, the manager calls <code>TrafficSpawnConfig.ExportBranchDecisionCsv()</code> to write the full branch decision statistics to <code>Assets/Configs/traffic_branch_decisions.csv</code>. See <a href="../TrafficSpawnConfig/">TrafficSpawnConfig</a> for the CSV format.</p>
+<p>On <code>OnDestroy</code>, the manager first disposes the <code>NPCVehicleSimulator</code>, then calls <code>TrafficSpawnConfig.ExportBranchDecisionCsv()</code> to write the branch decision statistics to <code>Assets/Configs/traffic_branch_decisions.csv</code> (relative to the project root). Export errors are logged as warnings. See <a href="../TrafficSpawnConfig/">TrafficSpawnConfig</a> for the CSV format.</p>
 <hr />
 <h2 id="scene-setup-checklist">Scene Setup Checklist</h2>
 <div class="admonition check">
 <p class="admonition-title">Required before Play</p>
 <ul>
-<li>[ ] A GameObject named <strong><code>TrafficLanes</code></strong> exists in the scene.</li>
+<li>[ ] The lanes parent is assigned to <strong><code>trafficLanesObject</code></strong>, or a GameObject named <strong><code>TrafficLanes</code></strong> exists in the scene.</li>
 <li>[ ] All <code>TrafficLane</code> child objects have <strong>unique names</strong>.</li>
 <li>[ ] At least one <code>TrafficLane</code> has <strong><code>intersectionLane = true</code></strong>.</li>
 <li>[ ] <code>TrafficManager.vehicleLayerMask</code> and <code>groundLayerMask</code> are assigned.</li>
-<li>[ ] At least one <code>RandomTrafficSimulatorConfiguration</code> entry is configured.</li>
+<li>[ ] At least one <code>RandomTrafficSimulatorConfiguration</code> entry is configured, with its spawnable lanes assigned.</li>
 </ul>
 </div>
-<p>These are validated at startup. Errors appear in the Console with descriptive messages.</p>
+<p>The first three items are validated at startup (<code>verifyIntegrationEnvironmentElements</code>); errors appear in the Console with descriptive messages.</p>
+<div class="admonition warning">
+<p class="admonition-title">Upgrading older scenes</p>
+<p><code>spawnableLanes</code> changed from a plain <code>TrafficLane[]</code> to <code>SpawnableLaneConfig</code> entries (<code>{lane, spawnsPerMinute}</code>). Scenes saved with the old format show empty lanes and must be relinked in the Inspector; until then the simulator has no valid spawn lane and is treated as disabled.</p>
+</div>
 <hr />
 <h2 id="extensibility">Extensibility</h2>
 <p>Custom simulators can be added at runtime via:</p>
