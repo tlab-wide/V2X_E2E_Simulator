@@ -12,7 +12,7 @@
         <link rel="prev" href="../Pedestrian/">
       
       
-        <link rel="next" href="../MultiSensorStepScanning/">
+        <link rel="next" href="../PathSpawnConfig/">
       
       
         
@@ -1947,6 +1947,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#spawneronwaypoint2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SpawnerOnWaypoint2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scenariohumanid" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1989,6 +2000,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PathSpawnConfig/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Path Spawn Config (JSON)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -2395,6 +2434,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#spawneronwaypoint2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SpawnerOnWaypoint2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scenariohumanid" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2526,7 +2576,7 @@
 
 <h1 id="pedestrian-cyclist-path-system">Pedestrian &amp; Cyclist Path System</h1>
 <h2 id="overview">Overview</h2>
-<p>This system controls the movement of pedestrians and cyclists along defined paths in the scene. It is built from four cooperating components:</p>
+<p>This system controls the movement of pedestrians and cyclists along defined paths in the scene. It is built from these cooperating components:</p>
 <table>
 <thead>
 <tr>
@@ -2545,18 +2595,26 @@
 </tr>
 <tr>
 <td><code>HumanNpcSpawner</code></td>
-<td>Pool-based spawner that assigns NPCs to unique paths</td>
+<td>Pool-based spawner that assigns NPCs to randomly chosen paths</td>
 </tr>
 <tr>
 <td><code>SpawnerOnWaypoint</code></td>
-<td>Manual or timed spawner for individual scenario NPCs</td>
+<td>Manual or timed spawner for a single path</td>
+</tr>
+<tr>
+<td><code>SpawnerOnWaypoint2</code></td>
+<td>Timed spawner that picks a random prefab and a random spawn point / path</td>
 </tr>
 <tr>
 <td><code>ScenarioHumanId</code></td>
-<td>Assigns a unique persistent ID to each spawned human</td>
+<td>Assigns a unique ID to each spawned human</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">JSON-driven paths</p>
+<p>Paths can also be defined in a JSON file instead of being placed by hand. In the <code>NormalTraffics</code> scenario of the Kashiwa scene, pedestrians and cyclists are spawned this way by <code>PedestrianCyclistSpawner</code>. See <a href="../PathSpawnConfig/">Path Spawn Config (JSON)</a>.</p>
+</div>
 <hr />
 <h2 id="waypointsystem">WaypointSystem</h2>
 <p>This component should be added to a <strong>parent GameObject</strong>. Child <code>Transform</code> objects define the waypoint positions in sequence.</p>
@@ -2567,10 +2625,13 @@
 <li>Add the <code>WaypointSystem</code> component to the parent.</li>
 <li>Click <strong>Clear Waypoints</strong>, then <strong>Generate Waypoints from Children</strong> — this populates the list in order.</li>
 </ol>
-<p>If <strong>Gizmos</strong> are enabled, the path is drawn as:
-- <strong>Cyan spheres</strong> at each waypoint
-- <strong>Green lines</strong> connecting consecutive waypoints
-- A closing line from last to first when <code>loopStatus = true</code></p>
+<p>If <strong>Gizmos</strong> are enabled, the path is drawn as:</p>
+<ul>
+<li><strong>Spheres</strong> at the waypoints</li>
+<li><strong>Green lines</strong> connecting consecutive waypoints</li>
+<li>A closing line from last to first when <code>loopStatus = true</code></li>
+</ul>
+<p>Empty (<code>None</code>) waypoint slots are skipped when drawing the gizmos, so a half-edited list does not throw errors in the Scene view. At runtime, however, every slot must reference a <code>Transform</code>.</p>
 <div style="text-align: center;">
   <img src="image.png" alt="Green path line in scene view" width="800">
   <p>Green line in the Scene view and <code>WaypointSystem</code> in the Inspector.</p>
@@ -2587,7 +2648,7 @@
 <tbody>
 <tr>
 <td><code>loopStatus</code></td>
-<td>When true, <code>GetNextWaypointIndex()</code> wraps from last back to first</td>
+<td>When true, the follower wraps from the last waypoint back to the first. When false, the follower is deactivated at the last waypoint (returned to the pool)</td>
 </tr>
 <tr>
 <td><code>GetFirstWaypoint()</code></td>
@@ -2622,7 +2683,26 @@
 <hr />
 <h2 id="waypointfollower">WaypointFollower</h2>
 <p>By adding a <code>WaypointFollower</code> component to a pedestrian or cyclist, it will automatically navigate toward successive waypoints in the assigned <code>WaypointSystem</code>.</p>
-<p>Assign the target path via the <code>waypoint</code> field in the Inspector.</p>
+<p>Assign the target path via the <code>waypointSystem</code> field in the Inspector, or from code:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SetWaypointSystem(ws)</code></td>
+<td>Assigns the path and starts from the waypoint <strong>closest</strong> to the current position</td>
+</tr>
+<tr>
+<td><code>ForceStartAtFirstWaypoint()</code></td>
+<td>Teleports the character to the first waypoint and starts from index 0</td>
+</tr>
+</tbody>
+</table>
+<p>When a non-looping path ends (or the character falls below y = -200), the follower stops the rigidbody and calls <code>SetActive(false)</code> on its GameObject, so spawners can reuse it.</p>
 <div style="text-align: center;">
   <img src="image-2.png" alt="WaypointFollower component" width="800">
   <p>Pedestrian NPC with a <code>WaypointFollower</code> component assigned.</p>
@@ -2631,7 +2711,7 @@
 <hr />
 <h2 id="iconstraintwaypoint">IConstraintWayPoint</h2>
 <p><code>IConstraintWayPoint</code> is an interface for adding stopping conditions at specific waypoints — for example, stopping at a red light before crossing the road.</p>
-<p>Constraint components are evaluated when the follower reaches the waypoint they are attached to, so place traffic-light constraints <strong>just before</strong> the crossing point.</p>
+<p>Constraint components are evaluated when the follower reaches the waypoint they are attached to (the follower waits there until all constraints pass), so place traffic-light constraints <strong>just before</strong> the crossing point.</p>
 <p>Provided implementations:</p>
 <table>
 <thead>
@@ -2643,7 +2723,7 @@
 <tbody>
 <tr>
 <td><code>ConstraintPedestrianTrafficLight</code></td>
-<td>Stop when pedestrian signal is red</td>
+<td>Stop unless the pedestrian signal is green</td>
 </tr>
 <tr>
 <td><code>ConstraintCarTrafficLight</code></td>
@@ -2662,48 +2742,81 @@
 
 <hr />
 <h2 id="humannpcspawner">HumanNpcSpawner</h2>
-<p><code>HumanNpcSpawner</code> manages a <strong>pool</strong> of human NPCs and spawns them continuously throughout a simulation run. It is designed for crowd scenes where many pedestrians need to be maintained without manual placement.</p>
+<p><code>HumanNpcSpawner</code> manages a <strong>pool</strong> of human NPCs and spawns them throughout a simulation run. It is designed for crowd scenes where many pedestrians need to be maintained without manual placement.</p>
 <h3 id="spawn-behaviour">Spawn Behaviour</h3>
 <ol>
-<li>On start, an initial burst of NPCs is spawned immediately.</li>
-<li>A repeating coroutine spawns additional NPCs at random intervals within a configured range.</li>
-<li>Before instantiating a new NPC, the spawner reuses any deactivated NPCs from the pool.</li>
-<li>Each NPC is assigned to a <strong>unique</strong> <code>WaypointSystem</code> — two active NPCs never share the same path.</li>
+<li>On <code>Start</code>, every NPC in <code>HumanPool</code> is deactivated.</li>
+<li>An initial burst of <code>Random.Range(initialSpawnMin, initialSpawnMax + 1)</code> NPCs is spawned.</li>
+<li>If <code>runSpawnLoopAfterInitial</code> is true, a coroutine spawns a batch every <code>waitTimeRandomGeneration</code> seconds. The batch size is <code>numberSpawningHuman</code>, plus a random offset in <code>[-varianceSpawningHuman, +varianceSpawningHuman]</code> (minimum 0).</li>
+<li>A batch is capped at the number of <code>waypointSystems</code>. Each NPC in a batch gets a <strong>different</strong> path (paths are not reserved across batches).</li>
+<li>Deactivated NPCs from <code>HumanPool</code> are reused first. If the pool is short, up to <code>maxExtraInstantiatesPerCycle</code> clones of random pool members are created and added to <code>HumanPool</code>.</li>
+<li>Each NPC is placed at the first waypoint of its path (<code>ForceStartAtFirstWaypoint</code>), gets a new <code>ScenarioHumanId</code>, and is activated.</li>
 </ol>
 <h3 id="fields">Fields</h3>
 <table>
 <thead>
 <tr>
 <th>Field</th>
+<th>Default</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>npcPrefab</code></td>
-<td>Human NPC prefab to instantiate</td>
+<td><code>HumanPool</code></td>
+<td>—</td>
+<td>Human NPC instances (each must have a <code>WaypointFollower</code>). All are deactivated on start</td>
 </tr>
 <tr>
 <td><code>waypointSystems</code></td>
+<td>—</td>
 <td>All available <code>WaypointSystem</code> paths</td>
 </tr>
 <tr>
-<td><code>spawnCountVariance</code></td>
-<td>Random variance applied to the spawn count per batch</td>
+<td><code>initialSpawnMin</code> / <code>initialSpawnMax</code></td>
+<td>0 / 5</td>
+<td>Inclusive range for the one-time initial burst</td>
 </tr>
 <tr>
-<td><code>spawnInterval</code></td>
-<td>Time between spawn batches</td>
+<td><code>runSpawnLoopAfterInitial</code></td>
+<td>true</td>
+<td>If false, only the initial burst is spawned</td>
+</tr>
+<tr>
+<td><code>waitTimeRandomGeneration</code></td>
+<td>5</td>
+<td>Seconds between spawn batches</td>
+</tr>
+<tr>
+<td><code>numberSpawningHuman</code></td>
+<td>3</td>
+<td>NPCs per batch</td>
+</tr>
+<tr>
+<td><code>varianceSpawningHuman</code></td>
+<td>0</td>
+<td>Random ± variation of the batch size</td>
+</tr>
+<tr>
+<td><code>maxExtraInstantiatesPerCycle</code></td>
+<td>10</td>
+<td>Max clones created per batch when the pool is short</td>
+</tr>
+<tr>
+<td><code>activeParent</code></td>
+<td>—</td>
+<td>Optional parent for activated NPCs</td>
 </tr>
 </tbody>
 </table>
+<p>Public methods: <code>TriggerNow()</code> runs one batch immediately; <code>RestartLoop()</code> restarts the spawn coroutine (e.g. after changing <code>waitTimeRandomGeneration</code>).</p>
 <div class="admonition note">
 <p class="admonition-title">Pool Reuse</p>
-<p>When an NPC reaches the end of its path and deactivates, it is returned to the pool and becomes available for reassignment on the next spawn cycle.</p>
+<p>When an NPC reaches the end of a non-looping path, <code>WaypointFollower</code> deactivates it. It stays in <code>HumanPool</code> and becomes available on the next spawn cycle.</p>
 </div>
 <hr />
 <h2 id="spawneronwaypoint">SpawnerOnWaypoint</h2>
-<p><code>SpawnerOnWaypoint</code> is a lighter-weight spawner for <strong>scenario-specific</strong> pedestrian placements. It spawns a single NPC either on a key press or on a configurable timer, and assigns it to a specific <code>WaypointSystem</code>.</p>
+<p><code>SpawnerOnWaypoint</code> is a lighter-weight spawner for <strong>scenario-specific</strong> placements. It instantiates <code>spawnerPrefab</code> at the pose of <code>initialSapwnPoint</code> (captured in <code>Awake</code>), either on a key press or on a random timer, and assigns it to <code>waypointSystem</code>. Spawned objects are parented to the spawner and are not pooled.</p>
 <h3 id="fields_1">Fields</h3>
 <table>
 <thead>
@@ -2715,40 +2828,86 @@
 </thead>
 <tbody>
 <tr>
-<td><code>spawnKey</code></td>
-<td><code>KeyCode.O</code></td>
-<td>Manual spawn key</td>
-</tr>
-<tr>
-<td><code>useRandomTimer</code></td>
-<td>false</td>
-<td>Enable automatic timed spawning</td>
-</tr>
-<tr>
-<td><code>minTime</code> / <code>maxTime</code></td>
+<td><code>initialSapwnPoint</code></td>
 <td>—</td>
-<td>Random interval range for timed spawning</td>
+<td>Transform whose position/rotation is used for spawning</td>
+</tr>
+<tr>
+<td><code>spawnerPrefab</code></td>
+<td>—</td>
+<td>Prefab to instantiate (must have a <code>WaypointFollower</code>)</td>
 </tr>
 <tr>
 <td><code>waypointSystem</code></td>
 <td>—</td>
-<td>Path the spawned NPC will follow</td>
+<td>Path the spawned object will follow (starts from the waypoint closest to the spawn point)</td>
 </tr>
 <tr>
-<td><code>npcPrefab</code></td>
-<td>—</td>
-<td>NPC prefab to instantiate</td>
+<td><code>spawnRandomEnable</code></td>
+<td>false</td>
+<td>Enable automatic timed spawning</td>
+</tr>
+<tr>
+<td><code>minWaitingTime</code> / <code>maxWaitingTime</code></td>
+<td>5 / 300</td>
+<td>Random interval range (seconds) for timed spawning</td>
+</tr>
+<tr>
+<td><code>spawnKey</code></td>
+<td><code>KeyCode.O</code></td>
+<td>Manual spawn key</td>
 </tr>
 </tbody>
 </table>
-<p>Every NPC spawned by <code>SpawnerOnWaypoint</code> receives a unique <code>ScenarioHumanId</code> automatically.</p>
+<hr />
+<h2 id="spawneronwaypoint2">SpawnerOnWaypoint2</h2>
+<p><code>SpawnerOnWaypoint2</code> spawns on a random timer only (no key). Each time the timer expires, it picks a random prefab from <code>prefabPool</code> and a random entry from <code>spawnPoints</code>; each <code>SpawnPoint</code> holds one <code>WaypointSystem</code> and a list of preferred spawn transforms, one of which is chosen at random.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spawnPoints</code></td>
+<td>—</td>
+<td>List of <code>SpawnPoint</code> (<code>waypointSystem</code> + preferred spawn transforms)</td>
+</tr>
+<tr>
+<td><code>prefabPool</code></td>
+<td>—</td>
+<td>Prefabs to choose from (must have a <code>WaypointFollower</code>)</td>
+</tr>
+<tr>
+<td><code>spawnRandomEnable</code></td>
+<td>true</td>
+<td>Enable timed spawning</td>
+</tr>
+<tr>
+<td><code>minWaitingTime</code> / <code>maxWaitingTime</code></td>
+<td>5 / 50</td>
+<td>Random interval range (seconds)</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Use <code>SpawnerOnWaypoint</code> when you need to trigger a pedestrian appearance at a specific scenario moment. Use <code>HumanNpcSpawner</code> when you want continuous background crowd generation.</p>
+<p>Use <code>SpawnerOnWaypoint</code> / <code>SpawnerOnWaypoint2</code> when you need a pedestrian to appear at a specific place or scenario moment. Use <code>HumanNpcSpawner</code>, or the JSON-driven <a href="../PathSpawnConfig/"><code>PedestrianCyclistSpawner</code></a>, for continuous background crowd generation.</p>
 </div>
 <hr />
 <h2 id="scenariohumanid">ScenarioHumanId</h2>
-<p><code>ScenarioHumanId</code> assigns a globally unique sequential integer ID (as a string) to each human NPC. It is added automatically by both <code>HumanNpcSpawner</code> and <code>SpawnerOnWaypoint</code>.</p>
+<p><code>ScenarioHumanId</code> holds a globally unique sequential integer ID (as a string) for a human NPC.</p>
+<p>A <strong>new ID is assigned every time an NPC is (re)activated or spawned</strong>, so a pooled NPC that is reused gets a different ID on each trip. IDs are assigned by:</p>
+<ul>
+<li><code>HumanNpcSpawner</code></li>
+<li><code>SpawnerOnWaypoint</code> and <code>SpawnerOnWaypoint2</code></li>
+<li>The JSON path spawners (<code>PedestrianCyclistSpawner</code>, <code>PedestrianPathSpawner</code>, <code>CyclistPathSpawner</code>)</li>
+<li><code>Ros2EntityController</code> (pedestrians spawned over ROS 2)</li>
+</ul>
+<p>Each of these adds the component if it is missing. Humans placed directly in the scene (not spawned) get one lazily from <a href="../Logger/">LogArea</a> the first time they are logged.</p>
 <h3 id="purpose">Purpose</h3>
 <p>The ID is used by the <a href="../Logger/">LogArea</a> system to uniquely identify each pedestrian across CSV rows, even if multiple pedestrians are in the scene at the same time.</p>
 <h3 id="usage">Usage</h3>
@@ -2756,7 +2915,7 @@
 <span class="n">idComp</span><span class="p">.</span><span class="n">AssignNewId</span><span class="p">();</span><span class="w">       </span><span class="c1">// assigns the next available ID</span>
 <span class="kt">string</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">idComp</span><span class="p">.</span><span class="n">HumanId</span><span class="p">;</span><span class="w"> </span><span class="c1">// "0", "1", "2", ...</span>
 </code></pre></div>
-<p>IDs are sequential and restart from <code>0</code> each time Unity enters Play mode. The <code>DisallowMultipleComponent</code> attribute ensures only one ID is assigned per NPC.</p>
+<p>IDs are sequential and restart from <code>0</code> each time Unity enters Play mode. The <code>DisallowMultipleComponent</code> attribute ensures only one ID component per NPC.</p>
 
 
 
@@ -2805,13 +2964,13 @@
         
         
           
-          <a href="../MultiSensorStepScanning/" class="md-footer__link md-footer__link--next" aria-label="Next: MultiSensorStepScanning">
+          <a href="../PathSpawnConfig/" class="md-footer__link md-footer__link--next" aria-label="Next: Path Spawn Config (JSON)">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                MultiSensorStepScanning
+                Path Spawn Config (JSON)
               </div>
             </div>
             <div class="md-footer__button md-icon">
