@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using AWSIM;
 using UnityEngine;
@@ -46,6 +47,8 @@ public class LogArea : MonoBehaviour
     private ILogIndex _logIndexBus;
     private List<Transform> _humanTransforms = new List<Transform>();
     private List<Transform> _carTransforms = new List<Transform>();
+    private string _runLogPathHumans;
+    private string _runLogPathCars;
     
     #endregion
 
@@ -54,7 +57,10 @@ public class LogArea : MonoBehaviour
     private void Start()
     {
         _logIndexBus = checkpointJumper;
-        
+
+        _runLogPathHumans = BuildRunFilePath(logPathHumans);
+        _runLogPathCars = BuildRunFilePath(logPathCars);
+
         StartCoroutine(InitializeCsvFiles());
         StartCoroutine(LoggingLoop(waitTime, ultraMode));
     }
@@ -69,7 +75,7 @@ public class LogArea : MonoBehaviour
         {
             AddUniqueTransform(_humanTransforms, pedestrianTransform);
         }
-        else if (IsVehicleLayer(other))
+        else if (checkCars && IsVehicleLayer(other))
         {
             // Handle special case for bus or other vehicles with Rigidbody
             Rigidbody rigidbody = FindRigidbodyInHierarchy(other.gameObject);
@@ -114,14 +120,15 @@ public class LogArea : MonoBehaviour
     private bool TryGetNPCPedestrian(Collider collider, out Transform pedestrianTransform)
     {
         NPCPedestrian pedestrian = collider.gameObject.GetComponentInParent<NPCPedestrian>();
-        pedestrianTransform = pedestrian?.transform;
-        if (pedestrian == null)
+        if (pedestrian != null)
         {
-            WaypointFollower waypointFollower = collider.gameObject.GetComponentInParent<WaypointFollower>();
-            pedestrianTransform = waypointFollower?.transform;
-            return waypointFollower != null;
+            pedestrianTransform = pedestrian.transform;
+            return true;
         }
-        return false;
+
+        WaypointFollower waypointFollower = collider.gameObject.GetComponentInParent<WaypointFollower>();
+        pedestrianTransform = waypointFollower?.transform;
+        return waypointFollower != null;
     }
 
     private bool IsVehicleLayer(Collider collider)
@@ -203,8 +210,8 @@ public class LogArea : MonoBehaviour
 
         while (true)
         {
-            LogTransforms(_carTransforms, logPathCars);
-            LogTransforms(_humanTransforms, logPathHumans);
+            LogTransforms(_carTransforms, _runLogPathCars);
+            LogTransforms(_humanTransforms, _runLogPathHumans);
 
             if (useUltraMode)
             {
@@ -256,17 +263,23 @@ public class LogArea : MonoBehaviour
         Vector3 position = GetRosPosition(transform.position);
         Quaternion rotation = ROS2Utility.UnityToRosRotation(transform.rotation);
         int busState = _logIndexBus?.GetIndex() ?? 0;
+        string entityId = GetEntityId(transform);
         
         // Get velocity data
         var (velocity, speedAmount) = GetVelocity(transform);
 
+        // Capture host system time for cross-app synchronization (UTC, millis since Unix epoch)
+        long systemTimeUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
         if (lineOfSight == null)
         {
             return FormatDataRow(
+                entityId,
                 transform.name,
                 position,
                 rotation,
                 rosTime,
+                systemTimeUnixMs,
                 boxState: LineOfSight.BoxState.Unknown,
                 sensorData: string.Empty,
                 busState,
@@ -279,10 +292,12 @@ public class LogArea : MonoBehaviour
         LineOfSight.BoxState boxState = lineOfSight.GetCarBoxState();
 
         return FormatDataRow(
+            entityId,
             transform.name,
             position,
             rotation,
             rosTime,
+            systemTimeUnixMs,
             boxState,
             sensorData,
             busState,
@@ -330,25 +345,20 @@ public class LogArea : MonoBehaviour
     }
 
     private string FormatDataRow(
+        string entityId,
         string name,
         Vector3 position,
         Quaternion rotation,
         builtin_interfaces.msg.Time rosTime,
+        long systemTimeUnixMs,
         LineOfSight.BoxState boxState,
         string sensorData,
         int busState,
         Vector3 velocity,
         float speedAmount)
     {
-        return $"{name}," +
-               $"{position.x},{position.y},{position.z}," +
-               $"{rotation.w},{rotation.x},{rotation.y},{rotation.z}," +
-               $"{rosTime.Sec},{rosTime.Nanosec}," +
-               $"{Time.frameCount}," +
-               $"{boxState}," +
-               $"{sensorData}," +
-               $"{busState}," +
-               $"{velocity.x},{velocity.y},{velocity.z},{speedAmount}\n";
+        // Numbers always use '.' as decimal separator, whatever the system locale.
+        return FormattableString.Invariant($"{entityId},{name},{position.x},{position.y},{position.z},{rotation.w},{rotation.x},{rotation.y},{rotation.z},{rosTime.Sec},{rosTime.Nanosec},{systemTimeUnixMs},{Time.frameCount},{boxState},{sensorData},{busState},{velocity.x},{velocity.y},{velocity.z},{speedAmount}\n");
     }
     
     #endregion
@@ -357,18 +367,21 @@ public class LogArea : MonoBehaviour
     
     private IEnumerator InitializeCsvFiles()
     {
-        const string CsvHeader = "Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation," +
-                                 "Time_sec,Time_nano,Frame,Box_State,Sensor Names,Index," +
-                                 "X Speed,Y Speed,Z Speed,Speed Amount\n";
+        const string CarsCsvHeader = "Car ID,Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation," +
+                                     "Time_sec,Time_nano,SystemTimeMs,Frame,Box_State,Sensor Names,Index," +
+                                     "X Speed,Y Speed,Z Speed,Speed Amount\n";
+        const string HumansCsvHeader = "Human ID,Name,X,Y,Z,W rotation,X rotation,Y rotation,Z rotation," +
+                                       "Time_sec,Time_nano,SystemTimeMs,Frame,Box_State,Sensor Names,Index," +
+                                       "X Speed,Y Speed,Z Speed,Speed Amount\n";
 
-        if (checkCars && !string.IsNullOrEmpty(logPathCars))
+        if (checkCars && !string.IsNullOrEmpty(_runLogPathCars))
         {
-            EnsureFileExistsWithHeader(logPathCars, CsvHeader);
+            EnsureFileExistsWithHeader(_runLogPathCars, CarsCsvHeader);
         }
 
-        if (checkHumans && !string.IsNullOrEmpty(logPathHumans))
+        if (checkHumans && !string.IsNullOrEmpty(_runLogPathHumans))
         {
-            EnsureFileExistsWithHeader(logPathHumans, CsvHeader);
+            EnsureFileExistsWithHeader(_runLogPathHumans, HumansCsvHeader);
         }
 
         yield return null;
@@ -407,6 +420,42 @@ public class LogArea : MonoBehaviour
     #endregion
 
     #region Utility Methods
+    private string BuildRunFilePath(string basePath)
+    {
+        if (string.IsNullOrEmpty(basePath))
+            return string.Empty;
+
+        string directory = Path.GetDirectoryName(basePath);
+        string name = Path.GetFileNameWithoutExtension(basePath);
+        string ext = Path.GetExtension(basePath);
+        if (string.IsNullOrEmpty(ext))
+            ext = ".csv";
+        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string runName = $"{name}_{timestamp}{ext}";
+        if (string.IsNullOrEmpty(directory))
+            return runName;
+        return Path.Combine(directory, runName);
+    }
+
+    private string GetEntityId(Transform transform)
+    {
+        NPCVehicle npcVehicle = transform.GetComponent<NPCVehicle>();
+        if (npcVehicle == null)
+        {
+            if (transform.GetComponent<NPCPedestrian>() == null && transform.GetComponent<WaypointFollower>() == null)
+                return string.Empty;
+
+            var humanId = transform.GetComponent<ScenarioHumanId>();
+            if (humanId == null)
+            {
+                humanId = transform.gameObject.AddComponent<ScenarioHumanId>();
+                humanId.AssignNewId();
+            }
+            return humanId.HumanId;
+        }
+
+        return npcVehicle.VehicleID.ToString();
+    }
     
     private IEnumerator WaitForNFrames(int frameCount)
     {
