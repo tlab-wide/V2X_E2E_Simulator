@@ -1,5 +1,5 @@
 # RSU pseudo sensors (MockSensor) of the Kashiwa scene, shown by the web viewer (tools/web-viewer).
-# Extracted from Assets/V2X/Scenes/V2X_E2E_Simulator_v3.1.0.unity; edit by hand if sensors are moved.
+# Extracted from Assets/V2X/Scenes/V2X_E2E_Simulator_v3.1.1.unity; edit by hand if sensors are moved.
 #
 # position      WGS84 lat/lon; z_m = height in the map frame (MGRS local, metres)
 # heading_deg   direction the sensor looks, clockwise from north; pitch_deg > 0 looks up
@@ -26,7 +26,7 @@ sensors:
       - /v2x/rsu12020003/sensor2/object_info
       - /v2x/object_info_2_noise
       - /v2x/object_info_2
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_Lidar 2'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Lidar 2'
 
   - name: 'RSU_Lidar 3'
     type: RSU_LIDAR
@@ -45,7 +45,7 @@ sensors:
       - /v2x/rsu12020003/sensor4/object_info
       - /v2x/object_info_2_noise
       - /v2x/object_info_2
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_Lidar 3'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Lidar 3'
 
   - name: 'RSU_Lidar 7'
     type: RSU_LIDAR
@@ -64,7 +64,7 @@ sensors:
       - /v2x/object_info_2
       - /v2x/rsu12020002/sensor3/object_info_noise
       - /v2x/rsu12020002/sensor3/object_info
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_Lidar 7'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Lidar 7'
 
   - name: 'RSU_Lidar 9'
     type: RSU_LIDAR
@@ -83,7 +83,7 @@ sensors:
       - /v2x/rsu12020002/sensor5/object_info
       - /v2x/object_info_2_noise
       - /v2x/object_info_2
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_Lidar 9'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Lidar 9'
 
   - name: 'RSU_camera 2'
     type: RSU_CAMERA
@@ -102,7 +102,7 @@ sensors:
       - /v2x/rsu12020003/sensor1/object_info
       - /v2x/object_info_2_noise
       - /v2x/object_info_2
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_camera 2'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 2'
 
   - name: 'RSU_camera 3'
     type: RSU_CAMERA
@@ -121,7 +121,7 @@ sensors:
       - /v2x/rsu12020003/sensor3/object_info
       - /v2x/object_info_2_noise
       - /v2x/object_info_2
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_camera 3'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 3'
 
   - name: 'RSU_camera 5'
     type: RSU_CAMERA
@@ -140,7 +140,7 @@ sensors:
       - /v2x/object_info_2
       - /v2x/rsu12020002/sensor1/object_info_noise
       - /v2x/rsu12020002/sensor1/object_info
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_camera 6'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 6'
 
   - name: 'RSU_camera 7'
     type: RSU_CAMERA
@@ -159,7 +159,7 @@ sensors:
       - /v2x/rsu12020002/sensor2/object_info
       - /v2x/object_info_2_noise
       - /v2x/object_info_2
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_camera 7'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 7'
 
   - name: 'RSU_camera 8'
     type: RSU_CAMERA
@@ -178,7 +178,7 @@ sensors:
       - /v2x/object_info_2
       - /v2x/rsu12020003/sensor5/object_info_noise
       - /v2x/rsu12020003/sensor5/object_info
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_camera 8'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 8'
 
   - name: 'RSU_camera 9'
     type: RSU_CAMERA
@@ -197,7 +197,7 @@ sensors:
       - /v2x/rsu12020002/sensor4/object_info
       - /v2x/object_info_2_noise
       - /v2x/object_info_2
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_camera 9'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 9'
 
   - name: 'RSU_cam_cross1_c1'
     type: RSU_CAMERA
@@ -212,7 +212,7 @@ sensors:
     v_fov_deg: 150.0
     range_m: 150.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#1/RSU_camera(1)_1'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken/RSU_camera(1)_1'
 
   - name: 'RSU_cam_cross1_x2'
     type: RSU_CAMERA
@@ -227,7 +227,7 @@ sensors:
     v_fov_deg: 150.0
     range_m: 150.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#1/RSU_camera(1)_2'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken/RSU_camera(1)_2'
 
   - name: 'RSU_cross1_s1'
     type: RSU_LIDAR
@@ -242,7 +242,7 @@ sensors:
     v_fov_deg: 45.0
     range_m: 150.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#1/RSU_Lidar'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken/RSU_Lidar'
 
   - name: 'RSU_Lidar 1'
     type: RSU_LIDAR
@@ -257,7 +257,7 @@ sensors:
     v_fov_deg: 11.0
     range_m: 60.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#1 (Ganken) Cool4 setup/RSU1'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU1'
 
   - name: 'RSU_Lidar 2'
     type: RSU_LIDAR
@@ -272,7 +272,7 @@ sensors:
     v_fov_deg: 11.0
     range_m: 60.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#1 (Ganken) Cool4 setup/RSU2'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU2'
 
   - name: 'RSU_Lidar 3'
     type: RSU_LIDAR
@@ -287,7 +287,7 @@ sensors:
     v_fov_deg: 11.0
     range_m: 60.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#1 (Ganken) Cool4 setup/RSU3'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU3'
 
   - name: 'RSU_Lidar 4'
     type: RSU_LIDAR
@@ -302,7 +302,7 @@ sensors:
     v_fov_deg: 11.0
     range_m: 60.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#1 (Ganken) Cool4 setup/RSU4'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/RSU4'
 
   - name: 'RSU_cam_cross2_c1'
     type: RSU_CAMERA
@@ -317,7 +317,7 @@ sensors:
     v_fov_deg: 45.0
     range_m: 40.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2/RSU_camera (2) _1'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken/RSU_camera (2) _1'
 
   - name: 'RSU_cam_cross2_c2'
     type: RSU_CAMERA
@@ -332,7 +332,7 @@ sensors:
     v_fov_deg: 45.0
     range_m: 40.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2/RSU_camera (2) _ 2'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken/RSU_camera (2) _ 2'
 
   - name: 'RSU_Lidar 9'
     type: RSU_CAMERA
@@ -347,7 +347,7 @@ sensors:
     v_fov_deg: 90.0
     range_m: 259.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_Ground_Truth (2)'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Ground_Truth (2)'
 
   - name: 'RSU_Lidar 9'
     type: RSU_CAMERA
@@ -362,7 +362,7 @@ sensors:
     v_fov_deg: 90.0
     range_m: 259.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_Ground_Truth (1)'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Ground_Truth (1)'
 
   - name: 'RSU_Lidar 9'
     type: RSU_CAMERA
@@ -377,7 +377,7 @@ sensors:
     v_fov_deg: 90.0
     range_m: 259.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#2  (Kakeiken)  CooL4 setup/RSU_Ground_Truth'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Ground_Truth'
 
   - name: 'RSU_cross3_s3'
     type: RSU_LIDAR
@@ -392,7 +392,7 @@ sensors:
     v_fov_deg: 50.0
     range_m: 120.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#3/RSU_Lidar'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU3_Midblock/RSU_Lidar'
 
   - name: 'RSU_cam_cross4_c1'
     type: RSU_CAMERA
@@ -407,7 +407,7 @@ sensors:
     v_fov_deg: 70.0
     range_m: 15.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#4/RSU_camera (4) _ 1 _ 360'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_camera (4) _ 1 _ 360'
 
   - name: 'RSU_cam_cross4_c2'
     type: RSU_CAMERA
@@ -422,7 +422,7 @@ sensors:
     v_fov_deg: 70.0
     range_m: 15.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#4/RSU_camera (4) _2 _ 360'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_camera (4) _2 _ 360'
 
   - name: 'RSU_cam_cross4_c3'
     type: RSU_CAMERA
@@ -437,7 +437,7 @@ sensors:
     v_fov_deg: 70.0
     range_m: 50.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#4/RSU_camera (4) _ 4_camera'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_camera (4) _ 4_camera'
 
   - name: 'RSU_cam_cross4_c4'
     type: RSU_CAMERA
@@ -452,7 +452,7 @@ sensors:
     v_fov_deg: 70.0
     range_m: 50.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#4/RSU_camera (4)'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_camera (4)'
 
   - name: 'RSU_cross4_s1'
     type: RSU_LIDAR
@@ -467,4 +467,4 @@ sensors:
     v_fov_deg: 180.0
     range_m: 121.0
     topics: []
-    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/int#4/RSU_sensor (4) _ 3 Lidar'
+    scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU4_Wakashiba/RSU_sensor (4) _ 3 Lidar'

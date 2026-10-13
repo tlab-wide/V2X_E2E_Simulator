@@ -12,7 +12,7 @@
 intersections:
   - name: 東大前 (UTokyo)
     crp_id: 1            # 0x00000001
-    unity_intersection: 'crossroad 14'
+    unity_intersection: 'Todaimae'
     center: {lat: 35.900061, lon: 139.937603}
     approaches:
       - id: 1                  # 方路1
@@ -59,7 +59,7 @@ intersections:
 
   - name: がん研 (Ganken)
     crp_id: 790529            # 0x000c1001
-    unity_intersection: 'crossroad1'
+    unity_intersection: 'Ganken'
     center: {lat: 35.900736, lon: 139.938975}
     approaches:
       - id: 1                  # 方路1
@@ -109,7 +109,7 @@ intersections:
 
   - name: 科警研 (Kakeiken)
     crp_id: 798721            # 0x000c3001
-    unity_intersection: 'crossroad2'
+    unity_intersection: 'Kakeiken'
     center: {lat: 35.896047, lon: 139.94182}
     approaches:
       - id: 1                  # 方路1
@@ -159,7 +159,7 @@ intersections:
 
   - name: 若柴 (Wakashiba)
     crp_id: 2            # 0x00000002
-    unity_intersection: 'crossroad3'
+    unity_intersection: 'Wakashiba'
     center: {lat: 35.897917, lon: 139.949477}
     approaches:
       - id: 1                  # 方路1
@@ -226,7 +226,7 @@ intersections:
 
   - name: 駅前 (Station)
     crp_id: 794625            # 0x000c2001
-    unity_intersection: 'crossroad4'
+    unity_intersection: 'Ekimae'
     center: {lat: 35.894453, lon: 139.949836}
     approaches:
       - id: 1                  # 方路1

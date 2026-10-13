@@ -11,7 +11,7 @@ All five signalised intersections on the Kashiwa-no-ha bus route are published *
 ## How it works
 
 ```text
- TrafficIntersection (one per crossroad, in the Kashiwa environment prefab)
+ TrafficIntersection (one per intersection, in the Kashiwa environment prefab)
  │  lightingSequences: [ {intervalSec, group → bulbs}, ... ]  (looped)
  │  remembers: current sequence index, the time it started, current bulbs of every group
  │
@@ -96,7 +96,7 @@ Bit field of `DE_青矢信号表示方向`: bit 6 left, bit 4 straight, bit 2 ri
 4. drops the last entry if it shows the current light again, because the look-ahead window cuts it short. It caps the list at 12 entries (spec maximum).
 5. if the light never changes during the cycle, publishes a single entry with `min/max_time_to_change = 65535` (UNKNOWN) and `count_down_stop_flag = ON`.
 
-**Worked example.** がん研 (crossroad1), 方路1 (group 0), 10 s after the cycle starts, with the environment prefab's sequence (the Kashiwa scene overrides it, so live values differ): G 50 s → Y 3 s → R (7+3+3+30+3+3 s) → G …
+**Worked example.** がん研 (`Ganken`), 方路1 (group 0), 10 s after the cycle starts, with the environment prefab's sequence (the Kashiwa scene overrides it, so live values differ): G 50 s → Y 3 s → R (7+3+3+30+3+3 s) → G …
 
 | `signal_light_info_list` | `main_light` | `min/max_time_to_change` | Meaning |
 |:--|:--|:--|:--|
@@ -124,7 +124,7 @@ The IDs below follow *東大_柏の葉実験環境について_信号情報に�
 
 Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/intersectionsFixed/`) and the lighting-sequence group the state comes from. Pedestrian groups follow the vehicle phase they run with: a crosswalk is green together with the traffic that runs parallel to it.
 
-### 東大前 (UTokyo) — CRP `0x00000001` (1) — `crossroad 14`
+### 東大前 (UTokyo) — CRP `0x00000001` (1) — `Todaimae`
 
 | Signal group | Approach | Group | Signal IDs (hex) | Signal IDs (dec) | Source |
 |:--|:--|:--|:--|:--|:--|
@@ -134,7 +134,7 @@ Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/interse
 | crossing 方路3 | pedestrian | 10 | 0x30 | 48 | spec |
 | crossing 方路1, 2 | pedestrian | 11 | 0x10 0x20 | 16 32 | spec |
 
-### がん研 (Ganken) — CRP `0x000c1001` (790529) — `crossroad1` / RSU1
+### がん研 (Ganken) — CRP `0x000c1001` (790529) — `Ganken` / RSU1
 
 | Signal group | Approach | Group | Signal IDs (hex) | Signal IDs (dec) | Source |
 |:--|:--|:--|:--|:--|:--|
@@ -144,7 +144,7 @@ Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/interse
 | 方路2, south (駅→東大 turns left) | vehicle | 1 | 0x22 0x23 0x21 | 34 35 33 | sheet |
 | 方路3, west (東大→駅 turns right) | vehicle | 2 | 0x33 0x31 0x32 | 51 49 50 | sheet |
 
-### 科警研 (Kakeiken) — CRP `0x000c3001` (798721) — `crossroad2` / RSU2
+### 科警研 (Kakeiken) — CRP `0x000c3001` (798721) — `Kakeiken` / RSU2
 
 | Signal group | Approach | Group | Signal IDs (hex) | Signal IDs (dec) | Source |
 |:--|:--|:--|:--|:--|:--|
@@ -154,7 +154,7 @@ Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/interse
 | 方路2, south | vehicle | 0 | 0x22 0x23 0x21 | 34 35 33 | sheet |
 | 方路3, north (東大→駅 turns left) | vehicle | 2 | 0x33 0x31 0x32 | 51 49 50 | sheet |
 
-### 若柴 (Wakashiba) — CRP `0x00000002` (2) — `crossroad3` / RSU4
+### 若柴 (Wakashiba) — CRP `0x00000002` (2) — `Wakashiba` / RSU4
 
 | Signal group | Approach | Group | Signal IDs (hex) | Signal IDs (dec) | Source |
 |:--|:--|:--|:--|:--|:--|
@@ -168,7 +168,7 @@ Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/interse
 !!! note "若柴 in the field"
     The sheet notes that the IDs a bus should look at here (方路3 and 方路4) were not output during the L2 bus runs, and that the L4 bus currently refers to the opposite side. The simulator always publishes all four approaches. To reproduce the field behaviour, delete the 方路3 / 方路4 entries in the Inspector.
 
-### 駅前 (Station) — CRP `0x000c2001` (794625) — `crossroad4` / RSU5
+### 駅前 (Station) — CRP `0x000c2001` (794625) — `Ekimae` / RSU5
 
 | Signal group | Approach | Group | Signal IDs (hex) | Signal IDs (dec) | Source |
 |:--|:--|:--|:--|:--|:--|
@@ -178,13 +178,13 @@ Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/interse
 | 方路2, south | vehicle | 0 | 0x22 0x23 0x21 | 34 35 33 | sheet |
 | 方路3, north (東大→駅 turns left) | vehicle | 0 | 0x33 0x31 0x32 | 51 49 50 | sheet |
 
-In the Kashiwa scene the south lights (`TrafficLights_C`) of `crossroad4` are moved into group 0 (together with the north lights) and group 2 is never lit, so 方路2 reads group 0.
+In the Kashiwa scene the south lights (`Ekimae_V_0x21-0x23_1`, `_2`) of `Ekimae` are moved into group 0 (together with the north lights) and group 2 is never lit, so 方路2 reads group 0.
 
 ### How the intersections were matched
 
-The Unity crossroads were matched to the sheet in two steps:
+The Unity intersections were matched to the sheet in two steps (before v3.1.1 their GameObjects were called `crossroad1` … `crossroad 14`; they now carry the names below):
 
-1. Each crossroad's traffic-light Lanelet2 IDs (`TrafficLightLaneletID`) were placed on the Kashiwa Lanelet2 map. From south-east to north-west: 駅前 `crossroad4` (35.8945, 139.9498) → 若柴 `crossroad3` (35.8979, 139.9495) → 科警研 `crossroad2` (35.8960, 139.9418) → がん研 `crossroad1` (35.9007, 139.9390) → 東大前 `crossroad 14` (35.9001, 139.9376).
+1. Each intersection's traffic-light Lanelet2 IDs (`TrafficLightLaneletID`) were placed on the Kashiwa Lanelet2 map. From south-east to north-west: 駅前 `Ekimae` (35.8945, 139.9498) → 若柴 `Wakashiba` (35.8979, 139.9495) → 科警研 `Kakeiken` (35.8960, 139.9418) → がん研 `Ganken` (35.9007, 139.9390) → 東大前 `Todaimae` (35.9001, 139.9376).
 2. The legs were numbered with the bus turns given in the sheet. For example, at 駅前 the 駅→東大 bus turns right from 方路1 towards 若柴 in the north, so 方路1 is the east leg.
 
 The resulting leg layout matches every diagram in the sheet. It also matches the pedestrian groupings the sheet gives for がん研, 科警研 and 駅前.
@@ -216,7 +216,7 @@ Each **Intersection** entry has:
 |:--|:--|
 | **Label** | Free text, e.g. `がん研 (Ganken)` |
 | **Traffic Intersection** | Optional direct reference. When empty, the intersection is looked up by **Traffic Intersection Name**. |
-| **Traffic Intersection Name** | GameObject name of the `TrafficIntersection`, e.g. `crossroad1` |
+| **Traffic Intersection Name** | GameObject name of the `TrafficIntersection`, e.g. `Ganken` |
 | **Crp Id** | CRP ID as an unsigned integer (`0x000c1001` = 790529) |
 | **Signals** | Signal groups. Each has a **Label**, **Is Pedestrian**, the lighting-sequence **Traffic Light Group** (0–3 vehicle, 10–13 pedestrian) and the **Signal Ids**. |
 
@@ -293,7 +293,7 @@ array:
 - **Fixed-time signals.** `min_time_to_change` always equals `max_time_to_change`. `event_count`, `state` and `specific_control_flags` are always `0`.
 - **Groups that never change.** A group that the lighting sequence sets only once per cycle (for example a pedestrian group) never changes; it is published with an UNKNOWN remaining time and `count_down_stop_flag = ON`.
 - **Scene overrides.** The Kashiwa scene overrides the lighting sequences and light groups of がん研, 科警研, 若柴 and 駅前 on top of the environment prefab, and 科警研's GameObject carries a second, disabled `TrafficIntersection`. The publisher uses the enabled component, and the approach-to-group table above matches the scene. If you change the light groups in the scene, update the publisher's signal groups too; a group that is never lit is logged once as a warning and not published.
-- **Lighting sequence of 東大前.** In `crossroad 14` (not overridden by the scene) one step sets group 0 twice (`g0=R g0=G g2=R`). Group 1 (東大前 方路3) therefore goes red → yellow without ever turning green. The DM output faithfully reports what the scene shows.
+- **Lighting sequence of 東大前.** In `Todaimae` (not overridden by the scene) one step sets group 0 twice (`g0=R g0=G g2=R`). Group 1 (東大前 方路3) therefore goes red → yellow without ever turning green. The DM output faithfully reports what the scene shows.
 - **Timestamp epoch.** The epoch is JST-based, consistent with object info (see [timestamp note](../index.md#timestamp-de_timestampits)).
 
 ## Relation to the other signal topics

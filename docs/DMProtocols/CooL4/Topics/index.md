@@ -1,6 +1,6 @@
 # CooL4 DM Topic List
 
-All CooL4 DM topics of the Kashiwa scene (`V2X_E2E_Simulator_v3.1.0.unity`), with the scene's default settings. "Delayed copies" are the `/DSRC` (100 ms, 5 % loss) and `/Cellular` (400 ms) variants described in [Delayed copies](../index.md#delayed-copies-network-model).
+All CooL4 DM topics of the Kashiwa scene (`V2X_E2E_Simulator_v3.1.1.unity`), with the scene's default settings. "Delayed copies" are the `/DSRC` (100 ms, 5 % loss) and `/Cellular` (400 ms) variants described in [Delayed copies](../index.md#delayed-copies-network-model).
 
 ## Signal information
 

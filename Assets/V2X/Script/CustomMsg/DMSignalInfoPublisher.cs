@@ -347,28 +347,28 @@ namespace AWSIM
         /// </summary>
         static List<Intersection> KashiwaDefaults() => new List<Intersection>
         {
-            new Intersection("東大前 (UTokyo)", "crossroad 14", 0x00000001,
+            new Intersection("東大前 (UTokyo)", "Todaimae", 0x00000001,
                 new SignalGroup("方路1 east (駅→東大 right turn)", false, 0, 0x11, 0x12, 0x13),
                 new SignalGroup("方路2 west", false, 2, 0x21, 0x22, 0x23),
                 new SignalGroup("方路3 north (東大→駅 left turn)", false, 1, 0x33, 0x31, 0x32),
                 new SignalGroup("Pedestrian crossing 方路3", true, 10, 0x30),
                 new SignalGroup("Pedestrian crossing 方路1, 2", true, 11, 0x10, 0x20)),
 
-            new Intersection("がん研 (Ganken)", "crossroad1", 0x000c1001,
+            new Intersection("がん研 (Ganken)", "Ganken", 0x000c1001,
                 new SignalGroup("Pedestrian crossing 方路1, 3", true, 11, 0x10, 0x30),
                 new SignalGroup("方路1 east", false, 0, 0x11, 0x12, 0x13),
                 new SignalGroup("Pedestrian crossing 方路2", true, 10, 0x20),
                 new SignalGroup("方路2 south (駅→東大 left turn)", false, 1, 0x22, 0x23, 0x21),
                 new SignalGroup("方路3 west (東大→駅 right turn)", false, 2, 0x33, 0x31, 0x32)),
 
-            new Intersection("科警研 (Kakeiken)", "crossroad2", 0x000c3001,
+            new Intersection("科警研 (Kakeiken)", "Kakeiken", 0x000c3001,
                 new SignalGroup("Pedestrian crossing 方路1", true, 10, 0x10),
                 new SignalGroup("方路1 east (駅→東大 right turn)", false, 1, 0x11, 0x12, 0x13),
                 new SignalGroup("Pedestrian crossing 方路2, 3", true, 11, 0x20, 0x30),
                 new SignalGroup("方路2 south", false, 0, 0x22, 0x23, 0x21),
                 new SignalGroup("方路3 north (東大→駅 left turn)", false, 2, 0x33, 0x31, 0x32)),
 
-            new Intersection("若柴 (Wakashiba)", "crossroad3", 0x00000002,
+            new Intersection("若柴 (Wakashiba)", "Wakashiba", 0x00000002,
                 new SignalGroup("方路1 north", false, 0, 0x11, 0x12, 0x13, 0x14),
                 new SignalGroup("方路2 east", false, 1, 0x22, 0x23, 0x24, 0x21),
                 new SignalGroup("方路3 south (駅→東大 left turn)", false, 0, 0x33, 0x34, 0x31, 0x32),
@@ -376,7 +376,7 @@ namespace AWSIM
                 new SignalGroup("Pedestrian crossing 方路2, 4", true, 10, 0x20, 0x40),
                 new SignalGroup("Pedestrian crossing 方路1, 3", true, 11, 0x10, 0x30)),
 
-            new Intersection("駅前 (Station)", "crossroad4", 0x000c2001,
+            new Intersection("駅前 (Station)", "Ekimae", 0x000c2001,
                 new SignalGroup("Pedestrian crossing 方路1", true, 10, 0x10),
                 new SignalGroup("方路1 east (駅→東大 right turn)", false, 1, 0x11, 0x12, 0x13),
                 new SignalGroup("Pedestrian crossing 方路2, 3", true, 11, 0x20, 0x30),

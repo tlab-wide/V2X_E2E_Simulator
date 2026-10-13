@@ -125,7 +125,7 @@ QoS: best effort, volatile, keep-last 1.
 
 ## Setups in the Kashiwa scene
 
-Under `RSUs/Publishers` in `V2X_E2E_Simulator_v3.1.0.unity`:
+Under `RSUs/Publishers` in `V2X_E2E_Simulator_v3.1.1.unity`:
 
 | Setup | Default | What it publishes |
 |:--|:--|:--|

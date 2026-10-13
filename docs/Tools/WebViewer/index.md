@@ -123,7 +123,7 @@ A human-readable file, one block per intersection and approach (方路):
 intersections:
   - name: 科警研 (Kakeiken)
     crp_id: 798721            # 0x000c3001
-    unity_intersection: 'crossroad2'
+    unity_intersection: 'Kakeiken'
     center: {lat: 35.896047, lon: 139.94182}
     approaches:
       - id: 2                  # 方路2
@@ -150,7 +150,7 @@ intersections:
 
 ## Sensors
 
-The RSU pseudo sensors (`MockSensor`) are listed in `config/sensors.yaml`, extracted from the Kashiwa scene (`V2X_E2E_Simulator_v3.1.0.unity`). Each sensor is drawn as an icon (C = camera, L = lidar) with its coverage sector. The icon gets a green halo when one of its object-info topics is live. Labels appear from zoom 18. Click a sensor for all its settings and the live status of its topics.
+The RSU pseudo sensors (`MockSensor`) are listed in `config/sensors.yaml`, extracted from the Kashiwa scene (`V2X_E2E_Simulator_v3.1.1.unity`). Each sensor is drawn as an icon (C = camera, L = lidar) with its coverage sector. The icon gets a green halo when one of its object-info topics is live. Labels appear from zoom 18. Click a sensor for all its settings and the live status of its topics.
 
 ```yaml
 sensors:

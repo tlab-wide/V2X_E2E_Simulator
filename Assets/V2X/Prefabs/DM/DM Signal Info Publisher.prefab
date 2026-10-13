@@ -44,3 +44,143 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cf9599f191746f8bf8cf55ddc50429a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hz: 10
+  topic: /signal_info
+  padSignalIdList: 1
+  intersections:
+  - label: "\u6771\u5927\u524D (UTokyo)"
+    trafficIntersection: {fileID: 0}
+    trafficIntersectionName: Todaimae
+    crpId: 1
+    signals:
+    - label: "\u65B9\u8DEF1 east (\u99C5\u2192\u6771\u5927 right turn)"
+      isPedestrian: 0
+      trafficLightGroup: 0
+      signalIds: 111213
+    - label: "\u65B9\u8DEF2 west"
+      isPedestrian: 0
+      trafficLightGroup: 2
+      signalIds: 212223
+    - label: "\u65B9\u8DEF3 north (\u6771\u5927\u2192\u99C5 left turn)"
+      isPedestrian: 0
+      trafficLightGroup: 1
+      signalIds: 333132
+    - label: "Pedestrian crossing \u65B9\u8DEF3"
+      isPedestrian: 1
+      trafficLightGroup: 10
+      signalIds: 30
+    - label: "Pedestrian crossing \u65B9\u8DEF1, 2"
+      isPedestrian: 1
+      trafficLightGroup: 11
+      signalIds: 1020
+  - label: "\u304C\u3093\u7814 (Ganken)"
+    trafficIntersection: {fileID: 0}
+    trafficIntersectionName: Ganken
+    crpId: 790529
+    signals:
+    - label: "Pedestrian crossing \u65B9\u8DEF1, 3"
+      isPedestrian: 1
+      trafficLightGroup: 11
+      signalIds: 1030
+    - label: "\u65B9\u8DEF1 east"
+      isPedestrian: 0
+      trafficLightGroup: 0
+      signalIds: 111213
+    - label: "Pedestrian crossing \u65B9\u8DEF2"
+      isPedestrian: 1
+      trafficLightGroup: 10
+      signalIds: 20
+    - label: "\u65B9\u8DEF2 south (\u99C5\u2192\u6771\u5927 left turn)"
+      isPedestrian: 0
+      trafficLightGroup: 1
+      signalIds: 222321
+    - label: "\u65B9\u8DEF3 west (\u6771\u5927\u2192\u99C5 right turn)"
+      isPedestrian: 0
+      trafficLightGroup: 2
+      signalIds: 333132
+  - label: "\u79D1\u8B66\u7814 (Kakeiken)"
+    trafficIntersection: {fileID: 0}
+    trafficIntersectionName: Kakeiken
+    crpId: 798721
+    signals:
+    - label: "Pedestrian crossing \u65B9\u8DEF1"
+      isPedestrian: 1
+      trafficLightGroup: 10
+      signalIds: 10
+    - label: "\u65B9\u8DEF1 east (\u99C5\u2192\u6771\u5927 right turn)"
+      isPedestrian: 0
+      trafficLightGroup: 1
+      signalIds: 111213
+    - label: "Pedestrian crossing \u65B9\u8DEF2, 3"
+      isPedestrian: 1
+      trafficLightGroup: 11
+      signalIds: 2030
+    - label: "\u65B9\u8DEF2 south"
+      isPedestrian: 0
+      trafficLightGroup: 0
+      signalIds: 222321
+    - label: "\u65B9\u8DEF3 north (\u6771\u5927\u2192\u99C5 left turn)"
+      isPedestrian: 0
+      trafficLightGroup: 2
+      signalIds: 333132
+  - label: "\u82E5\u67F4 (Wakashiba)"
+    trafficIntersection: {fileID: 0}
+    trafficIntersectionName: Wakashiba
+    crpId: 2
+    signals:
+    - label: "\u65B9\u8DEF1 north"
+      isPedestrian: 0
+      trafficLightGroup: 0
+      signalIds: 11121314
+    - label: "\u65B9\u8DEF2 east"
+      isPedestrian: 0
+      trafficLightGroup: 1
+      signalIds: 22232421
+    - label: "\u65B9\u8DEF3 south (\u99C5\u2192\u6771\u5927 left turn)"
+      isPedestrian: 0
+      trafficLightGroup: 0
+      signalIds: 33343132
+    - label: "\u65B9\u8DEF4 west (\u6771\u5927\u2192\u99C5 right turn)"
+      isPedestrian: 0
+      trafficLightGroup: 1
+      signalIds: 44414243
+    - label: "Pedestrian crossing \u65B9\u8DEF2, 4"
+      isPedestrian: 1
+      trafficLightGroup: 10
+      signalIds: 2040
+    - label: "Pedestrian crossing \u65B9\u8DEF1, 3"
+      isPedestrian: 1
+      trafficLightGroup: 11
+      signalIds: 1030
+  - label: "\u99C5\u524D (Station)"
+    trafficIntersection: {fileID: 0}
+    trafficIntersectionName: Ekimae
+    crpId: 794625
+    signals:
+    - label: "Pedestrian crossing \u65B9\u8DEF1"
+      isPedestrian: 1
+      trafficLightGroup: 10
+      signalIds: 10
+    - label: "\u65B9\u8DEF1 east (\u99C5\u2192\u6771\u5927 right turn)"
+      isPedestrian: 0
+      trafficLightGroup: 1
+      signalIds: 111213
+    - label: "Pedestrian crossing \u65B9\u8DEF2, 3"
+      isPedestrian: 1
+      trafficLightGroup: 11
+      signalIds: 2030
+    - label: "\u65B9\u8DEF2 south"
+      isPedestrian: 0
+      trafficLightGroup: 0
+      signalIds: 222321
+    - label: "\u65B9\u8DEF3 north (\u6771\u5927\u2192\u99C5 left turn)"
+      isPedestrian: 0
+      trafficLightGroup: 0
+      signalIds: 333132
+  enableDelayedMessages: 1
+  messageDelaysConfigs: []
+  qosSettings:
+    ReliabilityPolicy: 1
+    DurabilityPolicy: 2
+    HistoryPolicy: 1
+    Depth: 1

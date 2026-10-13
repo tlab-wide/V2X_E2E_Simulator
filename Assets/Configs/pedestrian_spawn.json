@@ -129,7 +129,7 @@
                     "y": 72946.921875,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                    "trafficLightId": "Kakeiken_P_0x30_1"
                 },
                 {
                     "x": 4508.01904296875,
@@ -213,7 +213,7 @@
                     "y": 72947.7421875,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                    "trafficLightId": "Kakeiken_P_0x30_1"
                 },
                 {
                     "x": 4504.84375,
@@ -297,7 +297,7 @@
                     "y": 72946.1484375,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                    "trafficLightId": "Kakeiken_P_0x30_1"
                 },
                 {
                     "x": 4505.24853515625,
@@ -388,7 +388,7 @@
                     "y": 72953.4609375,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                    "trafficLightId": "Kakeiken_P_0x30_1"
                 },
                 {
                     "x": 4489.64892578125,
@@ -458,7 +458,7 @@
                     "y": 72954.53125,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                    "trafficLightId": "Kakeiken_P_0x30_1"
                 },
                 {
                     "x": 4490.73046875,
@@ -472,7 +472,7 @@
                     "y": 72943.4921875,
                     "z": 23.0,
                     "checkLight": false,
-                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                    "trafficLightId": "Kakeiken_P_0x30_1"
                 },
                 {
                     "x": 4488.49365234375,
@@ -542,7 +542,7 @@
                     "y": 72947.984375,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                    "trafficLightId": "Kakeiken_P_0x30_1"
                 },
                 {
                     "x": 4507.63818359375,
@@ -556,7 +556,7 @@
                     "y": 72951.6640625,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                    "trafficLightId": "Kakeiken_P_0x10_1"
                 },
                 {
                     "x": 4520.0029296875,
@@ -717,7 +717,7 @@
                     "y": 72955.53125,
                     "z": 23.0,
                     "checkLight": false,
-                    "trafficLightId": "TrafficLights_A_pedestrain-cross2"
+                    "trafficLightId": "Kakeiken_P_0x30_2"
                 },
                 {
                     "x": 4505.6708984375,
@@ -808,7 +808,7 @@
                     "y": 72952.34375,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                    "trafficLightId": "Kakeiken_P_0x10_1"
                 },
                 {
                     "x": 4520.2783203125,
@@ -871,7 +871,7 @@
                     "y": 72934.75,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                    "trafficLightId": "Kakeiken_P_0x10_1"
                 },
                 {
                     "x": 4513.9853515625,
@@ -955,7 +955,7 @@
                     "y": 72934.75,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                    "trafficLightId": "Kakeiken_P_0x10_1"
                 },
                 {
                     "x": 4514.80859375,
@@ -1053,7 +1053,7 @@
                     "y": 72950.5859375,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                    "trafficLightId": "Kakeiken_P_0x10_1"
                 },
                 {
                     "x": 4520.5400390625,
@@ -1123,7 +1123,7 @@
                     "y": 72934.75,
                     "z": 23.0,
                     "checkLight": true,
-                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                    "trafficLightId": "Kakeiken_P_0x10_1"
                 },
                 {
                     "x": 4514.80859375,
