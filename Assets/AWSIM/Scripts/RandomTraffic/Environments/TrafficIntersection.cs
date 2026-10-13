@@ -117,6 +117,21 @@ namespace AWSIM.TrafficSimulation
             [SerializeField] TrafficLight.BulbData[] bulbData;
         }
 
+        /// <summary>
+        /// One entry of a group timeline: the bulb data shown by the group and how long it is shown (sec).
+        /// </summary>
+        public struct GroupTimelineEntry
+        {
+            public TrafficLight.BulbData[] BulbData;
+            public float DurationSec;
+
+            public GroupTimelineEntry(TrafficLight.BulbData[] bulbData, float durationSec)
+            {
+                BulbData = bulbData;
+                DurationSec = durationSec;
+            }
+        }
+
         [SerializeField] LayerMask colliderMask;
         [SerializeField] TrafficLightGroup[] trafficLightGroups;
         [SerializeField] LightingSequence[] lightingSequences;
@@ -129,6 +144,11 @@ namespace AWSIM.TrafficSimulation
         Dictionary<Group, TrafficLightGroup> trafficLightGroupPairs;
         int triggerEnterCount = 0;
         BoxCollider boxCollider;
+
+        // Lighting sequence currently applied, the time (Time.time) it was applied and the bulb data of each group.
+        int currentSequenceIndex = -1;
+        float currentSequenceStartTime;
+        readonly Dictionary<Group, TrafficLight.BulbData[]> currentGroupBulbData = new Dictionary<Group, TrafficLight.BulbData[]>();
 
         // Start is called before the first frame update
         void Start()
@@ -191,7 +211,10 @@ namespace AWSIM.TrafficSimulation
                     var trafficLightGroup = trafficLightGroupPairs[groupCommand.Group];
                     trafficLightGroup.TurnOffAllLights();
                     trafficLightGroup.SetBulbData(groupCommand.BulbData);
+                    currentGroupBulbData[groupCommand.Group] = groupCommand.BulbData;
                 }
+                currentSequenceIndex = i;
+                currentSequenceStartTime = Time.time;
 
                 yield return new WaitForSeconds(lightingSequences[i].IntervalSec);
 
@@ -199,6 +222,37 @@ namespace AWSIM.TrafficSimulation
                 if (i == lightingSequences.Length)
                     i = 0;
             }
+        }
+
+        /// <summary>
+        /// Timeline of a traffic light group over the next lighting cycle, one entry per lighting sequence.
+        /// The first entry is the bulb data shown now and the time left in the current sequence.
+        /// Works for groups without traffic lights too (e.g. pedestrian groups that only exist in the sequences).
+        /// </summary>
+        /// <param name="group">Group number (0-3: vehicle groups, 10-13: pedestrian groups).</param>
+        /// <param name="timeline">Cleared and filled with the timeline.</param>
+        /// <returns>false if the sequences have not started yet or the group has not been lit yet.</returns>
+        public bool TryGetGroupTimeline(int group, List<GroupTimelineEntry> timeline)
+        {
+            timeline.Clear();
+            if (currentSequenceIndex < 0 || !currentGroupBulbData.TryGetValue((Group)group, out var bulbData))
+                return false;
+
+            var remainingSec = lightingSequences[currentSequenceIndex].IntervalSec - (Time.time - currentSequenceStartTime);
+            timeline.Add(new GroupTimelineEntry(bulbData, Mathf.Max(0f, remainingSec)));
+
+            for (int n = 1; n < lightingSequences.Length; n++)
+            {
+                var sequence = lightingSequences[(currentSequenceIndex + n) % lightingSequences.Length];
+                foreach (var groupCommand in sequence.GroupLightingOrders)
+                {
+                    // The last order of a group wins, same as in StartLightingSequences().
+                    if (groupCommand.Group == (Group)group)
+                        bulbData = groupCommand.BulbData;
+                }
+                timeline.Add(new GroupTimelineEntry(bulbData, sequence.IntervalSec));
+            }
+            return true;
         }
 
         static bool CompareLayer(LayerMask layerMask, int layer)

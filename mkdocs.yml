@@ -78,6 +78,14 @@ nav:
     - Autoware, Awsim and Our project : Introduction/AutowareAwsimAndV2X/index.md
     - CombinationWithAutoware: Introduction/CombinationWithAutoware/index.md
 
+  - DM Protocols:
+    - Overview: DMProtocols/index.md
+    - CooL4 DM Protocols:
+      - Overview: DMProtocols/CooL4/index.md
+      - Object Info: DMProtocols/CooL4/ObjectInfo/index.md
+      - Signal Info: DMProtocols/CooL4/SignalInfo/index.md
+      - Topic List: DMProtocols/CooL4/Topics/index.md
+
   - Project guide:
     # - Directory: ProjectGuide/Directory/index.md
     - Kashiwa Scenes: ProjectGuide/KashiwaScenes/index.md

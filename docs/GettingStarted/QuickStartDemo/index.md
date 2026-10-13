@@ -361,6 +361,15 @@ These topics publish the **ground truth** of **all objects** in the intersection
   - `/v2x/rsu3/traffic_signals`
   - `/v2x/rsu4/traffic_signals`
 
+### **7b. CooL4 DM Signal Information**
+Signal state with remaining time for the five intersections on the bus route, in the **CooL4 DM format** (`dm_signal_info_msgs/SignalInfoArray`). Published all the time by the **DM Signal Info Publisher** prefab.
+
+- **Published Topic:**  
+  - `/signal_info` (all intersections)
+  - `/v2x/todaimae/signal_info`, `/v2x/rsu1/signal_info`, `/v2x/rsu2/signal_info`, `/v2x/rsu4/signal_info`, `/v2x/rsu5/signal_info`
+
+See [DM Protocols → CooL4 → Signal Info](../../DMProtocols/CooL4/SignalInfo/index.md) for details.
+
 
 ### **8. All intersection Cool4 Setup(DM)**
 - **Published Topic:**  

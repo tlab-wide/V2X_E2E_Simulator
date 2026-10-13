@@ -1,0 +1,56 @@
+# DM Protocols
+
+The V2X E2E Simulator can publish what its roadside units (RSUs) see, and what its traffic signals show, in the **Dynamic Map (DM)** data formats. That lets it stand in for a real roadside infrastructure and feed a DM data-linkage platform, or any node that consumes DM messages, without building an adapter.
+
+This section explains those formats and how the simulator produces them.
+
+| Protocol family | What it covers | Pages |
+|:--|:--|:--|
+| **CooL4 DM** | The CooL4 data-linkage platform API (CooL4 データ連携 PF API 仕様, v0.8.1). Object information (物標情報) and signal information (信号情報) published as ROS 2 messages from the `dm_*_msgs` packages. | [Overview](CooL4/index.md), [Object Info](CooL4/ObjectInfo/index.md), [Signal Info](CooL4/SignalInfo/index.md), [Topic List](CooL4/Topics/index.md) |
+
+## How DM output fits into the simulator
+
+The simulator already publishes Autoware-compatible topics (`PredictedObjects`, `TrafficSignalArray`, …) and the project's own `v2x_msgs` (`V2XPerception`, `V2XSignals`). The DM topics are **published alongside them** from the same ground truth, so the same scene can drive Autoware, NetSim and a DM platform at once.
+
+```text
+                         ┌──────────────── Unity scene ────────────────┐
+  NPC vehicles,          │  Pseudo sensors ──► ObjectInfo ─────────────┼──► dm_object_info_msgs/ObjectInfoArray
+  pedestrians,           │  (MockSensor)                               │     /v2x/.../object_info[_noise]
+  cyclists               │                                             │
+                         │  TrafficIntersection ──► DMSignalInfo-      │
+  Traffic lights ───────►│  (lighting sequences)    Publisher ─────────┼──► dm_signal_info_msgs/SignalInfoArray
+                         │                                             │     /signal_info, /v2x/rsuN/signal_info
+                         │  (unchanged) PredictedObjects, V2XSignals, …┼──► Autoware / NetSim topics
+                         └─────────────────────────────────────────────┘
+```
+
+## Getting the message packages
+
+A subscriber needs the DM message definitions. They are published together with the other simulator messages:
+
+- **Repository:** [github.com/tlab-wide/v2x_e2e_msgs](https://github.com/tlab-wide/v2x_e2e_msgs)
+- **DM packages:** `dm_object_info_msgs`, `dm_signal_info_msgs`, `dm_freespace_info_msgs`, `dm_sensor_info_msgs`, `dm_debug_msgs` (under `src/dm_msgs/`)
+
+```console
+mkdir -p ~/v2x_ws/src && cd ~/v2x_ws/src
+git clone https://github.com/tlab-wide/v2x_e2e_msgs.git
+cd ~/v2x_ws
+source /opt/ros/humble/setup.bash
+colcon build
+source install/setup.bash
+```
+
+The simulator itself needs no build step. The C# bindings (`dm_*_msgs_assembly.dll` and their native libraries) are already in `Assets/Ros2ForUnity/Plugins/`.
+
+## Quick check
+
+With the simulator running, and from a terminal where the workspace above is sourced:
+
+```console
+ros2 topic list | grep -E "signal_info|object_info"
+ros2 topic echo /signal_info --once
+ros2 topic hz /signal_info
+```
+
+!!! note "ROS domain and DDS"
+    The DM topics use the same ROS 2 node as all other simulator topics, so the usual `ROS_DOMAIN_ID` / `RMW_IMPLEMENTATION` settings apply. See [Troubleshooting](../TroubleShooting/index.md) if no topics show up.
