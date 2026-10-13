@@ -13,15 +13,16 @@ using UnityEngine.Serialization;
 using Coordinate = CoordinateSharp.Coordinate;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
-using System.Collections;
 
 public class ObjectInfo : MonoBehaviour
 {
     [SerializeField] private List<DetectionSensor> sensors;
 
-    [SerializeField] private float Hz = 10;
+    [Tooltip("Also publish the objects seen by the sensors of these ObjectInfo components (one message for several RSUs). " +
+             "Each object keeps the RSU ID of the publisher whose sensor saw it.")]
+    [SerializeField] private List<ObjectInfo> sources = new List<ObjectInfo>();
 
-    [SerializeField] private bool isGroundTruth = false;
+    [SerializeField] private float Hz = 10;
 
     // [SerializeField] private ulong stationID = 24;
 
@@ -53,11 +54,24 @@ public class ObjectInfo : MonoBehaviour
     private NoiseSetting.Noise probabilityNoise;
 
 
-    // Dictionary to store UUIDs (16-byte array) and their associated integers
-    private Dictionary<string, int> uuidDictionary = new Dictionary<string, int>();
+    // Object numbers (bits 47-32 of the object ID), shared by every ObjectInfo so the same object has the same
+    // number on every topic. Assigned in order, so no two live objects share one (wraps after 65535 objects).
+    private static readonly Dictionary<string, ushort> objectNumbers = new Dictionary<string, ushort>();
+    private static ushort lastObjectNumber;
 
-    // Random number generator
-    private System.Random random = new System.Random();
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetObjectNumbers()
+    {
+        objectNumbers.Clear();
+        lastObjectNumber = 0;
+    }
+
+    // A sensor together with the RSU ID it reports under.
+    private struct Watcher
+    {
+        public DetectionSensor sensor;
+        public uint rsu;
+    }
 
     [SerializeField] private static string Z_utm = "54S";
 
@@ -185,35 +199,37 @@ public class ObjectInfo : MonoBehaviour
     // }
 
 
+    // Sensors of this component and of the source components, each with its RSU ID.
+    private List<Watcher> CollectWatchers()
+    {
+        var watchers = new List<Watcher>();
+        void Add(ObjectInfo publisher)
+        {
+            uint rsu = Convert.ToUInt32(publisher.rsuId, 16);
+            if (publisher.sensors == null) return;
+            foreach (var sensor in publisher.sensors)
+                if (sensor != null && !watchers.Exists(w => w.sensor == sensor && w.rsu == rsu))
+                    watchers.Add(new Watcher { sensor = sensor, rsu = rsu });
+        }
+        Add(this);
+        foreach (var source in sources)
+            if (source != null && source != this)
+                Add(source);
+        return watchers;
+    }
+
     private void CheckMockSensors()
     {
-        // Group sightings by unique instance ID and keep:
-        // - a representative Transform for the object
-        // - the list of sensors that saw it
-        var sightings = new Dictionary<Transform, List<DetectionSensor>>();
-
-        for (int i = 0; i < sensors.Count; i++)
+        // Every object once, with the sensors that saw it.
+        var sightings = new Dictionary<Transform, List<Watcher>>();
+        foreach (var watcher in CollectWatchers())
         {
-            var sensor = sensors[i];
-            List<Transform> seenObjects = sensor.GetSeenObjects();
-
-            for (int j = 0; j < seenObjects.Count; j++)
+            foreach (Transform t in watcher.sensor.GetSeenObjects())
             {
-                Transform t = seenObjects[j];
                 if (t == null) continue;
-
-                // Use the Transform itself as the key
-                if (!sightings.TryGetValue(t, out var watchers))
-                {
-                    watchers = new List<DetectionSensor>();
-                    sightings[t] = watchers;
-                }
-
-                // Ensure each sensor is recorded once for this object
-                if (!watchers.Contains(sensor))
-                {
-                    watchers.Add(sensor);
-                }
+                if (!sightings.TryGetValue(t, out var list))
+                    sightings[t] = list = new List<Watcher>();
+                list.Add(watcher);
             }
         }
 
@@ -224,11 +240,13 @@ public class ObjectInfo : MonoBehaviour
         foreach (var kvp in sightings)
         {
             Transform rep = kvp.Key;
-            List<DetectionSensor> watchers = kvp.Value;
             if (rep.tag.Equals("Ego"))
             {
                 continue; // it is the ego car
             }
+            // Fixed order (RSU ID, then sensor ID), so the object's id does not depend on which sensor saw it first.
+            List<Watcher> watchers = kvp.Value;
+            watchers.Sort((a, b) => a.rsu != b.rsu ? a.rsu.CompareTo(b.rsu) : a.sensor.GetSensorId().CompareTo(b.sensor.GetSensorId()));
             objectInfos.Add(HandlObjectInfo(rep, watchers, true));
             objectInfosGroundTruth.Add(HandlObjectInfo(rep, watchers, false));
         }
@@ -254,7 +272,7 @@ public class ObjectInfo : MonoBehaviour
     private float timer;
 
 
-    private dm_object_info_msgs.msg.ObjectInfo HandlObjectInfo(Transform seenObject, List<DetectionSensor> sensors,
+    private dm_object_info_msgs.msg.ObjectInfo HandlObjectInfo(Transform seenObject, List<Watcher> watchers,
         bool byNoise = true)
     {
         
@@ -302,8 +320,7 @@ public class ObjectInfo : MonoBehaviour
 
         //Id setup
         UUID uuid = lineOfSight.GetUUID();
-        int generatedId = GetIntForUUID(uuid.Uuid);
-        objectInfo.Id.Value = (ulong)generatedId;
+        ushort objectNumber = GetObjectNumber(uuid.Uuid);
 
         //get rigidbody
         Rigidbody rigidbody = seenObject.GetComponent<Rigidbody>();
@@ -347,21 +364,19 @@ public class ObjectInfo : MonoBehaviour
 
 
         objectInfo.Time = new TimestampIts();
-        objectInfo.Time.Value = GetITSTimeInMilliseconds(sensors[0].GetLastUpdateTime());
+        objectInfo.Time.Value = GetITSTimeInMilliseconds(watchers[0].sensor.GetLastUpdateTime());
 
 
-        objectInfo.Information_source_list = new ObjectId[sensors.Count];
-        for (int i = 0; i < sensors.Count; i++)
+        objectInfo.Information_source_list = new ObjectId[watchers.Count];
+        for (int i = 0; i < watchers.Count; i++)
         {
             ObjectId sourceInfoObjectIdInstance = new ObjectId();
-            sourceInfoObjectIdInstance.Value = GenerateObjectId(rsuId, sensors[i].GetSensorId(), (ushort)generatedId);
+            sourceInfoObjectIdInstance.Value = GenerateObjectId(watchers[i].rsu, watchers[i].sensor.GetSensorId(), objectNumber);
             objectInfo.Information_source_list[i] = sourceInfoObjectIdInstance;
         }
 
-
-        ObjectId objectIdInstance = new ObjectId();
-        objectIdInstance.Value = objectInfo.Information_source_list[0].Value; // we would send first input 
-        objectInfo.Id.Value = objectIdInstance.Value;
+        // id = the ID given by the first sensor (lowest RSU ID, then lowest sensor ID)
+        objectInfo.Id.Value = objectInfo.Information_source_list[0].Value;
 
 
         // Debug.Log($"object info size : {objectInfo.Information_source_list.Length} , value is {objectInfo.Id.Value}");
@@ -532,98 +547,27 @@ public class ObjectInfo : MonoBehaviour
     }
 
 
-    // Function to convert byte array to a string (for use as a dictionary key)
-    private string ByteArrayToString(byte[] byteArray)
+    // Object number of the object with this UUID; a new object gets the next free number.
+    private static ushort GetObjectNumber(byte[] uuid)
     {
-        return BitConverter.ToString(byteArray).Replace("-", "").ToLower();
-    }
+        string uuidKey = BitConverter.ToString(uuid);
+        if (objectNumbers.TryGetValue(uuidKey, out var number))
+            return number;
 
-    // Function to retrieve an integer for a given UUID
-    public int GetIntForUUID(byte[] uuid)
-    {
-        // Convert the UUID byte array to a string to use as a dictionary key
-        string uuidKey = ByteArrayToString(uuid);
-
-        // Check if the UUID is already in the dictionary
-        if (uuidDictionary.ContainsKey(uuidKey))
-        {
-            // Return the existing integer
-            return uuidDictionary[uuidKey];
-        }
-        else
-        {
-            // Generate a random integer
-            int newInt = random.Next(1, int.MaxValue);
-
-            // Store the UUID and its associated integer in the dictionary
-            uuidDictionary.Add(uuidKey, newInt);
-
-            // Return the new integer
-            return newInt;
-        }
+        number = lastObjectNumber = (ushort)(lastObjectNumber % ushort.MaxValue + 1);   // 1 … 65535
+        objectNumbers[uuidKey] = number;
+        return number;
     }
 
 
-    public ulong GenerateObjectId(string rsuIdHex, byte sensorId, ushort detectedObjectId)
+    // Object ID of a roadside-recognised object (spec 3.3.3):
+    // bits 63-62 "10", 61-56 reserved, 55-48 sensor ID, 47-32 object number, 31-0 RSU ID.
+    public static ulong GenerateObjectId(uint rsuId, byte sensorId, ushort objectNumber)
     {
-        // Convert RSU ID from hex string to uint
-        uint rsuId = Convert.ToUInt32(rsuIdHex, 16);
-
-        // Ensure valid sensor ID range (0-255)
-        if (sensorId > 255)
-        {
-            Debug.LogError($"Sensor ID out of range: {sensorId}");
-            return 0;
-        }
-
-        // Object ID construction
-        ulong objectId = 0;
-
-        // Bits 63-62: "10" (Recognition by Cooperative Roadside Equipment)
-        objectId |= 1UL << 63; // bit 63 = 1, bit 62 = 0  →  "10"
-
-
-        // Bits 61-56: All "0" (Reserved, already zero-initialized)
-
-        // Bits 55-48: Sensor ID
-        objectId |= ((ulong)sensorId << 48);
-
-        // Bits 47-32: Detected Object ID
-        objectId |= ((ulong)detectedObjectId << 32);
-
-        // Bits 31-0: RSU ID (converted from hex string to uint)
+        ulong objectId = 1UL << 63;
+        objectId |= (ulong)sensorId << 48;
+        objectId |= (ulong)objectNumber << 32;
         objectId |= rsuId;
-
-        // Debugging Output in Unity Console
-        // Debug.Log($"Generated Object ID (Hex): {objectId:X16}");
-
-        // Convert ulong to a byte array (little-endian by default)
-        byte[] objectIdBytes = BitConverter.GetBytes(objectId);
-
-        // Convert byte array to BitArray
-        BitArray bitArray = new BitArray(objectIdBytes);
-
-        // Reverse the bit order
-        BitArray reversedBits = new BitArray(bitArray.Length);
-        for (int i = 0; i < bitArray.Length; i++)
-        {
-            reversedBits[bitArray.Length - 1 - i] = bitArray[i]; // Reverse the index
-        }
-
-        // Convert BitArray to a string for debugging
-        string binaryString = "";
-        for (int i = 0; i < reversedBits.Length; i++)
-        {
-            binaryString += reversedBits[i] ? "1" : "0";
-            if ((i + 1) % 8 == 0) binaryString += " "; // Space every 8 bits
-        }
-
-        // Debug.Log($"Original Bytes (Hex): {BitConverter.ToString(objectIdBytes).Replace("-", " ")}");
-        // Debug.Log($"BitArray (Binary): {binaryString}");
-        // Debug.Log($"rsuId: {rsuIdHex}, sensorId: {sensorId}, detectedObjectId: {detectedObjectId}");
-        // Debug.Log($"Final : {objectId:X16}");
-        // Debug.Log($"Final  {objectId}");
-
         return objectId;
     }
 

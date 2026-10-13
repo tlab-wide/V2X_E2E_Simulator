@@ -14,7 +14,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 19 m from the centre
     sensor_id: 2
-    rsu_ids: [0x1100, 0x12020003]
+    rsu_ids: [0x12020003]
     position: {lat: 35.8958773, lon: 139.9418131, z_m: 23.76}
     heading_deg: 334.8
     pitch_deg: -5.0
@@ -22,10 +22,10 @@ sensors:
     v_fov_deg: 38.6
     range_m: 150.0
     topics:
-      - /v2x/rsu12020003/sensor2/object_info_noise
       - /v2x/rsu12020003/sensor2/object_info
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
+      - /v2x/rsu12020003/sensor2/object_info_groundtruth
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Lidar 2'
 
   - name: 'RSU_Lidar 3'
@@ -33,7 +33,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 10 m from the centre
     sensor_id: 4
-    rsu_ids: [0x1100, 0x12020003]
+    rsu_ids: [0x12020003]
     position: {lat: 35.8959591, lon: 139.9417983, z_m: 23.72}
     heading_deg: 63.6
     pitch_deg: -5.0
@@ -41,10 +41,10 @@ sensors:
     v_fov_deg: 38.6
     range_m: 150.0
     topics:
-      - /v2x/rsu12020003/sensor4/object_info_noise
       - /v2x/rsu12020003/sensor4/object_info
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
+      - /v2x/rsu12020003/sensor4/object_info_groundtruth
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Lidar 3'
 
   - name: 'RSU_Lidar 7'
@@ -52,7 +52,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 42 m from the centre
     sensor_id: 3
-    rsu_ids: [0x1100, 0x12020002]
+    rsu_ids: [0x12020002]
     position: {lat: 35.8962885, lon: 139.9421774, z_m: 23.75}
     heading_deg: 242.7
     pitch_deg: -5.0
@@ -60,10 +60,10 @@ sensors:
     v_fov_deg: 38.6
     range_m: 150.0
     topics:
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
-      - /v2x/rsu12020002/sensor3/object_info_noise
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
       - /v2x/rsu12020002/sensor3/object_info
+      - /v2x/rsu12020002/sensor3/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Lidar 7'
 
   - name: 'RSU_Lidar 9'
@@ -71,7 +71,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 18 m from the centre
     sensor_id: 4
-    rsu_ids: [0x1100, 0x12020002]
+    rsu_ids: [0x12020002]
     position: {lat: 35.8960476, lon: 139.9420196, z_m: 23.85}
     heading_deg: 334.8
     pitch_deg: -5.0
@@ -79,10 +79,10 @@ sensors:
     v_fov_deg: 38.6
     range_m: 150.0
     topics:
-      - /v2x/rsu12020002/sensor5/object_info_noise
       - /v2x/rsu12020002/sensor5/object_info
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
+      - /v2x/rsu12020002/sensor5/object_info_groundtruth
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_Lidar 9'
 
   - name: 'RSU_camera 2'
@@ -90,7 +90,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 19 m from the centre
     sensor_id: 1
-    rsu_ids: [0x1100, 0x12020003]
+    rsu_ids: [0x12020003]
     position: {lat: 35.8958778, lon: 139.9418167, z_m: 23.79}
     heading_deg: 334.8
     pitch_deg: -35.0
@@ -98,10 +98,10 @@ sensors:
     v_fov_deg: 22.65
     range_m: 50.0
     topics:
-      - /v2x/rsu12020003/sensor1/object_info_noise
       - /v2x/rsu12020003/sensor1/object_info
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
+      - /v2x/rsu12020003/sensor1/object_info_groundtruth
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 2'
 
   - name: 'RSU_camera 3'
@@ -109,7 +109,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 10 m from the centre
     sensor_id: 3
-    rsu_ids: [0x1100, 0x12020003]
+    rsu_ids: [0x12020003]
     position: {lat: 35.8959549, lon: 139.9417997, z_m: 23.74}
     heading_deg: 65.3
     pitch_deg: -34.8
@@ -117,10 +117,10 @@ sensors:
     v_fov_deg: 22.65
     range_m: 50.0
     topics:
-      - /v2x/rsu12020003/sensor3/object_info_noise
       - /v2x/rsu12020003/sensor3/object_info
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
+      - /v2x/rsu12020003/sensor3/object_info_groundtruth
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 3'
 
   - name: 'RSU_camera 5'
@@ -128,7 +128,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 19 m from the centre
     sensor_id: 1
-    rsu_ids: [0x1100, 0x12020002]
+    rsu_ids: [0x12020002]
     position: {lat: 35.8961753, lon: 139.9419667, z_m: 23.71}
     heading_deg: 234.4
     pitch_deg: -35.0
@@ -136,10 +136,10 @@ sensors:
     v_fov_deg: 22.65
     range_m: 75.0
     topics:
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
-      - /v2x/rsu12020002/sensor1/object_info_noise
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
       - /v2x/rsu12020002/sensor1/object_info
+      - /v2x/rsu12020002/sensor1/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 6'
 
   - name: 'RSU_camera 7'
@@ -147,7 +147,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 42 m from the centre
     sensor_id: 2
-    rsu_ids: [0x1100, 0x12020002]
+    rsu_ids: [0x12020002]
     position: {lat: 35.8962875, lon: 139.9421801, z_m: 23.81}
     heading_deg: 235.9
     pitch_deg: -35.0
@@ -155,10 +155,10 @@ sensors:
     v_fov_deg: 22.65
     range_m: 50.0
     topics:
-      - /v2x/rsu12020002/sensor2/object_info_noise
       - /v2x/rsu12020002/sensor2/object_info
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
+      - /v2x/rsu12020002/sensor2/object_info_groundtruth
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 7'
 
   - name: 'RSU_camera 8'
@@ -166,7 +166,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 23 m from the centre
     sensor_id: 5
-    rsu_ids: [0x1100, 0x12020003]
+    rsu_ids: [0x12020003]
     position: {lat: 35.8960569, lon: 139.9420696, z_m: 23.57}
     heading_deg: 214.0
     pitch_deg: -34.9
@@ -174,10 +174,10 @@ sensors:
     v_fov_deg: 22.65
     range_m: 75.0
     topics:
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
-      - /v2x/rsu12020003/sensor5/object_info_noise
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
       - /v2x/rsu12020003/sensor5/object_info
+      - /v2x/rsu12020003/sensor5/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 8'
 
   - name: 'RSU_camera 9'
@@ -185,7 +185,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 18 m from the centre
     sensor_id: 5
-    rsu_ids: [0x1100, 0x12020002]
+    rsu_ids: [0x12020002]
     position: {lat: 35.8960458, lon: 139.9420172, z_m: 23.91}
     heading_deg: 334.8
     pitch_deg: -35.0
@@ -193,10 +193,10 @@ sensors:
     v_fov_deg: 22.65
     range_m: 50.0
     topics:
-      - /v2x/rsu12020002/sensor4/object_info_noise
       - /v2x/rsu12020002/sensor4/object_info
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
+      - /v2x/rsu12020002/sensor4/object_info_groundtruth
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
     scene_object: 'AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU2_Kakeiken_CooL4/RSU_camera 9'
 
   - name: 'RSU_cam_cross1_c1'

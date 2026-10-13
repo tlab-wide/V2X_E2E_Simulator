@@ -15,7 +15,7 @@ The simulator already publishes Autoware-compatible topics (`PredictedObjects`, 
 ```text
                          ┌──────────────── Unity scene ────────────────┐
   NPC vehicles,          │  Pseudo sensors ──► ObjectInfo ─────────────┼──► dm_object_info_msgs/ObjectInfoArray
-  pedestrians,           │  (MockSensor)                               │     /v2x/.../object_info[_noise]
+  pedestrians,           │  (MockSensor)                               │     /v2x/object_info[_groundtruth]
   cyclists               │                                             │
                          │  TrafficIntersection ──► DMSignalInfo-      │
   Traffic lights ───────►│  (lighting sequences)    Publisher ─────────┼──► dm_signal_info_msgs/SignalInfoArray

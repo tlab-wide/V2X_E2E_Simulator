@@ -44,8 +44,10 @@ The simulator publishes the CooL4 data-linkage formats ([`dm_*_msgs`](https://gi
 |:--|:--|:--|
 | `/signal_info` | `dm_signal_info_msgs/SignalInfoArray` | Signal state and remaining time of the five bus-route intersections, 10 Hz |
 | `/signal_info/DSRC`, `/signal_info/Cellular` | same | The same with DSRC (100 ms, 5 % loss) / Cellular (400 ms) network delay |
-| `/v2x/rsu…/sensor…/object_info[_noise]` | `dm_object_info_msgs/ObjectInfoArray` | Objects detected by each RSU sensor (ground truth / with noise) |
-| `/v2x/rsu…/sensor…/object_info_noise/DSRC`, `…/Cellular` | same | The noisy objects with network delay |
+| `/v2x/object_info` | `dm_object_info_msgs/ObjectInfoArray` | Objects detected by all RSU sensors, with sensor noise |
+| `/v2x/object_info/DSRC`, `/v2x/object_info/Cellular` | same | The same with DSRC / Cellular network delay |
+| `/v2x/object_info_groundtruth` | same | The same objects without noise |
+| `/v2x/rsu…/sensor…/object_info[_groundtruth]` | same | One sensor each (with noise / without noise), no network delay |
 
 Details: [DM Protocols](https://tlab-wide.github.io/V2X_E2E_Simulator/dev/DMProtocols/) · [Topic List](https://tlab-wide.github.io/V2X_E2E_Simulator/dev/DMProtocols/CooL4/Topics/)
 

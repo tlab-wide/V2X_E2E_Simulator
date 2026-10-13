@@ -56,7 +56,7 @@ When **every** topic is offline, the panel shows a single "Simulator not publish
 
 ### Topic tree
 
-Below the problems, topics are grouped by category: DM signal info, DM object info, traffic signals, Autoware objects, ego vehicle, control, clock and other. Within each category they form a tree that follows the topic names, for example `v2x › rsu12020002 › sensor1 › object_info_noise › DSRC`. Namespaces with a single child are merged (`awsim/ground_truth`).
+Below the problems, topics are grouped by category: DM signal info, DM object info, traffic signals, Autoware objects, ego vehicle, control, clock and other. Within each category they form a tree that follows the topic names, for example `v2x › object_info › DSRC`. Namespaces with a single child are merged (`awsim/ground_truth`).
 
 - **Branches** show how many of their topics are live (`3/20`) and badges for problems inside them (`1 no data`, `2 type missing`). Their checkbox ticks or unticks every drawable topic below them; it is part-filled when only some are ticked.
 - **Topics** show their status dot, rate or problem, and colour swatch. A topic with delayed copies (`/DSRC`, `/Cellular`) has a ▸ to show them.
@@ -159,7 +159,7 @@ sensors:
     enabled: true
     near: '科警研 (Kakeiken)'        # 19 m from the centre
     sensor_id: 1
-    rsu_ids: [0x1100, 0x12020002]
+    rsu_ids: [0x12020002]
     position: {lat: 35.8961753, lon: 139.9419667, z_m: 23.71}
     heading_deg: 234.4
     pitch_deg: -35.0
@@ -167,10 +167,10 @@ sensors:
     v_fov_deg: 22.65
     range_m: 75.0
     topics:
-      - /v2x/object_info_2_noise
-      - /v2x/object_info_2
-      - /v2x/rsu12020002/sensor1/object_info_noise
       - /v2x/rsu12020002/sensor1/object_info
+      - /v2x/rsu12020002/sensor1/object_info_groundtruth
+      - /v2x/object_info
+      - /v2x/object_info_groundtruth
 ```
 
 | Field | Meaning |

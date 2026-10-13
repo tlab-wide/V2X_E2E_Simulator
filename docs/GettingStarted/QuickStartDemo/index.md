@@ -268,87 +268,52 @@ The message type **`PredictedObjects`** comes from `autoware_auto_perception_msg
 ---
 
 ### **3. Cool4 DM Format Topics**
-These topics provide **the same detected objects in Cool4 DM format**.  
-(**Currently, only Intersection 1 and 2 have DM-compatible RSUs**).
-The message type **`ObjectInfoArray`** comes from `dm_object_info_msgs.msg`. This message is not compatible with **Autoware** and was created to work with  the **DM protocol**.
+These topics provide **the detected objects in CooL4 DM format** (`dm_object_info_msgs/ObjectInfoArray`). This message is not compatible with **Autoware**; it was created for the **DM protocol**.
+The sensors are at **Intersection #2 (Kakeiken)**, on two RSUs (`0x12020002`, `0x12020003`).
 
-
-
-| **Topic Name** | **Intersection** |
+| **Topic Name** | **Content** |
 |:--|:--|
-| `/v2x/object_info_1` | Ganken Intersection |
-| `/v2x/object_info_1_noise` | Ganken Intersection (with noise) |
-| `/v2x/object_info_2` | Kakeiken Intersection |
-| `/v2x/object_info_2_noise` | Kakeiken Intersection (with noise) |
+| `/v2x/object_info` | Objects seen by all RSU sensors, **with noise** |
+| `/v2x/object_info/DSRC` | The same with DSRC network delay and packet loss |
+| `/v2x/object_info/Cellular` | The same with cellular network delay |
+| `/v2x/object_info_groundtruth` | The same objects **without noise** |
 
 
-### **4. DM Format Topics for Intersection #2 in Kashiwa**
-For **Intersection #2 in Kashiwa**, detected objects from **each sensor** are also published in **DM format**.  
-The **rsu number** and **sensor number** help distinguish different sensors.  
-- `/object_info` → Detected objects **without noise**  
-- `/object_info_noise` → Detected objects **with noise**  
-- `/object_info_noise/Cellular` → Detected objects **with noise and delay based on network types**
+### **4. DM Format Topics per Sensor (Intersection #2 in Kashiwa)**
+Detected objects from **each sensor** are also published separately (for tracking research, no network delay).
+The **rsu number** and **sensor number** identify the sensor.
+- `/object_info` → Detected objects **with noise**
+- `/object_info_groundtruth` → Detected objects **without noise**
 
 #### **Published Topics:**
 ```plaintext
 /v2x/rsu12020002/sensor1/object_info
-/v2x/rsu12020002/sensor1/object_info_noise
-/v2x/rsu12020002/sensor1/object_info_noise/Cellular
-/v2x/rsu12020002/sensor1/object_info_noise/DSRC
+/v2x/rsu12020002/sensor1/object_info_groundtruth
 /v2x/rsu12020002/sensor2/object_info
-/v2x/rsu12020002/sensor2/object_info_noise
-/v2x/rsu12020002/sensor2/object_info_noise/Cellular
-/v2x/rsu12020002/sensor2/object_info_noise/DSRC
+/v2x/rsu12020002/sensor2/object_info_groundtruth
 /v2x/rsu12020002/sensor3/object_info
-/v2x/rsu12020002/sensor3/object_info_noise
-/v2x/rsu12020002/sensor3/object_info_noise/Cellular
-/v2x/rsu12020002/sensor3/object_info_noise/DSRC
+/v2x/rsu12020002/sensor3/object_info_groundtruth
 /v2x/rsu12020002/sensor4/object_info
-/v2x/rsu12020002/sensor4/object_info_noise
-/v2x/rsu12020002/sensor4/object_info_noise/Cellular
-/v2x/rsu12020002/sensor4/object_info_noise/DSRC
+/v2x/rsu12020002/sensor4/object_info_groundtruth
 /v2x/rsu12020002/sensor5/object_info
-/v2x/rsu12020002/sensor5/object_info_noise
-/v2x/rsu12020002/sensor5/object_info_noise/Cellular
-/v2x/rsu12020002/sensor5/object_info_noise/DSRC
+/v2x/rsu12020002/sensor5/object_info_groundtruth
 /v2x/rsu12020003/sensor1/object_info
-/v2x/rsu12020003/sensor1/object_info_noise
-/v2x/rsu12020003/sensor1/object_info_noise/Cellular
-/v2x/rsu12020003/sensor1/object_info_noise/DSRC
+/v2x/rsu12020003/sensor1/object_info_groundtruth
 /v2x/rsu12020003/sensor2/object_info
-/v2x/rsu12020003/sensor2/object_info_noise
-/v2x/rsu12020003/sensor2/object_info_noise/Cellular
-/v2x/rsu12020003/sensor2/object_info_noise/DSRC
+/v2x/rsu12020003/sensor2/object_info_groundtruth
 /v2x/rsu12020003/sensor3/object_info
-/v2x/rsu12020003/sensor3/object_info_noise
-/v2x/rsu12020003/sensor3/object_info_noise/Cellular
-/v2x/rsu12020003/sensor3/object_info_noise/DSRC
+/v2x/rsu12020003/sensor3/object_info_groundtruth
 /v2x/rsu12020003/sensor4/object_info
-/v2x/rsu12020003/sensor4/object_info_noise
-/v2x/rsu12020003/sensor4/object_info_noise/Cellular
-/v2x/rsu12020003/sensor4/object_info_noise/DSRC
+/v2x/rsu12020003/sensor4/object_info_groundtruth
 /v2x/rsu12020003/sensor5/object_info
-/v2x/rsu12020003/sensor5/object_info_noise
-/v2x/rsu12020003/sensor5/object_info_noise/Cellular
-/v2x/rsu12020003/sensor5/object_info_noise/DSRC
-
+/v2x/rsu12020003/sensor5/object_info_groundtruth
 ```
 
-
-
----
-
-### **5. Ground Truth Topics**
-These topics publish the **ground truth** of **all objects** in the intersection.
-
-- `/v2x/rsu_all/object_info_groundtruth`
-- `/v2x/rsu_all/object_info_groundtruth_noise`
-- `/v2x/rsu_all/object_info_groundtruth_noise/Cellular`
-- `/v2x/rsu_all/object_info_groundtruth_noise/DSRC`
+See [DM Protocols → CooL4 → Topic List](../../DMProtocols/CooL4/Topics/index.md) for details.
 
 ---
 
-### **6. V2X Traffic Signal Information for Autoware**
+### **5. V2X Traffic Signal Information for Autoware**
 - **Published Topic:**  
   - `/v2x/traffic_signals` 
   - `/v2x/rsu1/traffic_signals`
@@ -356,7 +321,7 @@ These topics publish the **ground truth** of **all objects** in the intersection
   - `/v2x/rsu3/traffic_signals`
   - `/v2x/rsu4/traffic_signals`
 
-### **6b. CooL4 DM Signal Information**
+### **6. CooL4 DM Signal Information**
 Signal state with remaining time for the five intersections on the bus route, in the **CooL4 DM format** (`dm_signal_info_msgs/SignalInfoArray`). Published all the time by the **DM Signal Info Publisher** prefab.
 
 - **Published Topic:**  
@@ -365,29 +330,6 @@ Signal state with remaining time for the five intersections on the bus route, in
 
 See [DM Protocols → CooL4 → Signal Info](../../DMProtocols/CooL4/SignalInfo/index.md) for details.
 
-
-### **7. All intersection Cool4 Setup(DM)**
-- **Published Topic:**  
-  - `/v2x/rsu1/object_info`
-  - `/v2x/rsu1/object_info_noise`
-  - `/v2x/rsu1/object_info_noise/Cellular`
-  - `/v2x/rsu1/object_info_noise/DSRC`
-  - `/v2x/rsu2_1/object_info`
-  - `/v2x/rsu2_1/object_info_noise`
-  - `/v2x/rsu2_1/object_info_noise/Cellular`
-  - `/v2x/rsu2_1/object_info_noise/DSRC`
-  - `/v2x/rsu2_2/object_info`
-  - `/v2x/rsu2_2/object_info_noise`
-  - `/v2x/rsu2_2/object_info_noise/Cellular`
-  - `/v2x/rsu2_2/object_info_noise/DSRC`
-  - `/v2x/rsu3/object_info`
-  - `/v2x/rsu3/object_info_noise`
-  - `/v2x/rsu3/object_info_noise/Cellular`
-  - `/v2x/rsu3/object_info_noise/DSRC`
-  - `/v2x/rsu4/object_info`
-  - `/v2x/rsu4/object_info_noise`
-  - `/v2x/rsu4/object_info_noise/Cellular`
-  - `/v2x/rsu4/object_info_noise/DSRC`
 
 ## Scenarios
 

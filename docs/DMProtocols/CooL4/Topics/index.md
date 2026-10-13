@@ -16,13 +16,22 @@ The delayed copies use the general profiles of the `NetworkSimulator` (see [Dela
 
 ## Object information
 
-Type: `dm_object_info_msgs/msg/ObjectInfoArray`. Publisher: `ObjectInfo`. QoS: best effort, volatile, keep-last 1. The actual rate is twice the **Hz** field ([why](../ObjectInfo/index.md#publishing-rate)). Details: [Object Info](../ObjectInfo/index.md).
+Type: `dm_object_info_msgs/msg/ObjectInfoArray`. Publisher: `ObjectInfo` (`RSUs/Publishers/CooL4 Object Info (DM)`). QoS: best effort, volatile, keep-last 1. The actual rate is twice the **Hz** field, about 20 Hz ([why](../ObjectInfo/index.md#publishing-rate)). Details: [Object Info](../ObjectInfo/index.md).
 
-Every source publishes a pair: `…/object_info` (ground truth) and `…/object_info_noise` (with sensor noise). Delayed copies are made from the noisy topic, for example `…/object_info_noise/DSRC`.
+All sensors are at 科警研 (Kakeiken), on two RSUs: `0x12020002` and `0x12020003`. "With noise" means position, rotation, size and existence noise; the ground truth has none.
 
-### Active by default
+### All RSUs in one message
 
-**Int#2 CooL4 Setup for Data Fusion (DM)**: Intersection #2 (科警研), one source per sensor, about 20 Hz.
+| Topic | Content |
+|:--|:--|
+| `/v2x/object_info` | Every object seen by any of the 10 sensors, with noise. Each object lists the sensors (RSU ID + sensor ID) that saw it. |
+| `/v2x/object_info/DSRC` | Same, delayed 100 ms with 5 % packet loss |
+| `/v2x/object_info/Cellular` | Same, delayed 400 ms |
+| `/v2x/object_info_groundtruth` | The same objects without noise |
+
+### One topic pair per sensor (tracking research)
+
+No delayed copies.
 
 | Topic prefix | RSU ID | Sensor |
 |:--|:--|:--|
@@ -37,26 +46,9 @@ Every source publishes a pair: `…/object_info` (ground truth) and `…/object_
 | `/v2x/rsu12020003/sensor4/` | 0x12020003 | Pole 3 LiDAR |
 | `/v2x/rsu12020003/sensor5/` | 0x12020003 | Pole 8 camera |
 
-Each prefix carries `object_info`, `object_info_noise`, `object_info_noise/DSRC` and `object_info_noise/Cellular`.
+Each prefix carries `object_info` (with noise) and `object_info_groundtruth` (without noise).
 
-| Topic | Content |
-|:--|:--|
-| `/v2x/rsu_all/object_info_groundtruth` | Ground truth of the whole sensor set of Intersection #2 |
-| `/v2x/rsu_all/object_info_groundtruth_noise` | Same, with noise |
-| `/v2x/object_info_2`, `/v2x/object_info_2_noise` | RSU2 (Intersection #2) merged over all its sensors, about 2 Hz |
-
-### Inactive by default
-
-Enable the GameObject to publish these.
-
-| Setup | Topics | RSU ID |
-|:--|:--|:--|
-| BasicSetup / RSU1 | `/v2x/object_info_1`, `/v2x/object_info_1_noise` | 0x1100 |
-| All Intersection CooL4 Setup (DM) / Intersection 1 | `/v2x/rsu1/object_info[_noise]` | 0x12020001 |
-| All Intersection CooL4 Setup (DM) / Intersection 2-1 | `/v2x/rsu2_1/object_info[_noise]` | 0x12020002 |
-| All Intersection CooL4 Setup (DM) / Intersection 2-2 | `/v2x/rsu2_2/object_info[_noise]` | 0x12020003 |
-| All Intersection CooL4 Setup (DM) / Intersection 3 | `/v2x/rsu3/object_info[_noise]` | 0x12020004 |
-| All Intersection CooL4 Setup (DM) / Intersection 4 | `/v2x/rsu4/object_info[_noise]` | 0x12020005 |
+Object numbers are shared by all these topics: the same object has the same object number everywhere ([Object ID layout](../ObjectInfo/index.md#object-id-layout)).
 
 ## Inspecting the topics
 
@@ -68,5 +60,5 @@ ros2 topic list -t | grep -E "dm_(object|signal)_info_msgs"
 ros2 topic echo /signal_info --once
 
 # rate check
-ros2 topic hz /v2x/rsu12020002/sensor1/object_info_noise
+ros2 topic hz /v2x/object_info
 ```

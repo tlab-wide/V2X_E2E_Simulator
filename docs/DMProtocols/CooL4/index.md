@@ -69,7 +69,7 @@ Each DM publisher can also publish **delayed and lossy copies** of its messages.
 | `/DSRC` | 100 ms | 5 % |
 | `/Cellular` | 400 ms | 0 % |
 
-For example, `/v2x/rsu12020002/sensor1/object_info_noise` is also published as `/v2x/rsu12020002/sensor1/object_info_noise/DSRC` and `.../Cellular`. Turn this on or off per component with **Enable Delayed Messages**.
+For example, `/v2x/object_info` is also published as `/v2x/object_info/DSRC` and `/v2x/object_info/Cellular`, and `/signal_info` as `/signal_info/DSRC` and `/signal_info/Cellular`. Turn this on or off per component with **Enable Delayed Messages**.
 
 ## Where to go next
 
