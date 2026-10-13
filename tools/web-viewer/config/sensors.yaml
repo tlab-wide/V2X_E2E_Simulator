@@ -393,7 +393,7 @@ sensors:
     position: {lat: 35.8978999, lon: 139.9492465, z_m: 21.41}
     heading_deg: 89.8
     pitch_deg: -0.0
-    h_fov_deg: 180
+    h_fov_deg: 40
     v_fov_deg: 70
     range_m: 50
     topics:
@@ -429,8 +429,8 @@ sensors:
     position: {lat: 35.8979323, lon: 139.9492515, z_m: 21.92}
     heading_deg: 95.2
     pitch_deg: 0.6
-    h_fov_deg: 180
-    v_fov_deg: 180
+    h_fov_deg: 40
+    v_fov_deg: 20
     range_m: 121
     topics:
       - /v2x/object_info
