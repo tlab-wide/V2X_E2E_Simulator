@@ -93,7 +93,8 @@ namespace AWSIM
         [SerializeField] List<Intersection> intersections = KashiwaDefaults();
 
         [Header("Delayed message")]
-        [SerializeField] bool enableDelayedMessages = false;
+        [Tooltip("Also publish delayed / lossy copies (/signal_info/DSRC, /signal_info/Cellular, ...) using the NetworkSimulator profiles, like the DM object info.")]
+        [SerializeField] bool enableDelayedMessages = true;
         [SerializeField] List<MessageDelayConfig> messageDelaysConfigs = new List<MessageDelayConfig>();
 
         public QoSSettings qosSettings = new QoSSettings()

@@ -25,7 +25,7 @@ All five signalised intersections on the Kashiwa-no-ha bus route are published *
  │     3. build SignalInfo { crp_id, signal_id_list, time, …, signal_light_info_list }
  ▼
  /signal_info                       SignalInfoArray, all intersections   (consumed by DM)
- [/…/DSRC, /…/Cellular]             delayed / lossy copies (optional)
+ /signal_info/DSRC, /…/Cellular     delayed / lossy copies (network model)
 ```
 
 The light state comes straight from the lighting sequence that drives the Unity traffic lights. The colour the DM consumer receives is therefore always the colour shown in the scene and obeyed by the NPC vehicles.
@@ -206,7 +206,7 @@ It does not depend on an RSU GameObject being active. The intersections are foun
 | **Topic** | `/signal_info` | All intersections in one `SignalInfoArray`. This is the topic DM subscribes to. |
 | **Pad Signal Id List** | on | Pad `signal_id_list` with `0` to 8 elements (ROS2DMI style) |
 | **Intersections** | Kashiwa route | One entry per intersection (see below) |
-| **Enable Delayed Messages** | off | Also publish `/DSRC`, `/Cellular`, … copies ([network model](../index.md#delayed-copies-network-model)) |
+| **Enable Delayed Messages** | on | Also publish `/signal_info/DSRC`, `/signal_info/Cellular`, … copies ([network model](../index.md#delayed-copies-network-model)) |
 | **Message Delays Configs** | empty | Extra delay profiles for this component only |
 | **QoS Settings** | reliable, volatile, keep-last 1 | QoS of all topics of this component |
 

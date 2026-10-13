@@ -15,6 +15,8 @@ V2X E2E Simulator is an end-to-end Vehicle-to-Everything (V2X) simulation platfo
 - Teleportation system with ETA-based lane targeting for controlled experiments
 - Pedestrian and cyclist simulation with waypoint paths and pool-based spawning
 - End-to-end CSV data logging of NPC positions, ego vehicle state, and spawn selection
+- CooL4 DM protocol output: object info and signal info (with remaining time), each also with DSRC / Cellular network delay
+- Local web viewer (`tools/web-viewer`): live topic health and all published information on the Lanelet2 map
 - Full ROS2 integration compatible with Autoware
 - Open source — Ubuntu 22.04 and Windows 10/11
 
@@ -27,6 +29,19 @@ git clone https://github.com/tlab-wide/V2X_E2E_Simulator.git
 Open the project in **Unity 2022.3 LTS** and load the scene at `Assets/AWSIM/Scenes/Main/AutowareSimulation/`.
 
 See the [Getting Started guide](https://tlab-wide.github.io/V2X_E2E_Simulator/GettingStarted/QuickStartDemo/) for full setup instructions.
+
+## CooL4 DM output
+
+The simulator publishes the CooL4 data-linkage formats ([`dm_*_msgs`](https://github.com/tlab-wide/v2x_e2e_msgs)) directly:
+
+| Topic | Type | Content |
+|:--|:--|:--|
+| `/signal_info` | `dm_signal_info_msgs/SignalInfoArray` | Signal state and remaining time of the five bus-route intersections, 10 Hz |
+| `/signal_info/DSRC`, `/signal_info/Cellular` | same | The same with DSRC (100 ms, 5 % loss) / Cellular (400 ms) network delay |
+| `/v2x/rsu…/sensor…/object_info[_noise]` | `dm_object_info_msgs/ObjectInfoArray` | Objects detected by each RSU sensor (ground truth / with noise) |
+| `/v2x/rsu…/sensor…/object_info_noise/DSRC`, `…/Cellular` | same | The noisy objects with network delay |
+
+Details: [DM Protocols](https://tlab-wide.github.io/V2X_E2E_Simulator/dev/DMProtocols/) · [Topic List](https://tlab-wide.github.io/V2X_E2E_Simulator/dev/DMProtocols/CooL4/Topics/)
 
 ---
 

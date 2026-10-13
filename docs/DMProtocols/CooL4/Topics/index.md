@@ -9,8 +9,10 @@ Type: `dm_signal_info_msgs/msg/SignalInfoArray`. Publisher: **DM Signal Info Pub
 | Topic | Content |
 |:--|:--|
 | `/signal_info` | **All five intersections** in one array. This is the topic DM consumes. |
+| `/signal_info/DSRC` | Same, delayed 100 ms with 5 % packet loss |
+| `/signal_info/Cellular` | Same, delayed 400 ms |
 
-Delayed copies (for example `/signal_info/DSRC`) are published only when **Enable Delayed Messages** is on (off by default).
+The delayed copies use the general profiles of the `NetworkSimulator` (see [Delayed copies](../index.md#delayed-copies-network-model)); turn them off with **Enable Delayed Messages** on the DM Signal Info Publisher.
 
 ## Object information
 

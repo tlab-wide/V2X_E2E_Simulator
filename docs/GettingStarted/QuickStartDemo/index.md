@@ -363,6 +363,7 @@ Signal state with remaining time for the five intersections on the bus route, in
 
 - **Published Topic:**  
   - `/signal_info` (all five intersections in one message)
+  - `/signal_info/DSRC`, `/signal_info/Cellular` (the same with network delay and packet loss)
 
 See [DM Protocols → CooL4 → Signal Info](../../DMProtocols/CooL4/SignalInfo/index.md) for details.
 
