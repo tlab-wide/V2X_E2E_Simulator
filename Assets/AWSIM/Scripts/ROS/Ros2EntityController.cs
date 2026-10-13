@@ -5,6 +5,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using ROS2;
+using AWSIM.TrafficSimulation;
 using Object = UnityEngine.Object;
 
 namespace AWSIM
@@ -218,6 +219,9 @@ namespace AWSIM
                 obj = Object.Instantiate(npcVehiclePrefab.prefab, spawnPosition, spawnRotation);
                 obj.name = obj.name + "_" + uniqueId;
                 obj.transform.parent = this.transform;
+                var npcVehicle = obj.GetComponent<NPCVehicle>();
+                if (npcVehicle != null)
+                    npcVehicle.VehicleID = SpawnIdGenerator.Generate();
                 entities.Add(new VehicleEntity(uniqueId, assetKey, obj));
             }
             if (npcPedestrianPrefab != null)
@@ -225,6 +229,10 @@ namespace AWSIM
                 obj = Object.Instantiate(npcPedestrianPrefab.prefab, spawnPosition, spawnRotation);
                 obj.name = obj.name + "_" + uniqueId;
                 obj.transform.parent = this.transform;
+                var humanId = obj.GetComponent<ScenarioHumanId>();
+                if (humanId == null)
+                    humanId = obj.AddComponent<ScenarioHumanId>();
+                humanId.AssignNewId();
                 entities.Add(new PedestrianEntity(uniqueId, assetKey, obj));
             }
             if (objectsPrefab != null)

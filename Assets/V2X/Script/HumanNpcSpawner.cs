@@ -141,6 +141,7 @@ public class HumanNpcSpawner : MonoBehaviour
             if (activeParent != null)
                 npc.SetParent(activeParent, true);
 
+            AssignSpawnId(npc);
             npc.gameObject.SetActive(true);
         }
     }
@@ -209,6 +210,15 @@ public class HumanNpcSpawner : MonoBehaviour
             (source[i], source[j]) = (source[j], source[i]);
         }
         return source;
+    }
+
+    private void AssignSpawnId(Transform npc)
+    {
+        var humanId = npc.GetComponent<ScenarioHumanId>();
+        if (humanId == null)
+            humanId = npc.gameObject.AddComponent<ScenarioHumanId>();
+
+        humanId.AssignNewId();
     }
 
     // --- Public controls ---

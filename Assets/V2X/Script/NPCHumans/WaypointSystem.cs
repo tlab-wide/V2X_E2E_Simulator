@@ -112,13 +112,19 @@ public class WaypointSystem : MonoBehaviour
                 // Draw line to next waypoint
 
                 Gizmos.color = Color.green;
-                Gizmos.DrawLine(waypoints[i].waypoint.position, waypoints[i+1].waypoint.position);
+                if (waypoints[i + 1].waypoint != null)
+                {
+                    Gizmos.DrawLine(waypoints[i].waypoint.position, waypoints[i + 1].waypoint.position);
+                }
             }
         }
 
         if (loopStatus && waypoints.Count > 1)
         {
-            Gizmos.DrawLine(waypoints[waypoints.Count-1].waypoint.position, waypoints[0].waypoint.position);
+            var first = waypoints[0].waypoint;
+            var last = waypoints[waypoints.Count - 1].waypoint;
+            if (first != null && last != null)
+                Gizmos.DrawLine(last.position, first.position);
         }
     }
 

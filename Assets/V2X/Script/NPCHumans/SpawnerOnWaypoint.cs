@@ -42,6 +42,7 @@ public class SpawnerOnWaypoint : MonoBehaviour
                 GameObject gameObject = Instantiate(spawnerPrefab, spawnPos, spawnRot);
                 WaypointFollower waypointFollower = gameObject.GetComponent<WaypointFollower>();
                 waypointFollower.SetWaypointSystem(waypointSystem);
+                AssignSpawnId(gameObject.transform);
                 gameObject.transform.parent = this.transform;
                 Debug.Log("Spawned an object at the waypoint.");
             }
@@ -64,6 +65,7 @@ public class SpawnerOnWaypoint : MonoBehaviour
                     GameObject gameObject = Instantiate(spawnerPrefab, spawnPos, spawnRot);
                     WaypointFollower waypointFollower = gameObject.GetComponent<WaypointFollower>();
                     waypointFollower.SetWaypointSystem(waypointSystem);
+                    AssignSpawnId(gameObject.transform);
                     gameObject.transform.parent = this.transform;
                     Debug.Log("Spawned an object at the waypoint.");
                 }
@@ -73,5 +75,14 @@ public class SpawnerOnWaypoint : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void AssignSpawnId(Transform agent)
+    {
+        var humanId = agent.GetComponent<ScenarioHumanId>();
+        if (humanId == null)
+            humanId = agent.gameObject.AddComponent<ScenarioHumanId>();
+
+        humanId.AssignNewId();
     }
 }

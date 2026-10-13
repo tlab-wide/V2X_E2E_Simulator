@@ -42,6 +42,7 @@ public class SpawnerOnWaypoint2 : MonoBehaviour
                 
                 GameObject gameObject = Instantiate(selectedObject, selectedTransform.position, selectedTransform.rotation);
                 gameObject.transform.parent = this.transform;
+                AssignSpawnId(gameObject.transform);
                 
                 WaypointFollower waypointFollower = gameObject.GetComponent<WaypointFollower>();
                 waypointFollower.SetWaypointSystem(selectedSpawnPoint.GetWaypointSystem());
@@ -59,6 +60,15 @@ public class SpawnerOnWaypoint2 : MonoBehaviour
     {
         int randomIndex = Random.Range(0, spawnPoints.Count);
         return spawnPoints[randomIndex];
+    }
+
+    private void AssignSpawnId(Transform agent)
+    {
+        var humanId = agent.GetComponent<ScenarioHumanId>();
+        if (humanId == null)
+            humanId = agent.gameObject.AddComponent<ScenarioHumanId>();
+
+        humanId.AssignNewId();
     }
 }
 
