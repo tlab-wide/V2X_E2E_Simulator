@@ -167,9 +167,13 @@ namespace AWSIM
         void Update()
         {
             timer += Time.deltaTime;
-            if (timer + 0.00001f < 1f / Mathf.Max(1f, hz))
+            var period = 1f / Mathf.Max(1f, hz);
+            if (timer < period)
                 return;
-            timer = 0f;
+            // Keep the time beyond the period so the average rate is exactly hz (publishing happens on frames;
+            // resetting to 0 lost the overshoot every time and gave e.g. 7.5-9 Hz at 30 fps). Capped so a long
+            // frame does not cause a burst of catch-up messages.
+            timer = Mathf.Min(timer - period, period);
 
             var time = ObjectInfo.GetITSTimeInMilliseconds();
             var all = new List<DMSignalInfo>();
