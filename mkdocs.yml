@@ -120,7 +120,6 @@ nav:
     - Teleport: Components/Teleport/index.md
     - Camera View Tab: Components/CameraView/index.md
 
-  - NetSim: NetSim/index.md
   - TroubleShooting: TroubleShooting/index.md
   - In progress: inProgressSections/index.md
   - License: License/index.md

@@ -188,12 +188,12 @@ Without using **Autoware**, you can manually control the cars to create your des
 #### **2. Driving Controls**  
 - After pressing **D** (Drive), use the **arrow keys** to move around the city.  
 
-#### **3. Teleport Feature**  
+#### **2. Teleport Feature**  
 - There are **four predefined teleport locations** in the scene.  
 - The car can teleport **only when in Drive mode** and must have **at least a small amount of speed**.  
 - Use the following keys to teleport to different locations on the map:  
   - **Q**, **E**, **F**, **X** → Teleport to four different places in the city.  
-#### **4. Manual Object Creation**
+#### **3. Manual Object Creation**
 - Use button **O** to spawn cars in scenarios where this feature is available
 
 ![Keyboard](Keyboard.jpg)  
@@ -241,25 +241,7 @@ These objects are detected by the **Bus pseudo sensor**, which consists of a **4
 
 ---
 
-### **2. NetSim-Compatible Topics**
-These topics represent **all detected objects at each intersection** and are used as **input for NetSim**.
-
-The message type **`CooperativeObjectsMessage`** comes from `autoware_auto_perception_msgs.msg`, which is a compatible type with **Autoware**. In the Autoware architecture, this message is typically created by one of the internal nodes. However, in our simulation, we replicate the detection algorithm and send this message directly from the simulator. 
-
-Therefore, if we use this feature, we can ignore or disable the camera responsible for generating the corresponding message. Our policy for using this message is **hybrid**—it can be used either in combination with other real sensors or as a standalone pseudo sensor.
-
-
-
-| **Topic Name** | **Intersection** |
-|:--|:--|
-| `/v2x/rsu1/net_sim` | Ganken Intersection |
-| `/v2x/rsu2/net_sim` | Kakeiken Intersection |
-| `/v2x/rsu3/net_sim` | Daisan Kidoutai |
-| `/v2x/rsu4/net_sim` | Wakashiba Intersection |
-
----
-
-### **3. Autoware-Compatible Topics**
+### **2. Autoware-Compatible Topics**
 These topics are **used as direct inputs to Autoware** for testing.
 The message type **`PredictedObjects`** comes from `autoware_auto_perception_msgs.msg`, which is a default message type of **Autoware** and **AWSIM**.
 
@@ -272,7 +254,7 @@ The message type **`PredictedObjects`** comes from `autoware_auto_perception_msg
 
 ---
 
-### **4. Cool4 DM Format Topics**
+### **3. Cool4 DM Format Topics**
 These topics provide **the same detected objects in Cool4 DM format**.  
 (**Currently, only Intersection 1 and 2 have DM-compatible RSUs**).
 The message type **`ObjectInfoArray`** comes from `dm_object_info_msgs.msg`. This message is not compatible with **Autoware** and was created to work with  the **DM protocol**.
@@ -287,7 +269,7 @@ The message type **`ObjectInfoArray`** comes from `dm_object_info_msgs.msg`. Thi
 | `/v2x/object_info_2_noise` | Kakeiken Intersection (with noise) |
 
 
-### **5. DM Format Topics for Intersection #2 in Kashiwa**
+### **4. DM Format Topics for Intersection #2 in Kashiwa**
 For **Intersection #2 in Kashiwa**, detected objects from **each sensor** are also published in **DM format**.  
 The **rsu number** and **sensor number** help distinguish different sensors.  
 - `/object_info` → Detected objects **without noise**  
@@ -343,7 +325,7 @@ The **rsu number** and **sensor number** help distinguish different sensors.
 
 ---
 
-### **6. Ground Truth Topics**
+### **5. Ground Truth Topics**
 These topics publish the **ground truth** of **all objects** in the intersection.
 
 - `/v2x/rsu_all/object_info_groundtruth`
@@ -353,7 +335,7 @@ These topics publish the **ground truth** of **all objects** in the intersection
 
 ---
 
-### **7. V2X Traffic Signal Information for Autoware**
+### **6. V2X Traffic Signal Information for Autoware**
 - **Published Topic:**  
   - `/v2x/traffic_signals` 
   - `/v2x/rsu1/traffic_signals`
@@ -361,7 +343,7 @@ These topics publish the **ground truth** of **all objects** in the intersection
   - `/v2x/rsu3/traffic_signals`
   - `/v2x/rsu4/traffic_signals`
 
-### **7b. CooL4 DM Signal Information**
+### **6b. CooL4 DM Signal Information**
 Signal state with remaining time for the five intersections on the bus route, in the **CooL4 DM format** (`dm_signal_info_msgs/SignalInfoArray`). Published all the time by the **DM Signal Info Publisher** prefab.
 
 - **Published Topic:**  
@@ -371,7 +353,7 @@ Signal state with remaining time for the five intersections on the bus route, in
 See [DM Protocols → CooL4 → Signal Info](../../DMProtocols/CooL4/SignalInfo/index.md) for details.
 
 
-### **8. All intersection Cool4 Setup(DM)**
+### **7. All intersection Cool4 Setup(DM)**
 - **Published Topic:**  
   - `/v2x/rsu1/object_info`
   - `/v2x/rsu1/object_info_noise`

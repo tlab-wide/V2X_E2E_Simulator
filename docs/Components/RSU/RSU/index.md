@@ -21,8 +21,10 @@ These two components send data about traffic lights in their topics. They are ve
   <p> Components of RSUs </p>
 </div>
 
-## PredictedObjectsAutoware && PredictedObjectsNetworkSim
-These two components exactly work the same but final message format is different. they use a list of pseudo sensor and pridiocally scan the detected object list inside them and retrive the data of cars or humans detected by them and finally send the data in Hz that assigned to the component. These component also get the name of noise category and will apply the noise on output data when publishing ros message.
+## PredictedObjectsAutoware
+This component uses a list of pseudo sensors, periodically scans the objects they detect (cars and humans), and publishes them as Autoware `PredictedObjects` at the Hz assigned to the component. It also takes the names of noise categories and applies that noise to the output when publishing the ROS message.
+
+Network effects (delay and packet loss) are generated inside the simulator: with **Enable Delayed Messages** on, the component also publishes delayed copies such as `/DSRC` and `/Cellular`, using the profiles of the `NetworkSimulator` component (**Noise and Delay Profile** object).
 
 <div style="text-align: center;">
   <img src="image-3.png" alt="alt text" width="500">
