@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>V2X Simulator Viewer</title>
+  <link rel="stylesheet" href="/static/vendor/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">V2X E2E Simulator <span>Viewer</span></div>
+    <div class="stats" id="stats"></div>
+    <div class="spacer"></div>
+    <label class="toggle"><input type="checkbox" id="basemap"> Background map (online)</label>
+    <div class="conn" id="conn"><span class="dot"></span><span class="text">connecting…</span></div>
+  </header>
+
+  <main>
+    <aside id="sidebar">
+      <div class="side-head">
+        <input id="filter" type="search" placeholder="Filter topics…" autocomplete="off">
+        <label class="toggle small"><input type="checkbox" id="show-raw"> raw sensors</label>
+      </div>
+      <div class="legend">
+        <span><i class="s live"></i>live</span><span><i class="s stale"></i>stale</span>
+        <span><i class="s waiting"></i>no data yet</span><span><i class="s offline"></i>offline</span>
+        <span><i class="s unsupported"></i>type missing</span>
+      </div>
+      <div id="topics"></div>
+    </aside>
+
+    <section id="map"></section>
+
+    <aside id="inspector" class="hidden">
+      <div class="insp-head"><span id="insp-title">Inspector</span><button id="insp-close" title="Close">×</button></div>
+      <div id="insp-body"></div>
+    </aside>
+  </main>
+
+  <script src="/static/vendor/maplibre-gl.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
