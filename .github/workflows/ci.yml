@@ -1,8 +1,13 @@
-name: ci 
+name: ci
+# Versioned documentation with mike:
+#  - a version tag (v*) publishes that version and moves the "latest" alias to it
+#  - a push to Kashiwa publishes the in-development docs as "dev"
 on:
   push:
     branches:
-      - Kashiwa 
+      - Kashiwa
+    tags:
+      - 'v*'
 permissions:
   contents: write
 jobs:
@@ -10,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Configure Git Credentials
         run: |
           git config user.name github-actions[bot]
@@ -17,12 +24,20 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV 
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
       - uses: actions/cache@v4
         with:
           key: mkdocs-material-${{ env.cache_id }}
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install mkdocs-material 
-      - run: mkdocs gh-deploy --force
+      - run: pip install "mkdocs<2" mkdocs-material mike
+      - run: git fetch origin gh-pages --depth=1
+      - name: Deploy release docs
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          mike deploy --push --update-aliases "${GITHUB_REF_NAME}" latest
+          mike set-default --push latest
+      - name: Deploy development docs
+        if: github.ref == 'refs/heads/Kashiwa'
+        run: mike deploy --push dev
