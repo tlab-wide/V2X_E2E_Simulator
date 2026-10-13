@@ -951,6 +951,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#signal-heads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal heads
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signal heads">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configtraffic_lightsyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        config/traffic_lights.yaml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#coordinates" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2225,6 +2264,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#signal-heads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal heads
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signal heads">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configtraffic_lightsyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        config/traffic_lights.yaml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#coordinates" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2405,14 +2483,19 @@
 <td style="text-align: left;">Latitude/longitude and heading from the message, drawn as boxes of the reported size</td>
 </tr>
 <tr>
-<td style="text-align: left;">DM signal info</td>
-<td style="text-align: left;"><code>dm_signal_info_msgs/SignalInfoArray</code></td>
-<td style="text-align: left;">One lamp per approach (方路) at its intersection, from <code>config/cool4_intersections.json</code>. Zoom in (≥ 17) to see remaining seconds and pedestrian signals.</td>
+<td style="text-align: left;">Signal heads</td>
+<td style="text-align: left;"><code>dm_signal_info_msgs/SignalInfoArray</code>, <code>v2x_msgs/V2XSignals</code>, Autoware <code>TrafficSignalArray</code> / <code>TrafficLightGroupArray</code></td>
+<td style="text-align: left;">At the real signal positions of <code>config/traffic_lights.yaml</code> (see <a href="#signal-heads">Signal heads</a>)</td>
 </tr>
 <tr>
-<td style="text-align: left;">Traffic signals</td>
-<td style="text-align: left;"><code>v2x_msgs/V2XSignals</code>, Autoware <code>TrafficSignalArray</code> / <code>TrafficLightGroupArray</code></td>
-<td style="text-align: left;">At the Lanelet2 traffic light with that regulatory-element or way ID</td>
+<td style="text-align: left;">Other traffic lights</td>
+<td style="text-align: left;">V2X / Autoware traffic signals whose ID is not in the config</td>
+<td style="text-align: left;">A dot at the Lanelet2 traffic light with that regulatory-element or way ID</td>
+</tr>
+<tr>
+<td style="text-align: left;">RSU sensors</td>
+<td style="text-align: left;"><code>config/sensors.yaml</code> + health of their object-info topics</td>
+<td style="text-align: left;">Sensor icon and field-of-view sector (see <a href="#sensors">Sensors</a>)</td>
 </tr>
 <tr>
 <td style="text-align: left;">Autoware objects</td>
@@ -2427,8 +2510,123 @@
 </tbody>
 </table>
 <p>Each topic has its own colour (the swatch in the list). Layers of topics that are not live are dimmed. Click any object or signal to open the inspector. It shows the decoded fields: for example the object ID split into RSU / sensor / object number, the CooL4 light colour and the full remaining-time schedule.</p>
-<p><img alt="Intersection 科警研 zoomed in: signal lamps with remaining seconds, DM and Autoware objects" src="intersection.png" /></p>
+<p><img alt="Intersection 科警研 zoomed in: signal heads with remaining seconds, RSU sensors with coverage, DM and Autoware objects" src="intersection.png" /></p>
+<p>The <strong>overlay toggles</strong> under the legend switch the signal heads, the sensors, the sensor coverage sectors and the disabled sensors on and off. Overlapping heads and sensors (several on one pole) are stacked automatically.</p>
 <p><strong>Background map (online)</strong> overlays GSI tiles when the machine has internet. Everything else, including the Lanelet2 map, works offline.</p>
+<h2 id="signal-heads">Signal heads</h2>
+<p>Every vehicle and pedestrian signal head of the five bus-route intersections is drawn where it stands. Positions come from <code>config/traffic_lights.yaml</code>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Head</th>
+<th style="text-align: left;">Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Vehicle</td>
+<td style="text-align: left;">Three bulbs in Japanese order (green, yellow, red, left to right), green arrows (← ↑ →) if lit, remaining seconds</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pedestrian</td>
+<td style="text-align: left;">Stop (red) and walk (green) figures, remaining seconds; a flashing walk figure is 青点滅</td>
+</tr>
+</tbody>
+</table>
+<p>Flashing lights blink. Zoomed out (below 17.3) the heads show bulbs only; below 15.8 they are hidden.</p>
+<p><strong>Where the state comes from</strong>, in order of preference:</p>
+<ol>
+<li><strong>CooL4 DM signal info</strong>: the SignalInfo whose <code>crp_id</code> matches the intersection and whose <code>signal_id_list</code> contains one of the head's <code>dm_signal_ids</code>. <code>/signal_info</code> is preferred over the per-intersection topics. Only DM carries the <strong>remaining time</strong> (<code>min_time_to_change</code>); "—" means the light never changes (countdown stopped).</li>
+<li><strong>V2X / Autoware traffic signals</strong> (vehicle heads only): the signal whose ID is one of the head's <code>lanelet_regulatory_elements</code> or <code>lanelet_light_ways</code>. These messages have no remaining time, so no seconds are shown.</li>
+</ol>
+<p>A head with no data is greyed out; a head fed by a topic that is not live is dimmed with a dashed border. Click a head to see both sources side by side: the DM light, remaining time and full schedule, and the V2X/Autoware elements.</p>
+<p><img alt="Route view: heads shrink to bulbs when zoomed out" src="route.png" /></p>
+<h3 id="configtraffic_lightsyaml">config/traffic_lights.yaml</h3>
+<p>A human-readable file, one block per intersection and approach (方路):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">intersections</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">科警研 (Kakeiken)</span>
+<span class="w">    </span><span class="nt">crp_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">798721</span><span class="w">            </span><span class="c1"># 0x000c3001</span>
+<span class="w">    </span><span class="nt">unity_intersection</span><span class="p">:</span><span class="w"> </span><span class="s">'crossroad2'</span>
+<span class="w">    </span><span class="nt">center</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">lat</span><span class="p">:</span><span class="w"> </span><span class="nv">35.896047</span><span class="p p-Indicator">,</span><span class="nt"> lon</span><span class="p">:</span><span class="w"> </span><span class="nv">139.94182</span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">approaches</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w">                  </span><span class="c1"># 方路2</span>
+<span class="w">        </span><span class="nt">direction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">south</span>
+<span class="w">        </span><span class="nt">bearing_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">160</span><span class="w">        </span><span class="c1"># from the centre towards this leg</span>
+<span class="w">        </span><span class="nt">vehicle</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">dm_signal_ids</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0x21</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0x22</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0x23</span><span class="p p-Indicator">]</span>
+<span class="w">          </span><span class="nt">lanelet_regulatory_elements</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">166940</span><span class="p p-Indicator">]</span>
+<span class="w">          </span><span class="nt">lanelet_light_ways</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">166935</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">166947</span><span class="p p-Indicator">]</span>
+<span class="w">          </span><span class="nt">heads</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">lat</span><span class="p">:</span><span class="w"> </span><span class="nv">35.895915</span><span class="p p-Indicator">,</span><span class="nt"> lon</span><span class="p">:</span><span class="w"> </span><span class="nv">139.94194</span><span class="p p-Indicator">,</span><span class="nt"> facing_deg</span><span class="p">:</span><span class="w"> </span><span class="nv">160</span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">lat</span><span class="p">:</span><span class="w"> </span><span class="nv">35.8961811</span><span class="p p-Indicator">,</span><span class="nt"> lon</span><span class="p">:</span><span class="w"> </span><span class="nv">139.9417231</span><span class="p p-Indicator">,</span><span class="nt"> facing_deg</span><span class="p">:</span><span class="w"> </span><span class="nv">160</span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">pedestrian</span><span class="p">:</span><span class="w">                 </span><span class="c1"># crosswalk across this approach</span>
+<span class="w">          </span><span class="nt">dm_signal_ids</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0x20</span><span class="p p-Indicator">]</span>
+<span class="w">          </span><span class="nt">heads</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">lat</span><span class="p">:</span><span class="w"> </span><span class="nv">35.8959157</span><span class="p p-Indicator">,</span><span class="nt"> lon</span><span class="p">:</span><span class="w"> </span><span class="nv">139.9418385</span><span class="p p-Indicator">,</span><span class="nt"> facing_deg</span><span class="p">:</span><span class="w"> </span><span class="nv">160</span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">lat</span><span class="p">:</span><span class="w"> </span><span class="nv">35.8959551</span><span class="p p-Indicator">,</span><span class="nt"> lon</span><span class="p">:</span><span class="w"> </span><span class="nv">139.9419562</span><span class="p p-Indicator">,</span><span class="nt"> facing_deg</span><span class="p">:</span><span class="w"> </span><span class="nv">160</span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<ul>
+<li><strong>Vehicle heads</strong> were placed on the Lanelet2 <code>traffic_light</code> poles of the regulatory elements whose lanes enter from that approach. These are the same regulatory elements the simulator's <code>TrafficLightLaneletID</code> components carry.</li>
+<li><strong>Pedestrian heads</strong> sit at the two ends of the crosswalk across the approach; the Lanelet2 map has no pedestrian lights. 東大前 方路1 has no crosswalk in the map, so it has no pedestrian head. Add one by hand if needed.</li>
+<li><strong>Editing:</strong> move a head by changing its <code>lat</code>/<code>lon</code>, add or remove heads freely. Restart the viewer to load the change.</li>
+<li><strong>Re-deriving positions:</strong> <code>python3 tools/web-viewer/scripts/build_signal_config.py /path/to/lanelet2_map.osm</code> fills only approaches without heads. <code>--force</code> recomputes all of them, overwriting hand edits.</li>
+</ul>
+<h2 id="sensors">Sensors</h2>
+<p>The RSU pseudo sensors (<code>MockSensor</code>) are listed in <code>config/sensors.yaml</code>, extracted from the Kashiwa scene (<code>V2X_E2E_Simulator_v3.1.0.unity</code>). Each sensor is drawn as an icon (C = camera, L = lidar) with its coverage sector. The icon gets a green halo when one of its object-info topics is live. Labels appear from zoom 18. Click a sensor for all its settings and the live status of its topics.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">sensors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">'RSU_camera</span><span class="nv"> </span><span class="s">5'</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RSU_CAMERA</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">near</span><span class="p">:</span><span class="w"> </span><span class="s">'科警研</span><span class="nv"> </span><span class="s">(Kakeiken)'</span><span class="w">        </span><span class="c1"># 19 m from the centre</span>
+<span class="w">    </span><span class="nt">sensor_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">rsu_ids</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0x1100</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0x12020002</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">lat</span><span class="p">:</span><span class="w"> </span><span class="nv">35.8961753</span><span class="p p-Indicator">,</span><span class="nt"> lon</span><span class="p">:</span><span class="w"> </span><span class="nv">139.9419667</span><span class="p p-Indicator">,</span><span class="nt"> z_m</span><span class="p">:</span><span class="w"> </span><span class="nv">23.71</span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">heading_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">234.4</span>
+<span class="w">    </span><span class="nt">pitch_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-35.0</span>
+<span class="w">    </span><span class="nt">h_fov_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42.4</span>
+<span class="w">    </span><span class="nt">v_fov_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">22.65</span>
+<span class="w">    </span><span class="nt">range_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">75.0</span>
+<span class="w">    </span><span class="nt">topics</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/object_info_2_noise</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/object_info_2</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/rsu12020002/sensor1/object_info_noise</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/rsu12020002/sensor1/object_info</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>type</code></td>
+<td style="text-align: left;"><code>RSU_CAMERA</code> or <code>RSU_LIDAR</code> (<code>MockSensorType</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>enabled</code></td>
+<td style="text-align: left;">Active in the scene. The 10 sensors of the Kakeiken CooL4 setup are enabled; the others belong to disabled setups and are shown only with <strong>Disabled sensors</strong> ticked.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>position</code>, <code>heading_deg</code>, <code>pitch_deg</code></td>
+<td style="text-align: left;">World pose of the sensor (heading clockwise from north)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>h_fov_deg</code>, <code>v_fov_deg</code></td>
+<td style="text-align: left;"><strong>Half-angles</strong>, as <code>MockSensor</code> uses them (it detects |yaw| ≤ <code>Hfov</code>), so the drawn sector is 2 × <code>h_fov_deg</code> wide</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>range_m</code></td>
+<td style="text-align: left;"><code>MockSensor.maxDistance</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>rsu_ids</code>, <code>topics</code></td>
+<td style="text-align: left;">The active CooL4 DM object-info publishers (<code>ObjectInfo</code>) that use the sensor</td>
+</tr>
+</tbody>
+</table>
+<p>The file is not regenerated automatically. If you move or add sensors in the scene, update it by hand.</p>
 <h2 id="coordinates">Coordinates</h2>
 <table>
 <thead>
@@ -2455,7 +2653,8 @@
 <h2 id="using-another-map-or-intersections">Using another map or intersections</h2>
 <ul>
 <li><strong>Map:</strong> <code>python3 tools/web-viewer/scripts/build_map.py /path/to/lanelet2_map.osm</code> regenerates <code>maps/lanelet2.geojson</code> and <code>maps/lanelet2_meta.json</code>.</li>
-<li><strong>CooL4 signals:</strong> edit <code>config/cool4_intersections.json</code>. Each intersection has its CRP ID, its centre (<code>[lon, lat]</code>) and the bearing of each approach in degrees clockwise from north. The Kashiwa values match the <a href="../../DMProtocols/CooL4/SignalInfo/">Signal Info</a> mapping.</li>
+<li><strong>Signal heads:</strong> edit <code>config/traffic_lights.yaml</code> (see <a href="#signal-heads">Signal heads</a>). The CRP and signal IDs match the <a href="../../DMProtocols/CooL4/SignalInfo/">Signal Info</a> mapping.</li>
+<li><strong>Sensors:</strong> edit <code>config/sensors.yaml</code> (see <a href="#sensors">Sensors</a>).</li>
 </ul>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <table>
