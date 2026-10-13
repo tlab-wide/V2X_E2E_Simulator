@@ -120,6 +120,7 @@ nav:
     - Pedestrian & Cyclist:
       - General: Components/Pedestrian/index.md
       - Waypoint & Spawning System: Components/WaypointPed/index.md
+      - Path Spawn Config (JSON): Components/PathSpawnConfig/index.md
     - MultiSensorStepScanning: Components/MultiSensorStepScanning/index.md
     - RandomSpawnCharacters: Components/RandomSpawnCharacters/index.md
     - Teleport: Components/Teleport/index.md

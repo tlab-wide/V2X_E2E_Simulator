@@ -1,0 +1,1180 @@
+{
+    "paths": [
+        {
+            "id": "Path1",
+            "type": "both",
+            "spawnPerMinute": 0.133,
+            "waypoints": [
+                {
+                    "x": 4465.23046875,
+                    "y": 73000.0234375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4468.23388671875,
+                    "y": 72984.2109375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4475.10693359375,
+                    "y": 72966.3828125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4477.80615234375,
+                    "y": 72958.890625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4483.1494140625,
+                    "y": 72956.2734375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4488.26318359375,
+                    "y": 72944.4140625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4489.28564453125,
+                    "y": 72936.5703125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4495.8017578125,
+                    "y": 72925.0859375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4502.67529296875,
+                    "y": 72909.1171875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4514.849609375,
+                    "y": 72877.4375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4524.9833984375,
+                    "y": 72850.171875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path2",
+            "type": "both",
+            "spawnPerMinute": 0.066,
+            "waypoints": [
+                {
+                    "x": 4465.23046875,
+                    "y": 73000.0234375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4469.47119140625,
+                    "y": 72985.40625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4475.1640625,
+                    "y": 72968.7890625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4480.57861328125,
+                    "y": 72960.90625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4487.9013671875,
+                    "y": 72948.5546875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4490.7509765625,
+                    "y": 72946.921875,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                },
+                {
+                    "x": 4508.01904296875,
+                    "y": 72955.1328125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4516.7451171875,
+                    "y": 72953.6328125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4525.61083984375,
+                    "y": 72956.109375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4537.59423828125,
+                    "y": 72964.4453125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4550.5673828125,
+                    "y": 72971.640625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path3",
+            "type": "both",
+            "spawnPerMinute": 0.033,
+            "waypoints": [
+                {
+                    "x": 4458.68798828125,
+                    "y": 73013.71875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4469.9814453125,
+                    "y": 72985.75,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4475.9375,
+                    "y": 72969.1328125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4481.1806640625,
+                    "y": 72961.421875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4487.9013671875,
+                    "y": 72948.5546875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4490.94580078125,
+                    "y": 72947.7421875,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                },
+                {
+                    "x": 4504.84375,
+                    "y": 72953.9609375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4504.85693359375,
+                    "y": 72960.09375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4502.0615234375,
+                    "y": 72965.9296875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4493.90478515625,
+                    "y": 72985.625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4478.5625,
+                    "y": 73024.3203125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path4",
+            "type": "both",
+            "spawnPerMinute": 0.0,
+            "waypoints": [
+                {
+                    "x": 4525.814453125,
+                    "y": 72849.5078125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4508.72216796875,
+                    "y": 72892.453125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4502.724609375,
+                    "y": 72907.3125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4494.13525390625,
+                    "y": 72930.71875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4489.2607421875,
+                    "y": 72938.84375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4490.20458984375,
+                    "y": 72946.1484375,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                },
+                {
+                    "x": 4505.24853515625,
+                    "y": 72954.8359375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4505.22802734375,
+                    "y": 72958.6328125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4501.80517578125,
+                    "y": 72965.328125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4493.90478515625,
+                    "y": 72985.625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4478.5625,
+                    "y": 73024.3203125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path5",
+            "type": "both",
+            "spawnPerMinute": 0.05,
+            "waypoints": [
+                {
+                    "x": 4569.39208984375,
+                    "y": 72981.8046875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4532.8935546875,
+                    "y": 72961.625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4527.38134765625,
+                    "y": 72958.84375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4522.2861328125,
+                    "y": 72955.0234375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4518.3583984375,
+                    "y": 72953.9375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4512.75537109375,
+                    "y": 72952.9140625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4507.55078125,
+                    "y": 72953.4609375,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                },
+                {
+                    "x": 4489.64892578125,
+                    "y": 72947.9296875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4481.39404296875,
+                    "y": 72960.3203125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4470.27734375,
+                    "y": 72983.578125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4461.080078125,
+                    "y": 73011.2890625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path6",
+            "type": "both",
+            "spawnPerMinute": 0.0,
+            "waypoints": [
+                {
+                    "x": 4481.8125,
+                    "y": 73014.5859375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4485.6943359375,
+                    "y": 73005.3671875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4495.90478515625,
+                    "y": 72980.9296875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4504.05029296875,
+                    "y": 72961.328125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4505.0966796875,
+                    "y": 72954.53125,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                },
+                {
+                    "x": 4490.73046875,
+                    "y": 72946.7578125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4489.2666015625,
+                    "y": 72943.4921875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                },
+                {
+                    "x": 4488.49365234375,
+                    "y": 72939.578125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4495.2666015625,
+                    "y": 72927.6171875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4511.26416015625,
+                    "y": 72886.2890625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4524.52099609375,
+                    "y": 72852.484375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path7",
+            "type": "both",
+            "spawnPerMinute": 0.0,
+            "waypoints": [
+                {
+                    "x": 4464.8125,
+                    "y": 73004.1015625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4471.2314453125,
+                    "y": 72983.1171875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4479.4365234375,
+                    "y": 72959.7890625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4486.6259765625,
+                    "y": 72948.8125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4490.29833984375,
+                    "y": 72947.984375,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_A_pedestrain (1)-cross2"
+                },
+                {
+                    "x": 4507.63818359375,
+                    "y": 72954.5546875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4513.94873046875,
+                    "y": 72951.6640625,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                },
+                {
+                    "x": 4520.0029296875,
+                    "y": 72935.671875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4517.90185546875,
+                    "y": 72924.828125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4522.72021484375,
+                    "y": 72914.4453125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4538.99365234375,
+                    "y": 72874.9140625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path8",
+            "type": "both",
+            "spawnPerMinute": 0.066,
+            "waypoints": [
+                {
+                    "x": 4485.486328125,
+                    "y": 73006.015625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4490.9541015625,
+                    "y": 72992.34375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4497.5732421875,
+                    "y": 72976.8125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4502.6005859375,
+                    "y": 72963.9375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4505.583984375,
+                    "y": 72958.6484375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4513.337890625,
+                    "y": 72954.2734375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4517.908203125,
+                    "y": 72954.9765625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4523.32470703125,
+                    "y": 72956.75,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4540.8076171875,
+                    "y": 72966.015625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4553.56640625,
+                    "y": 72973.9140625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4570.7890625,
+                    "y": 72982.875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path9",
+            "type": "both",
+            "spawnPerMinute": 0.016,
+            "waypoints": [
+                {
+                    "x": 4555.494140625,
+                    "y": 72974.78125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4540.185546875,
+                    "y": 72965.6953125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4528.6396484375,
+                    "y": 72958.953125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4523.4921875,
+                    "y": 72956.359375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4519.97412109375,
+                    "y": 72955.3046875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4512.5390625,
+                    "y": 72955.53125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": "TrafficLights_A_pedestrain-cross2"
+                },
+                {
+                    "x": 4505.6708984375,
+                    "y": 72959.09375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4503.00537109375,
+                    "y": 72964.515625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4495.474609375,
+                    "y": 72982.3984375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4491.76904296875,
+                    "y": 72993.6015625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4485.71875,
+                    "y": 73006.0625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path10",
+            "type": "both",
+            "spawnPerMinute": 0.183,
+            "waypoints": [
+                {
+                    "x": 4485.486328125,
+                    "y": 73006.015625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4490.9541015625,
+                    "y": 72992.34375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4497.5732421875,
+                    "y": 72976.8125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4501.41259765625,
+                    "y": 72966.6328125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4504.22705078125,
+                    "y": 72960.7734375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4506.48486328125,
+                    "y": 72956.5078125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4514.51708984375,
+                    "y": 72952.34375,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                },
+                {
+                    "x": 4520.2783203125,
+                    "y": 72934.9140625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4517.439453125,
+                    "y": 72925.53125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4524.5419921875,
+                    "y": 72907.609375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4538.1005859375,
+                    "y": 72876.2265625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path11",
+            "type": "both",
+            "spawnPerMinute": 0.1,
+            "waypoints": [
+                {
+                    "x": 4536.2890625,
+                    "y": 72878.9609375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4520.744140625,
+                    "y": 72918.6328125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4519.02099609375,
+                    "y": 72925.0859375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4520.494140625,
+                    "y": 72934.75,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                },
+                {
+                    "x": 4513.9853515625,
+                    "y": 72951.265625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4508.45068359375,
+                    "y": 72956.34375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4504.66943359375,
+                    "y": 72958.6875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4501.81640625,
+                    "y": 72966.2734375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4495.27880859375,
+                    "y": 72982.1875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4490.11865234375,
+                    "y": 72993.4609375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4484.4072265625,
+                    "y": 73009.5390625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path12",
+            "type": "both",
+            "spawnPerMinute": 0.066,
+            "waypoints": [
+                {
+                    "x": 4536.2890625,
+                    "y": 72878.9609375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4520.744140625,
+                    "y": 72918.6328125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4519.02099609375,
+                    "y": 72925.0859375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4520.494140625,
+                    "y": 72934.75,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                },
+                {
+                    "x": 4514.80859375,
+                    "y": 72951.2734375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4516.83642578125,
+                    "y": 72953.9296875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4527.263671875,
+                    "y": 72958.2109375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4538.6533203125,
+                    "y": 72964.484375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4541.59521484375,
+                    "y": 72965.828125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4553.95751953125,
+                    "y": 72973.5,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4566.2431640625,
+                    "y": 72980.25,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path13",
+            "type": "both",
+            "spawnPerMinute": 0.05,
+            "waypoints": [
+                {
+                    "x": 4569.39208984375,
+                    "y": 72981.8046875,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4532.8935546875,
+                    "y": 72961.625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4524.2470703125,
+                    "y": 72956.484375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4519.8798828125,
+                    "y": 72954.953125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4516.62548828125,
+                    "y": 72952.78125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4514.6181640625,
+                    "y": 72950.5859375,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                },
+                {
+                    "x": 4520.5400390625,
+                    "y": 72936.015625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4518.36767578125,
+                    "y": 72929.953125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4518.43896484375,
+                    "y": 72921.7890625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4526.19921875,
+                    "y": 72905.859375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4538.17578125,
+                    "y": 72876.1640625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        },
+        {
+            "id": "Path14",
+            "type": "both",
+            "spawnPerMinute": 0.016,
+            "waypoints": [
+                {
+                    "x": 4536.2890625,
+                    "y": 72878.9609375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4520.744140625,
+                    "y": 72918.6328125,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4519.02099609375,
+                    "y": 72925.0859375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4520.494140625,
+                    "y": 72934.75,
+                    "z": 23.0,
+                    "checkLight": true,
+                    "trafficLightId": "TrafficLights_B_pedestrain (2)"
+                },
+                {
+                    "x": 4514.80859375,
+                    "y": 72951.2734375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4508.1845703125,
+                    "y": 72952.859375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4490.8515625,
+                    "y": 72946.6484375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4485.43115234375,
+                    "y": 72953.2109375,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4479.228515625,
+                    "y": 72962.5,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4474.119140625,
+                    "y": 72974.0,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                },
+                {
+                    "x": 4468.34375,
+                    "y": 72990.515625,
+                    "z": 23.0,
+                    "checkLight": false,
+                    "trafficLightId": ""
+                }
+            ]
+        }
+    ]
+}
