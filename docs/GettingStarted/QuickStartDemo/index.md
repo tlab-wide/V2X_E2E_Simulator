@@ -135,9 +135,7 @@ To run the simulator, please follow the steps below.
 
     1. Download the desired build (Bus or lexus).
 
-        [Download V2X_E2E_Simulator Demo for Bus ubuntu](https://drive.google.com/file/d/1QbQizozZh1kLVYYlNSFUGBXGt8CajAbM/view?usp=drive_link){.md-button .md-button--primary}
-
-        [Download V2X_E2E_Simulator Demo for Lexus ubuntu](https://drive.google.com/file/d/1q4WkCwwlp-LZb3iQLhD1qAB0R6S9IKbU/view?usp=drive_link){.md-button .md-button--primary}
+        [Request the download (Bus / Lexus demo builds)](../Download/index.md){.md-button .md-button--primary}
 
         !!! note
             In the current version, both vehicles are in one scene and you can switch between them at runtime with the vehicle dropdown (see [Vehicle selection](#vehicle-selection)). A build of the current version therefore contains both vehicles.
@@ -423,7 +421,7 @@ The dropdown entry index is passed to `ScenarioSelector.ActivateScenario`, which
 1. **Download and Extract Map Files**  
    Download the `map files (pcd, osm)` and unzip them.
 
-   [Download Map Files (pcd, osm)](https://drive.google.com/file/d/1sPpqLBxyWCifsDPViqgYgX3b91Fwh6JK/view?usp=drive_link){.md-button .md-button--primary}
+   [Request the download (map files)](../Download/index.md){.md-button .md-button--primary}
 
 2. **Ensure Compatibility with Autoware**  
    This version of the **E2E V2X Simulator** is compatible with **Autoware version 2024.05**.  
@@ -437,11 +435,11 @@ The dropdown entry index is passed to `ScenarioSelector.ActivateScenario`, which
    In order to work with **Bus Autoware**, you need to download the bus vehicle parameters and the bus sensor kit setup.
 
    - **Bus Vehicle Parameters**: 
-    [Download Bus Vehicle Parameters](https://drive.google.com/file/d/1x_ro7XKXHiObi-Tiy-BKj4Z2xExc8vSw/view?usp=drive_link){.md-button .md-button--primary}
+    `bus_vehicle_description_7.8.1.zip` from the [download folder](../Download/index.md)
 
 
    - **Bus Sensor Kit**:
-   [Download Bus Sensor Kit](https://drive.google.com/file/d/1vJ-aszM0l5tHfYoezstcA7cOfBINmxjt/view?usp=drive_link){.md-button .md-button--primary}
+   `bus_sensor_kit_7.8.1.zip` from the [download folder](../Download/index.md)
 
    **Place the downloaded files in the following directories:**
    - `autoware/src/vehicle/sample_vehicle_launch/sample_vehicle_description/config`

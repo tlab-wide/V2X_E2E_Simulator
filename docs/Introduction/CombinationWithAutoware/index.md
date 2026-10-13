@@ -1,7 +1,7 @@
 # Cooperative Autoware
 
 ## Download 
-[Cooperative Autoware](https://drive.google.com/file/d/1x5M7YegynHbTBnRW1qIkoA0bpzMZLOAP/view?usp=drive_link)
+`autoware-main.zip` (Cooperative Autoware) is distributed on request: fill in the form on the [Download](../../GettingStarted/Download/index.md) page.
 
 ## Build
 
