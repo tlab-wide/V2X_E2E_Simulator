@@ -194,7 +194,7 @@ The file is not regenerated automatically. If you move or add sensors in the sce
 
 ## Using another map or intersections
 
-- **Map:** `python3 tools/web-viewer/scripts/build_map.py /path/to/lanelet2_map.osm` regenerates `maps/lanelet2.geojson` and `maps/lanelet2_meta.json`.
+- **Map:** `python3 tools/web-viewer/scripts/build_map.py /path/to/lanelet2_map.osm` (the Kashiwa map is in `kashiwa_pcdmap_forV2X_E2E_7.8.zip`, see [Download](../../GettingStarted/Download/index.md)) regenerates `maps/lanelet2.geojson` and `maps/lanelet2_meta.json`.
 - **Signal heads:** edit `config/traffic_lights.yaml` (see [Signal heads](#signal-heads)). The CRP and signal IDs match the [Signal Info](../../DMProtocols/CooL4/SignalInfo/index.md) mapping.
 - **Sensors:** edit `config/sensors.yaml` (see [Sensors](#sensors)).
 

@@ -4,6 +4,7 @@
 This project is a simulation system based on the AWSIM project, available on [GitHub](https://github.com/tier4/AWSIM). It has been enhanced with a range of sensor types and a more realistic environment. One of the key study cases in this project is the simulation of autonomous buses, which incorporates a significant number of cameras to address blind spots during autonomous driving. Examples of applications for this simulation environment include analyzing the positioning of roadside unit sensors and bus sensors to enhance the vision of autonomous buses, as well as evaluating traffic metrics such as congestion due to the presence of autonomous buses within the city.
 
 [Our Git repository is currently available](https://github.com/tlab-wide/V2X_E2E_Simulator){.md-button .md-button--primary}
+[Download the Unity package and maps](GettingStarted/Download/index.md){.md-button}
 
 ## About
 This project is part of **Cool4 (Cooperative Level 4 Automated Mobility Service)**, which corresponds to **Theme 4** of the [*Road to the L4*](https://www.road-to-the-l4.go.jp/en/) initiative.

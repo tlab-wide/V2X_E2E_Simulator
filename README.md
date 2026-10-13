@@ -6,6 +6,8 @@ V2X E2E Simulator is an end-to-end Vehicle-to-Everything (V2X) simulation platfo
 
 **Full documentation: [https://tlab-wide.github.io/V2X_E2E_Simulator/](https://tlab-wide.github.io/V2X_E2E_Simulator/)**
 
+**Download** (Unity package, Kashiwa maps, Autoware vehicle files): fill in the [request form](https://docs.google.com/forms/d/e/1FAIpQLSfsFGAvp8J0iLGfcQQ8r6o2x72SBmsddg-B-ngfVQoC4tF0iw/viewform); the download link is sent to your email.
+
 ---
 
 ## Features
@@ -29,7 +31,7 @@ V2X E2E Simulator is an end-to-end Vehicle-to-Everything (V2X) simulation platfo
    ```
 
 2. Open the project in **Unity 6000.0.50f1** (Unity 6).
-3. The scene, the Kashiwa map and the 3D models are not in the repository. Request **`V2X_E2E_Simulator_3_1_1.unitypackage`** on the [Download page](https://tlab-wide.github.io/V2X_E2E_Simulator/latest/GettingStarted/Download/) (the link is sent to your email) and import it with `Assets → Import Package → Custom Package…`.
+3. The scene, the Kashiwa map and the 3D models are not in the repository. Request **`V2X_E2E_Simulator_3_1_1.unitypackage`** with the [request form](https://docs.google.com/forms/d/e/1FAIpQLSfsFGAvp8J0iLGfcQQ8r6o2x72SBmsddg-B-ngfVQoC4tF0iw/viewform) (the download link is sent to your email; file list on the [Download page](https://tlab-wide.github.io/V2X_E2E_Simulator/latest/GettingStarted/Download/)) and import it with `Assets → Import Package → Custom Package…`.
 4. Open the scene `Assets/V2X/Scenes/V2X_E2E_Simulator_v3.1.1.unity` and press Play.
 
 See the [Getting Started guide](https://tlab-wide.github.io/V2X_E2E_Simulator/GettingStarted/QuickStartDemo/) for full setup instructions (ROS 2, Autoware, maps).
