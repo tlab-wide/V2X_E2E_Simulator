@@ -113,6 +113,7 @@ namespace AWSIM
         readonly Dictionary<string, List<MessageDelay<SignalInfoArray>>> messageDelays = new Dictionary<string, List<MessageDelay<SignalInfoArray>>>();
 
         readonly List<TrafficIntersection.GroupTimelineEntry> timeline = new List<TrafficIntersection.GroupTimelineEntry>();
+        readonly HashSet<string> warnedGroups = new HashSet<string>();
         float timer;
 
         void Start()
@@ -121,7 +122,7 @@ namespace AWSIM
             foreach (var intersection in intersections)
             {
                 if (intersection.trafficIntersection == null)
-                    intersection.trafficIntersection = Array.Find(allIntersections, x => x.name == intersection.trafficIntersectionName);
+                    intersection.trafficIntersection = FindIntersection(allIntersections, intersection.trafficIntersectionName);
                 if (intersection.trafficIntersection == null)
                     Debug.LogWarning($"[DMSignalInfoPublisher] TrafficIntersection '{intersection.trafficIntersectionName}' of {intersection.label} not found.");
             }
@@ -132,6 +133,19 @@ namespace AWSIM
                 if (!string.IsNullOrEmpty(intersection.topic))
                     CreatePublishers(intersection.topic);
             }
+        }
+
+        // A GameObject can carry several TrafficIntersection components (e.g. a disabled alternative setup);
+        // only an enabled one runs its lighting sequence, so prefer it.
+        static TrafficIntersection FindIntersection(TrafficIntersection[] all, string gameObjectName)
+        {
+            var matches = Array.FindAll(all, x => x.name == gameObjectName);
+            var running = Array.FindAll(matches, x => x.isActiveAndEnabled);
+            if (running.Length > 1)
+                Debug.LogWarning($"[DMSignalInfoPublisher] {running.Length} enabled TrafficIntersections named '{gameObjectName}'; using the first.");
+            if (running.Length > 0)
+                return running[0];
+            return Array.Find(matches, x => x.enabled) ?? (matches.Length > 0 ? matches[0] : null);
         }
 
         void CreatePublishers(string baseTopic)
@@ -198,7 +212,14 @@ namespace AWSIM
                 if (signal.signalIds == null || signal.signalIds.Length == 0)
                     continue;
                 if (!intersection.trafficIntersection.TryGetGroupTimeline(signal.trafficLightGroup, timeline))
+                {
+                    // The group is never lit by this intersection's lighting sequence (or it has not started yet).
+                    var key = $"{intersection.label}/{signal.label}";
+                    if (Time.timeSinceLevelLoad > 2f && warnedGroups.Add(key))
+                        Debug.LogWarning($"[DMSignalInfoPublisher] {key}: group {signal.trafficLightGroup} has no state in " +
+                                         $"'{intersection.trafficIntersection.name}' (not used by its lighting sequence?); not published.");
                     continue;
+                }
 
                 var lightInfos = BuildSignalLightInfos(timeline, signal.isPedestrian, out var isCountingDown);
 
@@ -368,7 +389,7 @@ namespace AWSIM
                 new SignalGroup("Pedestrian crossing 方路1", true, 10, 0x10),
                 new SignalGroup("方路1 east (駅→東大 right turn)", false, 1, 0x11, 0x12, 0x13),
                 new SignalGroup("Pedestrian crossing 方路2, 3", true, 11, 0x20, 0x30),
-                new SignalGroup("方路2 south", false, 2, 0x22, 0x23, 0x21),
+                new SignalGroup("方路2 south", false, 0, 0x22, 0x23, 0x21),   // the scene puts the south lights in group 0
                 new SignalGroup("方路3 north (東大→駅 left turn)", false, 0, 0x33, 0x31, 0x32)),
         };
     }

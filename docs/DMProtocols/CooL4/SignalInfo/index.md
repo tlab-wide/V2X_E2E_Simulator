@@ -97,7 +97,7 @@ Bit field of `DE_青矢信号表示方向`: bit 6 left, bit 4 straight, bit 2 ri
 4. drops the last entry if it shows the current light again, because the look-ahead window cuts it short. It caps the list at 12 entries (spec maximum).
 5. if the light never changes during the cycle, publishes a single entry with `min/max_time_to_change = 65535` (UNKNOWN) and `count_down_stop_flag = ON`.
 
-**Worked example.** がん研 (crossroad1), 方路1 (group 0), 10 s after the cycle starts. The sequence is G 50 s → Y 3 s → R (7+3+3+30+3+3 s) → G …
+**Worked example.** がん研 (crossroad1), 方路1 (group 0), 10 s after the cycle starts, with the environment prefab's sequence (the Kashiwa scene overrides it, so live values differ): G 50 s → Y 3 s → R (7+3+3+30+3+3 s) → G …
 
 | `signal_light_info_list` | `main_light` | `min/max_time_to_change` | Meaning |
 |:--|:--|:--|:--|
@@ -176,8 +176,10 @@ Each row also names the Unity `TrafficIntersection` (in `Enviroment copy/interse
 | crossing 方路1 | pedestrian | 10 | 0x10 | 16 | sheet |
 | 方路1, east (駅→東大 turns right) | vehicle | 1 | 0x11 0x12 0x13 | 17 18 19 | sheet |
 | crossing 方路2, 3 | pedestrian | 11 | 0x20 0x30 | 32 48 | sheet |
-| 方路2, south | vehicle | 2 | 0x22 0x23 0x21 | 34 35 33 | sheet |
+| 方路2, south | vehicle | 0 | 0x22 0x23 0x21 | 34 35 33 | sheet |
 | 方路3, north (東大→駅 turns left) | vehicle | 0 | 0x33 0x31 0x32 | 51 49 50 | sheet |
+
+In the Kashiwa scene the south lights (`TrafficLights_C`) of `crossroad4` are moved into group 0 (together with the north lights) and group 2 is never lit, so 方路2 reads group 0.
 
 ### How the intersections were matched
 
@@ -290,8 +292,9 @@ array:
 ## Known limitations
 
 - **Fixed-time signals.** `min_time_to_change` always equals `max_time_to_change`. `event_count`, `state` and `specific_control_flags` are always `0`.
-- **Pedestrian phases without changes.** At がん研 and 科警研 the pedestrian groups (10/11) are set only once per cycle, so they never change. They are published with an UNKNOWN remaining time and `count_down_stop_flag = ON`.
-- **Lighting sequences of 駅前 and 東大前.** In `crossroad4` and `crossroad 14` one step sets group 0 twice (`g0=R g0=G g2=R`). Group 1 (駅前 方路1, 東大前 方路3) therefore goes red → yellow without ever turning green. The DM output faithfully reports what the scene shows. Fix the sequence in the environment prefab if those approaches should get a green phase.
+- **Groups that never change.** A group that the lighting sequence sets only once per cycle (for example a pedestrian group) never changes; it is published with an UNKNOWN remaining time and `count_down_stop_flag = ON`.
+- **Scene overrides.** The Kashiwa scene overrides the lighting sequences and light groups of がん研, 科警研, 若柴 and 駅前 on top of the environment prefab, and 科警研's GameObject carries a second, disabled `TrafficIntersection`. The publisher uses the enabled component, and the approach-to-group table above matches the scene. If you change the light groups in the scene, update the publisher's signal groups too; a group that is never lit is logged once as a warning and not published.
+- **Lighting sequence of 東大前.** In `crossroad 14` (not overridden by the scene) one step sets group 0 twice (`g0=R g0=G g2=R`). Group 1 (東大前 方路3) therefore goes red → yellow without ever turning green. The DM output faithfully reports what the scene shows.
 - **Timestamp epoch.** The epoch is JST-based, consistent with object info (see [timestamp note](../index.md#timestamp-de_timestampits)).
 
 ## Relation to the other signal topics
