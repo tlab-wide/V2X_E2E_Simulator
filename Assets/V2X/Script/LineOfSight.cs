@@ -131,6 +131,7 @@ public class LineOfSight : MonoBehaviour
             List<Transform> seenObjectsByLidar = new List<Transform>();
             for (int j = 0; j < carLidars.Count; j++)
             {
+                if (carLidars[j] == null) continue;   // sensor deleted from the scene but still listed in the scenario
                 int numberOfSeenBusLidars = 0;
                 for (int i = 0; i < points.Count; i++)
                 {
@@ -175,6 +176,7 @@ public class LineOfSight : MonoBehaviour
 
             for (int j = 0; j < rsuSensors.Count; j++)
             {
+                if (rsuSensors[j] == null) continue;   // sensor deleted from the scene but still listed in the scenario
                 int numberOfSeenRSUs = 0;
                 for (int i = 0; i < points.Count; i++)
                 {
@@ -213,6 +215,7 @@ public class LineOfSight : MonoBehaviour
             List<Transform> seenObjectsCameras = new List<Transform>();
             for (int j = 0; j < carCameras.Count; j++)
             {
+                if (carCameras[j] == null) continue;   // sensor deleted from the scene but still listed in the scenario
                 int numberOfSeenBusCameras = 0;
                 for (int i = 0; i < points.Count; i++)
                 {
@@ -250,6 +253,7 @@ public class LineOfSight : MonoBehaviour
             List<Transform> seenObjectsByRsuCameras = new List<Transform>();
             for (int j = 0; j < rsuCameras.Count; j++)
             {
+                if (rsuCameras[j] == null) continue;   // sensor deleted from the scene but still listed in the scenario
                 int numberOfSeenRsuCameras = 0;
                 for (int i = 0; i < points.Count; i++)
                 {
