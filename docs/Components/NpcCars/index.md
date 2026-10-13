@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Vehicle Despawn System removes NPC vehicles within a specified radius. This is used during bus teleportation to prevent collisions.
+The Vehicle Despawn System removes NPC vehicles within a specified radius. It is used before moving the ego vehicle (Bus or Lexus) to a new position, to prevent collisions with NPCs at the destination. In-code callers are the [Teleporter](../Teleport/index.md) gate and `ScenarioSelector` (Q/E/F/X start points); `TestTrafficRemovingNpc` is a manual test component.
 
 ## How It Works
 
@@ -13,7 +13,7 @@ The system uses a two-phase approach:
 
 ### System Flow
 ```
-Game Code (TestTrafficRemovingNpc)
+Game Code (Teleporter, ScenarioSelector, TestTrafficRemovingNpc)
     ↓
 TrafficManager.RemoveVehiclesInRadius()
     ↓
@@ -55,7 +55,7 @@ public class TestTrafficRemovingNpc : MonoBehaviour
 
 **Inspector Parameters**:
 - **Traffic Manager**: Reference to the TrafficManager in the scene
-- **Center Transform**: The center point for vehicle removal (typically the bus transform)
+- **Center Transform**: The center point for vehicle removal (e.g. the ego vehicle transform)
 - **Radius**: Distance in meters from center point
 - **Remove Key**: Keyboard key to trigger removal (default: R)
 
@@ -63,13 +63,17 @@ public class TestTrafficRemovingNpc : MonoBehaviour
 
 ### RemoveVehiclesInRadius
 
-**Method**: `TrafficManager.RemoveVehiclesInRadius()`
+**Overloads**:
+- `TrafficManager.RemoveVehiclesInRadius(Vector3 center, float radius)`
+- `TrafficManager.RemoveVehiclesInRadius(Transform centerTransform, float radius)` - uses `centerTransform.position`; logs a warning and returns `0` if the transform is null
 
 **Parameters**:
-- `center` (Transform) - Center point of removal area
+- `center` / `centerTransform` - Center point of removal area
 - `radius` (float) - Radius in meters
 
-**Returns**: `int` - Number of vehicles marked for removal
+**Returns**: `int` - Number of vehicles marked for removal (vehicles already marked are not counted again). Returns `0` with a warning if the `NPCVehicleSimulator` is not initialized.
+
+The call affects only the NPCs of the `TrafficManager` it is called on. If the scene has several TrafficManagers, call it on each (the Teleporter and `ScenarioSelector` do this).
 
 ## Implementation Details
 
@@ -77,8 +81,8 @@ public class TestTrafficRemovingNpc : MonoBehaviour
 
 The system uses squared distance (`sqrMagnitude`) for performance:
 ```csharp
-float sqrDistance = (vehiclePosition - center.position).sqrMagnitude;
-if (sqrDistance <= radius * radius)
+var distanceSquared = (state.Position - centerPosition).sqrMagnitude;
+if (distanceSquared <= radiusSquared)
 {
     vehicleState.ShouldDespawn = true;
 }
@@ -86,13 +90,13 @@ if (sqrDistance <= radius * radius)
 
 ### Despawn Timing
 
-Vehicles are not destroyed immediately. Destruction occurs in the next `FixedUpdate()` cycle (typically ~0.02 seconds later).
+Vehicles are not destroyed immediately. Destruction occurs at the end of the next `TrafficManager.FixedUpdate()` (typically ~0.02 seconds later).
 
 ## Testing
 
 1. Add `TestTrafficRemovingNpc` component to any GameObject
 2. Assign the TrafficManager reference from the scene
-3. Set the center transform (bus or target location)
+3. Set the center transform (ego vehicle or target location)
 4. Configure the radius (recommended: 20-30m)
 5. Enter Play mode and press **R** key to test removal
 
@@ -100,7 +104,7 @@ Vehicles are not destroyed immediately. Destruction occurs in the next `FixedUpd
 
 - **Time Complexity**: O(n) where n is the number of active vehicles
 - **Optimization**: Uses squared distance to avoid expensive square root calculations
-- **Recommended Radius**: 20-30m for bus spawning
+- **Recommended Radius**: 20-30m when clearing an area around a spawn point
 
 ## Common Issues
 
@@ -119,9 +123,9 @@ Vehicles are not destroyed immediately. Destruction occurs in the next `FixedUpd
 ## Notes
 
 - The test component uses `FixedUpdate()` with `Input.GetKeyDown()` for testing purposes
-- In production, call `RemoveVehiclesInRadius()` before teleporting or spawning buses
+- In production, call `RemoveVehiclesInRadius()` before teleporting or spawning the ego vehicle
 - Vehicles marked for despawn remain in the scene until next physics update
 
 ---
 
-**Related**: Traffic Spawning System, Bus Teleportation System
+**Related**: Traffic Spawning System, [Teleporter](../Teleport/index.md)
