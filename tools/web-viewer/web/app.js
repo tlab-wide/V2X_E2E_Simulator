@@ -10,7 +10,6 @@ const STORAGE_KEY = 'v2x-viewer:v1';
 const state = {
   topics: new Map(),        // name -> health row
   layers: new Map(),        // name -> {layer, features, summary}
-  markers: new Map(),       // key -> maplibre Marker (signal info)
   addedLayers: new Set(),   // topics with map sources
   selected: null,
   ws: null,
@@ -79,9 +78,6 @@ const map = new maplibregl.Map({
 map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
 map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-right');
 map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
-// Below zoom 17 signals shrink to a lamp per approach so the whole route stays readable.
-const COMPACT_BELOW_ZOOM = 17;
-map.on('zoom', () => document.getElementById('map').classList.toggle('compact', map.getZoom() < COMPACT_BELOW_ZOOM));
 
 function sourceId(topic) { return 't:' + topic; }
 
@@ -128,39 +124,7 @@ function applyVisibility() {
       if (id.endsWith(':circle')) map.setPaintProperty(id, 'circle-opacity', dim ? 0.3 : 1);
     }
   }
-  for (const [key, marker] of state.markers) {
-    const topic = key.split('|')[0];
-    const row = state.topics.get(topic);
-    const visible = row && isEnabled(row);
-    marker.getElement().style.display = visible ? '' : 'none';
-    marker.getElement().classList.toggle('stale', !!row && row.status !== 'live');
-  }
-}
-
-function updateSignalMarkers(topic, features) {
-  const seen = new Set();
-  for (const f of features) {
-    const p = f.properties;
-    const key = `${topic}|${p.crp_id}|${p.kind}|${p.approach}`;
-    seen.add(key);
-    let marker = state.markers.get(key);
-    if (!marker) {
-      const el = document.createElement('div');
-      el.className = 'sig' + (p.kind === 'pedestrian' ? ' ped' : '');
-      el.innerHTML = '<span class="lamp"></span><span class="txt"></span>';
-      el.addEventListener('click', ev => { ev.stopPropagation(); inspectFeature(topic, el._props); });
-      marker = new maplibregl.Marker({ element: el }).setLngLat(f.geometry.coordinates).addTo(map);
-      state.markers.set(key, marker);
-    }
-    const el = marker.getElement();
-    el._props = p;
-    el.querySelector('.lamp').className = 'lamp ' + p.color;
-    el.querySelector('.txt').textContent = p.label;
-    el.title = `${p.intersection} 方路${p.approach} ${p.signal_ids}\n${p.schedule}`;
-  }
-  for (const [key, marker] of state.markers) {
-    if (key.startsWith(topic + '|') && !seen.has(key)) { marker.remove(); state.markers.delete(key); }
-  }
+  Overlays.onVisibility();
 }
 
 function addIntersectionLabels() {
@@ -168,15 +132,15 @@ function addIntersectionLabels() {
     const el = document.createElement('div');
     el.className = 'inter-label';
     el.textContent = inter.name;
-    new maplibregl.Marker({ element: el, offset: [0, -26] }).setLngLat(inter.center).addTo(map);
+    new maplibregl.Marker({ element: el, offset: [0, -34] }).setLngLat([inter.center.lon, inter.center.lat]).addTo(map);
   }
-  const lons = state.config.intersections.map(i => i.center[0]);
-  const lats = state.config.intersections.map(i => i.center[1]);
+  const lons = state.config.intersections.map(i => i.center.lon);
+  const lats = state.config.intersections.map(i => i.center.lat);
   map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: 90, duration: 0 });
-  document.getElementById('map').classList.toggle('compact', map.getZoom() < COMPACT_BELOW_ZOOM);
 }
 
 // ------------------------------------------------------------------------------------------------ sidebar
+
 const topicsEl = document.getElementById('topics');
 
 function renderTopics() {
@@ -249,15 +213,16 @@ basemap.addEventListener('change', () => {
 function renderStats() {
   const rows = [...state.topics.values()].filter(r => r.status !== 'raw');
   const live = rows.filter(r => r.status === 'live').length;
-  let objects = 0, signals = 0;
+  let objects = 0;
   for (const [topic, l] of state.layers) {
     const row = state.topics.get(topic);
     if (!row || !isEnabled(row) || row.status !== 'live') continue;
-    if (l.layer === 'dm_signals') signals += l.features.length;
-    else if (l.layer !== 'poses' && l.layer !== 'traffic_signals') objects += l.features.length;
+    if (l.layer !== 'poses' && l.layer !== 'traffic_signals' && l.layer !== 'dm_signals') objects += l.features.length;
   }
+  const heads = Overlays.stats();
   document.getElementById('stats').innerHTML =
-    `<span><b>${live}</b>/${rows.length} topics live</span><span><b>${objects}</b> objects shown</span><span><b>${signals}</b> DM signals</span>`;
+    `<span><b>${live}</b>/${rows.length} topics live</span><span><b>${objects}</b> objects shown</span>` +
+    `<span><b>${heads.withData}</b>/${heads.total} signal heads with data</span><span><b>${heads.sensorsLive}</b>/${heads.sensors} sensors live</span>`;
 }
 
 // ------------------------------------------------------------------------------------------------ inspector
@@ -333,17 +298,17 @@ function connect() {
       state.decodeErrors = msg.decode_errors || {};
       const after = [...state.topics.values()].filter(isEnabled).map(r => r.name);
       if (after.length !== before.size || after.some(n => !before.has(n))) sendEnabled();
-      renderTopics(); renderStats(); applyVisibility();
+      renderTopics(); Overlays.onHealth(); renderStats(); applyVisibility();
       if (state.inspecting) inspectTopic(state.inspecting.topic);
     } else if (msg.type === 'layers') {
       if (!map.isStyleLoaded()) return;
       for (const [topic, data] of Object.entries(msg.layers)) {
         state.layers.set(topic, data);
-        if (data.layer === 'dm_signals') { updateSignalMarkers(topic, data.features); continue; }
+        if (data.layer === 'dm_signals') continue;          // drawn on the signal heads (overlays.js)
         ensureTopicLayer(topic, data.layer);
         map.getSource(sourceId(topic)).setData({ type: 'FeatureCollection', features: data.features });
       }
-      applyVisibility(); renderStats();
+      Overlays.onLayers(); applyVisibility(); renderStats();
     }
   };
 }
@@ -352,5 +317,6 @@ map.on('load', async () => {
   map.setLayoutProperty('basemap', 'visibility', state.prefs.basemap ? 'visible' : 'none');
   state.config = await (await fetch('/api/config')).json();
   addIntersectionLabels();
+  Overlays.init(state.config);
   connect();
 });

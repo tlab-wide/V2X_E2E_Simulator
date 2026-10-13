@@ -5,13 +5,12 @@ Feature properties are what the inspector shows when a feature is clicked.
 """
 import math
 
-from geo import box, destination, yaw_from_quaternion, yaw_to_heading
+from geo import box, yaw_from_quaternion, yaw_to_heading
 
 # CooL4 DM constants (CooL4 データ連携 PF API 仕様 §5)
 DM_CLASS = {0: 'unknown', 1: 'vehicle', 2: 'person', 3: 'animal', 4: 'other'}
 DM_MAIN_LIGHT = {0: 'unknown', 1: 'dark', 2: 'flashing red', 3: 'red', 5: 'green', 7: 'yellow', 9: 'flashing yellow'}
 DM_PED_MAIN_LIGHT = {**DM_MAIN_LIGHT, 7: 'flashing green'}
-DM_LIGHT_COLOR = {0: 'gray', 1: 'dark', 2: 'red', 3: 'red', 5: 'green', 7: 'yellow', 9: 'yellow'}
 ITS_EPOCH_UNIX_MS = 1072882800000   # epoch used by the simulator (2004-01-01 00:00 JST), see docs
 UNKNOWN_LAT, UNKNOWN_LON = 900000001, 1800000001
 
@@ -56,13 +55,15 @@ def _uuid(uuid_msg):
 
 
 class Decoders:
-    def __init__(self, map_frame, meta, intersections):
+    def __init__(self, map_frame, meta, traffic_lights):
         self.map_frame = map_frame
         self.lights_by_re = meta.get('traffic_lights_by_regulatory_element', {})
         self.lights_by_way = meta.get('traffic_lights_by_way', {})
-        self.intersections = {i['crp_id']: i for i in intersections['intersections']}
-        self.vehicle_distance = intersections.get('vehicle_distance_m', 24)
-        self.pedestrian_distance = intersections.get('pedestrian_distance_m', 14)
+        self.crp_ids = {i['crp_id'] for i in traffic_lights['intersections']}
+        # Lanelet2 IDs drawn on configured signal heads (no separate dot needed for them)
+        self.configured_lanelet_ids = {lid for i in traffic_lights['intersections'] for a in i['approaches']
+                                       for key in ('lanelet_regulatory_elements', 'lanelet_light_ways')
+                                       for lid in (a.get('vehicle') or {}).get(key, [])}
         self.ego = None            # (x, y, yaw) in the map frame, from the ego pose topic
         self.ego_topic = '/awsim/ground_truth/vehicle/pose'
 
@@ -124,7 +125,8 @@ class Decoders:
 
     # ---------------------------------------------------------------- CooL4 DM signal info
     def _dm_signals(self, msg):
-        features, unplaced = [], set()
+        """Signal states keyed by CRP ID + signal IDs; the page draws them on the heads of config/traffic_lights.yaml."""
+        signals, unknown = [], set()
         for s in msg.array:
             crp = s.crp_id.value
             ids = [i.value for i in s.signal_id_list if i.value]
@@ -132,68 +134,59 @@ class Decoders:
                       for li in s.signal_light_info_list]
             if not ids or not lights:
                 continue
-            inter = self.intersections.get(crp)
-            if inter is None:
-                unplaced.add(crp)
-                continue
-            main, arrow, tmin, tmax = lights[0]
+            if crp not in self.crp_ids:
+                unknown.add(crp)
             pedestrian = all(i & 0x0F == 0 for i in ids)
             names = DM_PED_MAIN_LIGHT if pedestrian else DM_MAIN_LIGHT
-            remaining = None if tmin == 65535 else round(tmin / 10.0, 1)
-            schedule = [f'{names.get(m, m)} {"?" if a == 65535 else f"{a / 10:.1f}s"}' for m, _, a, _ in lights]
-            legs = sorted({i >> 4 for i in ids})
-            for leg in legs:
-                bearing = inter['approaches'].get(str(leg))
-                if bearing is None:
-                    continue
-                distance = self.pedestrian_distance if pedestrian else self.vehicle_distance
-                # Pedestrian markers are pushed sideways so they do not hide the vehicle marker of the same leg.
-                lon, lat = destination(*inter['center'], bearing + (12 if pedestrian else 0), distance)
-                props = {
-                    'kind': 'pedestrian' if pedestrian else 'vehicle',
-                    'intersection': inter['name'],
-                    'crp_id': crp,
-                    'approach': leg,
-                    'signal_ids': ' '.join(_hex(i, 2) for i in ids),
-                    'main_light': main,
-                    'light': names.get(main, str(main)),
-                    'color': DM_LIGHT_COLOR.get(main, 'gray'),
-                    'arrow_bits': arrow,
-                    'remaining_s': remaining,
-                    'countdown_stopped': bool(s.count_down_stop_flag.value),
-                    'schedule': ' → '.join(schedule),
-                    'its_time_ms': s.time.value,
-                    'label': ('🚶 ' if pedestrian else '') + (f'{remaining:.0f}s' if remaining is not None else '—'),
-                }
-                features.append(_feature('Point', [lon, lat], **props))
-        return {'layer': 'dm_signals', 'features': features,
-                'summary': {'signal_groups': len(msg.array), 'unplaced_crp_ids': sorted(unplaced)}}
+            seconds = lambda t: None if t == 65535 else round(t / 10.0, 1)
+            signals.append({
+                'crp_id': crp,
+                'signal_ids': ids,
+                'pedestrian': pedestrian,
+                'main_light': lights[0][0],
+                'light': names.get(lights[0][0], str(lights[0][0])),
+                'arrow_bits': lights[0][1],
+                'remaining_s': seconds(lights[0][2]),
+                'max_remaining_s': seconds(lights[0][3]),
+                'countdown_stopped': bool(s.count_down_stop_flag.value),
+                'schedule': [{'main_light': m, 'light': names.get(m, str(m)), 'arrow_bits': a,
+                              'min_s': seconds(lo), 'max_s': seconds(hi)} for m, a, lo, hi in lights],
+                'its_time_ms': s.time.value,
+            })
+        return {'layer': 'dm_signals', 'features': [], 'signals': signals,
+                'summary': {'signal_groups': len(signals), 'crp_ids_not_in_config': sorted(unknown)}}
 
     # ---------------------------------------------------------------- Autoware / V2X traffic signals
     def _traffic_signals(self, type_name, msg):
+        """States keyed by Lanelet2 regulatory-element / way ID. Configured heads show them; others get a dot."""
         if type_name.endswith('V2XSignals'):
-            signals = [(s.traffic_signal_id, s.elements) for s in msg.traffic_signals.signals]
+            raw = [(s.traffic_signal_id, s.elements) for s in msg.traffic_signals.signals]
             station = msg.station_id
         elif type_name.endswith('TrafficLightGroupArray'):
-            signals = [(s.traffic_light_group_id, s.elements) for s in msg.traffic_light_groups]
+            raw = [(s.traffic_light_group_id, s.elements) for s in msg.traffic_light_groups]
             station = None
         else:
-            signals = [(s.traffic_signal_id, s.elements) for s in msg.signals]
+            raw = [(s.traffic_signal_id, s.elements) for s in msg.signals]
             station = None
-        features, unplaced = [], 0
-        for sid, elements in signals:
+        features, signals, unplaced = [], [], 0
+        for sid, elements in raw:
+            on = [e for e in elements if AW_STATUS.get(e.status) in ('on', 'flashing')]
+            color = AW_LIGHT_COLOR.get(on[0].color, 'gray') if on else 'gray'
+            arrows = [AW_SHAPE.get(e.shape, str(e.shape)) for e in on if e.shape not in (0, 1)]
+            desc = ', '.join(f'{AW_COLOR.get(e.color, e.color)} {AW_SHAPE.get(e.shape, e.shape)} {AW_STATUS.get(e.status, e.status)}'
+                             for e in elements)
+            flashing = any(AW_STATUS.get(e.status) == 'flashing' for e in on)
+            signals.append({'id': sid, 'color': color, 'flashing': flashing, 'arrows': arrows, 'elements': desc or 'none'})
+            if sid in self.configured_lanelet_ids:
+                continue
             pos = self.lights_by_re.get(str(sid)) or self.lights_by_way.get(str(sid))
             if pos is None:
                 unplaced += 1
                 continue
-            on = [e for e in elements if AW_STATUS.get(e.status) in ('on', 'flashing')] or list(elements)
-            color = AW_LIGHT_COLOR.get(on[0].color, 'gray') if on else 'gray'
-            desc = ', '.join(f'{AW_COLOR.get(e.color, e.color)} {AW_SHAPE.get(e.shape, e.shape)} {AW_STATUS.get(e.status, e.status)}'
-                             for e in elements)
             features.append(_feature('Point', pos, kind='traffic_light', signal_id=sid, color=color,
                                      elements=desc or 'none', station_id=station, label=''))
-        return {'layer': 'traffic_signals', 'features': features,
-                'summary': {'signals': len(signals), 'unplaced': unplaced}}
+        return {'layer': 'traffic_signals', 'features': features, 'signals': signals,
+                'summary': {'signals': len(raw), 'station_id': station, 'not_on_map': unplaced}}
 
     # ---------------------------------------------------------------- Autoware objects
     def _autoware_objects(self, type_name, msg):

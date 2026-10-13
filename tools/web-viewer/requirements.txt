@@ -1,1 +1,2 @@
 aiohttp>=3.8
+pyyaml>=5.3

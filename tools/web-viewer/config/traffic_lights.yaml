@@ -1,0 +1,276 @@
+# Traffic signals shown by the web viewer (tools/web-viewer).
+# Positions are WGS84 latitude/longitude. Edit them freely: scripts/build_signal_config.py only fills
+# approaches that have no heads yet (use --force to re-derive everything from the Lanelet2 map).
+#
+# How live data is matched to a head:
+#   dm_signal_ids                -> CooL4 SignalInfo (crp_id + any of these signal IDs); has remaining time
+#   lanelet_regulatory_elements  -> v2x_msgs/V2XSignals, Autoware TrafficSignalArray / TrafficLightGroupArray
+#   lanelet_light_ways           -> the same messages when they carry Lanelet2 way IDs instead
+# Signal IDs follow CooL4 §3.6.3: vehicle = inbound approach << 4 | outbound approach,
+# pedestrian = crossed approach << 4.  facing_deg = direction the head faces (clockwise from north).
+
+intersections:
+  - name: 東大前 (UTokyo)
+    crp_id: 1            # 0x00000001
+    unity_intersection: 'crossroad 14'
+    center: {lat: 35.900061, lon: 139.937603}
+    approaches:
+      - id: 1                  # 方路1
+        direction: east
+        bearing_deg: 66        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x11, 0x12, 0x13]
+          lanelet_regulatory_elements: [165630, 165704]
+          lanelet_light_ways: [155173, 155249]
+          heads:
+            - {lat: 35.899943, lon: 139.9373207, facing_deg: 66}
+            - {lat: 35.9000965, lon: 139.9376429, facing_deg: 66}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x10]
+          heads: []
+      - id: 2                  # 方路2
+        direction: west
+        bearing_deg: 246        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x21, 0x22, 0x23]
+          lanelet_regulatory_elements: [165648]
+          lanelet_light_ways: [155191]
+          heads:
+            - {lat: 35.9000893, lon: 139.9376268, facing_deg: 246}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x20]
+          heads:
+            - {lat: 35.8999307, lon: 139.9373629, facing_deg: 246}
+            - {lat: 35.9001046, lon: 139.9375284, facing_deg: 246}
+      - id: 3                  # 方路3
+        direction: north
+        bearing_deg: 311        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x31, 0x32, 0x33]
+          lanelet_regulatory_elements: [165553]
+          lanelet_light_ways: [155092]
+          heads:
+            - {lat: 35.8999967, lon: 139.9375379, facing_deg: 311}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x30]
+          heads:
+            - {lat: 35.9001194, lon: 139.9374962, facing_deg: 311}
+            - {lat: 35.9000713, lon: 139.9373753, facing_deg: 311}
+
+  - name: がん研 (Ganken)
+    crp_id: 790529            # 0x000c1001
+    unity_intersection: 'crossroad1'
+    center: {lat: 35.900736, lon: 139.938975}
+    approaches:
+      - id: 1                  # 方路1
+        direction: east
+        bearing_deg: 64        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x11, 0x12, 0x13]
+          lanelet_regulatory_elements: [166893]
+          lanelet_light_ways: [166888, 166899]
+          heads:
+            - {lat: 35.9008546, lon: 139.9391303, facing_deg: 64}
+            - {lat: 35.9006178, lon: 139.9388575, facing_deg: 64}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x10]
+          heads:
+            - {lat: 35.9007496, lon: 139.9391421, facing_deg: 64}
+            - {lat: 35.9008348, lon: 139.9390663, facing_deg: 64}
+      - id: 2                  # 方路2
+        direction: south
+        bearing_deg: 150        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x21, 0x22, 0x23]
+          lanelet_regulatory_elements: [165709]
+          lanelet_light_ways: [166906]
+          heads:
+            - {lat: 35.9007537, lon: 139.9389256, facing_deg: 150}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x20]
+          heads:
+            - {lat: 35.9005899, lon: 139.9389916, facing_deg: 150}
+            - {lat: 35.9006607, lon: 139.9391278, facing_deg: 150}
+      - id: 3                  # 方路3
+        direction: west
+        bearing_deg: 236        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x31, 0x32, 0x33]
+          lanelet_regulatory_elements: [166849]
+          lanelet_light_ways: [166844, 166866]
+          heads:
+            - {lat: 35.9006086, lon: 139.938844, facing_deg: 236}
+            - {lat: 35.9008449, lon: 139.9391167, facing_deg: 236}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x30]
+          heads:
+            - {lat: 35.9006936, lon: 139.9388295, facing_deg: 236}
+            - {lat: 35.90061, lon: 139.9389, facing_deg: 236}
+
+  - name: 科警研 (Kakeiken)
+    crp_id: 798721            # 0x000c3001
+    unity_intersection: 'crossroad2'
+    center: {lat: 35.896047, lon: 139.94182}
+    approaches:
+      - id: 1                  # 方路1
+        direction: east
+        bearing_deg: 65        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x11, 0x12, 0x13]
+          lanelet_regulatory_elements: [165626]
+          lanelet_light_ways: [166953]
+          heads:
+            - {lat: 35.8960134, lon: 139.9417823, facing_deg: 65}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x10]
+          heads:
+            - {lat: 35.8960642, lon: 139.942008, facing_deg: 65}
+            - {lat: 35.8961743, lon: 139.9419521, facing_deg: 65}
+      - id: 2                  # 方路2
+        direction: south
+        bearing_deg: 160        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x21, 0x22, 0x23]
+          lanelet_regulatory_elements: [166940]
+          lanelet_light_ways: [166935, 166947]
+          heads:
+            - {lat: 35.895915, lon: 139.94194, facing_deg: 160}
+            - {lat: 35.8961811, lon: 139.9417231, facing_deg: 160}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x20]
+          heads:
+            - {lat: 35.8959157, lon: 139.9418385, facing_deg: 160}
+            - {lat: 35.8959551, lon: 139.9419562, facing_deg: 160}
+      - id: 3                  # 方路3
+        direction: north
+        bearing_deg: 347        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x31, 0x32, 0x33]
+          lanelet_regulatory_elements: [166922]
+          lanelet_light_ways: [166917, 166928]
+          heads:
+            - {lat: 35.8961951, lon: 139.9417172, facing_deg: 347}
+            - {lat: 35.8959301, lon: 139.9419351, facing_deg: 347}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x30]
+          heads:
+            - {lat: 35.8961587, lon: 139.9417156, facing_deg: 347}
+            - {lat: 35.8962027, lon: 139.9418444, facing_deg: 347}
+
+  - name: 若柴 (Wakashiba)
+    crp_id: 2            # 0x00000002
+    unity_intersection: 'crossroad3'
+    center: {lat: 35.897917, lon: 139.949477}
+    approaches:
+      - id: 1                  # 方路1
+        direction: north
+        bearing_deg: 15        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x11, 0x12, 0x13, 0x14]
+          lanelet_regulatory_elements: [167050]
+          lanelet_light_ways: [167045, 166999]
+          heads:
+            - {lat: 35.8980962, lon: 139.9494158, facing_deg: 15}
+            - {lat: 35.897765, lon: 139.9495324, facing_deg: 15}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x10]
+          heads:
+            - {lat: 35.898018, lon: 139.9496267, facing_deg: 15}
+            - {lat: 35.8980429, lon: 139.9493693, facing_deg: 15}
+      - id: 2                  # 方路2
+        direction: east
+        bearing_deg: 100        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x21, 0x22, 0x23, 0x24]
+          lanelet_regulatory_elements: [167039]
+          lanelet_light_ways: [167034, 167006]
+          heads:
+            - {lat: 35.8979546, lon: 139.949737, facing_deg: 100}
+            - {lat: 35.8979181, lon: 139.9492601, facing_deg: 100}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x20]
+          heads:
+            - {lat: 35.8978235, lon: 139.9496549, facing_deg: 100}
+            - {lat: 35.8979901, lon: 139.9496743, facing_deg: 100}
+      - id: 3                  # 方路3
+        direction: south
+        bearing_deg: 190        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x31, 0x32, 0x33, 0x34]
+          lanelet_regulatory_elements: [165441]
+          lanelet_light_ways: [166985, 166992]
+          heads:
+            - {lat: 35.8980791, lon: 139.9494129, facing_deg: 190}
+            - {lat: 35.897748, lon: 139.9495307, facing_deg: 190}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x30]
+          heads:
+            - {lat: 35.897831, lon: 139.9493452, facing_deg: 190}
+            - {lat: 35.8978077, lon: 139.9496011, facing_deg: 190}
+      - id: 4                  # 方路4
+        direction: west
+        bearing_deg: 280        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x41, 0x42, 0x43, 0x44]
+          lanelet_regulatory_elements: [166965]
+          lanelet_light_ways: [166960, 166971, 166978]
+          heads:
+            - {lat: 35.8979215, lon: 139.9492397, facing_deg: 280}
+            - {lat: 35.8979581, lon: 139.9497163, facing_deg: 280}
+            - {lat: 35.897848, lon: 139.9497044, facing_deg: 280}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x40]
+          heads:
+            - {lat: 35.8980122, lon: 139.9493321, facing_deg: 280}
+            - {lat: 35.8978804, lon: 139.9493141, facing_deg: 280}
+
+  - name: 駅前 (Station)
+    crp_id: 794625            # 0x000c2001
+    unity_intersection: 'crossroad4'
+    center: {lat: 35.894453, lon: 139.949836}
+    approaches:
+      - id: 1                  # 方路1
+        direction: east
+        bearing_deg: 83        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x11, 0x12, 0x13]
+          lanelet_regulatory_elements: [167083]
+          lanelet_light_ways: [167078, 167027]
+          heads:
+            - {lat: 35.8944091, lon: 139.9497555, facing_deg: 83}
+            - {lat: 35.8945394, lon: 139.9500908, facing_deg: 83}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x10]
+          heads:
+            - {lat: 35.8944068, lon: 139.9500388, facing_deg: 83}
+            - {lat: 35.8945663, lon: 139.9500117, facing_deg: 83}
+      - id: 2                  # 方路2
+        direction: south
+        bearing_deg: 180        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x21, 0x22, 0x23]
+          lanelet_regulatory_elements: [167072]
+          lanelet_light_ways: [167067, 167020]
+          heads:
+            - {lat: 35.8943043, lon: 139.9499631, facing_deg: 180}
+            - {lat: 35.8946053, lon: 139.9497519, facing_deg: 180}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x20]
+          heads:
+            - {lat: 35.8943182, lon: 139.9497737, facing_deg: 180}
+            - {lat: 35.8943723, lon: 139.9500015, facing_deg: 180}
+      - id: 3                  # 方路3
+        direction: north
+        bearing_deg: 0        # from the centre towards this leg
+        vehicle:
+          dm_signal_ids: [0x31, 0x32, 0x33]
+          lanelet_regulatory_elements: [167061]
+          lanelet_light_ways: [167056, 167013]
+          heads:
+            - {lat: 35.8946226, lon: 139.9497497, facing_deg: 0}
+            - {lat: 35.8943217, lon: 139.9499607, facing_deg: 0}
+        pedestrian:                 # crosswalk across this approach
+          dm_signal_ids: [0x30]
+          heads:
+            - {lat: 35.8945813, lon: 139.9497229, facing_deg: 0}
+            - {lat: 35.894583, lon: 139.9499695, facing_deg: 0}

@@ -20,7 +20,9 @@ server/main.py                aiohttp server: page, /api/config, WebSocket /ws
 server/monitor.py             ROS 2 node: discovers topics, measures rate, keeps the latest message
 server/decoders.py            ROS messages -> GeoJSON features (DM, V2X, Autoware, poses)
 server/geo.py                 map frame <-> WGS84, oriented boxes
-config/cool4_intersections.json   where CooL4 signal IDs are drawn (CRP ID, approach bearings)
+config/traffic_lights.yaml    signal heads: positions, CooL4 CRP/signal IDs, Lanelet2 IDs (hand-editable)
+config/sensors.yaml           RSU pseudo sensors: pose, FOV, range, RSU IDs, topics (hand-editable)
+scripts/build_signal_config.py  fills signal-head positions in traffic_lights.yaml from a Lanelet2 map
 maps/lanelet2.geojson         Kashiwa Lanelet2 map, pre-converted
 maps/lanelet2_meta.json       map-frame offset and traffic-light positions
 scripts/build_map.py          converts a Lanelet2 .osm into the two map files

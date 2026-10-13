@@ -86,20 +86,53 @@ i.s { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
 #insp-body h4 { margin: 12px 12px 4px; color: var(--accent); font-size: 12px; font-family: ui-monospace, monospace; }
 
 /* Map markers */
-.sig { display: flex; align-items: center; gap: 4px; padding: 2px 6px 2px 3px; border-radius: 12px;
-  background: rgba(15, 18, 24, .85); border: 1px solid #39424f; font-size: 11px; font-weight: 600;
-  font-variant-numeric: tabular-nums; cursor: pointer; white-space: nowrap; }
-.sig .lamp { width: 12px; height: 12px; border-radius: 50%; background: #555; }
-.sig.ped { font-size: 10px; opacity: .92; }
-.lamp.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
-.lamp.yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
-.lamp.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
-.lamp.dark, .lamp.gray { background: #444c58; }
-.sig.stale { opacity: .35; }
-#map.compact .sig { padding: 0; border: 0; background: none; }
-#map.compact .sig .txt { display: none; }
-#map.compact .sig .lamp { width: 9px; height: 9px; outline: 1.5px solid #0f1218; }
-#map.compact .sig.ped { display: none !important; }
 .inter-label { color: #c9d3e0; font-size: 12px; font-weight: 600; text-shadow: 0 0 3px #000, 0 0 6px #000; pointer-events: none; }
 .maplibregl-ctrl-group { background: var(--panel-2) !important; }
 .maplibregl-ctrl-group button span { filter: invert(.85); }
+
+/* Overlay toggles */
+.overlay-toggles { display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+p.muted { color: var(--muted); padding: 0 12px; margin: 4px 0; }
+
+/* Signal heads (Japanese style: green - yellow - red, left to right) */
+.head { display: flex; align-items: center; gap: 3px; padding: 2px 4px; border-radius: 4px; cursor: pointer;
+  background: #14171c; border: 1px solid #3a4250; box-shadow: 0 1px 4px rgba(0,0,0,.6);
+  font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; color: #e8edf3; white-space: nowrap; }
+.head .bulbs { display: flex; gap: 2px; }
+.head .b { width: 10px; height: 10px; border-radius: 50%; background: #2b2f36; }
+.head .b.g.on { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.head .b.y.on { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+.head .b.r.on { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.head .arr { color: var(--green); font-size: 11px; line-height: 1; }
+.head .arr:empty, .head .t:empty { display: none; }
+.head.ped { padding: 2px 3px; }
+.head .figs { display: flex; flex-direction: column; gap: 1px; }
+.head .f { display: block; width: 10px; height: 12px; color: #2f343c; }
+.head .f svg { width: 100%; height: 100%; fill: currentColor; display: block; }
+.head .f.stop.on { color: var(--red); filter: drop-shadow(0 0 3px var(--red)); }
+.head .f.walk.on { color: var(--green); filter: drop-shadow(0 0 3px var(--green)); }
+.head .blink { animation: blink 1s steps(2, start) infinite; }
+@keyframes blink { to { visibility: hidden; } }
+.head.nodata { opacity: .45; }
+.head.stale { opacity: .55; border-style: dashed; }
+#map.heads-far .head { display: none !important; }
+#map.heads-compact .head .t, #map.heads-compact .head .arr { display: none; }
+#map.heads-compact .head.ped { display: none !important; }
+#map.heads-compact .head { padding: 1px 2px; }
+#map.heads-compact .head .b { width: 7px; height: 7px; }
+#map.heads-compact .head .f { width: 7px; height: 8px; }
+
+/* RSU sensors */
+.sensor { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.sensor .ic { width: 16px; height: 16px; border-radius: 4px; display: grid; place-items: center; font-size: 10px; font-weight: 800;
+  color: #0f1218; background: var(--c); border: 2px solid #0f1218; box-shadow: 0 0 0 1px var(--c); }
+.sensor.live .ic { box-shadow: 0 0 0 2px var(--live), 0 0 8px var(--live); }
+.sensor.disabled .ic { background: #3a4250; color: #9aa4b2; box-shadow: none; }
+.sensor .nm { display: none; font-size: 11px; color: #dfe5ee; text-shadow: 0 0 3px #000, 0 0 5px #000; }
+#map.sensor-labels .sensor .nm { display: inline; }
+
+/* Topic list in the sensor inspector */
+.topic-list { list-style: none; margin: 0; padding: 0 12px; }
+.topic-list li { display: grid; grid-template-columns: 12px 1fr; gap: 2px 6px; align-items: center; padding: 4px 0;
+  border-bottom: 1px solid #1d2430; font-family: ui-monospace, monospace; font-size: 12px; word-break: break-all; }
+.topic-list li em { grid-column: 2; color: var(--muted); font-style: normal; font-family: inherit; }

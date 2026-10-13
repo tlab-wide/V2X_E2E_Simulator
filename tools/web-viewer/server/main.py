@@ -12,6 +12,7 @@ import threading
 import time
 
 import rclpy
+import yaml
 from aiohttp import WSMsgType, web
 from rclpy.executors import ExternalShutdownException, SingleThreadedExecutor
 from rclpy.serialization import deserialize_message
@@ -31,11 +32,15 @@ class Viewer:
     def __init__(self, map_dir):
         with open(os.path.join(map_dir, 'lanelet2_meta.json')) as f:
             self.meta = json.load(f)
-        with open(os.path.join(ROOT, 'config', 'cool4_intersections.json')) as f:
-            self.intersections = json.load(f)
+        with open(os.path.join(ROOT, 'config', 'traffic_lights.yaml'), encoding='utf-8') as f:
+            self.traffic_lights = yaml.safe_load(f)
+        with open(os.path.join(ROOT, 'config', 'sensors.yaml'), encoding='utf-8') as f:
+            self.sensors = yaml.safe_load(f)['sensors']
+        for sensor in self.sensors:     # YAML hex IDs arrive as ints; the page shows them as hex
+            sensor['rsu_ids'] = [f'0x{i:x}' if isinstance(i, int) else str(i) for i in sensor.get('rsu_ids') or []]
         self.map_dir = map_dir
         self.decoders = Decoders(MapFrame(self.meta['utm_epsg'], self.meta['map_to_utm_offset']),
-                                 self.meta, self.intersections)
+                                 self.meta, self.traffic_lights)
         self.monitor = TopicMonitor(renderable=lambda t: Decoders.layer_of(t) is not None)
         self.clients = {}            # websocket -> set of enabled topics
         self.decoded_seq = {}        # topic -> seq of the last decoded message
@@ -49,7 +54,8 @@ class Viewer:
         return web.json_response({
             'bounds': self.meta['bounds'],
             'map_source': self.meta['source'],
-            'intersections': self.intersections['intersections'],
+            'intersections': self.traffic_lights['intersections'],
+            'sensors': self.sensors,
             'ego_topic': self.decoders.ego_topic,
         })
 
