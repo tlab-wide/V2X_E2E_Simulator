@@ -41,17 +41,39 @@ No Foxglove, rosbridge or other ROS packages are needed. The server subscribes w
 
 ## Topic panel
 
-Topics are grouped into DM signal info, DM object info, traffic signals, Autoware objects, ego vehicle, control, clock and other.
+### Problems
 
-| Status | Meaning |
+Every topic with an issue is listed at the top of the sidebar, grouped by reason. Each group has a short explanation, and each topic its details. Click a topic to open it in the inspector.
+
+| Group | Meaning | What to check |
+|:--|:--|:--|
+| 🔴 Message type missing | The type is not in the sourced message workspace, so the topic cannot be received or decoded (e.g. `/OBU/Sensing`, Autoware `DetectedObjects`). | Rebuild `v2x_e2e_msgs` with that type, or set `MSGS_SETUP` to a workspace that has it. |
+| 🔵 Publisher but no data | A publisher exists but nothing has arrived. | The publisher may be idle, or its QoS is incompatible. |
+| 🟠 Stopped publishing | Messages arrived before but stopped (shows how long ago). | The simulator is paused, or the publisher stopped. |
+| ⚫ Offline (no publisher) | The publisher is gone. Folded by default. | The simulator is stopped, or the publisher is disabled in the scene. |
+
+When **every** topic is offline, the panel shows a single "Simulator not publishing" notice instead of the long list.
+
+### Topic tree
+
+Below the problems, topics are grouped by category: DM signal info, DM object info, traffic signals, Autoware objects, ego vehicle, control, clock and other. Within each category they form a tree that follows the topic names, for example `v2x › rsu12020002 › sensor1 › object_info_noise › DSRC`. Namespaces with a single child are merged (`awsim/ground_truth`).
+
+- **Branches** show how many of their topics are live (`3/20`) and badges for problems inside them (`1 no data`, `2 type missing`). Their checkbox ticks or unticks every drawable topic below them; it is part-filled when only some are ticked.
+- **Topics** show their status dot, rate or problem, and colour swatch. A topic with delayed copies (`/DSRC`, `/Cellular`) has a ▸ to show them.
+- Branches with more than six topics, and every topic's delayed copies, start folded. Typing in the filter box expands everything that matches. The folding and tick choices are remembered in the browser.
+
+| Status dot | Meaning |
 |:--|:--|
 | 🟢 live | Messages are arriving; the rate is measured over the last 3 s. |
 | 🟠 stale | Messages arrived before but have stopped (the age is shown). |
 | 🔵 no data yet | A publisher exists but nothing has been received. |
 | ⚫ offline | No publisher any more (e.g. the simulator was stopped). |
 | 🔴 type missing | The message type is not in the sourced workspace, so the topic cannot be decoded. |
+| half green | (branches) some, but not all, topics below are live |
 
-Tick a topic to draw it on the map. Click its name to see its type, publishers, rate, message count, bandwidth and a summary of the last message. Delayed copies (`…/DSRC`, `…/Cellular`) and the per-intersection `…/signal_info` topics start unticked, because they duplicate other topics. Your choices are remembered in the browser.
+Tick a topic to draw it on the map. Click its name to see its type, publishers, rate, message count, bandwidth and a summary of the last message. Delayed copies (`…/DSRC`, `…/Cellular`) and the per-intersection `…/signal_info` topics start unticked, because they duplicate other topics.
+
+![Sidebar: problems on top, then the topic tree](sidebar.png)
 
 ## Map layers
 

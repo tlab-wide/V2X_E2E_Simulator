@@ -4,7 +4,6 @@
 const PALETTE = ['#4cc2ff', '#ff7ab6', '#ffd166', '#7ae582', '#c792ea', '#ff9f43', '#5ce1e6', '#f78fb3',
                  '#a3de83', '#ffb4a2', '#89b4fa', '#e5c07b'];
 const POLYGON_LAYERS = new Set(['dm_objects', 'autoware_objects', 'poses']);
-const STATUS_RANK = { live: 0, stale: 1, waiting: 2, offline: 3, unsupported: 4, raw: 5 };
 const STORAGE_KEY = 'v2x-viewer:v1';
 
 const state = {
@@ -141,64 +140,9 @@ function addIntersectionLabels() {
 
 // ------------------------------------------------------------------------------------------------ sidebar
 
-const topicsEl = document.getElementById('topics');
+// The topic tree and the problems summary live in sidebar.js.
+function renderTopics() { Sidebar.render(); }
 
-function renderTopics() {
-  const filter = document.getElementById('filter').value.trim().toLowerCase();
-  const groups = new Map();
-  for (const row of state.topics.values()) {
-    if (row.status === 'raw' && !state.prefs.showRaw) continue;
-    if (filter && !row.name.toLowerCase().includes(filter) && !row.type.toLowerCase().includes(filter)) continue;
-    if (!groups.has(row.category)) groups.set(row.category, []);
-    groups.get(row.category).push(row);
-  }
-  const order = ['DM signal info', 'DM object info', 'Traffic signals', 'Autoware objects', 'Ego vehicle', 'Control', 'Clock', 'Other', 'Raw sensors'];
-  const names = [...groups.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b));
-  let html = '';
-  for (const g of names) {
-    const rows = groups.get(g).sort((a, b) => STATUS_RANK[a.status] - STATUS_RANK[b.status] || a.name.localeCompare(b.name));
-    const live = rows.filter(r => r.status === 'live').length;
-    const collapsed = state.prefs.collapsed[g] ? ' collapsed' : '';
-    html += `<div class="group${collapsed}" data-group="${escapeHtml(g)}"><div class="group-head"><span class="chev">▾</span>` +
-            `<span class="name">${escapeHtml(g)}</span><span class="count">${live}/${rows.length} live</span></div><div class="rows">`;
-    for (const r of rows) {
-      const meta = r.status === 'live' ? `${r.hz.toFixed(1)} Hz` :
-                   r.status === 'stale' ? `${r.age_s}s ago` :
-                   r.status === 'waiting' ? 'no data' : r.status === 'unsupported' ? 'type missing' : r.status;
-      const sel = state.selected === r.name ? ' selected' : '';
-      const checked = isEnabled(r) ? ' checked' : '';
-      const sw = r.renderable ? `<span class="swatch" style="background:${colorOf(r.name)}"></span>` : '<span></span>';
-      html += `<div class="row${sel}" data-topic="${escapeHtml(r.name)}" title="${escapeHtml(r.type)}">` +
-              `<input type="checkbox"${checked}${r.renderable ? '' : ' disabled'}>` +
-              `<span><i class="s ${r.status}"></i></span>` +
-              `<span class="tname">${escapeHtml(r.name)}</span>` +
-              `<span class="meta">${sw} ${escapeHtml(meta)}</span></div>`;
-    }
-    html += '</div></div>';
-  }
-  const scroll = topicsEl.scrollTop;
-  topicsEl.innerHTML = html || '<div style="padding:14px;color:var(--muted)">No topics yet. Is the simulator running?</div>';
-  topicsEl.scrollTop = scroll;
-}
-
-topicsEl.addEventListener('click', e => {
-  const head = e.target.closest('.group-head');
-  if (head) {
-    const g = head.parentElement.dataset.group;
-    state.prefs.collapsed[g] = !state.prefs.collapsed[g];
-    savePrefs(); renderTopics(); return;
-  }
-  const rowEl = e.target.closest('.row');
-  if (!rowEl) return;
-  const name = rowEl.dataset.topic;
-  if (e.target.matches('input[type=checkbox]')) {
-    state.prefs.enabled[name] = e.target.checked;
-    savePrefs(); sendEnabled(); applyVisibility(); renderTopics(); return;
-  }
-  state.selected = name;
-  inspectTopic(name);
-  renderTopics();
-});
 document.getElementById('filter').addEventListener('input', renderTopics);
 const showRaw = document.getElementById('show-raw');
 showRaw.checked = state.prefs.showRaw;
