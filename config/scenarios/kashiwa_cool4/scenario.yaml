@@ -3,3 +3,4 @@
 name: kashiwa_cool4
 description: exported from V2X_E2E_Simulator_v3.1.1
 rsus: rsus.yaml
+vehicles: vehicles.yaml

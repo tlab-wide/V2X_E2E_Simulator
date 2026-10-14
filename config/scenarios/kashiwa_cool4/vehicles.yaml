@@ -1,0 +1,64 @@
+# NPC vehicle traffic.
+# lanes_root: scene path of the TrafficLanes object; lanes are named lanelet<Lanelet2 ID>.
+# template_traffic_manager: scene TrafficManager whose vehicle dynamics, layers and ego are used.
+# spawn_points: vehicles start at the first point of the lanelet, vehicles_per_minute each (±25 % jitter).
+# branches: where a lanelet splits, the ratio of vehicles taking each next lanelet (normalised; others get 0).
+# behaviour: deadlock_timeout_s = standing still while yielding this long gives the right of way for forced_pass_s;
+#            stuck_despawn_s = standing still this long for any reason removes the vehicle (0 = off).
+# vehicle_types: NPC prefab names (from the scene's traffic managers) with relative weights.
+
+lanes_root: AutowareSimulator/Enviroment /TrafficLanes
+template_traffic_manager: ScenarioSelector/Cool4 Kakeiken Overal Evaluation /New NPC - Kashiwa High
+seed: 0
+max_vehicles: 200
+spawn_distance_to_ego_m: 30
+spawn_clearance_m: 4
+maximum_spawns: 4000
+behaviour:
+  deadlock_timeout_s: 8
+  forced_pass_s: 6
+  forced_pass_radius_m: 70
+  stuck_despawn_s: 180
+  standstill_speed_mps: 0.3
+vehicle_types:
+- prefab: Hatchback Variant
+  weight: 1
+- prefab: SmallCar Variant
+  weight: 1
+- prefab: Taxi Variant
+  weight: 1
+- prefab: Van Variant
+  weight: 1
+spawn_points:
+- name: lanelet1079
+  lanelet: 1079
+  vehicles_per_minute: 1.94
+  position:
+    x: 4962.96
+    y: 73165.86
+    z: 17.11
+- name: lanelet779
+  lanelet: 779
+  vehicles_per_minute: 5.15
+  position:
+    x: 4352.18
+    y: 73301.3
+    z: 18.62
+- name: lanelet1185
+  lanelet: 1185
+  vehicles_per_minute: 3.8
+  position:
+    x: 4561.24
+    y: 72781.36
+    z: 18.99
+branches:
+- from_lanelet: 1034
+  to:
+  - lanelet: 1088
+    ratio: 0.33
+  - lanelet: 1089
+    ratio: 0.67
+- from_lanelet: 1101
+  to:
+  - lanelet: 1102
+    ratio: 1

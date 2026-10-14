@@ -70,6 +70,11 @@ namespace AWSIM.TrafficSimulation
         // Output from any steps
         public bool ShouldDespawn { get; set; }
 
+        // Deadlock / stuck handling (NPCVehicleSimulator)
+        public float YieldWaitTime { get; set; }        // time standing still while yielding (s)
+        public float StuckTime { get; set; }            // time standing still for any reason (s)
+        public float ForcedPassUntil { get; set; } = -1f; // simulation time until which this vehicle ignores yielding
+
         // Debugs
         public Transform DominatingVehicle { get; set; }
         public bool IsStoppedByFrontVehicle { get; set; }

@@ -42,6 +42,109 @@ namespace V2X.Config
             ApplyNetwork(config);
             if (config.Rsus != null)
                 BuildRsus(config);
+            if (config.Vehicles != null)
+                SetupVehicles(config);
+        }
+
+        static string ScenePath(Transform t) => t.parent ? ScenePath(t.parent) + "/" + t.name : t.name;
+
+        /// <summary>
+        /// One TrafficManager drives the traffic from vehicles.yaml: the active one in the scene is kept as the template
+        /// (prefabs, ego, layers, vehicle dynamics); every other TrafficManager is switched off.
+        /// </summary>
+        static void SetupVehicles(LoadedConfig c)
+        {
+            var v = c.Vehicles;
+            var managers = FindObjectsByType<AWSIM.TrafficSimulation.TrafficManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            // Any TrafficManager works as the template (they share prefabs, ego, layers); prefer an enabled one.
+            var template = managers.FirstOrDefault(m => !string.IsNullOrEmpty(v.TemplateTrafficManager) && ScenePath(m.transform) == v.TemplateTrafficManager)
+                           ?? managers.OrderBy(m => ScenePath(m.transform)).FirstOrDefault(m => m.enabled && m.randomTrafficSims != null && m.randomTrafficSims.Length > 0)
+                           ?? managers.FirstOrDefault();
+            if (!string.IsNullOrEmpty(v.TemplateTrafficManager) && ScenePath(template.transform) != v.TemplateTrafficManager)
+                Debug.LogWarning($"[Config] vehicles: template_traffic_manager '{v.TemplateTrafficManager}' not found; using {ScenePath(template.transform)}");
+            if (template == null)
+            {
+                Debug.LogError("[Config] vehicles: no TrafficManager in the scene");
+                return;
+            }
+            foreach (var m in managers)
+                if (m != template) m.enabled = false;
+            // Independent of which scenario object the selector switches on
+            template.transform.SetParent(null, true);
+            template.gameObject.SetActive(true);
+            template.enabled = true;
+
+            // Prefabs known to any traffic manager of the scene, by name
+            var prefabs = new Dictionary<string, GameObject>();
+            foreach (var m in managers)
+                foreach (var sim in m.randomTrafficSims ?? new AWSIM.TrafficSimulation.RandomTrafficSimulatorConfiguration[0])
+                    foreach (var p in sim.npcPrefabs ?? new GameObject[0])
+                        if (p != null && !prefabs.ContainsKey(p.name)) prefabs[p.name] = p;
+
+            // Several objects can share the path; use the one that holds the most of the configured lanelets.
+            var wanted = new HashSet<string>(v.SpawnPoints.Select(sp => "lanelet" + sp.Lanelet)
+                .Concat(v.Branches.SelectMany(b => b.To.Select(t => "lanelet" + t.Lanelet).Append("lanelet" + b.FromLanelet))));
+            var root = FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .Where(t => ScenePath(t) == v.LanesRoot)
+                .OrderByDescending(t => t.GetComponentsInChildren<AWSIM.TrafficSimulation.TrafficLane>(true).Count(l => wanted.Contains(l.name)))
+                .FirstOrDefault();
+            if (root == null)
+            {
+                Debug.LogError($"[Config] vehicles: lanes_root '{v.LanesRoot}' not found; the scene's traffic setup is used");
+                foreach (var m in managers) m.enabled = m == template;
+                return;
+            }
+            var lanes = new Dictionary<string, AWSIM.TrafficSimulation.TrafficLane>();
+            foreach (var lane in root.GetComponentsInChildren<AWSIM.TrafficSimulation.TrafficLane>(true))
+                lanes[lane.name] = lane;
+            AWSIM.TrafficSimulation.TrafficLane Lane(long id, string where)
+            {
+                if (lanes.TryGetValue("lanelet" + id, out var lane)) return lane;
+                Debug.LogError($"[Config] vehicles: {where}: lanelet {id} has no lane under {v.LanesRoot}");
+                return null;
+            }
+
+            var ext = new AWSIM.TrafficSimulation.TrafficManager.ExternalConfig
+            {
+                seed = v.Seed, maxVehicleCount = v.MaxVehicles, spawnDistanceToEgo = v.SpawnDistanceToEgoM,
+                spawnClearance = v.SpawnClearanceM, maximumSpawns = v.MaximumSpawns,
+                behaviour = new AWSIM.TrafficSimulation.NPCTrafficBehaviour
+                {
+                    deadlockTimeout = v.Behaviour.DeadlockTimeoutS, forcedPassDuration = v.Behaviour.ForcedPassS,
+                    forcedPassRadius = v.Behaviour.ForcedPassRadiusM, stuckDespawnTimeout = v.Behaviour.StuckDespawnS,
+                    standstillSpeed = v.Behaviour.StandstillSpeedMps,
+                },
+            };
+            foreach (var t in v.VehicleTypes)
+            {
+                if (prefabs.TryGetValue(t.Prefab, out var p)) { ext.prefabs.Add(p); ext.prefabWeights.Add(t.Weight); }
+                else Debug.LogError($"[Config] vehicles: unknown vehicle prefab '{t.Prefab}' (known: {string.Join(", ", prefabs.Keys)})");
+            }
+            foreach (var s in v.SpawnPoints)
+            {
+                var lane = Lane(s.Lanelet, $"spawn point {s.Name}");
+                if (lane == null) continue;
+                ext.spawnLanes.Add(lane);
+                ext.vehiclesPerMinute.Add(s.VehiclesPerMinute);
+            }
+            foreach (var b in v.Branches)
+            {
+                var from = Lane(b.FromLanelet, "branch");
+                if (from == null) continue;
+                var next = new List<AWSIM.TrafficSimulation.RandomTrafficSimulatorConfiguration.BranchWeight>();
+                foreach (var t in b.To)
+                {
+                    var to = Lane(t.Lanelet, $"branch from {b.FromLanelet}");
+                    if (to == null) continue;
+                    if (!from.NextLanes.Contains(to))
+                        Debug.LogWarning($"[Config] vehicles: lanelet {t.Lanelet} does not follow lanelet {b.FromLanelet}; the ratio is ignored");
+                    next.Add(new AWSIM.TrafficSimulation.RandomTrafficSimulatorConfiguration.BranchWeight { nextLane = to, weight = t.Ratio });
+                }
+                ext.branches.Add(new AWSIM.TrafficSimulation.RandomTrafficSimulatorConfiguration.BranchWeightSet { fromLane = from, next = next.ToArray() });
+            }
+            template.ApplyExternalConfig(ext);
+            Debug.Log($"[Config] vehicles: {ext.spawnLanes.Count} spawn points, {ext.branches.Count} branches, " +
+                      $"{ext.prefabs.Count} vehicle types, max {ext.maxVehicleCount} ({template.name})");
         }
 
         static void ApplyNoise(LoadedConfig c)

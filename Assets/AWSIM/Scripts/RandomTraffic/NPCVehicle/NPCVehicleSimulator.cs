@@ -13,8 +13,39 @@ namespace AWSIM.TrafficSimulation
     /// - Control step implemented in <see cref="NPCVehicleControlStep"/><br/>
     /// Each step updates <see cref="NPCVehicleInternalState"/> and the result is passed to <see cref="NPCVehicleVisualizationStep"/> for visualization update.
     /// </summary>
+    /// <summary>
+    /// Rules that keep the traffic moving.
+    /// </summary>
+    [Serializable]
+    public struct NPCTrafficBehaviour
+    {
+        [Tooltip("A vehicle that stands still this long while yielding gets the right of way (s). 0 = off.")]
+        public float deadlockTimeout;
+        [Tooltip("How long a vehicle keeps the right of way it was given (s).")]
+        public float forcedPassDuration;
+        [Tooltip("Only one vehicle gets the right of way within this distance (m).")]
+        public float forcedPassRadius;
+        [Tooltip("A vehicle that stands still this long for any reason is removed (s). 0 = off.")]
+        public float stuckDespawnTimeout;
+        [Tooltip("Below this speed a vehicle counts as standing still (m/s).")]
+        public float standstillSpeed;
+
+        public static NPCTrafficBehaviour Default() => new NPCTrafficBehaviour
+        {
+            deadlockTimeout = 8f, forcedPassDuration = 6f, forcedPassRadius = 70f,
+            stuckDespawnTimeout = 180f, standstillSpeed = 0.3f,
+        };
+    }
+
     public class NPCVehicleSimulator : IDisposable
     {
+        public NPCTrafficBehaviour Behaviour { get; set; } = NPCTrafficBehaviour.Default();
+
+        /// <summary>Number of vehicles removed because they were stuck, and right-of-way grants, since the start.</summary>
+        public int StuckDespawnCount { get; private set; }
+        public int ForcedPassCount { get; private set; }
+
+        private float simulationTime;
         /// <summary>
         /// Get NPC vehicle states that are updated in simulation steps.<br/>
         /// </summary>
@@ -125,6 +156,9 @@ namespace AWSIM.TrafficSimulation
             cognitionStep.Execute(vehicleStates, EGOVehicle);
             Profiler.EndSample();
 
+            simulationTime += deltaTime;
+            ApplyForcedPass();
+
             Profiler.BeginSample("NPCVehicleSimulator.Decision");
             decisionStep.Execute(VehicleStates);
             Profiler.EndSample();
@@ -132,6 +166,8 @@ namespace AWSIM.TrafficSimulation
             Profiler.BeginSample("NPCVehicleSimulator.Control");
             controlStep.Execute(VehicleStates, deltaTime);
             Profiler.EndSample();
+
+            UpdateDeadlockAndStuck(deltaTime);
 
             // Visualization step
             Profiler.BeginSample("NPCVehicleSimulator.Visualize");
@@ -142,6 +178,71 @@ namespace AWSIM.TrafficSimulation
         /// <summary>
         /// Show editor gizmos for debugging.
         /// </summary>
+        static bool IsWaitingForOthers(NPCVehicleYieldPhase phase)
+            => phase != NPCVehicleYieldPhase.NONE && phase != NPCVehicleYieldPhase.ENTERING_INTERSECTION &&
+               phase != NPCVehicleYieldPhase.AT_INTERSECTION;
+
+        /// <summary>A vehicle that was given the right of way does not yield (it still stops for lights and vehicles ahead).</summary>
+        private void ApplyForcedPass()
+        {
+            foreach (var state in vehicleStates)
+                if (!state.ShouldDespawn && state.ForcedPassUntil > simulationTime && IsWaitingForOthers(state.YieldPhase))
+                    state.YieldPhase = NPCVehicleYieldPhase.NONE;
+        }
+
+        /// <summary>
+        /// Breaks right-of-way deadlocks (two vehicles yielding to each other forever) and removes vehicles stuck for a long time.
+        /// </summary>
+        private void UpdateDeadlockAndStuck(float deltaTime)
+        {
+            var b = Behaviour;
+            List<NPCVehicleInternalState> candidates = null;
+            foreach (var state in vehicleStates)
+            {
+                if (state.ShouldDespawn || state.Vehicle == null)
+                    continue;
+                bool still = state.Speed < b.standstillSpeed;
+                state.StuckTime = still ? state.StuckTime + deltaTime : 0f;
+                state.YieldWaitTime = still && IsWaitingForOthers(state.YieldPhase) ? state.YieldWaitTime + deltaTime : 0f;
+
+                if (b.stuckDespawnTimeout > 0f && state.StuckTime > b.stuckDespawnTimeout)
+                {
+                    state.ShouldDespawn = true;
+                    StuckDespawnCount++;
+                    var lane = state.FollowingLanes.Count > 0 && state.FollowingLanes[0] != null ? state.FollowingLanes[0].name : "-";
+                    Debug.Log($"[Traffic] removed {state.Vehicle.name}: standing still for {state.StuckTime:F0} s on {lane} " +
+                              $"(yield {state.YieldPhase}, light {(state.TrafficLightLane != null ? state.TrafficLightPassability.ToString() : "-")}, " +
+                              $"front vehicle {(state.DistanceToFrontVehicle < 1000f ? state.DistanceToFrontVehicle.ToString("F1") + " m" : "-")}, " +
+                              $"zebra {state.IsZebraBlocked}, speed mode {state.SpeedMode})");
+                    continue;
+                }
+                if (b.deadlockTimeout > 0f && state.YieldWaitTime > b.deadlockTimeout && state.ForcedPassUntil <= simulationTime)
+                    (candidates ??= new List<NPCVehicleInternalState>()).Add(state);
+            }
+            if (candidates == null)
+                return;
+
+            // Longest wait first, then the lower vehicle ID: deterministic, and only one winner per area.
+            candidates.Sort((x, y) => x.YieldWaitTime != y.YieldWaitTime
+                ? y.YieldWaitTime.CompareTo(x.YieldWaitTime) : x.Vehicle.VehicleID.CompareTo(y.Vehicle.VehicleID));
+            var radiusSq = b.forcedPassRadius * b.forcedPassRadius;
+            foreach (var c in candidates)
+            {
+                bool areaBusy = false;
+                foreach (var other in vehicleStates)
+                    if (other != c && other.ForcedPassUntil > simulationTime && (other.Position - c.Position).sqrMagnitude < radiusSq)
+                    {
+                        areaBusy = true;
+                        break;
+                    }
+                if (areaBusy)
+                    continue;
+                c.ForcedPassUntil = simulationTime + b.forcedPassDuration;
+                c.YieldWaitTime = 0f;
+                ForcedPassCount++;
+            }
+        }
+
         public void ShowGizmos(bool showYieldingPhase, bool showObstacleChecking)
         {
             decisionStep.ShowGizmos(VehicleStates);

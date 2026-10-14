@@ -54,6 +54,9 @@ namespace AWSIM.TrafficSimulation
             {
                 foreach (var state in States)
                 {
+                    if (state.ShouldDespawn)
+                        continue;
+
                     var isCloseToTarget = state.DistanceToCurrentWaypoint <= 1f;
 
                     if (!isCloseToTarget)
@@ -100,7 +103,7 @@ namespace AWSIM.TrafficSimulation
                 for (var i = 0; i < States.Count; i++)
                 {
                     if (States[i].Vehicle == null)
-                        return;
+                        continue;   // (was return: one destroyed vehicle hid every later vehicle for the step)
 
                     var srcIndex = States[i].WaypointIndex;
                     var dstIndex = 0;

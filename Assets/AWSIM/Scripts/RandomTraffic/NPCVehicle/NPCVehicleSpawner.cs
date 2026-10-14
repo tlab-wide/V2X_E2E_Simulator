@@ -160,6 +160,19 @@ namespace AWSIM.TrafficSimulation
         }
 
         /// <summary>
+        /// Check if the vehicle with <paramref name="localBounds"/> fits at <paramref name="spawnPoint"/> with
+        /// <paramref name="clearance"/> metres of free space in front of and behind it (and a quarter of it to the sides).
+        /// </summary>
+        public static bool IsSpawnable(Bounds localBounds, NPCVehicleSpawnPoint spawnPoint, float clearance)
+        {
+            var rotation = Quaternion.LookRotation(spawnPoint.Forward);
+            var center = rotation * localBounds.center + spawnPoint.Position;
+            var halfExtents = localBounds.extents + new Vector3(clearance * 0.25f, 0f, clearance);
+            var ignoreGroundLayerMask = ~LayerMask.GetMask(Constants.Layers.Ground);
+            return !Physics.CheckBox(center, halfExtents, rotation, ignoreGroundLayerMask, QueryTriggerInteraction.Ignore);
+        }
+
+        /// <summary>
         /// Get all spawnable point from spawnable lanes.
         /// </summary>
         public IList<NPCVehicleSpawnPoint> GetSpawnablePoints(Bounds localBounds)

@@ -219,6 +219,102 @@ namespace V2X.Config
             return string.Join("\n", log);
         }
 
+        [MenuItem("V2X/Config/Export Vehicle Traffic To Config")]
+        public static void ExportVehiclesMenu()
+        {
+            EditorUtility.DisplayDialog("Export vehicle traffic to config", ExportVehicles(ConfigLoader.ResolveScenarioName(ConfigLoader.ConfigRoot(), null) ?? DefaultScenario), "OK");
+        }
+
+        public static void ExportVehiclesBatch()
+        {
+            var scene = ConfigLoader.GetArg("-exportScene");
+            if (!string.IsNullOrEmpty(scene))
+                EditorSceneManager.OpenScene(scene, OpenSceneMode.Single);
+            Debug.Log("[ConfigExporter] " + ExportVehicles(ConfigLoader.GetArg("-exportScenario") ?? DefaultScenario));
+            EditorApplication.Exit(0);
+        }
+
+        static long LaneletId(string laneName)
+            => laneName != null && laneName.StartsWith("lanelet") && long.TryParse(laneName.Substring(7), out var id) ? id : -1;
+
+        /// <summary>Writes the active TrafficManager (and its spawn JSON) to vehicles.yaml and links it from scenario.yaml.</summary>
+        public static string ExportVehicles(string scenario)
+        {
+            var managers = All<AWSIM.TrafficSimulation.TrafficManager>().ToList();
+            var tm = managers.FirstOrDefault(m => m.isActiveAndEnabled) ?? managers.FirstOrDefault(m => m.gameObject.activeInHierarchy && m.enabled);
+            if (tm == null) return "no active TrafficManager in the scene";
+            var so = new SerializedObject(tm);
+            var sim = tm.randomTrafficSims.FirstOrDefault(r => r.enabled && r.spawnableLanes != null && r.spawnableLanes.Length > 0);
+            var lanes = sim.spawnableLanes.Where(l => l.lane != null).ToList();
+            if (lanes.Count == 0) return $"{tm.name}: no spawn lanes";
+            var root = lanes[0].lane.transform.parent;
+            var v = new VehiclesConfig
+            {
+                LanesRoot = Path_(root), TemplateTrafficManager = Path_(tm.transform), Seed = tm.seed, MaxVehicles = tm.maxVehicleCount,
+                SpawnDistanceToEgoM = so.FindProperty("spawnDistanceToEgo").floatValue, MaximumSpawns = sim.maximumSpawns,
+            };
+            foreach (var p in sim.npcPrefabs.Where(p => p != null))
+                v.VehicleTypes.Add(new VehicleTypeConfig { Prefab = p.name, Weight = 1f });
+
+            // spawn rates and branch weights: the JSON wins over the inspector, as at runtime
+            var rates = lanes.ToDictionary(l => l.lane.name, l => l.spawnsPerMinute);
+            var branches = (sim.branchWeights ?? new AWSIM.TrafficSimulation.RandomTrafficSimulatorConfiguration.BranchWeightSet[0])
+                .Where(b => b.fromLane != null).Select(b => (from: b.fromLane.name,
+                    to: (b.next ?? new AWSIM.TrafficSimulation.RandomTrafficSimulatorConfiguration.BranchWeight[0])
+                        .Where(n => n.nextLane != null).Select(n => (n.nextLane.name, n.weight)).ToList())).ToList();
+            var jsonPath = tm.GetSpawnConfigPath();
+            if (!string.IsNullOrEmpty(jsonPath))
+            {
+                var full = System.IO.Path.IsPathRooted(jsonPath) ? jsonPath : System.IO.Path.Combine(Application.dataPath, "..", jsonPath);
+                var data = AWSIM.TrafficSimulation.TrafficSpawnConfig.ReadJson(full);
+                if (data != null)
+                {
+                    foreach (var r in data.spawnRates ?? new List<AWSIM.TrafficSimulation.TrafficSpawnConfig.SpawnRateEntry>())
+                        if (rates.ContainsKey(r.lane)) rates[r.lane] = r.spawnsPerMinute;
+                    if (data.branchWeights != null && data.branchWeights.Count > 0)
+                        branches = data.branchWeights.Select(b => (from: b.fromLane, to: b.next.Select(n => (n.lane, n.weight)).ToList())).ToList();
+                }
+            }
+            var skipped = new List<string>();
+            foreach (var l in lanes)
+            {
+                var id = LaneletId(l.lane.name);
+                if (id < 0) { skipped.Add(l.lane.name); continue; }
+                var m = ConfigGeometry.UnityToMap(l.lane.Waypoints[0]);
+                v.SpawnPoints.Add(new SpawnPointConfig
+                {
+                    Name = l.lane.name, Lanelet = id, VehiclesPerMinute = (float)System.Math.Round(rates[l.lane.name], 3),
+                    Position = new MapPoint { X = System.Math.Round(m.x, 2), Y = System.Math.Round(m.y, 2), Z = System.Math.Round(m.z, 2) },
+                });
+            }
+            foreach (var b in branches)
+            {
+                if (LaneletId(b.from) < 0) { skipped.Add(b.from); continue; }
+                v.Branches.Add(new BranchConfig
+                {
+                    FromLanelet = LaneletId(b.from),
+                    To = b.to.Where(t => LaneletId(t.Item1) >= 0).Select(t => new BranchTarget { Lanelet = LaneletId(t.Item1), Ratio = (float)System.Math.Round(t.Item2, 3) }).ToList(),
+                });
+            }
+
+            var dir = Path.Combine(ConfigLoader.ConfigRoot(), ConfigLoader.ScenariosDir, scenario);
+            ConfigLoader.Write(Path.Combine(dir, "vehicles.yaml"), v,
+                "# NPC vehicle traffic.\n" +
+                "# lanes_root: scene path of the TrafficLanes object; lanes are named lanelet<Lanelet2 ID>.\n" +
+                "# template_traffic_manager: scene TrafficManager whose vehicle dynamics, layers and ego are used.\n" +
+                "# spawn_points: vehicles start at the first point of the lanelet, vehicles_per_minute each (±25 % jitter).\n" +
+                "# branches: where a lanelet splits, the ratio of vehicles taking each next lanelet (normalised; others get 0).\n" +
+                "# behaviour: deadlock_timeout_s = standing still while yielding this long gives the right of way for forced_pass_s;\n" +
+                "#            stuck_despawn_s = standing still this long for any reason removes the vehicle (0 = off).\n" +
+                "# vehicle_types: NPC prefab names (from the scene's traffic managers) with relative weights.");
+            var scenarioFile = Path.Combine(dir, "scenario.yaml");
+            var text = File.Exists(scenarioFile) ? File.ReadAllText(scenarioFile) : "";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(text, @"^vehicles:", System.Text.RegularExpressions.RegexOptions.Multiline))
+                File.WriteAllText(scenarioFile, text.TrimEnd() + "\nvehicles: vehicles.yaml\n");
+            return $"{tm.name}: {v.SpawnPoints.Count} spawn points, {v.Branches.Count} branches, {v.VehicleTypes.Count} vehicle types, " +
+                   $"lanes {v.LanesRoot}" + (skipped.Count > 0 ? $"; skipped (not lanelet-named): {string.Join(", ", skipped)}" : "");
+        }
+
         static NoiseSelection Noise(SerializedObject so, System.Func<string, string> map) => new NoiseSelection
         {
             Position = map(so.FindProperty("positionNoiseName").stringValue),

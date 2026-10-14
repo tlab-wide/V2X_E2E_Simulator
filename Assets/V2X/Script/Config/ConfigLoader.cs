@@ -23,6 +23,7 @@ namespace V2X.Config
         public NoiseConfig Noise;
         public NetworkConfig Network;
         public RsusConfig Rsus;                        // null when the scenario does not configure RSUs
+        public VehiclesConfig Vehicles;                // null when the scenario does not configure vehicle traffic
         public readonly List<string> Errors = new List<string>();
         public readonly List<string> Warnings = new List<string>();
 
@@ -134,6 +135,8 @@ namespace V2X.Config
                 return c;
             if (!string.IsNullOrEmpty(c.Scenario.Rsus))
                 c.Rsus = Read<RsusConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Rsus), c);
+            if (!string.IsNullOrEmpty(c.Scenario.Vehicles))
+                c.Vehicles = Read<VehiclesConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Vehicles), c);
 
             Validate(c);
             return c;
@@ -141,6 +144,17 @@ namespace V2X.Config
 
         static void Validate(LoadedConfig c)
         {
+            if (c.Vehicles != null)
+            {
+                var v = c.Vehicles;
+                if (string.IsNullOrEmpty(v.LanesRoot)) c.Errors.Add("vehicles: lanes_root is empty");
+                if (v.VehicleTypes.Count == 0) c.Errors.Add("vehicles: no vehicle_types");
+                if (v.MaxVehicles < 0) c.Errors.Add("vehicles: max_vehicles < 0");
+                foreach (var s in v.SpawnPoints)
+                    if (s.VehiclesPerMinute < 0) c.Errors.Add($"vehicles: spawn point lanelet {s.Lanelet}: vehicles_per_minute < 0");
+                foreach (var b in v.Branches)
+                    if (b.To.Count == 0 || b.To.Any(t => t.Ratio < 0)) c.Errors.Add($"vehicles: branch from lanelet {b.FromLanelet}: needs targets with ratio >= 0");
+            }
             if (c.Rsus == null) return;
             var rsuNames = new HashSet<string>();
             var rsuIds = new HashSet<uint>();

@@ -75,6 +75,101 @@ namespace AWSIM.TrafficSimulation
 
         public string GetSpawnConfigPath() => spawnConfigPath;
 
+        // ------------------------------------------------------------------------------ external (config file) setup
+        /// <summary>Traffic set up from a config file instead of the inspector (see <see cref="ApplyExternalConfig"/>).</summary>
+        public class ExternalConfig
+        {
+            public int seed;
+            public int maxVehicleCount = 60;
+            public float spawnDistanceToEgo = 50f;
+            public float spawnClearance = 4f;
+            public int maximumSpawns;                                     // 0 = unlimited
+            public List<GameObject> prefabs = new List<GameObject>();
+            public List<float> prefabWeights = new List<float>();
+            public List<TrafficLane> spawnLanes = new List<TrafficLane>();
+            public List<float> vehiclesPerMinute = new List<float>();
+            public List<RandomTrafficSimulatorConfiguration.BranchWeightSet> branches = new List<RandomTrafficSimulatorConfiguration.BranchWeightSet>();
+            public NPCTrafficBehaviour behaviour = NPCTrafficBehaviour.Default();
+        }
+
+        private class ScheduledSpawnPoint
+        {
+            public NPCVehicleSpawnPoint point;
+            public string laneName;
+            public float interval;
+            public float nextTime;
+            public GameObject pendingPrefab;
+            public int spawned;
+        }
+
+        private ExternalConfig externalConfig;
+        private List<ScheduledSpawnPoint> schedule;
+
+        /// <summary>
+        /// Replaces the inspector setup (call before Start): one random traffic simulator with the given spawn lanes,
+        /// each spawning at its own rate, weighted vehicle types and branch ratios. The spawn JSON is not read.
+        /// </summary>
+        public void ApplyExternalConfig(ExternalConfig config)
+        {
+            externalConfig = config;
+            seed = config.seed;
+            maxVehicleCount = config.maxVehicleCount;
+            spawnDistanceToEgo = config.spawnDistanceToEgo;
+            spawnConfigPath = "";
+            var lanes = new RandomTrafficSimulatorConfiguration.SpawnableLaneConfig[config.spawnLanes.Count];
+            for (int i = 0; i < lanes.Length; i++)
+                lanes[i] = new RandomTrafficSimulatorConfiguration.SpawnableLaneConfig { lane = config.spawnLanes[i], spawnsPerMinute = config.vehiclesPerMinute[i] };
+            randomTrafficSims = new[]
+            {
+                new RandomTrafficSimulatorConfiguration
+                {
+                    npcPrefabs = config.prefabs.ToArray(), spawnableLanes = lanes, branchWeights = config.branches.ToArray(),
+                    maximumSpawns = config.maximumSpawns, enabled = true,
+                },
+            };
+            routeTrafficSims = new RouteTrafficSimulatorConfiguration[0];
+        }
+
+        private GameObject PickPrefab()
+        {
+            var c = externalConfig;
+            float total = 0f;
+            for (int i = 0; i < c.prefabs.Count; i++) total += Mathf.Max(0f, c.prefabWeights[i]);
+            if (total <= 0f) return c.prefabs[UnityEngine.Random.Range(0, c.prefabs.Count)];
+            float r = UnityEngine.Random.value * total;
+            for (int i = 0; i < c.prefabs.Count; i++)
+            {
+                r -= Mathf.Max(0f, c.prefabWeights[i]);
+                if (r <= 0f) return c.prefabs[i];
+            }
+            return c.prefabs[c.prefabs.Count - 1];
+        }
+
+        /// <summary>Each spawn point spawns at its own rate; a blocked spawn is retried on the next step.</summary>
+        private void ScheduledSpawn()
+        {
+            var sim = trafficSimulatorNodes.OfType<RandomTrafficSimulator>().FirstOrDefault();
+            if (sim == null || !sim.IsEnabled() || externalConfig.prefabs.Count == 0)
+                return;
+            foreach (var sp in schedule)
+            {
+                if (sp.interval <= 0f || Time.time < sp.nextTime)
+                    continue;
+                if (GeometryUtility.Distance2D(_egoVehicle.transform.position, sp.point.Position) < spawnDistanceToEgo)
+                    continue;
+                sp.pendingPrefab ??= PickPrefab();     // fixed until spawned, so big vehicles are not starved
+                if (!NPCVehicleSpawner.IsSpawnable(sp.pendingPrefab.GetComponent<NPCVehicle>().Bounds, sp.point, externalConfig.spawnClearance))
+                    continue;
+                if (!sim.Spawn(sp.pendingPrefab, sp.point, out var vehicle))
+                    continue;
+                sp.pendingPrefab = null;
+                sp.spawned++;
+                sp.nextTime = Time.time + sp.interval * UnityEngine.Random.Range(0.75f, 1.25f);
+                if (vehicle && vehicle.gameObject.tag == "Ego")
+                    npcVehicleSimulator.EGOVehicle = vehicle.transform;
+            }
+        }
+
         [ContextMenu("Save Spawn Config JSON")]
         public void SaveSpawnConfigJson()
         {
@@ -185,6 +280,22 @@ namespace AWSIM.TrafficSimulation
             }
             npcVehicleSimulator = new NPCVehicleSimulator(vehicleConfig, vehicleLayerMask, groundLayerMask, maxVehicleCount, _egoVehicle);
             npcVehicleSimulator.SetDummyEgo(dummyEgo);
+            if (externalConfig != null)
+            {
+                npcVehicleSimulator.Behaviour = externalConfig.behaviour;
+                schedule = new List<ScheduledSpawnPoint>();
+                for (int i = 0; i < externalConfig.spawnLanes.Count; i++)
+                {
+                    var vpm = externalConfig.vehiclesPerMinute[i];
+                    schedule.Add(new ScheduledSpawnPoint
+                    {
+                        point = new NPCVehicleSpawnPoint(externalConfig.spawnLanes[i], 0),
+                        laneName = externalConfig.spawnLanes[i].name,
+                        interval = vpm > 0f ? 60f / vpm : 0f,
+                        nextTime = vpm > 0f ? UnityEngine.Random.Range(0f, 60f / vpm) : float.MaxValue,
+                    });
+                }
+            }
 
             verifyIntegrationEnvironmentElements();
             trafficSimulatorNodes = new List<ITrafficSimulator>();
@@ -223,9 +334,9 @@ namespace AWSIM.TrafficSimulation
 
         void Dispose()
         {
-            npcVehicleSimulator?.Dispose();
             ClearAll();
             Despawn();
+            npcVehicleSimulator?.Dispose();   // after Despawn, which still reads the vehicle states
             spawnLanes.Clear();
             if (dummyEgo)
             {
@@ -309,6 +420,14 @@ namespace AWSIM.TrafficSimulation
                 return;
             }
             trafficSimulatorNodes.RemoveAll(item => item == null);
+
+            if (schedule != null)
+            {
+                ScheduledSpawn();
+                npcVehicleSimulator.StepOnce(Time.fixedDeltaTime);
+                Despawn();
+                return;
+            }
 
             // Find out which lanes are used by multiple spawners
             // We can easly spawn vehicle on a lane which only one spawner hooked to that lane.
@@ -412,8 +531,19 @@ namespace AWSIM.TrafficSimulation
             npcVehicleSimulator.RemoveInvalidVehicles();
         }
 
+        /// <summary>Vehicles spawned per spawn lane (config mode), and the stuck / right-of-way counters.</summary>
+        public string SpawnSummary()
+        {
+            if (schedule == null) return "inspector mode";
+            var t = Mathf.Max(1f, Time.time);
+            return string.Join(", ", schedule.Select(s => $"{s.laneName}: {s.spawned} ({s.spawned * 60f / t:F1}/min)")) +
+                   $"; removed stuck {npcVehicleSimulator?.StuckDespawnCount}, right-of-way given {npcVehicleSimulator?.ForcedPassCount}";
+        }
+
         private void OnDestroy()
         {
+            if (schedule != null)
+                Debug.Log("[Traffic] " + SpawnSummary());
             // Dispose first: a failing export must not leak the simulator's native arrays.
             npcVehicleSimulator?.Dispose();
             try

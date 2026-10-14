@@ -16,6 +16,67 @@ namespace V2X.Config
         public string Description { get; set; } = "";
         // Files of this scenario folder, relative to it. Empty or missing = not configured (the scene objects stay).
         public string Rsus { get; set; } = "rsus.yaml";
+        public string Vehicles { get; set; } = "";
+    }
+
+    // ------------------------------------------------------------------------------------------------- vehicles
+    public class VehiclesConfig
+    {
+        // Scene path of the TrafficLanes object whose lanes (named lanelet<ID>) are used
+        public string LanesRoot { get; set; } = "";
+        // Scene path of the TrafficManager whose vehicle dynamics, layers and ego are used (empty = the first enabled one)
+        public string TemplateTrafficManager { get; set; } = "";
+        public int Seed { get; set; }
+        public int MaxVehicles { get; set; } = 60;
+        public float SpawnDistanceToEgoM { get; set; } = 50f;   // no spawning closer than this to the ego vehicle
+        public float SpawnClearanceM { get; set; } = 4f;        // free space needed in front of / behind a new vehicle
+        public int MaximumSpawns { get; set; }                  // 0 = unlimited
+        public TrafficBehaviourConfig Behaviour { get; set; } = new TrafficBehaviourConfig();
+        public List<VehicleTypeConfig> VehicleTypes { get; set; } = new List<VehicleTypeConfig>();
+        public List<SpawnPointConfig> SpawnPoints { get; set; } = new List<SpawnPointConfig>();
+        public List<BranchConfig> Branches { get; set; } = new List<BranchConfig>();
+    }
+
+    public class TrafficBehaviourConfig
+    {
+        public float DeadlockTimeoutS { get; set; } = 8f;       // standing still while yielding this long -> right of way
+        public float ForcedPassS { get; set; } = 6f;
+        public float ForcedPassRadiusM { get; set; } = 70f;
+        public float StuckDespawnS { get; set; } = 180f;        // standing still this long for any reason -> removed
+        public float StandstillSpeedMps { get; set; } = 0.3f;
+    }
+
+    public class VehicleTypeConfig
+    {
+        public string Prefab { get; set; } = "";               // NPC vehicle prefab name (from the scene's traffic managers)
+        public float Weight { get; set; } = 1f;
+    }
+
+    public class SpawnPointConfig
+    {
+        public string Name { get; set; } = "";
+        public long Lanelet { get; set; }                       // Lanelet2 lanelet ID; vehicles start at its first point
+        public float VehiclesPerMinute { get; set; }
+        public MapPoint Position { get; set; }                  // informational (map frame), e.g. where it was picked
+    }
+
+    public class MapPoint
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Z { get; set; }
+    }
+
+    public class BranchConfig
+    {
+        public long FromLanelet { get; set; }
+        public List<BranchTarget> To { get; set; } = new List<BranchTarget>();
+    }
+
+    public class BranchTarget
+    {
+        public long Lanelet { get; set; }
+        public float Ratio { get; set; }
     }
 
     // ------------------------------------------------------------------------------------------------- defaults
