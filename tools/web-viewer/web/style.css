@@ -164,3 +164,65 @@ p.muted { color: var(--muted); padding: 0 12px; margin: 4px 0; }
 .topic-list li { display: grid; grid-template-columns: 12px 1fr; gap: 2px 6px; align-items: center; padding: 4px 0;
   border-bottom: 1px solid #1d2430; font-family: ui-monospace, monospace; font-size: 12px; word-break: break-all; }
 .topic-list li em { grid-column: 2; color: var(--muted); font-style: normal; font-family: inherit; }
+
+/* ---------------------------------------------------------------- settings mode */
+.modes { display: flex; gap: 2px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 2px; }
+.mode-tab { background: none; border: 0; color: var(--muted); padding: 4px 14px; border-radius: 4px; cursor: pointer; font: inherit; }
+.mode-tab.active { background: var(--panel-2); color: var(--text); }
+#settings { display: none; width: 440px; background: var(--panel); border-right: 1px solid var(--line); flex-direction: column; }
+body.settings-mode #settings { display: flex; }
+body.settings-mode #sidebar, body.settings-mode #inspector { display: none; }
+.set-head { display: flex; gap: 6px; align-items: center; }
+.set-head select { flex: 1; min-width: 0; }
+.set-tabs { display: flex; flex-wrap: wrap; gap: 2px; padding: 6px 10px 0; border-bottom: 1px solid var(--line); }
+.set-tabs .tab { padding: 5px 9px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; }
+.set-tabs .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+.set-actions { display: flex; gap: 6px; align-items: center; padding: 8px 10px; flex-wrap: wrap; }
+.set-tool { color: var(--accent); font-size: 12px; }
+.set-status { padding: 0 10px 6px; color: var(--muted); font-size: 12px; }
+.set-status.dirty { color: var(--stale); }
+.set-status.error { color: var(--unsupported); max-height: 140px; overflow: auto; }
+#set-body { flex: 1; overflow: auto; padding: 0 10px 20px; }
+#settings select, #settings input[type=text], #settings input[type=number] {
+  background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 4px 6px; font: inherit; width: 100%; }
+.btn { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 4px 10px; cursor: pointer; font: inherit; white-space: nowrap; }
+.btn:hover:not(:disabled) { border-color: var(--accent); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.primary { background: #1d5d84; border-color: #2a7bb0; }
+.btn.small { padding: 1px 7px; align-self: end; margin-bottom: 2px; }
+.sec { margin-top: 12px; }
+.sec-title { font-weight: 600; color: var(--muted); text-transform: uppercase; font-size: 11px; letter-spacing: .5px; margin-bottom: 6px; }
+.bar { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 6px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; margin: 4px 0; }
+.f { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.f > span { color: var(--muted); font-size: 11px; }
+.f small { color: var(--muted); font-size: 10.5px; }
+.f-wide { grid-column: 1 / -1; }
+.f-bool { flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 6px; }
+.items { border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
+.item { display: flex; align-items: center; padding: 5px 8px; cursor: pointer; border-top: 1px solid var(--line); }
+.item:first-child { border-top: 0; }
+.item:hover { background: var(--panel-2); }
+.item.sel { background: #1f3346; }
+.item.off .lbl { color: var(--offline); }
+.item .lbl { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item .del { color: var(--muted); padding: 0 4px; font-size: 15px; }
+.item .del:hover { color: var(--unsupported); }
+.item-form { padding: 6px 10px 10px; background: #131820; border-top: 1px solid var(--line); }
+.item-form .items { margin-left: 4px; }
+.muted { color: var(--muted); font-size: 12px; }
+.set-marker { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #0f1218; cursor: pointer; }
+.set-marker.sensor.lidar { background: #4cc2ff; }
+.set-marker.sensor.cam { background: #c792ea; }
+.set-marker.sensor.raw { background: #ffd166; border-radius: 3px; }
+.set-marker.off { opacity: .4; }
+.set-marker.spawn { background: #4c8dff; width: 16px; height: 16px; border-radius: 3px; transform: rotate(45deg); }
+.set-marker.wp { width: 11px; height: 11px; background: #ffd166; }
+.set-marker.wp.light { background: #ff4d4f; }
+.set-marker.wp.start { background: #7ae582; }
+.set-marker.gate { background: #ff7ab6; border-radius: 3px; }
+.set-marker.target { background: #ff9f43; width: 11px; height: 11px; }
+.set-marker.sel { box-shadow: 0 0 0 3px #fff; }
+.set-popup { color: #111; font-size: 12px; }
+.set-popup .bar { margin-top: 6px; }
+.set-popup .btn { color: var(--text); }

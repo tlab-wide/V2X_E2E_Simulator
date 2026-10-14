@@ -1,0 +1,18 @@
+# Network profiles: delayed / lossy copies of a topic, published as <topic><topic_suffix>.
+# delay_ms ± delay_variance_ms; packet_loss is a probability (0-1). ground_truth: copy the ground-truth topic.
+
+network_profiles:
+- name: DSRC
+  topic_suffix: /DSRC
+  delay_ms: 100
+  delay_variance_ms: 0
+  packet_loss: 0.05
+  packet_loss_variance: 0
+  ground_truth: false
+- name: Cellular
+  topic_suffix: /Cellular
+  delay_ms: 400
+  delay_variance_ms: 0
+  packet_loss: 0
+  packet_loss_variance: 0
+  ground_truth: false

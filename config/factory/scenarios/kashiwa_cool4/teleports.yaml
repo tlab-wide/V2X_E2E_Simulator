@@ -1,0 +1,35 @@
+# Teleport gates: when the ego vehicle enters the trigger box it is moved to a target, after the NPC vehicles
+# within clearance_radius_m of the target are removed.
+# trigger: centre and heading of the box (map frame); trigger_size: x = width across, y = height, z = length along the heading (m).
+# lane_midpoint: target on the listed lanelets, chosen so the ego reaches midpoint_lanelet within arrival_window_s.
+# random_point: one of random_points. lanes_root: empty = the one of vehicles.yaml.
+
+lanes_root: ''
+teleports:
+- name: First gate
+  enabled: true
+  trigger:
+    x: 4431.903
+    y: 73109.227
+    z: 19.707
+    heading_deg: 70.4
+    pitch_deg: 0
+    roll_deg: 0
+  trigger_size:
+    x: 5.11
+    y: 2
+    z: 6.92
+  strategy: lane_midpoint
+  clearance_radius_m: 15
+  delay_s: 0
+  random_delay_s: [0, 0]
+  lane_midpoint:
+    lanelets: [1034, 1118, 1113, 1104, 1086, 1093, 1082, 1071]
+    spacing_m: 10
+    include_endpoints: true
+    midpoint_lanelet: 328
+    midpoint_fraction: 0.5
+    cruise_speed_kmh: 30
+    acceleration_mps2: 0.341
+    arrival_window_s: [0, 90]
+  random_points: []

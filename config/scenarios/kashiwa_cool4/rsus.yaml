@@ -281,26 +281,15 @@ rsus:
       roll_deg: 0
 object_info_publishers:
 - name: all_rsus
-  rsus:
-  - all
+  rsus: [all]
   topic: /v2x/object_info
   ground_truth_topic: /v2x/object_info_groundtruth
   hz: 10
-  noise:
-    position: Default
-    rotation: Default
-    dimension: Default
-    probability: Default
-  network:
-  - DSRC
-  - Cellular
+  noise: {position: Default, rotation: Default, dimension: Default, probability: Default}
+  network: [DSRC, Cellular]
 per_sensor_object_info:
   hz: 10
-  noise:
-    position: Default
-    rotation: Default
-    dimension: Default
-    probability: Default
+  noise: {position: Default, rotation: Default, dimension: Default, probability: Default}
 # Autoware PredictedObjects (autoware_auto_perception_msgs) of the objects seen by the sensors of the listed RSUs.
 autoware_object_publishers:
 - name: rsu1

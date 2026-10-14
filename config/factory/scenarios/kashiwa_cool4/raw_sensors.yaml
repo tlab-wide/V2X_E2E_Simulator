@@ -1,0 +1,414 @@
+# Raw sensors (RGL LiDARs publishing point clouds, cameras publishing images).
+# mount: ego   = a sensor of an ego vehicle prefab, matched by vehicle + object (path below the vehicle; name[i] when names repeat)
+#        scene = a sensor placed in the scene, matched by its scene path in object
+#        world = a new sensor created from a raw_sensor_types entry (config/defaults/sensor_types.yaml) at pose
+# enabled: false switches a sensor off. Raw sensors that are not listed stay as they are in the scene.
+# lidar: hz, frame_id, point_cloud_topics (format: Pcl24, PointXYZIRCAEDT, ...). camera: image_topic, camera_info_topic,
+# frame_id, width × height (a multiple of 4); hz is the rate of the camera holder (shared by its cameras).
+
+raw_sensors:
+- name: BusAutowareFinal/URDF/base_link/sensor_kit_base_link/velodyne_left_base_link/VelodyneVLP16
+  kind: lidar
+  mount: ego
+  vehicle: BusAutowareFinal
+  object: URDF/base_link/sensor_kit_base_link/velodyne_left_base_link/VelodyneVLP16
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: lidar_left/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: lidar_left/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: BusAutowareFinal/URDF/base_link/sensor_kit_base_link/velodyne_right_base_link/VelodyneVLP16
+  kind: lidar
+  mount: ego
+  vehicle: BusAutowareFinal
+  object: URDF/base_link/sensor_kit_base_link/velodyne_right_base_link/VelodyneVLP16
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: lidar_right/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: lidar_right/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: BusAutowareFinal/URDF/base_link/sensor_kit_base_link/VelodyneVLP16
+  kind: lidar
+  mount: ego
+  vehicle: BusAutowareFinal
+  object: URDF/base_link/sensor_kit_base_link/VelodyneVLP16
+  type: ''
+  enabled: false
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: lidar/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: lidar/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: BusAutowareFinal/URDF/base_link/sensor_kit_base_link/VelodyneVLP16 (1)
+  kind: lidar
+  mount: ego
+  vehicle: BusAutowareFinal
+  object: URDF/base_link/sensor_kit_base_link/VelodyneVLP16 (1)
+  type: ''
+  enabled: false
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: lidar/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: lidar/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: BusAutowareFinal_original/URDF/base_link/sensor_kit_base_link/velodyne_left_base_link/VelodyneVLP16
+  kind: lidar
+  mount: ego
+  vehicle: BusAutowareFinal_original
+  object: URDF/base_link/sensor_kit_base_link/velodyne_left_base_link/VelodyneVLP16
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: lidar_left/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: lidar_left/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: BusAutowareFinal_original/URDF/base_link/sensor_kit_base_link/velodyne_right_base_link/VelodyneVLP16
+  kind: lidar
+  mount: ego
+  vehicle: BusAutowareFinal_original
+  object: URDF/base_link/sensor_kit_base_link/velodyne_right_base_link/VelodyneVLP16
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: lidar_right/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: lidar_right/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: BusAutowareFinal_original/URDF/base_link/sensor_kit_base_link/VelodyneVLP16
+  kind: lidar
+  mount: ego
+  vehicle: BusAutowareFinal_original
+  object: URDF/base_link/sensor_kit_base_link/VelodyneVLP16
+  type: ''
+  enabled: false
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: lidar/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: lidar/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: BusAutowareFinal_original/URDF/base_link/sensor_kit_base_link/VelodyneVLP16 (1)
+  kind: lidar
+  mount: ego
+  vehicle: BusAutowareFinal_original
+  object: URDF/base_link/sensor_kit_base_link/VelodyneVLP16 (1)
+  type: ''
+  enabled: false
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: lidar/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: lidar/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: Lexus RX450h 2015 Sample Sensor/URDF/base_link/sensor_kit_base_link/velodyne_left/VelodyneVLP16
+  kind: lidar
+  mount: ego
+  vehicle: Lexus RX450h 2015 Sample Sensor
+  object: URDF/base_link/sensor_kit_base_link/velodyne_left/VelodyneVLP16
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: velodyne_left
+  point_cloud_topics:
+  - topic: /sensing/lidar/left/pointcloud_raw
+    format: Pcl24
+    publish: true
+  - topic: /sensing/lidar/left/pointcloud_raw_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: Lexus RX450h 2015 Sample Sensor/URDF/base_link/sensor_kit_base_link/velodyne_right/VelodyneVLP16
+  kind: lidar
+  mount: ego
+  vehicle: Lexus RX450h 2015 Sample Sensor
+  object: URDF/base_link/sensor_kit_base_link/velodyne_right/VelodyneVLP16
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: velodyne_right
+  point_cloud_topics:
+  - topic: /sensing/lidar/right/pointcloud_raw
+    format: Pcl24
+    publish: true
+  - topic: /sensing/lidar/right/pointcloud_raw_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: Lexus RX450h 2015 Sample Sensor/URDF/base_link/sensor_kit_base_link/velodyne_top/VelodyneVLP16
+  kind: lidar
+  mount: ego
+  vehicle: Lexus RX450h 2015 Sample Sensor
+  object: URDF/base_link/sensor_kit_base_link/velodyne_top/VelodyneVLP16
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: velodyne_top
+  point_cloud_topics:
+  - topic: /sensing/lidar/top/pointcloud_raw
+    format: Pcl24
+    publish: true
+  - topic: /sensing/lidar/top/pointcloud_raw_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: CeptonP60_1
+  kind: lidar
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/CeptonP60_1
+  type: ''
+  enabled: false
+  hz: 10
+- name: CeptonP60_2
+  kind: lidar
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/CeptonP60_2
+  type: ''
+  enabled: false
+  hz: 10
+- name: CeptonP60_3
+  kind: lidar
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/CeptonP60_3
+  type: ''
+  enabled: false
+  hz: 10
+- name: CeptonP60_4
+  kind: lidar
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Pseudo Sensors setup/RSU1_Ganken_CooL4/CeptonP60_4
+  type: ''
+  enabled: false
+  hz: 10
+- name: VelodyneVLP32C
+  kind: lidar
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Velodyne LiDARs int#1/VelodyneVLP32C
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: /rsu/intersection1/velodyne32/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: /rsu/intersection1/velodyne32/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: VelodyneVLP32C_3
+  kind: lidar
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Velodyne LiDARs int#2/VelodyneVLP32C_3
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: /rsu/intersection2/velodyne32_3/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: /rsu/intersection2/velodyne32_3/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: VelodyneVLP32C_9
+  kind: lidar
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Velodyne LiDARs int#2/VelodyneVLP32C_9
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: /rsu/intersection2/velodyne32_9/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: /rsu/intersection2/velodyne32_9/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: VelodyneVLP32
+  kind: lidar
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Velodyne LiDARs int#4/VelodyneVLP32
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: /rsu/intersection4/velodyne32/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: /rsu/intersection4/velodyne32/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: VelodyneVLP32C_3 (1)
+  kind: lidar
+  mount: scene
+  vehicle: ''
+  object: Multi Sensor Step Scanning/VelodyneVLP32C_3 (1)
+  type: ''
+  enabled: false
+  hz: 10
+  frame_id: world
+  point_cloud_topics:
+  - topic: /rsu/intersection2/velodyne32_3/pointcloud
+    format: Pcl24
+    publish: true
+  - topic: /rsu/intersection2/velodyne32_3/pointcloud_ex
+    format: PointXYZIRCAEDT
+    publish: true
+- name: BusAutowareFinal/URDF/base_link/sensor_kit_base_link/traffic_light_left_camera/camera_link/CameraSensorHolder/CameraSensor
+  kind: camera
+  mount: ego
+  vehicle: BusAutowareFinal
+  object: URDF/base_link/sensor_kit_base_link/traffic_light_left_camera/camera_link/CameraSensorHolder/CameraSensor
+  type: ''
+  enabled: true
+  hz: 5
+  frame_id: traffic_light_left_camera/camera_optical_link
+  image_topic: /sensing/camera/traffic_light/image_raw
+  camera_info_topic: /sensing/camera/traffic_light/camera_info
+  width: 480
+  height: 270
+- name: BusAutowareFinal_original/URDF/base_link/sensor_kit_base_link/traffic_light_left_camera/camera_link/CameraSensorHolder/CameraSensor
+  kind: camera
+  mount: ego
+  vehicle: BusAutowareFinal_original
+  object: URDF/base_link/sensor_kit_base_link/traffic_light_left_camera/camera_link/CameraSensorHolder/CameraSensor
+  type: ''
+  enabled: true
+  hz: 5
+  frame_id: traffic_light_left_camera/camera_optical_link
+  image_topic: /sensing/camera/traffic_light/image_raw
+  camera_info_topic: /sensing/camera/traffic_light/camera_info
+  width: 480
+  height: 270
+- name: Lexus RX450h 2015 Sample Sensor/URDF/base_link/sensor_kit_base_link/traffic_light_left_camera/camera_link/CameraSensorHolder/CameraSensor
+  kind: camera
+  mount: ego
+  vehicle: Lexus RX450h 2015 Sample Sensor
+  object: URDF/base_link/sensor_kit_base_link/traffic_light_left_camera/camera_link/CameraSensorHolder/CameraSensor
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: traffic_light_left_camera/camera_optical_link
+  image_topic: /sensing/camera/traffic_light/image_raw
+  camera_info_topic: /sensing/camera/traffic_light/camera_info
+  width: 1920
+  height: 1080
+- name: CameraSensor2
+  kind: camera
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Cameras/CameraSensor2
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: traffic_light_left_camera/camera_optical_link
+  image_topic: /rsu/intersection2/camera_2/camera_raw   # was swapped with camera_info in the scene
+  camera_info_topic: /rsu/intersection2/camera_2/camera_info
+  width: 480
+  height: 270
+- name: CameraSensor3
+  kind: camera
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Cameras/CameraSensor3
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: traffic_light_left_camera/camera_optical_link
+  image_topic: /rsu/intersection2/camera_3/camera_raw   # was swapped with camera_info in the scene
+  camera_info_topic: /rsu/intersection2/camera_3/camera_info
+  width: 480
+  height: 270
+- name: CameraSensor6
+  kind: camera
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Cameras/CameraSensor6
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: traffic_light_left_camera/camera_optical_link
+  image_topic: /rsu/intersection2/camera_6/camera_raw   # was swapped with camera_info in the scene
+  camera_info_topic: /rsu/intersection2/camera_6/camera_info
+  width: 480
+  height: 270
+- name: CameraSensor7
+  kind: camera
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Cameras/CameraSensor7
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: traffic_light_left_camera/camera_optical_link
+  image_topic: /rsu/intersection2/camera_7/camera_raw   # was swapped with camera_info in the scene
+  camera_info_topic: /rsu/intersection2/camera_7/camera_info
+  width: 480
+  height: 270
+- name: CameraSensor8
+  kind: camera
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Cameras/CameraSensor8
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: traffic_light_left_camera/camera_optical_link
+  image_topic: /rsu/intersection2/camera_8/camera_raw   # was swapped with camera_info in the scene
+  camera_info_topic: /rsu/intersection2/camera_8/camera_info
+  width: 480
+  height: 270
+- name: CameraSensor9
+  kind: camera
+  mount: scene
+  vehicle: ''
+  object: AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Cameras/CameraSensor9
+  type: ''
+  enabled: true
+  hz: 10
+  frame_id: traffic_light_left_camera/camera_optical_link
+  image_topic: /rsu/intersection2/camera_9/camera_raw   # was swapped with camera_info in the scene
+  camera_info_topic: /rsu/intersection2/camera_9/camera_info
+  width: 480
+  height: 270

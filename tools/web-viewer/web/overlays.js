@@ -21,6 +21,7 @@ const Overlays = (() => {
   let dmIndex = new Map();     // `${crp}|${signalId}` -> {signal, topic, live}
   let v2xIndex = new Map();    // lanelet id -> {signal, topic, live}
   let prefs;
+  let hidden = false;          // settings mode hides the live overlays
 
   // ---------------------------------------------------------------------------------------------- init
   function init(config) {
@@ -281,10 +282,10 @@ const Overlays = (() => {
 
   function onVisibility() {
     if (!prefs) return;
-    for (const h of heads) h.el.style.display = prefs.heads ? '' : 'none';
-    for (const s of sensors) s.el.style.display = prefs.sensors && (s.cfg.enabled || prefs.disabled) ? '' : 'none';
+    for (const h of heads) h.el.style.display = prefs.heads && !hidden ? '' : 'none';
+    for (const s of sensors) s.el.style.display = prefs.sensors && !hidden && (s.cfg.enabled || prefs.disabled) ? '' : 'none';
     for (const id of ['sensor-coverage-fill', 'sensor-coverage-line'])
-      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', prefs.coverage ? 'visible' : 'none');
+      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', prefs.coverage && !hidden ? 'visible' : 'none');
   }
 
   function stats() {
@@ -292,5 +293,7 @@ const Overlays = (() => {
              sensors: sensors.filter(s => s.cfg.enabled).length, sensorsLive: sensors.filter(s => s.cfg.enabled && sensorLive(s.cfg)).length };
   }
 
-  return { init, onLayers, onHealth, onVisibility, stats };
+  function setHidden(on) { hidden = on; onVisibility(); }
+
+  return { init, onLayers, onHealth, onVisibility, setHidden, stats };
 })();

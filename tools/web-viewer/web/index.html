@@ -11,6 +11,7 @@
   <header>
     <div class="brand">V2X E2E Simulator <span>Viewer</span></div>
     <div class="stats" id="stats"></div>
+    <nav class="modes"><button class="mode-tab active" data-mode="live">Live</button><button class="mode-tab" data-mode="settings">Settings</button></nav>
     <div class="spacer"></div>
     <label class="toggle"><input type="checkbox" id="basemap"> Background map (online)</label>
     <div class="conn" id="conn"><span class="dot"></span><span class="text">connecting…</span></div>
@@ -31,6 +32,23 @@
       <div id="topics"></div>
     </aside>
 
+    <aside id="settings">
+      <div class="side-head set-head">
+        <select id="set-scenario" title="Scenario"></select>
+        <button class="btn" id="set-new" title="Copy this scenario to a new one">New…</button>
+        <button class="btn" id="set-default" title="Load this scenario when the simulator starts">Make default</button>
+      </div>
+      <div id="set-tabs" class="set-tabs"></div>
+      <div class="set-actions">
+        <button class="btn primary" id="set-save" disabled>Save</button>
+        <button class="btn" id="set-discard" disabled>Discard</button>
+        <button class="btn" id="set-reset" title="Replace the files of this tab with the shipped default">Reset to default</button>
+        <span id="set-tool" class="set-tool"></span>
+      </div>
+      <div id="set-status" class="set-status"></div>
+      <div id="set-body"></div>
+    </aside>
+
     <section id="map"></section>
 
     <aside id="inspector" class="hidden">
@@ -43,5 +61,6 @@
   <script src="/static/app.js"></script>
   <script src="/static/overlays.js"></script>
   <script src="/static/sidebar.js"></script>
+  <script src="/static/settings.js"></script>
 </body>
 </html>

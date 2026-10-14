@@ -1,0 +1,349 @@
+# RSUs, their pseudo sensors and the object-info publishers.
+# pose: map frame (MGRS-local x/y/z, m), heading clockwise from north, pitch > 0 looks up (degrees).
+# type: a name from config/defaults/sensor_types.yaml; h_fov_deg / v_fov_deg / range_m override it.
+# object_info on a sensor: its own topics (no network copies). object_info_publishers: merged topics.
+
+rsus:
+- name: Ganken
+  rsu_id: 0x12020001
+  location: Ganken
+  enabled: true
+  sensors:
+  - name: RSU_Lidar 1
+    type: lidar_60x22deg_60m
+    sensor_id: 1
+    enabled: true
+    pose:
+      x: 4240.481
+      y: 73444.969
+      z: 25.433
+      heading_deg: 35.5
+      pitch_deg: -13.8
+      roll_deg: 0
+  - name: RSU_Lidar 2
+    type: lidar_60x22deg_60m
+    sensor_id: 2
+    enabled: true
+    pose:
+      x: 4242.345
+      y: 73442.07
+      z: 24.081
+      heading_deg: 230
+      pitch_deg: -13
+      roll_deg: 0
+  - name: RSU_Lidar 3
+    type: lidar_60x22deg_60m
+    sensor_id: 3
+    enabled: true
+    pose:
+      x: 4266.118
+      y: 73453.68
+      z: 23.895
+      heading_deg: 230
+      pitch_deg: -13
+      roll_deg: 0
+  - name: RSU_Lidar 4
+    type: lidar_60x22deg_60m
+    sensor_id: 4
+    enabled: true
+    pose:
+      x: 4266.719
+      y: 73459.109
+      z: 24.021
+      heading_deg: 50
+      pitch_deg: -13
+      roll_deg: 0
+- name: Kakeiken_A
+  rsu_id: 0x12020002
+  location: Kakeiken
+  enabled: true
+  sensors:
+  - name: RSU_camera 6
+    type: camera_84.8x45.3deg_75m
+    sensor_id: 1
+    enabled: true
+    pose:
+      x: 4515.432
+      y: 72949.82
+      z: 23.71
+      heading_deg: 234.4
+      pitch_deg: -35
+      roll_deg: 0
+    object_info:
+      topic: /v2x/rsu12020002/sensor1/object_info
+      ground_truth_topic: /v2x/rsu12020002/sensor1/object_info_groundtruth
+  - name: RSU_camera 7
+    type: camera_84.8x45.3deg_50m
+    sensor_id: 2
+    enabled: true
+    pose:
+      x: 4534.816
+      y: 72962.047
+      z: 23.811
+      heading_deg: 235.9
+      pitch_deg: -35
+      roll_deg: 0
+    object_info:
+      topic: /v2x/rsu12020002/sensor2/object_info
+      ground_truth_topic: /v2x/rsu12020002/sensor2/object_info_groundtruth
+  - name: RSU_Lidar 7
+    type: lidar_70.4x77.2deg_150m
+    sensor_id: 3
+    enabled: true
+    pose:
+      x: 4534.582
+      y: 72962.164
+      z: 23.75
+      heading_deg: 242.7
+      pitch_deg: -5
+      roll_deg: 0
+    object_info:
+      topic: /v2x/rsu12020002/sensor3/object_info
+      ground_truth_topic: /v2x/rsu12020002/sensor3/object_info_groundtruth
+  - name: RSU_camera 9
+    type: camera_84.8x45.3deg_50m
+    sensor_id: 4
+    enabled: true
+    pose:
+      x: 4519.828
+      y: 72935.398
+      z: 23.905
+      heading_deg: 334.8
+      pitch_deg: -35
+      roll_deg: 0
+    object_info:
+      topic: /v2x/rsu12020002/sensor4/object_info
+      ground_truth_topic: /v2x/rsu12020002/sensor4/object_info_groundtruth
+  - name: RSU_Lidar 9
+    type: lidar_70.4x77.2deg_150m
+    sensor_id: 5
+    enabled: true
+    pose:
+      x: 4520.045
+      y: 72935.602
+      z: 23.85
+      heading_deg: 334.8
+      pitch_deg: -5
+      roll_deg: 0
+    object_info:
+      topic: /v2x/rsu12020002/sensor5/object_info
+      ground_truth_topic: /v2x/rsu12020002/sensor5/object_info_groundtruth
+- name: Kakeiken_B
+  rsu_id: 0x12020003
+  location: Kakeiken
+  enabled: true
+  sensors:
+  - name: RSU_camera 2
+    type: camera_84.8x45.3deg_50m
+    sensor_id: 1
+    enabled: true
+    pose:
+      x: 4501.533
+      y: 72916.969
+      z: 23.79
+      heading_deg: 334.8
+      pitch_deg: -35
+      roll_deg: 0
+    object_info:
+      topic: /v2x/rsu12020003/sensor1/object_info
+      ground_truth_topic: /v2x/rsu12020003/sensor1/object_info_groundtruth
+  - name: RSU_Lidar 2
+    type: lidar_70.4x77.2deg_150m
+    sensor_id: 2
+    enabled: true
+    pose:
+      x: 4501.208
+      y: 72916.906
+      z: 23.76
+      heading_deg: 334.8
+      pitch_deg: -5
+      roll_deg: 0
+    object_info:
+      topic: /v2x/rsu12020003/sensor2/object_info
+      ground_truth_topic: /v2x/rsu12020003/sensor2/object_info_groundtruth
+  - name: RSU_camera 3
+    type: camera_84.8x45.3deg_50m
+    sensor_id: 3
+    enabled: true
+    pose:
+      x: 4500.092
+      y: 72925.523
+      z: 23.74
+      heading_deg: 65.3
+      pitch_deg: -34.8
+      roll_deg: 0.1
+    object_info:
+      topic: /v2x/rsu12020003/sensor3/object_info
+      ground_truth_topic: /v2x/rsu12020003/sensor3/object_info_groundtruth
+  - name: RSU_Lidar 3
+    type: lidar_70.4x77.2deg_150m
+    sensor_id: 4
+    enabled: true
+    pose:
+      x: 4499.972
+      y: 72926
+      z: 23.722
+      heading_deg: 63.6
+      pitch_deg: -5
+      roll_deg: 0
+    object_info:
+      topic: /v2x/rsu12020003/sensor4/object_info
+      ground_truth_topic: /v2x/rsu12020003/sensor4/object_info_groundtruth
+  - name: RSU_camera 8
+    type: camera_84.8x45.3deg_75m
+    sensor_id: 5
+    enabled: true
+    pose:
+      x: 4524.57
+      y: 72936.594
+      z: 23.57
+      heading_deg: 214
+      pitch_deg: -34.9
+      roll_deg: -0.1
+    object_info:
+      topic: /v2x/rsu12020003/sensor5/object_info
+      ground_truth_topic: /v2x/rsu12020003/sensor5/object_info_groundtruth
+- name: Midblock
+  rsu_id: 0x12020004
+  location: Midblock
+  enabled: true
+  sensors:
+  - name: RSU_Lidar
+    type: lidar_90x100deg_120m
+    sensor_id: 1
+    enabled: true
+    pose:
+      x: 4871.562
+      y: 73137.508
+      z: 21.26
+      heading_deg: 314.4
+      pitch_deg: 0
+      roll_deg: 0
+- name: Wakashiba
+  rsu_id: 0x12020005
+  location: Wakashiba
+  enabled: true
+  sensors:
+  - name: RSU_camera (4) _ 1 _ 360
+    type: camera_360x140deg_15m
+    sensor_id: 1
+    enabled: true
+    pose:
+      x: 5198.992
+      y: 73115.875
+      z: 22.79
+      heading_deg: 273.1
+      pitch_deg: 0
+      roll_deg: 0
+  - name: RSU_camera (4) _2 _ 360
+    type: camera_360x140deg_15m
+    sensor_id: 2
+    enabled: true
+    pose:
+      x: 5218.524
+      y: 73144.18
+      z: 21.76
+      heading_deg: 5.9
+      pitch_deg: 0
+      roll_deg: 0
+  - name: RSU_camera (4) _ 4_camera
+    type: camera_80x140deg_50m
+    sensor_id: 3
+    enabled: true
+    pose:
+      x: 5174.493
+      y: 73134.023
+      z: 21.41
+      heading_deg: 89.8
+      pitch_deg: 0
+      roll_deg: 0
+  - name: RSU_camera (4)
+    type: camera_360x140deg_50m
+    sensor_id: 4
+    enabled: true
+    pose:
+      x: 5174.678
+      y: 73135.086
+      z: 22.218
+      heading_deg: 120.4
+      pitch_deg: 0
+      roll_deg: 0
+  - name: RSU_sensor (4) _ 3 Lidar
+    type: lidar_80x40deg_121m
+    sensor_id: 5
+    enabled: true
+    pose:
+      x: 5174.983
+      y: 73137.609
+      z: 21.922
+      heading_deg: 95.2
+      pitch_deg: 0.6
+      roll_deg: 0
+object_info_publishers:
+- name: all_rsus
+  rsus: [all]
+  topic: /v2x/object_info
+  ground_truth_topic: /v2x/object_info_groundtruth
+  hz: 10
+  noise: {position: Default, rotation: Default, dimension: Default, probability: Default}
+  network: [DSRC, Cellular]
+per_sensor_object_info:
+  hz: 10
+  noise: {position: Default, rotation: Default, dimension: Default, probability: Default}
+# Autoware PredictedObjects (autoware_auto_perception_msgs) of the objects seen by the sensors of the listed RSUs.
+autoware_object_publishers:
+- name: rsu1
+  rsus: [Ganken]
+  topic: /v2x/rsu1/predicted_object
+  station_id: 1
+  hz: 10
+  noise: {position: Default, rotation: Default, dimension: Default, probability: Default}
+  network: [DSRC, Cellular]
+- name: rsu2
+  rsus: [Kakeiken_A, Kakeiken_B]
+  topic: /v2x/rsu2/predicted_object
+  station_id: 2
+  hz: 10
+  noise: {position: NoNoise, rotation: NoNoise, dimension: NoNoise, probability: NoNoise}
+  network: [DSRC, Cellular]
+- name: rsu3
+  rsus: [Midblock]
+  topic: /v2x/rsu3/predicted_object
+  station_id: 3
+  hz: 10
+  noise: {position: Default, rotation: Default, dimension: Default, probability: Default}
+  network: [DSRC, Cellular]
+- name: rsu4
+  rsus: [Wakashiba]
+  topic: /v2x/rsu4/predicted_object
+  station_id: 4
+  hz: 10
+  noise: {position: Default, rotation: Default, dimension: Default, probability: Default}
+  network: [DSRC, Cellular]
+# V2X traffic signals (v2x_msgs/V2XSignals) of the vehicle traffic lights of the listed intersections.
+# signal_id: relation = Lanelet2 regulatory-element IDs, way = traffic-light way IDs.
+traffic_signal_publishers:
+- name: rsu1
+  station_id: 1
+  intersections: [Ganken]
+  topics: [/v2x/rsu1/traffic_signals, /v2x/traffic_signals]
+  hz: 10
+  signal_id: relation
+- name: rsu2
+  station_id: 2
+  intersections: [Kakeiken]
+  topics: [/v2x/rsu2/traffic_signals, /v2x/traffic_signals]
+  hz: 10
+  signal_id: relation
+- name: rsu4
+  station_id: 4
+  intersections: [Wakashiba]
+  topics: [/v2x/rsu4/traffic_signals, /v2x/traffic_signals]
+  hz: 10
+  signal_id: relation
+- name: rsu5
+  station_id: 5
+  intersections: [Ekimae]
+  topics: [/v2x/rsu5/traffic_signals]
+  hz: 10
+  signal_id: relation

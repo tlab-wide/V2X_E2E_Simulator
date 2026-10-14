@@ -260,5 +260,6 @@ map.on('load', async () => {
   state.config = await (await fetch('/api/config')).json();
   addIntersectionLabels();
   Overlays.init(state.config);
+  Settings.init(state.config);
   connect();
 });

@@ -1,0 +1,9 @@
+# Scenario: the files below (relative to this folder) are loaded when the simulation starts.
+
+name: kashiwa_cool4
+description: exported from V2X_E2E_Simulator_v3.1.1
+rsus: rsus.yaml
+vehicles: vehicles.yaml
+pedestrians: pedestrians.yaml
+teleports: teleports.yaml
+raw_sensors: raw_sensors.yaml

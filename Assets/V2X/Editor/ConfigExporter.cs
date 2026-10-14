@@ -315,6 +315,64 @@ namespace V2X.Config
                    $"lanes {v.LanesRoot}" + (skipped.Count > 0 ? $"; skipped (not lanelet-named): {string.Join(", ", skipped)}" : "");
         }
 
+        [MenuItem("V2X/Config/Export Traffic Lanes For The Web Viewer")]
+        public static void ExportLanesMenu()
+        {
+            EditorUtility.DisplayDialog("Export traffic lanes", ExportTrafficLanes(ConfigLoader.ResolveScenarioName(ConfigLoader.ConfigRoot(), null) ?? DefaultScenario), "OK");
+        }
+
+        public static void ExportLanesBatch()
+        {
+            var scene = ConfigLoader.GetArg("-exportScene");
+            if (!string.IsNullOrEmpty(scene))
+                EditorSceneManager.OpenScene(scene, OpenSceneMode.Single);
+            Debug.Log("[ConfigExporter] " + ExportTrafficLanes(ConfigLoader.GetArg("-exportScenario") ?? DefaultScenario));
+            EditorApplication.Exit(0);
+        }
+
+        /// <summary>
+        /// Writes the TrafficLanes under lanes_root of vehicles.yaml (centre lines in the map frame, next / previous lanes)
+        /// to config/maps/traffic_lanes.json. The web viewer draws them in Settings so spawn points, branches and teleport
+        /// lanes are picked from the lanes the simulator really uses (their numbers are not the Lanelet2 IDs of the map file).
+        /// </summary>
+        public static string ExportTrafficLanes(string scenario)
+        {
+            var dir = Path.Combine(ConfigLoader.ConfigRoot(), ConfigLoader.ScenariosDir, scenario);
+            var vehicles = Path.Combine(dir, "vehicles.yaml");
+            var lanesRoot = File.Exists(vehicles) ? ConfigLoader.Read<VehiclesConfig>(vehicles, new LoadedConfig())?.LanesRoot : null;
+            var roots = All<Transform>().Where(t => lanesRoot == null ? t.name == "TrafficLanes" : Path_(t) == lanesRoot).ToList();
+            var root = roots.OrderByDescending(t => t.GetComponentsInChildren<AWSIM.TrafficSimulation.TrafficLane>(true).Length).FirstOrDefault();
+            if (root == null) return $"lanes root '{lanesRoot}' not found";
+            var sb = new System.Text.StringBuilder();
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            string Ids(IEnumerable<AWSIM.TrafficSimulation.TrafficLane> l)
+                => string.Join(",", (l ?? Enumerable.Empty<AWSIM.TrafficSimulation.TrafficLane>()).Where(x => x != null).Select(x => LaneletId(x.name)).Where(id => id >= 0));
+            var lanes = root.GetComponentsInChildren<AWSIM.TrafficSimulation.TrafficLane>(true).Where(l => LaneletId(l.name) >= 0 && l.Waypoints != null && l.Waypoints.Length > 1).ToList();
+            sb.Append("{\"lanes_root\":\"").Append(Path_(root).Replace("\"", "\\\"")).Append("\",\"lanes\":[");
+            for (int i = 0; i < lanes.Count; i++)
+            {
+                var l = lanes[i];
+                if (i > 0) sb.Append(",");
+                sb.Append("\n{\"id\":").Append(LaneletId(l.name)).Append(",\"turn\":\"").Append(l.TurnDirection).Append("\"")
+                  .Append(",\"intersection\":").Append(l.intersectionLane ? "true" : "false")
+                  .Append(",\"speed_limit\":").Append(System.Math.Round(l.SpeedLimit, 2).ToString(inv))
+                  .Append(",\"next\":[").Append(Ids(l.NextLanes)).Append("],\"prev\":[").Append(Ids(l.PrevLanes)).Append("],\"points\":[");
+                for (int k = 0; k < l.Waypoints.Length; k++)
+                {
+                    var m = ConfigGeometry.UnityToMap(l.Waypoints[k]);
+                    if (k > 0) sb.Append(",");
+                    sb.Append("[").Append(System.Math.Round(m.x, 2).ToString(inv)).Append(",").Append(System.Math.Round(m.y, 2).ToString(inv))
+                      .Append(",").Append(System.Math.Round(m.z, 2).ToString(inv)).Append("]");
+                }
+                sb.Append("]}");
+            }
+            sb.Append("\n]}\n");
+            var outDir = Path.Combine(ConfigLoader.ConfigRoot(), "maps");
+            Directory.CreateDirectory(outDir);
+            File.WriteAllText(Path.Combine(outDir, "traffic_lanes.json"), sb.ToString());
+            return $"{lanes.Count} traffic lanes of {Path_(root)} written to config/maps/traffic_lanes.json";
+        }
+
         [MenuItem("V2X/Config/Export Pedestrians And Teleports To Config")]
         public static void ExportHumansMenu()
         {

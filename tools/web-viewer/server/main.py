@@ -20,6 +20,7 @@ from rclpy.serialization import deserialize_message
 from decoders import Decoders
 from geo import MapFrame
 from monitor import TopicMonitor
+from settings import Settings
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 LAYER_HZ = 10.0
@@ -57,6 +58,8 @@ class Viewer:
             'intersections': self.traffic_lights['intersections'],
             'sensors': self.sensors,
             'ego_topic': self.decoders.ego_topic,
+            'utm_epsg': self.meta['utm_epsg'],
+            'map_to_utm_offset': self.meta['map_to_utm_offset'],
         })
 
     async def websocket(self, request):
@@ -155,6 +158,7 @@ def main():
     app.router.add_get('/ws', viewer.websocket)
     app.router.add_static('/map/', args.map_dir)
     app.router.add_static('/static/', os.path.join(ROOT, 'web'))
+    Settings(viewer.meta['utm_epsg'], viewer.meta['map_to_utm_offset']).add_routes(app)
 
     async def start_loops(app):
         app['tasks'] = [asyncio.create_task(viewer.health_loop()), asyncio.create_task(viewer.layer_loop())]
