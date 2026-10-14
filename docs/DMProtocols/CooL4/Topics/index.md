@@ -16,7 +16,7 @@ The delayed copies use the general profiles of the `NetworkSimulator` (see [Dela
 
 ## Object information
 
-Type: `dm_object_info_msgs/msg/ObjectInfoArray`. Publisher: `ObjectInfo` (`RSUs/Publishers/CooL4 Object Info (DM)`). QoS: best effort, volatile, keep-last 1. Rate: 10 Hz ([publishing rate](../ObjectInfo/index.md#publishing-rate)). Details: [Object Info](../ObjectInfo/index.md).
+Type: `dm_object_info_msgs/msg/ObjectInfoArray`. Publisher: `ObjectInfo`, built at Play from `rsus.yaml` of the scenario (see [Scenario Configuration](../../../Configuration/index.md#object-info-publishers-cool4-dm)). QoS: best effort, volatile, keep-last 1. Rate: 10 Hz ([publishing rate](../ObjectInfo/index.md#publishing-rate)). Details: [Object Info](../ObjectInfo/index.md).
 
 "With noise" means position, rotation, size and existence noise; the ground truth has none. The RSUs:
 
@@ -60,6 +60,8 @@ Each prefix carries `object_info` (with noise) and `object_info_groundtruth` (wi
 Object numbers are shared by all these topics: the same object has the same object number everywhere ([Object ID layout](../ObjectInfo/index.md#object-id-layout)).
 
 ## Inspecting the topics
+
+For decoded output (units, light names, IDs split into RSU / sensor / object), see [Reading the Messages](../Reading/index.md).
 
 ```console
 # list every DM topic

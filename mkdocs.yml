@@ -88,6 +88,7 @@ nav:
       - Object Info: DMProtocols/CooL4/ObjectInfo/index.md
       - Signal Info: DMProtocols/CooL4/SignalInfo/index.md
       - Topic List: DMProtocols/CooL4/Topics/index.md
+      - Reading the Messages: DMProtocols/CooL4/Reading/index.md
 
   - Configuration: Configuration/index.md
 

@@ -348,7 +348,8 @@ public class ObjectInfo : MonoBehaviour
 
         //Existancy
         objectInfo.Existency.Value =
-            (byte)((int)(byNoise ? (probabilityNoise.ApplyNoiseOnFloat(0.8f) * 101) : 1f * 101));
+            // with noise: 0.8 ± noise, kept inside 0-100 (a noisy value must not reach 101 or wrap below 0)
+            (byte)(byNoise ? Mathf.Clamp((int)(probabilityNoise.ApplyNoiseOnFloat(0.8f) * 101), 0, 100) : 101);
 
 
         //Orientation

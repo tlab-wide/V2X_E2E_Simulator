@@ -34,7 +34,7 @@ An object seen by several sensors is sent **once**, with every sensor that saw i
 | `time.value` | 情報取得時刻 [required] | Last update time of the sensor of `information_source_list[0]`, as `DE_TimestampIts` ([epoch note](../index.md#timestamp-de_timestampits)) |
 | `object_class[0].id.value` | 物標種別 | `1` VEHICLE if the object is an `NPCVehicle`, else `2` PERSON (pedestrians and cyclists) |
 | `object_class[0].confidence.value` | 分類信頼度 | `101` |
-| `existency.value` | 存在信頼度 | Ground truth: `101` (certain). Noisy: `0.8 × 101` with the probability noise applied. |
+| `existency.value` | 存在信頼度 | Ground truth: `101` (certain). Noisy: `0.8 × 101` with the probability noise applied, kept within 0–100. |
 | `object_location.geodetic_srid.value` | 空間参照系 | `4326` (WGS84) |
 | `object_location.latitude.value` | 緯度 | 1e-7 deg, see [coordinates](#coordinates) |
 | `object_location.longitude.value` | 経度 | 1e-7 deg |
