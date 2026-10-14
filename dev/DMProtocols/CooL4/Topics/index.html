@@ -865,10 +865,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#active-by-default" class="md-nav__link">
+  <a href="#all-rsus-in-one-message" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Active by default
+        All RSUs in one message
       
     </span>
   </a>
@@ -876,10 +876,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#inactive-by-default" class="md-nav__link">
+  <a href="#one-topic-pair-per-sensor-tracking-research" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Inactive by default
+        One topic pair per sensor (tracking research)
       
     </span>
   </a>
@@ -2218,10 +2218,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#active-by-default" class="md-nav__link">
+  <a href="#all-rsus-in-one-message" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Active by default
+        All RSUs in one message
       
     </span>
   </a>
@@ -2229,10 +2229,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#inactive-by-default" class="md-nav__link">
+  <a href="#one-topic-pair-per-sensor-tracking-research" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Inactive by default
+        One topic pair per sensor (tracking research)
       
     </span>
   </a>
@@ -2366,10 +2366,73 @@
 </table>
 <p>The delayed copies use the general profiles of the <code>NetworkSimulator</code> (see <a href="../#delayed-copies-network-model">Delayed copies</a>); turn them off with <strong>Enable Delayed Messages</strong> on the DM Signal Info Publisher.</p>
 <h2 id="object-information">Object information</h2>
-<p>Type: <code>dm_object_info_msgs/msg/ObjectInfoArray</code>. Publisher: <code>ObjectInfo</code>. QoS: best effort, volatile, keep-last 1. The actual rate is twice the <strong>Hz</strong> field (<a href="../ObjectInfo/#publishing-rate">why</a>). Details: <a href="../ObjectInfo/">Object Info</a>.</p>
-<p>Every source publishes a pair: <code>…/object_info</code> (ground truth) and <code>…/object_info_noise</code> (with sensor noise). Delayed copies are made from the noisy topic, for example <code>…/object_info_noise/DSRC</code>.</p>
-<h3 id="active-by-default">Active by default</h3>
-<p><strong>Int#2 CooL4 Setup for Data Fusion (DM)</strong>: Intersection #2 (科警研), one source per sensor, about 20 Hz.</p>
+<p>Type: <code>dm_object_info_msgs/msg/ObjectInfoArray</code>. Publisher: <code>ObjectInfo</code> (<code>RSUs/Publishers/CooL4 Object Info (DM)</code>). QoS: best effort, volatile, keep-last 1. Rate: 10 Hz (<a href="../ObjectInfo/#publishing-rate">publishing rate</a>). Details: <a href="../ObjectInfo/">Object Info</a>.</p>
+<p>"With noise" means position, rotation, size and existence noise; the ground truth has none. The RSUs:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">RSU</th>
+<th style="text-align: left;">RSU ID</th>
+<th style="text-align: left;">Sensors (sensor ID)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">がん研 (Ganken), <code>RSU1_Ganken_CooL4</code></td>
+<td style="text-align: left;"><code>0x12020001</code></td>
+<td style="text-align: left;">4 LiDARs <code>RSU_Lidar 1</code>–<code>4</code> (1–4)</td>
+</tr>
+<tr>
+<td style="text-align: left;">科警研 (Kakeiken), <code>RSU2_Kakeiken_CooL4</code></td>
+<td style="text-align: left;"><code>0x12020002</code></td>
+<td style="text-align: left;">Pole 6, 7, 9: camera 6 (1), camera 7 (2), LiDAR 7 (3), camera 9 (4), LiDAR 9 (5)</td>
+</tr>
+<tr>
+<td style="text-align: left;">科警研 (Kakeiken), <code>RSU2_Kakeiken_CooL4</code></td>
+<td style="text-align: left;"><code>0x12020003</code></td>
+<td style="text-align: left;">Pole 2, 3, 8: camera 2 (1), LiDAR 2 (2), camera 3 (3), LiDAR 3 (4), camera 8 (5)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Midblock between 科警研 and 若柴, <code>RSU3_Midblock</code></td>
+<td style="text-align: left;"><code>0x12020004</code></td>
+<td style="text-align: left;">1 LiDAR (1)</td>
+</tr>
+<tr>
+<td style="text-align: left;">若柴 (Wakashiba), <code>RSU4_Wakashiba</code></td>
+<td style="text-align: left;"><code>0x12020005</code></td>
+<td style="text-align: left;">cameras c1–c4 (1–4), LiDAR s1 (5)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="all-rsus-in-one-message">All RSUs in one message</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Topic</th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/v2x/object_info</code></td>
+<td style="text-align: left;">Every object seen by any RSU sensor (all five RSUs above), with noise. Each object lists the sensors (RSU ID + sensor ID) that saw it.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/object_info/DSRC</code></td>
+<td style="text-align: left;">Same, delayed 100 ms with 5 % packet loss</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/object_info/Cellular</code></td>
+<td style="text-align: left;">Same, delayed 400 ms</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/v2x/object_info_groundtruth</code></td>
+<td style="text-align: left;">The same objects without noise</td>
+</tr>
+</tbody>
+</table>
+<h3 id="one-topic-pair-per-sensor-tracking-research">One topic pair per sensor (tracking research)</h3>
+<p>Only the 10 Kakeiken sensors; no delayed copies.</p>
 <table>
 <thead>
 <tr>
@@ -2431,72 +2494,8 @@
 </tr>
 </tbody>
 </table>
-<p>Each prefix carries <code>object_info</code>, <code>object_info_noise</code>, <code>object_info_noise/DSRC</code> and <code>object_info_noise/Cellular</code>.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Topic</th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>/v2x/rsu_all/object_info_groundtruth</code></td>
-<td style="text-align: left;">Ground truth of the whole sensor set of Intersection #2</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>/v2x/rsu_all/object_info_groundtruth_noise</code></td>
-<td style="text-align: left;">Same, with noise</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>/v2x/object_info_2</code>, <code>/v2x/object_info_2_noise</code></td>
-<td style="text-align: left;">RSU2 (Intersection #2) merged over all its sensors, about 2 Hz</td>
-</tr>
-</tbody>
-</table>
-<h3 id="inactive-by-default">Inactive by default</h3>
-<p>Enable the GameObject to publish these.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Setup</th>
-<th style="text-align: left;">Topics</th>
-<th style="text-align: left;">RSU ID</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">BasicSetup / RSU1</td>
-<td style="text-align: left;"><code>/v2x/object_info_1</code>, <code>/v2x/object_info_1_noise</code></td>
-<td style="text-align: left;">0x1100</td>
-</tr>
-<tr>
-<td style="text-align: left;">All Intersection CooL4 Setup (DM) / Intersection 1</td>
-<td style="text-align: left;"><code>/v2x/rsu1/object_info[_noise]</code></td>
-<td style="text-align: left;">0x12020001</td>
-</tr>
-<tr>
-<td style="text-align: left;">All Intersection CooL4 Setup (DM) / Intersection 2-1</td>
-<td style="text-align: left;"><code>/v2x/rsu2_1/object_info[_noise]</code></td>
-<td style="text-align: left;">0x12020002</td>
-</tr>
-<tr>
-<td style="text-align: left;">All Intersection CooL4 Setup (DM) / Intersection 2-2</td>
-<td style="text-align: left;"><code>/v2x/rsu2_2/object_info[_noise]</code></td>
-<td style="text-align: left;">0x12020003</td>
-</tr>
-<tr>
-<td style="text-align: left;">All Intersection CooL4 Setup (DM) / Intersection 3</td>
-<td style="text-align: left;"><code>/v2x/rsu3/object_info[_noise]</code></td>
-<td style="text-align: left;">0x12020004</td>
-</tr>
-<tr>
-<td style="text-align: left;">All Intersection CooL4 Setup (DM) / Intersection 4</td>
-<td style="text-align: left;"><code>/v2x/rsu4/object_info[_noise]</code></td>
-<td style="text-align: left;">0x12020005</td>
-</tr>
-</tbody>
-</table>
+<p>Each prefix carries <code>object_info</code> (with noise) and <code>object_info_groundtruth</code> (without noise).</p>
+<p>Object numbers are shared by all these topics: the same object has the same object number everywhere (<a href="../ObjectInfo/#object-id-layout">Object ID layout</a>).</p>
 <h2 id="inspecting-the-topics">Inspecting the topics</h2>
 <div class="highlight"><pre><span></span><code><span class="gp"># </span>list<span class="w"> </span>every<span class="w"> </span>DM<span class="w"> </span>topic
 <span class="go">ros2 topic list -t | grep -E "dm_(object|signal)_info_msgs"</span>
@@ -2505,7 +2504,7 @@
 <span class="go">ros2 topic echo /signal_info --once</span>
 
 <span class="gp"># </span>rate<span class="w"> </span>check
-<span class="go">ros2 topic hz /v2x/rsu12020002/sensor1/object_info_noise</span>
+<span class="go">ros2 topic hz /v2x/object_info</span>
 </code></pre></div>
 
 

@@ -886,10 +886,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#setups-in-the-kashiwa-scene" class="md-nav__link">
+  <a href="#setup-in-the-kashiwa-scene" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Setups in the Kashiwa scene
+        Setup in the Kashiwa scene
       
     </span>
   </a>
@@ -2345,10 +2345,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#setups-in-the-kashiwa-scene" class="md-nav__link">
+  <a href="#setup-in-the-kashiwa-scene" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Setups in the Kashiwa scene
+        Setup in the Kashiwa scene
       
     </span>
   </a>
@@ -2447,16 +2447,17 @@
  Pseudo sensors (MockSensor: LiDAR / camera FOV + line-of-sight checks), each with a sensor ID
           │  GetSeenObjects()
           ▼
- ObjectInfo component (one per RSU, or one per sensor)          every 1 / (2 × Hz) s
-          │  1. collect every object seen by any of its sensors (ego excluded)
+ ObjectInfo component                                            every 1 / Hz s
+          │  1. collect every object seen by its sensors, by the sensors of its Sources (other
+          │     ObjectInfo components) and of its Rsu Sensors groups, each with its RSU ID; ego excluded
           │  2. build one ObjectInfo per object, twice:
-          │       ground truth  → topicGroundTruth   e.g. /v2x/rsu12020002/sensor1/object_info
-          │       with noise    → topic              e.g. /v2x/rsu12020002/sensor1/object_info_noise
+          │       with noise    → topic              e.g. /v2x/object_info
+          │       ground truth  → topicGroundTruth   e.g. /v2x/object_info_groundtruth
           │  3. optional delayed / lossy copies of the noisy topic (/DSRC, /Cellular)
           ▼
  dm_object_info_msgs/ObjectInfoArray
 </code></pre></div>
-<p>An object seen by several sensors of the same component is sent <strong>once</strong>, with every sensor that saw it in <code>information_source_list</code>.</p>
+<p>An object seen by several sensors is sent <strong>once</strong>, with every sensor that saw it in <code>information_source_list</code>. The ground truth contains the same objects with the same IDs, without position, rotation, size or existence noise.</p>
 <h2 id="message-format">Message format</h2>
 <p><code>dm_object_info_msgs/ObjectInfoArray</code> holds <code>ObjectInfo[] array</code>. The table lists every field the simulator fills; all other fields keep their "unknown" default (see <a href="../#unknown-values-and-optional-fields">conventions</a>).</p>
 <table>
@@ -2476,7 +2477,7 @@
 <tr>
 <td style="text-align: left;"><code>time.value</code></td>
 <td style="text-align: left;">情報取得時刻 [required]</td>
-<td style="text-align: left;">Last update time of the first sensor that saw the object, as <code>DE_TimestampIts</code> (<a href="../#timestamp-de_timestampits">epoch note</a>)</td>
+<td style="text-align: left;">Last update time of the sensor of <code>information_source_list[0]</code>, as <code>DE_TimestampIts</code> (<a href="../#timestamp-de_timestampits">epoch note</a>)</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>object_class[0].id.value</code></td>
@@ -2536,7 +2537,7 @@
 <tr>
 <td style="text-align: left;"><code>information_source_list[]</code></td>
 <td style="text-align: left;">情報源のリスト [required]</td>
-<td style="text-align: left;">One object ID per sensor that saw the object</td>
+<td style="text-align: left;">One object ID per sensor that saw the object, sorted by RSU ID, then sensor ID</td>
 </tr>
 </tbody>
 </table>
@@ -2582,21 +2583,20 @@
  └─────┴──────────────┴─────────────┴─────────────────┴────────────────────────────────┘
 </code></pre></div>
 <ul>
-<li><strong>RSU ID</strong>: the component's <code>Rsu Id</code> field, a hex string such as <code>0x12020002</code>.</li>
+<li><strong>RSU ID</strong>: the <code>Rsu Id</code> field of the component the sensor belongs to, a hex string such as <code>0x12020002</code>. A combined publisher keeps each source's RSU ID.</li>
 <li><strong>Sensor ID</strong>: the <code>Sensor Id</code> of the <code>MockSensor</code> that saw the object.</li>
-<li><strong>Object number</strong>: lower 16 bits of a random number drawn once per object (keyed by the object's UUID). It is stable while the object exists.</li>
+<li><strong>Object number</strong>: a random number (1–65 535) drawn once per object (keyed by the object's UUID) from one table shared by all <code>ObjectInfo</code> components. So the same object has the same number on every topic and at every intersection, and a number is never given to two objects (the table starts over after 65 535 objects).</li>
 </ul>
-<p><code>information_source_list</code> holds one such ID per sensor that saw the object. <code>id</code> copies the first one, so the same object seen by a different first sensor gets a different <code>id</code>.</p>
+<p><code>information_source_list</code> holds one such ID per sensor that saw the object, sorted by RSU ID and then sensor ID. <code>id</code> copies the first one. It changes only when the set of sensors that see the object changes so that a different sensor comes first.</p>
 <div class="admonition note">
 <p class="admonition-title">Differences from the spec</p>
 <ul>
 <li>The spec expects <code>information_source_list</code> to contain the <em>observing device's</em> ID (<code>00</code> + device ID). The simulator puts the per-sensor recognised-object IDs there instead, which lets a consumer tell which sensors saw the object.</li>
 <li>The list is not capped at 4 entries.</li>
-<li>The object number is 16 bits, so two objects can collide in rare cases.</li>
 </ul>
 </div>
 <h2 id="publishing-rate">Publishing rate</h2>
-<p>The <strong>Hz</strong> field sets half the publishing rate. <code>ObjectInfo.Update()</code> publishes every <code>1 / (2 × Hz)</code> seconds, so <code>Hz = 10</code> produces about <strong>20 Hz</strong>, and <code>Hz = 1</code> produces about <strong>2 Hz</strong>. Verify with <code>ros2 topic hz</code>.</p>
+<p>The <strong>Hz</strong> field is the publishing rate: <code>ObjectInfo.Update()</code> publishes every <code>1 / Hz</code> seconds of simulation time, carrying the remainder over so the average stays at <strong>Hz</strong> even when the frame rate does not divide it. All publishers of the Kashiwa scene use <strong>10 Hz</strong>. Verify with <code>ros2 topic hz</code>.</p>
 <p>QoS: best effort, volatile, keep-last 1.</p>
 <h2 id="components">Components</h2>
 <table>
@@ -2611,12 +2611,7 @@
 <tr>
 <td style="text-align: left;"><strong>ObjectInfo</strong></td>
 <td style="text-align: left;"><code>Assets/V2X/Script/CustomMsg/ObjectInfo.cs</code></td>
-<td style="text-align: left;">Main DM object publisher. Takes a list of <code>MockSensor</code>s.</td>
-</tr>
-<tr>
-<td style="text-align: left;">ObjectInfoPublisher <em>(deprecated)</em></td>
-<td style="text-align: left;"><code>Assets/V2X/Script/CustomMsg/ObjectInfoPublisher.cs</code></td>
-<td style="text-align: left;">Publishes everything inside a <code>GroundTruthArea</code> without sensors. Single topic, no delay support.</td>
+<td style="text-align: left;">DM object publisher. Takes a list of <code>MockSensor</code>s and/or other <code>ObjectInfo</code> components as sources.</td>
 </tr>
 </tbody>
 </table>
@@ -2631,15 +2626,19 @@
 <tbody>
 <tr>
 <td style="text-align: left;"><strong>Sensors</strong></td>
-<td style="text-align: left;">Pseudo sensors whose detections are merged into this component's output</td>
+<td style="text-align: left;">Pseudo sensors whose detections are merged into this component's output (reported with this component's <strong>Rsu Id</strong>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sources</strong></td>
+<td style="text-align: left;">Other <code>ObjectInfo</code> components whose sensors are merged in as well, each reported with that component's <strong>Rsu Id</strong>. Used for one message covering several RSUs.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Rsu Sensors</strong></td>
+<td style="text-align: left;">Further RSUs (an <strong>Rsu Id</strong> and its <strong>Sensors</strong>) merged into this message only. For RSUs that do not publish their own topics.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Hz</strong></td>
-<td style="text-align: left;">Half of the publishing rate (see <a href="#publishing-rate">Publishing rate</a>)</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Is Ground Truth</strong></td>
-<td style="text-align: left;">Not used by <code>ObjectInfo</code>. Both the noisy and the ground-truth topic are always published. It is kept for the deprecated <code>ObjectInfoPublisher</code>.</td>
+<td style="text-align: left;">Publishing rate (see <a href="#publishing-rate">Publishing rate</a>)</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Topic</strong></td>
@@ -2669,39 +2668,67 @@
 <li>Add an <strong>ObjectInfo</strong> component under <code>RSUs/Publishers</code>, fill <strong>Sensors</strong>, and set <strong>Rsu Id</strong> and the topics.</li>
 <li>Optionally enable delayed messages.</li>
 </ol>
-<h2 id="setups-in-the-kashiwa-scene">Setups in the Kashiwa scene</h2>
-<p>Under <code>RSUs/Publishers</code> in <code>V2X_E2E_Simulator_v3.1.1.unity</code>:</p>
+<h2 id="setup-in-the-kashiwa-scene">Setup in the Kashiwa scene</h2>
+<p>Under <code>RSUs/Publishers/CooL4 Object Info (DM)</code> in <code>V2X_E2E_Simulator_v3.1.1.unity</code>, all at 10 Hz:</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Setup</th>
-<th style="text-align: left;">Default</th>
-<th style="text-align: left;">What it publishes</th>
+<th style="text-align: left;">Publisher</th>
+<th style="text-align: left;">Topics</th>
+<th style="text-align: left;">Use</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong>Int#2 CooL4 Setup for Data Fusion (DM)</strong></td>
-<td style="text-align: left;">active</td>
-<td style="text-align: left;">One topic pair per sensor at Intersection #2 (科警研). RSU <code>0x12020002</code> sensors 1–5 and RSU <code>0x12020003</code> sensors 1–5, plus an all-sensor ground-truth source.</td>
+<td style="text-align: left;"><strong>all_rsu_publisher</strong></td>
+<td style="text-align: left;"><code>/v2x/object_info</code>, <code>/v2x/object_info/DSRC</code>, <code>/v2x/object_info/Cellular</code>, <code>/v2x/object_info_groundtruth</code></td>
+<td style="text-align: left;">Every object seen by any RSU sensor below, with each sensor's RSU ID. The 10 Kakeiken sensors come in through <strong>Sources</strong>, the other RSUs through <strong>Rsu Sensors</strong>. This is the DM-style output, with network-delayed copies.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>BasicSetup / RSU2</strong></td>
-<td style="text-align: left;">active</td>
-<td style="text-align: left;">Intersection #2 (科警研) merged: <code>/v2x/object_info_2[_noise]</code> (Hz 1)</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>BasicSetup / RSU1</strong></td>
-<td style="text-align: left;">inactive</td>
-<td style="text-align: left;">Intersection #1 (がん研) merged: <code>/v2x/object_info_1[_noise]</code></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>All Intersection CooL4 Setup (DM)</strong></td>
-<td style="text-align: left;">inactive</td>
-<td style="text-align: left;">One merged topic pair per intersection: <code>/v2x/rsu1</code>, <code>rsu2_1</code>, <code>rsu2_2</code>, <code>rsu3</code>, <code>rsu4</code> (RSU IDs <code>0x12020001</code>–<code>0x12020005</code>)</td>
+<td style="text-align: left;"><strong>indivisual_publisher/…</strong> (10 publishers, one per Kakeiken sensor)</td>
+<td style="text-align: left;"><code>/v2x/rsu&lt;RSU ID&gt;/sensor&lt;N&gt;/object_info</code>, <code>…/object_info_groundtruth</code></td>
+<td style="text-align: left;">One sensor each, without delayed copies. For tracking research.</td>
 </tr>
 </tbody>
 </table>
+<p>The RSUs and their sensors:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">RSU</th>
+<th style="text-align: left;">RSU ID</th>
+<th style="text-align: left;">Sensors (sensor ID)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">がん研 (Ganken), <code>RSU1_Ganken_CooL4</code></td>
+<td style="text-align: left;"><code>0x12020001</code></td>
+<td style="text-align: left;">4 LiDARs <code>RSU_Lidar 1</code>–<code>4</code> (1–4)</td>
+</tr>
+<tr>
+<td style="text-align: left;">科警研 (Kakeiken), <code>RSU2_Kakeiken_CooL4</code></td>
+<td style="text-align: left;"><code>0x12020002</code></td>
+<td style="text-align: left;">Pole 6, 7, 9: camera 6 (1), camera 7 (2), LiDAR 7 (3), camera 9 (4), LiDAR 9 (5)</td>
+</tr>
+<tr>
+<td style="text-align: left;">科警研 (Kakeiken), <code>RSU2_Kakeiken_CooL4</code></td>
+<td style="text-align: left;"><code>0x12020003</code></td>
+<td style="text-align: left;">Pole 2, 3, 8: camera 2 (1), LiDAR 2 (2), camera 3 (3), LiDAR 3 (4), camera 8 (5)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Midblock between 科警研 and 若柴, <code>RSU3_Midblock</code></td>
+<td style="text-align: left;"><code>0x12020004</code></td>
+<td style="text-align: left;">1 LiDAR (1)</td>
+</tr>
+<tr>
+<td style="text-align: left;">若柴 (Wakashiba), <code>RSU4_Wakashiba</code></td>
+<td style="text-align: left;"><code>0x12020005</code></td>
+<td style="text-align: left;">cameras c1–c4 (1–4), LiDAR s1 (5)</td>
+</tr>
+</tbody>
+</table>
+<p>A pseudo sensor only detects objects when it is listed in the active scenario (<strong>Cooperative Autonomous Driving</strong> → <em>Rsu Lidar</em> / <em>Rsu Cameras</em>), which runs the line-of-sight checks. Add new RSU sensors there as well.</p>
 <p>See the <a href="../Topics/">Topic List</a> for every topic name.</p>
 
 

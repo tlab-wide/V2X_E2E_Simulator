@@ -733,15 +733,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-dm-format-topics-for-intersection-2-in-kashiwa" class="md-nav__link">
+  <a href="#4-dm-format-topics-per-sensor-intersection-2-in-kashiwa" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. DM Format Topics for Intersection #2 in Kashiwa
+        4. DM Format Topics per Sensor (Intersection #2 in Kashiwa)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. DM Format Topics for Intersection #2 in Kashiwa">
+    <nav class="md-nav" aria-label="4. DM Format Topics per Sensor (Intersection #2 in Kashiwa)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -761,10 +761,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-ground-truth-topics" class="md-nav__link">
+  <a href="#5-v2x-traffic-signal-information-for-autoware" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Ground Truth Topics
+        5. V2X Traffic Signal Information for Autoware
       
     </span>
   </a>
@@ -772,32 +772,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-v2x-traffic-signal-information-for-autoware" class="md-nav__link">
+  <a href="#6-cool4-dm-signal-information" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. V2X Traffic Signal Information for Autoware
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6b-cool4-dm-signal-information" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6b. CooL4 DM Signal Information
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7-all-intersection-cool4-setupdm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. All intersection Cool4 Setup(DM)
+        6. CooL4 DM Signal Information
       
     </span>
   </a>
@@ -2872,15 +2850,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-dm-format-topics-for-intersection-2-in-kashiwa" class="md-nav__link">
+  <a href="#4-dm-format-topics-per-sensor-intersection-2-in-kashiwa" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. DM Format Topics for Intersection #2 in Kashiwa
+        4. DM Format Topics per Sensor (Intersection #2 in Kashiwa)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. DM Format Topics for Intersection #2 in Kashiwa">
+    <nav class="md-nav" aria-label="4. DM Format Topics per Sensor (Intersection #2 in Kashiwa)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2900,10 +2878,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-ground-truth-topics" class="md-nav__link">
+  <a href="#5-v2x-traffic-signal-information-for-autoware" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Ground Truth Topics
+        5. V2X Traffic Signal Information for Autoware
       
     </span>
   </a>
@@ -2911,32 +2889,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-v2x-traffic-signal-information-for-autoware" class="md-nav__link">
+  <a href="#6-cool4-dm-signal-information" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. V2X Traffic Signal Information for Autoware
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6b-cool4-dm-signal-information" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6b. CooL4 DM Signal Information
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7-all-intersection-cool4-setupdm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. All intersection Cool4 Setup(DM)
+        6. CooL4 DM Signal Information
       
     </span>
   </a>
@@ -3369,94 +3325,64 @@ The message type <strong><code>PredictedObjects</code></strong> comes from <code
 </table>
 <hr />
 <h3 id="3-cool4-dm-format-topics"><strong>3. Cool4 DM Format Topics</strong></h3>
-<p>These topics provide <strong>the same detected objects in Cool4 DM format</strong>.<br />
-(<strong>Currently, only Intersection 1 and 2 have DM-compatible RSUs</strong>).
-The message type <strong><code>ObjectInfoArray</code></strong> comes from <code>dm_object_info_msgs.msg</code>. This message is not compatible with <strong>Autoware</strong> and was created to work with  the <strong>DM protocol</strong>.</p>
+<p>These topics provide <strong>the detected objects in CooL4 DM format</strong> (<code>dm_object_info_msgs/ObjectInfoArray</code>). This message is not compatible with <strong>Autoware</strong>; it was created for the <strong>DM protocol</strong>.
+The RSU sensors are at Ganken (<code>0x12020001</code>), Kakeiken (<code>0x12020002</code>, <code>0x12020003</code>), the midblock between Kakeiken and Wakashiba (<code>0x12020004</code>) and Wakashiba (<code>0x12020005</code>). All topics are published at 10 Hz.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><strong>Topic Name</strong></th>
-<th style="text-align: left;"><strong>Intersection</strong></th>
+<th style="text-align: left;"><strong>Content</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>/v2x/object_info_1</code></td>
-<td style="text-align: left;">Ganken Intersection</td>
+<td style="text-align: left;"><code>/v2x/object_info</code></td>
+<td style="text-align: left;">Objects seen by all RSU sensors, <strong>with noise</strong></td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>/v2x/object_info_1_noise</code></td>
-<td style="text-align: left;">Ganken Intersection (with noise)</td>
+<td style="text-align: left;"><code>/v2x/object_info/DSRC</code></td>
+<td style="text-align: left;">The same with DSRC network delay and packet loss</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>/v2x/object_info_2</code></td>
-<td style="text-align: left;">Kakeiken Intersection</td>
+<td style="text-align: left;"><code>/v2x/object_info/Cellular</code></td>
+<td style="text-align: left;">The same with cellular network delay</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>/v2x/object_info_2_noise</code></td>
-<td style="text-align: left;">Kakeiken Intersection (with noise)</td>
+<td style="text-align: left;"><code>/v2x/object_info_groundtruth</code></td>
+<td style="text-align: left;">The same objects <strong>without noise</strong></td>
 </tr>
 </tbody>
 </table>
-<h3 id="4-dm-format-topics-for-intersection-2-in-kashiwa"><strong>4. DM Format Topics for Intersection #2 in Kashiwa</strong></h3>
-<p>For <strong>Intersection #2 in Kashiwa</strong>, detected objects from <strong>each sensor</strong> are also published in <strong>DM format</strong>.<br />
-The <strong>rsu number</strong> and <strong>sensor number</strong> help distinguish different sensors.<br />
-- <code>/object_info</code> → Detected objects <strong>without noise</strong><br />
-- <code>/object_info_noise</code> → Detected objects <strong>with noise</strong><br />
-- <code>/object_info_noise/Cellular</code> → Detected objects <strong>with noise and delay based on network types</strong></p>
+<h3 id="4-dm-format-topics-per-sensor-intersection-2-in-kashiwa"><strong>4. DM Format Topics per Sensor (Intersection #2 in Kashiwa)</strong></h3>
+<p>Detected objects from <strong>each sensor</strong> are also published separately (for tracking research, no network delay).
+The <strong>rsu number</strong> and <strong>sensor number</strong> identify the sensor.
+- <code>/object_info</code> → Detected objects <strong>with noise</strong>
+- <code>/object_info_groundtruth</code> → Detected objects <strong>without noise</strong></p>
 <h4 id="published-topics"><strong>Published Topics:</strong></h4>
 <div class="highlight"><pre><span></span><code>/v2x/rsu12020002/sensor1/object_info
-/v2x/rsu12020002/sensor1/object_info_noise
-/v2x/rsu12020002/sensor1/object_info_noise/Cellular
-/v2x/rsu12020002/sensor1/object_info_noise/DSRC
+/v2x/rsu12020002/sensor1/object_info_groundtruth
 /v2x/rsu12020002/sensor2/object_info
-/v2x/rsu12020002/sensor2/object_info_noise
-/v2x/rsu12020002/sensor2/object_info_noise/Cellular
-/v2x/rsu12020002/sensor2/object_info_noise/DSRC
+/v2x/rsu12020002/sensor2/object_info_groundtruth
 /v2x/rsu12020002/sensor3/object_info
-/v2x/rsu12020002/sensor3/object_info_noise
-/v2x/rsu12020002/sensor3/object_info_noise/Cellular
-/v2x/rsu12020002/sensor3/object_info_noise/DSRC
+/v2x/rsu12020002/sensor3/object_info_groundtruth
 /v2x/rsu12020002/sensor4/object_info
-/v2x/rsu12020002/sensor4/object_info_noise
-/v2x/rsu12020002/sensor4/object_info_noise/Cellular
-/v2x/rsu12020002/sensor4/object_info_noise/DSRC
+/v2x/rsu12020002/sensor4/object_info_groundtruth
 /v2x/rsu12020002/sensor5/object_info
-/v2x/rsu12020002/sensor5/object_info_noise
-/v2x/rsu12020002/sensor5/object_info_noise/Cellular
-/v2x/rsu12020002/sensor5/object_info_noise/DSRC
+/v2x/rsu12020002/sensor5/object_info_groundtruth
 /v2x/rsu12020003/sensor1/object_info
-/v2x/rsu12020003/sensor1/object_info_noise
-/v2x/rsu12020003/sensor1/object_info_noise/Cellular
-/v2x/rsu12020003/sensor1/object_info_noise/DSRC
+/v2x/rsu12020003/sensor1/object_info_groundtruth
 /v2x/rsu12020003/sensor2/object_info
-/v2x/rsu12020003/sensor2/object_info_noise
-/v2x/rsu12020003/sensor2/object_info_noise/Cellular
-/v2x/rsu12020003/sensor2/object_info_noise/DSRC
+/v2x/rsu12020003/sensor2/object_info_groundtruth
 /v2x/rsu12020003/sensor3/object_info
-/v2x/rsu12020003/sensor3/object_info_noise
-/v2x/rsu12020003/sensor3/object_info_noise/Cellular
-/v2x/rsu12020003/sensor3/object_info_noise/DSRC
+/v2x/rsu12020003/sensor3/object_info_groundtruth
 /v2x/rsu12020003/sensor4/object_info
-/v2x/rsu12020003/sensor4/object_info_noise
-/v2x/rsu12020003/sensor4/object_info_noise/Cellular
-/v2x/rsu12020003/sensor4/object_info_noise/DSRC
+/v2x/rsu12020003/sensor4/object_info_groundtruth
 /v2x/rsu12020003/sensor5/object_info
-/v2x/rsu12020003/sensor5/object_info_noise
-/v2x/rsu12020003/sensor5/object_info_noise/Cellular
-/v2x/rsu12020003/sensor5/object_info_noise/DSRC
+/v2x/rsu12020003/sensor5/object_info_groundtruth
 </code></pre></div>
+<p>See <a href="../../DMProtocols/CooL4/Topics/">DM Protocols → CooL4 → Topic List</a> for details.</p>
 <hr />
-<h3 id="5-ground-truth-topics"><strong>5. Ground Truth Topics</strong></h3>
-<p>These topics publish the <strong>ground truth</strong> of <strong>all objects</strong> in the intersection.</p>
-<ul>
-<li><code>/v2x/rsu_all/object_info_groundtruth</code></li>
-<li><code>/v2x/rsu_all/object_info_groundtruth_noise</code></li>
-<li><code>/v2x/rsu_all/object_info_groundtruth_noise/Cellular</code></li>
-<li><code>/v2x/rsu_all/object_info_groundtruth_noise/DSRC</code></li>
-</ul>
-<hr />
-<h3 id="6-v2x-traffic-signal-information-for-autoware"><strong>6. V2X Traffic Signal Information for Autoware</strong></h3>
+<h3 id="5-v2x-traffic-signal-information-for-autoware"><strong>5. V2X Traffic Signal Information for Autoware</strong></h3>
 <ul>
 <li><strong>Published Topic:</strong>  </li>
 <li><code>/v2x/traffic_signals</code> </li>
@@ -3465,7 +3391,7 @@ The <strong>rsu number</strong> and <strong>sensor number</strong> help distingu
 <li><code>/v2x/rsu3/traffic_signals</code></li>
 <li><code>/v2x/rsu4/traffic_signals</code></li>
 </ul>
-<h3 id="6b-cool4-dm-signal-information"><strong>6b. CooL4 DM Signal Information</strong></h3>
+<h3 id="6-cool4-dm-signal-information"><strong>6. CooL4 DM Signal Information</strong></h3>
 <p>Signal state with remaining time for the five intersections on the bus route, in the <strong>CooL4 DM format</strong> (<code>dm_signal_info_msgs/SignalInfoArray</code>). Published all the time by the <strong>DM Signal Info Publisher</strong> prefab.</p>
 <ul>
 <li><strong>Published Topic:</strong>  </li>
@@ -3473,30 +3399,6 @@ The <strong>rsu number</strong> and <strong>sensor number</strong> help distingu
 <li><code>/signal_info/DSRC</code>, <code>/signal_info/Cellular</code> (the same with network delay and packet loss)</li>
 </ul>
 <p>See <a href="../../DMProtocols/CooL4/SignalInfo/">DM Protocols → CooL4 → Signal Info</a> for details.</p>
-<h3 id="7-all-intersection-cool4-setupdm"><strong>7. All intersection Cool4 Setup(DM)</strong></h3>
-<ul>
-<li><strong>Published Topic:</strong>  </li>
-<li><code>/v2x/rsu1/object_info</code></li>
-<li><code>/v2x/rsu1/object_info_noise</code></li>
-<li><code>/v2x/rsu1/object_info_noise/Cellular</code></li>
-<li><code>/v2x/rsu1/object_info_noise/DSRC</code></li>
-<li><code>/v2x/rsu2_1/object_info</code></li>
-<li><code>/v2x/rsu2_1/object_info_noise</code></li>
-<li><code>/v2x/rsu2_1/object_info_noise/Cellular</code></li>
-<li><code>/v2x/rsu2_1/object_info_noise/DSRC</code></li>
-<li><code>/v2x/rsu2_2/object_info</code></li>
-<li><code>/v2x/rsu2_2/object_info_noise</code></li>
-<li><code>/v2x/rsu2_2/object_info_noise/Cellular</code></li>
-<li><code>/v2x/rsu2_2/object_info_noise/DSRC</code></li>
-<li><code>/v2x/rsu3/object_info</code></li>
-<li><code>/v2x/rsu3/object_info_noise</code></li>
-<li><code>/v2x/rsu3/object_info_noise/Cellular</code></li>
-<li><code>/v2x/rsu3/object_info_noise/DSRC</code></li>
-<li><code>/v2x/rsu4/object_info</code></li>
-<li><code>/v2x/rsu4/object_info_noise</code></li>
-<li><code>/v2x/rsu4/object_info_noise/Cellular</code></li>
-<li><code>/v2x/rsu4/object_info_noise/DSRC</code></li>
-</ul>
 <h2 id="scenarios">Scenarios</h2>
 <p>Select the scenario from the <strong>Scenario dropdown</strong> in the UI. The number keys are not used for scenario selection (keys <strong>1</strong>–<strong>4</strong> control the turn signals).</p>
 <p>The dropdown entry index is passed to <code>ScenarioSelector.ActivateScenario</code>, which activates that scenario and deactivates all others. On start, <code>ScenarioSelector</code> activates <code>defaultScenarioIndex</code> (set it to <code>-1</code> to start with no scenario active).</p>

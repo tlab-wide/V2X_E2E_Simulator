@@ -2549,7 +2549,7 @@
 </table>
 <p>When <strong>every</strong> topic is offline, the panel shows a single "Simulator not publishing" notice instead of the long list.</p>
 <h3 id="topic-tree">Topic tree</h3>
-<p>Below the problems, topics are grouped by category: DM signal info, DM object info, traffic signals, Autoware objects, ego vehicle, control, clock and other. Within each category they form a tree that follows the topic names, for example <code>v2x › rsu12020002 › sensor1 › object_info_noise › DSRC</code>. Namespaces with a single child are merged (<code>awsim/ground_truth</code>).</p>
+<p>Below the problems, topics are grouped by category: DM signal info, DM object info, traffic signals, Autoware objects, ego vehicle, control, clock and other. Within each category they form a tree that follows the topic names, for example <code>v2x › object_info › DSRC</code>. Namespaces with a single child are merged (<code>awsim/ground_truth</code>).</p>
 <ul>
 <li><strong>Branches</strong> show how many of their topics are live (<code>3/20</code>) and badges for problems inside them (<code>1 no data</code>, <code>2 type missing</code>). Their checkbox ticks or unticks every drawable topic below them; it is part-filled when only some are ticked.</li>
 <li><strong>Topics</strong> show their status dot, rate or problem, and colour swatch. A topic with delayed copies (<code>/DSRC</code>, <code>/Cellular</code>) has a ▸ to show them.</li>
@@ -2708,7 +2708,7 @@
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">near</span><span class="p">:</span><span class="w"> </span><span class="s">'科警研</span><span class="nv"> </span><span class="s">(Kakeiken)'</span><span class="w">        </span><span class="c1"># 19 m from the centre</span>
 <span class="w">    </span><span class="nt">sensor_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="w">    </span><span class="nt">rsu_ids</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0x1100</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0x12020002</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">rsu_ids</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0x12020002</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">lat</span><span class="p">:</span><span class="w"> </span><span class="nv">35.8961753</span><span class="p p-Indicator">,</span><span class="nt"> lon</span><span class="p">:</span><span class="w"> </span><span class="nv">139.9419667</span><span class="p p-Indicator">,</span><span class="nt"> z_m</span><span class="p">:</span><span class="w"> </span><span class="nv">23.71</span><span class="p p-Indicator">}</span>
 <span class="w">    </span><span class="nt">heading_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">234.4</span>
 <span class="w">    </span><span class="nt">pitch_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-35.0</span>
@@ -2716,10 +2716,10 @@
 <span class="w">    </span><span class="nt">v_fov_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">22.65</span>
 <span class="w">    </span><span class="nt">range_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">75.0</span>
 <span class="w">    </span><span class="nt">topics</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/object_info_2_noise</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/object_info_2</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/rsu12020002/sensor1/object_info_noise</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/rsu12020002/sensor1/object_info</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/rsu12020002/sensor1/object_info_groundtruth</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/object_info</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/object_info_groundtruth</span>
 </code></pre></div>
 <table>
 <thead>
@@ -2735,7 +2735,11 @@
 </tr>
 <tr>
 <td style="text-align: left;"><code>enabled</code></td>
-<td style="text-align: left;">Active in the scene. The 10 sensors of the Kakeiken CooL4 setup are enabled; the others belong to disabled setups and are shown only with <strong>Disabled sensors</strong> ticked.</td>
+<td style="text-align: left;">Active in the scene. The sensors of the four RSU groups (Ganken, Kakeiken, Midblock, Wakashiba) are enabled; disabled ones are shown only with <strong>Disabled sensors</strong> ticked.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>group</code></td>
+<td style="text-align: left;">The RSU sensor group under <code>RSUs/Pseudo Sensors setup</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>position</code>, <code>heading_deg</code>, <code>pitch_deg</code></td>
