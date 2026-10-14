@@ -97,7 +97,7 @@ nav:
 
   - Project guide:
     # - Directory: ProjectGuide/Directory/index.md
-    - Kashiwa Scenes: ProjectGuide/KashiwaScenes/index.md
+    - Kashiwa Scene Names: ProjectGuide/KashiwaScenes/index.md
     - Git Branch: ProjectGuide/GitBranch/index.md
     - External Libraries: ProjectGuide/ExternalLibraries/index.md
 
