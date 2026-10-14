@@ -5,10 +5,10 @@ the repository are distributed on request. Fill in the form below and the downlo
 
 | File | Content | Needed for |
 |:--|:--|:--|
-| `V2X_E2E_Simulator_3_1_1.unitypackage` | Scene `V2X_E2E_Simulator_v3.1.1.unity`, Kashiwa 3D map, models and textures (the whole `Assets` folder) | [Setup Unity Project](../SetupUnityProject/index.md) |
-| `kashiwa_pcdmap_forV2X_E2E_7.8.zip` | Kashiwa point-cloud map (`pointcloud_map.pcd`) and Lanelet2 map (`lanelet2_map.osm`) | Autoware, the [web viewer](../../Tools/WebViewer/index.md) |
-| `bus_vehicle_description_7.8.1.zip` | Bus vehicle parameters for Autoware | [Steps to launch Autoware](../QuickStartDemo/index.md#steps-to-lunch-autoware) |
-| `bus_sensor_kit_7.8.1.zip` | Bus sensor kit for Autoware | [Steps to launch Autoware](../QuickStartDemo/index.md#steps-to-lunch-autoware) |
+| `V2X_E2E_Simulator_3_1_2.unitypackage` | Scene `V2X_E2E_Simulator_v3.1.1.unity` (the file name is unchanged in 3.1.2), Kashiwa 3D map, models and textures | [Setup Unity Project](../SetupUnityProject/index.md) |
+| `simulator_maps_v3.1.1.zip` | Kashiwa point-cloud map (`pointcloud_map.pcd`) and Lanelet2 map (`lanelet2_map.osm`) | Autoware, the [web viewer](../../Tools/WebViewer/index.md) |
+| `bus_vehicle_description_v3.1.1.zip` | Bus vehicle parameters for Autoware | [Steps to launch Autoware](../QuickStartDemo/index.md#steps-to-lunch-autoware) |
+| `bus_sensor_kit_v3.1.1.zip` | Bus sensor kit for Autoware | [Steps to launch Autoware](../QuickStartDemo/index.md#steps-to-lunch-autoware) |
 | `V2X_E2E_Kashiwa_7_8_2_Bus.zip`, `V2X_E2E_Kashiwa_7_8_2_Lexus.zip` | Prebuilt Ubuntu demo binaries (older version 7.8.2) | [Quick Start Demo](../QuickStartDemo/index.md) |
 | `autoware-main.zip` | Cooperative Autoware workspace | [Cooperative Autoware](../../Introduction/CombinationWithAutoware/index.md) |
 

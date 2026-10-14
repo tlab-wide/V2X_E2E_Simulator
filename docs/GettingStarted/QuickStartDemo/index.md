@@ -255,6 +255,10 @@ These objects are detected by the **Bus pseudo sensor**, which consists of a **4
 ---
 
 ### **2. Autoware-Compatible Topics**
+
+!!! warning "Not published in v3.1.2"
+    The v3.1.2 scene does not publish these topics: their publishers were removed by mistake together with the old object-info setup. They will be back in the next version. Use v3.1.1 if you need them.
+
 These topics are **used as direct inputs to Autoware** for testing.
 The message type **`PredictedObjects`** comes from `autoware_auto_perception_msgs.msg`, which is a default message type of **Autoware** and **AWSIM**.
 
@@ -314,6 +318,10 @@ See [DM Protocols → CooL4 → Topic List](../../DMProtocols/CooL4/Topics/index
 ---
 
 ### **5. V2X Traffic Signal Information for Autoware**
+
+!!! warning "Not published in v3.1.2"
+    The v3.1.2 scene does not publish these topics: their publishers were removed by mistake together with the old object-info setup. They will be back in the next version. Use v3.1.1 if you need them.
+
 - **Published Topic:**  
   - `/v2x/traffic_signals` 
   - `/v2x/rsu1/traffic_signals`
@@ -377,11 +385,11 @@ The dropdown entry index is passed to `ScenarioSelector.ActivateScenario`, which
    In order to work with **Bus Autoware**, you need to download the bus vehicle parameters and the bus sensor kit setup.
 
    - **Bus Vehicle Parameters**: 
-    `bus_vehicle_description_7.8.1.zip` from the [download folder](../Download/index.md)
+    `bus_vehicle_description_v3.1.1.zip` from the [download folder](../Download/index.md)
 
 
    - **Bus Sensor Kit**:
-   `bus_sensor_kit_7.8.1.zip` from the [download folder](../Download/index.md)
+   `bus_sensor_kit_v3.1.1.zip` from the [download folder](../Download/index.md)
 
    **Place the downloaded files in the following directories:**
    - `autoware/src/vehicle/sample_vehicle_launch/sample_vehicle_description/config`

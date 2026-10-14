@@ -35,6 +35,6 @@ web/                          the page (MapLibre GL vendored in web/vendor, work
 python3 tools/web-viewer/scripts/build_map.py /path/to/lanelet2_map.osm
 ```
 
-The Kashiwa `lanelet2_map.osm` is in `kashiwa_pcdmap_forV2X_E2E_7.8.zip` ([request form](https://docs.google.com/forms/d/e/1FAIpQLSfsFGAvp8J0iLGfcQQ8r6o2x72SBmsddg-B-ngfVQoC4tF0iw/viewform)). The script needs `pyproj`. It overwrites `maps/lanelet2.geojson` and `maps/lanelet2_meta.json`.
+The Kashiwa `lanelet2_map.osm` is in `simulator_maps_v3.1.1.zip` ([request form](https://docs.google.com/forms/d/e/1FAIpQLSfsFGAvp8J0iLGfcQQ8r6o2x72SBmsddg-B-ngfVQoC4tF0iw/viewform)). The script needs `pyproj`. It overwrites `maps/lanelet2.geojson` and `maps/lanelet2_meta.json`.
 
 See the documentation page *Tools → Web Viewer* for details.

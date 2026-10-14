@@ -301,5 +301,5 @@ array:
 | Topic | Type | Content |
 |:--|:--|:--|
 | `/signal_info` | `dm_signal_info_msgs/SignalInfoArray` | **This page.** CooL4 format, all intersections, with remaining time. |
-| `/v2x/traffic_signals`, `/v2x/rsuN/traffic_signals` | `v2x_msgs/V2XSignals` | Autoware `TrafficSignalArray` wrapped with the RSU station ID. Lanelet2 regulatory-element IDs, no remaining time. Published by `CustomV2I` + `CustomV2IPublisher` on active RSU objects. |
+| `/v2x/traffic_signals`, `/v2x/rsuN/traffic_signals` (not in the v3.1.2 scene) | `v2x_msgs/V2XSignals` | Autoware `TrafficSignalArray` wrapped with the RSU station ID. Lanelet2 regulatory-element IDs, no remaining time. Published by `CustomV2I` + `CustomV2IPublisher` on active RSU objects. |
 | `/v2x/traffic_signals_Awsim` | `autoware_perception_msgs/TrafficLightGroupArray` | Original AWSIM `V2I` output (lights within 150 m of the ego). Disabled in the Kashiwa scene. |
