@@ -5,6 +5,40 @@ From v3.2 the simulator builds its RSUs, pseudo sensors, publishers, traffic, pe
 !!! note "When changes apply"
     The files are read once, when Play starts (or when a built simulator starts). Saved changes apply on the next run.
 
+## How to change the configuration
+
+There are three ways. All of them change the same files, so you can mix them.
+
+| Way | Use it for |
+|:--|:--|
+| **Web viewer → Settings** (`tools/web-viewer/run.sh`, open <http://localhost:8080>, top bar **Settings**) | Everyday changes. Lists and forms for every file, with editing on the map. **Save** checks everything first. See [Web Viewer → Settings](../Tools/WebViewer/index.md#settings). |
+| **Edit the YAML files** in `config/` with any text editor | Many similar changes at once, or with version control. Errors show in the Unity Console as `[Config] …` when Play starts. |
+| **Unity menu *V2X → Config → Export …*** | Copy what you built in the scene into the files (see [Editing in Unity](#editing-in-unity)) |
+
+After a change, press Play again (or restart the built simulator). To undo, use **Reset to default** in the web viewer (or copy the file back from `config/factory/`).
+
+### Common tasks
+
+| Task | In the web viewer (Settings) | In the files |
+|:--|:--|:--|
+| Make a new scenario | **New…** copies the current one; **Make default** loads it at Play | Copy a folder in `config/scenarios/`, write its name in `config/default_scenario.txt` (or pick it on the *Config Bootstrap* object, or start with `--scenario <name>`) |
+| Use the Lexus instead of the bus | Simulation → *vehicle* | `simulation.yaml` → `ego.vehicle` |
+| Start the ego somewhere else | Simulation → **Place on map**, then drag; set *heading* | `simulation.yaml` → `ego.pose` |
+| Run faster than real time | Simulation → *time scale* | `simulation.yaml` → `time_scale` |
+| Repeat the same traffic | Simulation → *random seed* | `simulation.yaml` → `seed` |
+| Evening, night, fog | Simulation → *time of day*, *fog visibility* | `simulation.yaml` → `lighting.time_of_day`, `weather.fog_visibility_m` |
+| Turn CSV logging on or off | Simulation → Loggers | `simulation.yaml` → `loggers` |
+| Change a signal cycle | Signals → intersection → step durations | `signals.yaml` → `steps[].duration_s` |
+| Add, move or remove an RSU sensor | RSUs & sensors → RSU → **Place on map** / drag / × | `rsus.yaml` → `rsus[].sensors` |
+| Change a sensor's range or field of view | RSUs & sensors → sensor → *range*, *h FOV*, *v FOV* (or Defaults → sensor type) | `rsus.yaml` (per sensor) or `defaults/sensor_types.yaml` (per type) |
+| Change sensor noise or network delay | Defaults → Noise / Network profiles; RSUs → publisher → noise, network copies | `defaults/noise.yaml`, `defaults/network.yaml`, `rsus.yaml` publishers |
+| Publish a new object-info topic | RSUs & sensors → Object-info publishers → **+ Add** | `rsus.yaml` → `object_info_publishers` |
+| More or less traffic | Vehicles → spawn point → *vehicles / minute*; *max vehicles* | `vehicles.yaml` → `spawn_points`, `max_vehicles` |
+| Add a spawn point or a turn ratio | Vehicles → click a lane → **Spawn vehicles here** / **Set branch ratios** | `vehicles.yaml` → `spawn_points`, `branches` |
+| Add a pedestrian or cyclist route | Pedestrians → **+ Add**, click the points on the map | `pedestrians.yaml` → `paths` |
+| Move or add a teleport gate | Teleports → drag the gate / **Place gate on map** | `teleports.yaml` |
+| Switch a LiDAR or camera on or off, change its topic | Raw sensors → sensor → *enabled*, topics | `raw_sensors.yaml` |
+
 ## Folder layout
 
 ```text
@@ -146,6 +180,19 @@ An RSU sensor refers to a type by `name` and may override `h_fov_deg`, `v_fov_de
 
 ### Noise profiles (`defaults/noise.yaml`)
 
+```yaml
+noise_profiles:
+- name: Default
+  distribution: uniform        # uniform | gaussian
+  x_m: 0.5
+  y_m: 0.5
+  z_m: 0.5
+  gaussian_mean: 0
+  gaussian_std_dev: 25
+```
+
+Publishers refer to a profile by `name` for each kind of noise: `position`, `rotation`, `dimension` (size) and `probability` (existence).
+
 | Field | Meaning |
 |:--|:--|
 | `distribution` | `uniform`: a random value in [−amplitude, +amplitude] per axis. `gaussian`: `gaussian_mean + gaussian_std_dev × amplitude × N(0,1)` |
@@ -155,7 +202,18 @@ An RSU sensor refers to a type by `name` and may override `h_fov_deg`, `v_fov_de
 
 ### Network profiles (`defaults/network.yaml`)
 
-A network profile publishes a delayed, lossy copy of a topic as `<topic><topic_suffix>`, for example `/v2x/object_info/DSRC`.
+A network profile publishes a delayed, lossy copy of a topic as `<topic><topic_suffix>`, for example `/v2x/object_info/DSRC`. Publishers list the profiles they use under `network`.
+
+```yaml
+network_profiles:
+- name: DSRC
+  topic_suffix: /DSRC
+  delay_ms: 100
+  delay_variance_ms: 0
+  packet_loss: 0.05
+  packet_loss_variance: 0
+  ground_truth: false
+```
 
 | Field | Meaning |
 |:--|:--|
@@ -260,6 +318,7 @@ branches:                            # where a lane splits
 - **Lanelet numbers** are the names of the simulator's traffic lanes (`lanelet<number>` under `lanes_root`). In the web viewer, click a lane in **Settings → Vehicles** to see its number and next lanes and to add a spawn point or branch ratios.
 - One traffic manager runs the traffic. The `template_traffic_manager` of the scene supplies the ego vehicle, layers and vehicle dynamics, and the scene's other traffic managers are switched off. `vehicle_types` may use any NPC prefab that a traffic manager of the scene knows.
 - A vehicle is created only when the spawn point is clear. The next one is scheduled from `vehicles_per_minute`.
+- `behaviour.forced_pass_radius_m`: at most one vehicle within this distance gets the right of way at a time (the one that has waited longest), so two blocked vehicles at the same intersection do not both go. `behaviour.standstill_speed_mps`: below this speed a vehicle counts as standing.
 - Right of way: vehicles follow the lane rules of the scene. If a vehicle has waited to yield for `deadlock_timeout_s` while the others also wait, it gets the right of way. Vehicles that have not moved for `stuck_despawn_s` are removed. Vehicles also leave at the end of their route.
 
 ## Pedestrians and cyclists (`pedestrians.yaml`)
@@ -306,6 +365,19 @@ teleports:
     include_endpoints: true
   # random_point: random_points: [{x: …, y: …, z: …, heading_deg: …}]
 ```
+
+| Field | Meaning |
+|:--|:--|
+| `trigger`, `trigger_size` | Box the ego drives into: centre and heading in the map frame; size `x` = width, `y` = height, `z` = length (m) |
+| `strategy` | `lane_midpoint`: pick a start point on the listed lanes (below). `random_point`: one of `random_points`, chosen at random. |
+| `clearance_radius_m` | NPC vehicles closer than this to the target are removed before the ego arrives |
+| `delay_s`, `random_delay_s` | Wait before the jump: `delay_s` plus a random value in [min, max] |
+| `lane_midpoint.lanelets` | Lanes the ego may be placed on; candidate points every `spacing_m` along them (`include_endpoints`: also the lane ends) |
+| `lane_midpoint.midpoint_lanelet`, `midpoint_fraction` | Reference point the ego should reach: this far along that lane (0 = start, 1 = end) |
+| `lane_midpoint.arrival_window_s` | A target time is drawn at random in [min, max]. The candidate whose estimated driving time to the reference point is closest wins. |
+| `lane_midpoint.cruise_speed_kmh`, `acceleration_mps2` | Used for that estimate: accelerate from 0 to cruise speed, then drive on |
+
+In the web viewer, **Pick target lanes on map** toggles lanes in `lanelets`.
 
 ## Raw sensors (`raw_sensors.yaml`)
 
