@@ -26,6 +26,8 @@ namespace V2X.Config
         public VehiclesConfig Vehicles;                // null when the scenario does not configure vehicle traffic
         public PedestriansConfig Pedestrians;
         public TeleportsConfig Teleports;
+        public RawSensorsConfig RawSensors;
+        public RawSensorType FindRawSensorType(string name) => SensorTypes?.RawSensorTypes.FirstOrDefault(t => t.Name == name);
         public readonly List<string> Errors = new List<string>();
         public readonly List<string> Warnings = new List<string>();
 
@@ -143,6 +145,8 @@ namespace V2X.Config
                 c.Pedestrians = Read<PedestriansConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Pedestrians), c);
             if (!string.IsNullOrEmpty(c.Scenario.Teleports))
                 c.Teleports = Read<TeleportsConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Teleports), c);
+            if (!string.IsNullOrEmpty(c.Scenario.RawSensors))
+                c.RawSensors = Read<RawSensorsConfig>(Path.Combine(c.ScenarioDir, c.Scenario.RawSensors), c);
 
             Validate(c);
             return c;
@@ -160,6 +164,19 @@ namespace V2X.Config
                     if (p.CyclistRatio < 0f || p.CyclistRatio > 1f) c.Errors.Add($"pedestrians: path {p.Id}: cyclist_ratio must be 0-1");
                     if (p.SpawnsPerMinute < 0f) c.Errors.Add($"pedestrians: path {p.Id}: spawns_per_minute < 0");
                     if (p.Waypoints.Count < 2) c.Errors.Add($"pedestrians: path {p.Id}: needs at least 2 waypoints");
+                }
+            }
+            if (c.RawSensors != null)
+            {
+                foreach (var s in c.RawSensors.RawSensors)
+                {
+                    if (s.Mount != "ego" && s.Mount != "scene" && s.Mount != "world") c.Errors.Add($"raw sensor {s.Name}: mount must be ego, scene or world");
+                    if (s.Kind != "lidar" && s.Kind != "camera") c.Errors.Add($"raw sensor {s.Name}: kind must be lidar or camera");
+                    if (s.Mount != "world" && string.IsNullOrEmpty(s.Object)) c.Errors.Add($"raw sensor {s.Name}: {s.Mount} sensors need object (name in the vehicle / scene path)");
+                    if (s.Mount == "world" && s.Enabled && (c.FindRawSensorType(s.Type) == null || s.Pose == null))
+                        c.Errors.Add($"raw sensor {s.Name}: world sensors need a known type and a pose");
+                    if (s.Width.HasValue != s.Height.HasValue || (s.Width.HasValue && (s.Width * s.Height) % 4 != 0))
+                        c.Errors.Add($"raw sensor {s.Name}: set width and height together (width × height a multiple of 4)");
                 }
             }
             if (c.Teleports != null)

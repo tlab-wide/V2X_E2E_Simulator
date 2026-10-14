@@ -130,6 +130,16 @@ namespace AWSIM
 
         [SerializeField] CameraParameters cameraParameters;
 
+        /// <summary>Image size from config (call before Start; width × height must be a multiple of 4).</summary>
+        public void SetImageSize(int width, int height)
+        {
+            cameraParameters.width = width;
+            cameraParameters.height = height;
+        }
+
+        public int ImageWidth => cameraParameters.width;
+        public int ImageHeight => cameraParameters.height;
+
         /// <summary>
         /// Delegate used in callbacks.
         /// </summary>

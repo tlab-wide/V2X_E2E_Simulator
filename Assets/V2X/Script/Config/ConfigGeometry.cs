@@ -43,5 +43,32 @@ namespace V2X.Config
         }
 
         static float Round1(float v) => Mathf.Round(v * 10f) / 10f;
+
+        /// <summary>
+        /// Path of <paramref name="t"/> below <paramref name="root"/>, each step as name[index among same-named siblings]
+        /// when the name is not unique, e.g. "Sensors/VelodyneVLP16[2]". Stable and unique within the root.
+        /// </summary>
+        public static string RelativeKey(Transform root, Transform t)
+        {
+            var parts = new System.Collections.Generic.List<string>();
+            for (var x = t; x != null && x != root; x = x.parent)
+            {
+                var name = x.name;
+                if (x.parent != null)
+                {
+                    int same = 0, index = 0;
+                    foreach (Transform sib in x.parent)
+                    {
+                        if (sib.name != name) continue;
+                        if (sib == x) index = same;
+                        same++;
+                    }
+                    if (same > 1) name += $"[{index}]";
+                }
+                parts.Add(name);
+            }
+            parts.Reverse();
+            return string.Join("/", parts);
+        }
     }
 }

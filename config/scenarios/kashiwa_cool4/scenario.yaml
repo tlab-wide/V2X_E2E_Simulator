@@ -6,3 +6,4 @@ rsus: rsus.yaml
 vehicles: vehicles.yaml
 pedestrians: pedestrians.yaml
 teleports: teleports.yaml
+raw_sensors: raw_sensors.yaml

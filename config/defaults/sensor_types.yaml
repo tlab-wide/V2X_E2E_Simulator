@@ -1,5 +1,6 @@
 # Pseudo-sensor (MockSensor) types: field of view (full angles, degrees) and range (m).
 # kind: lidar | camera. RSU sensors in config/scenarios/*/rsus.yaml refer to a type by name and may override any value.
+# Raw sensor types: prefabs that raw_sensors.yaml can create (mount: world).
 
 pseudo_sensor_types:
 - name: lidar_60x22deg_60m
@@ -56,3 +57,60 @@ pseudo_sensor_types:
   h_fov_deg: 80
   v_fov_deg: 40
   range_m: 121
+raw_sensor_types:
+- name: Cepton_P60
+  kind: lidar
+  prefab: Cepton P60
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/Cepton P60.prefab
+- name: HesaiAT128E2X
+  kind: lidar
+  prefab: HesaiAT128E2X
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/HesaiAT128E2X.prefab
+- name: HesaiPandar40P
+  kind: lidar
+  prefab: HesaiPandar40P
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/HesaiPandar40P.prefab
+- name: HesaiPandar128E4X
+  kind: lidar
+  prefab: HesaiPandar128E4X
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/HesaiPandar128E4X.prefab
+- name: HesaiPandarQT64
+  kind: lidar
+  prefab: HesaiPandarQT64
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/HesaiPandarQT64.prefab
+- name: HesaiPandarXT32
+  kind: lidar
+  prefab: HesaiPandarXT32
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/HesaiPandarXT32.prefab
+- name: HesaiQT128C2X
+  kind: lidar
+  prefab: HesaiQT128C2X
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/HesaiQT128C2X.prefab
+- name: OusterOS1-64
+  kind: lidar
+  prefab: OusterOS1-64
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/OusterOS1-64.prefab
+- name: VelodyneVLP16
+  kind: lidar
+  prefab: VelodyneVLP16
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/VelodyneVLP16.prefab
+- name: VelodyneVLP32C
+  kind: lidar
+  prefab: VelodyneVLP32C
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/VelodyneVLP32C.prefab
+- name: VelodyneVLS128
+  kind: lidar
+  prefab: VelodyneVLS128
+  description: Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars/VelodyneVLS128.prefab
+- name: CameraSensor
+  kind: camera
+  prefab: CameraSensor
+  description: Assets/AWSIM/Prefabs/Sensors/CameraSensor.prefab
+- name: CameraC1-198
+  kind: camera
+  prefab: CameraC1-198
+  description: Assets/AWSIM/Prefabs/Sensors/CameraC1-198.prefab
+- name: CameraC2-176
+  kind: camera
+  prefab: CameraC2-176
+  description: Assets/AWSIM/Prefabs/Sensors/CameraC2-176.prefab

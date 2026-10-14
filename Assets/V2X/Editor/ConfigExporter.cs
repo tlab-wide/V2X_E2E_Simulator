@@ -445,6 +445,108 @@ namespace V2X.Config
                    (skippedGates.Count > 0 ? $"; skipped (no target): {string.Join(", ", skippedGates)}" : "");
         }
 
+        public const string LidarPrefabDir = "Assets/AWSIM/Prefabs/Sensors/RobotecGPULidars";
+        public static readonly string[] CameraPrefabs =
+        {
+            "Assets/AWSIM/Prefabs/Sensors/CameraSensor.prefab", "Assets/AWSIM/Prefabs/Sensors/CameraC1-198.prefab",
+            "Assets/AWSIM/Prefabs/Sensors/CameraC2-176.prefab",
+        };
+
+        /// <summary>LiDAR and camera prefabs that can be created from config (raw_sensor_types).</summary>
+        public static List<GameObject> RawSensorPrefabs()
+        {
+            var list = AssetDatabase.FindAssets("t:Prefab", new[] { LidarPrefabDir })
+                .Select(g => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(p => p != null && p.GetComponentInChildren<RGLUnityPlugin.LidarSensor>(true) != null).ToList();
+            list.AddRange(CameraPrefabs.Select(AssetDatabase.LoadAssetAtPath<GameObject>).Where(p => p != null));
+            return list;
+        }
+
+        [MenuItem("V2X/Config/Export Raw Sensors To Config")]
+        public static void ExportRawMenu()
+        {
+            EditorUtility.DisplayDialog("Export raw sensors", ExportRawSensors(ConfigLoader.ResolveScenarioName(ConfigLoader.ConfigRoot(), null) ?? DefaultScenario), "OK");
+        }
+
+        public static void ExportRawBatch()
+        {
+            var scene = ConfigLoader.GetArg("-exportScene");
+            if (!string.IsNullOrEmpty(scene))
+                EditorSceneManager.OpenScene(scene, OpenSceneMode.Single);
+            Debug.Log("[ConfigExporter] " + ExportRawSensors(ConfigLoader.GetArg("-exportScenario") ?? DefaultScenario));
+            EditorApplication.Exit(0);
+        }
+
+        /// <summary>The scene's RGL LiDARs and cameras (on the ego vehicles and elsewhere) to raw_sensors.yaml; raw sensor types to sensor_types.yaml.</summary>
+        public static string ExportRawSensors(string scenario)
+        {
+            var cfg = new RawSensorsConfig();
+            string Mount(Component c, RawSensorConfig r)
+            {
+                var vehicle = c.GetComponentInParent<AWSIM.Vehicle>(true);
+                if (vehicle != null) { r.Vehicle = vehicle.name; r.Object = ConfigGeometry.RelativeKey(vehicle.transform, c.transform); return "ego"; }
+                r.Object = Path_(c.transform);
+                return "scene";
+            }
+            foreach (var l in All<RGLUnityPlugin.LidarSensor>().OrderBy(x => Path_(x.transform)))
+            {
+                var r = new RawSensorConfig { Name = l.name, Kind = "lidar", Enabled = l.gameObject.activeSelf && l.enabled, Hz = l.AutomaticCaptureHz };
+                r.Mount = Mount(l, r);
+                var pub = l.GetComponent<AWSIM.RglLidarPublisher>();
+                if (pub != null)
+                {
+                    r.FrameId = pub.frameId;
+                    r.PointCloudTopics = pub.pointCloud2Publishers.Select(p => new PointCloudTopic { Topic = p.topic, Format = p.fieldsPreset.ToString(), Publish = p.publish }).ToList();
+                }
+                cfg.RawSensors.Add(r);
+            }
+            foreach (var cam in All<AWSIM.CameraSensor>().OrderBy(x => Path_(x.transform)))
+            {
+                var r = new RawSensorConfig { Name = cam.name, Kind = "camera", Enabled = cam.gameObject.activeSelf && cam.enabled, Width = cam.ImageWidth, Height = cam.ImageHeight };
+                r.Mount = Mount(cam, r);
+                var holder = cam.GetComponentInParent<AWSIM.CameraSensorHolder>(true);
+                if (holder != null) r.Hz = (int)holder.PublishHz;
+                var pub = cam.GetComponent<AWSIM.CameraRos2Publisher>();
+                if (pub != null) { r.FrameId = pub.frameId; r.ImageTopic = pub.imageTopic; r.CameraInfoTopic = pub.cameraInfoTopic; }
+                cfg.RawSensors.Add(r);
+            }
+            // names must be unique (the web UI uses them as keys)
+            foreach (var r in cfg.RawSensors.Where(r => r.Mount == "ego"))
+                r.Name = r.Vehicle + "/" + r.Object;
+            foreach (var g in cfg.RawSensors.GroupBy(r => r.Name).Where(g => g.Count() > 1))
+            {
+                int i = 0;
+                foreach (var r in g) r.Name += $" ({++i})";
+            }
+
+            var dir = Path.Combine(ConfigLoader.ConfigRoot(), ConfigLoader.ScenariosDir, scenario);
+            ConfigLoader.Write(Path.Combine(dir, "raw_sensors.yaml"), cfg,
+                "# Raw sensors (RGL LiDARs publishing point clouds, cameras publishing images).\n" +
+                "# mount: ego   = a sensor of an ego vehicle prefab, matched by vehicle + object (path below the vehicle; name[i] when names repeat)\n" +
+                "#        scene = a sensor placed in the scene, matched by its scene path in object\n" +
+                "#        world = a new sensor created from a raw_sensor_types entry (config/defaults/sensor_types.yaml) at pose\n" +
+                "# enabled: false switches a sensor off. Raw sensors that are not listed stay as they are in the scene.\n" +
+                "# lidar: hz, frame_id, point_cloud_topics (format: Pcl24, PointXYZIRCAEDT, ...). camera: image_topic, camera_info_topic,\n" +
+                "# frame_id, width × height (a multiple of 4); hz is the rate of the camera holder (shared by its cameras).");
+            LinkFromScenario(dir, "raw_sensors", "raw_sensors.yaml");
+
+            // raw sensor types, keeping the pseudo-sensor types
+            var typesFile = Path.Combine(ConfigLoader.ConfigRoot(), ConfigLoader.DefaultsDir, "sensor_types.yaml");
+            var tmp = new LoadedConfig();
+            var types = ConfigLoader.Read<SensorTypesConfig>(typesFile, tmp) ?? new SensorTypesConfig();
+            types.RawSensorTypes = RawSensorPrefabs().Select(p => new RawSensorType
+            {
+                Name = p.name.Replace(" ", "_"), Kind = p.GetComponentInChildren<RGLUnityPlugin.LidarSensor>(true) != null ? "lidar" : "camera",
+                Prefab = p.name, Description = AssetDatabase.GetAssetPath(p),
+            }).ToList();
+            ConfigLoader.Write(typesFile, types,
+                "# Pseudo-sensor (MockSensor) types: field of view (full angles, degrees) and range (m).\n" +
+                "# kind: lidar | camera. RSU sensors in config/scenarios/*/rsus.yaml refer to a type by name and may override any value.\n" +
+                "# Raw sensor types: prefabs that raw_sensors.yaml can create (mount: world).");
+            return $"raw sensors: {cfg.RawSensors.Count} ({cfg.RawSensors.Count(r => r.Mount == "ego")} on ego vehicles, " +
+                   $"{cfg.RawSensors.Count(r => r.Mount == "scene")} in the scene, {cfg.RawSensors.Count(r => r.Enabled)} enabled); {types.RawSensorTypes.Count} raw sensor types";
+        }
+
         static NoiseSelection Noise(SerializedObject so, System.Func<string, string> map) => new NoiseSelection
         {
             Position = map(so.FindProperty("positionNoiseName").stringValue),

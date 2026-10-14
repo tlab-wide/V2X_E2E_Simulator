@@ -28,6 +28,8 @@ namespace V2X.Config
             var scene = ConfigLoader.GetArg("-exportScene");
             if (!string.IsNullOrEmpty(scene))
                 EditorSceneManager.OpenScene(scene, OpenSceneMode.Single);
+            if (ConfigLoader.GetArg("-exportRaw") != null)
+                Debug.Log("[ConfigSceneSetup] " + ConfigExporter.ExportRawSensors(ConfigLoader.GetArg("-exportScenario") ?? "kashiwa_cool4"));
             if (!Directory.Exists(ConfigLoader.ConfigRoot()))
                 Debug.Log("[ConfigSceneSetup] " + ConfigExporter.Export(ConfigLoader.GetArg("-exportScenario") ?? "kashiwa_cool4"));
             Debug.Log("[ConfigSceneSetup] " + Setup());
@@ -49,6 +51,10 @@ namespace V2X.Config
             var so = new SerializedObject(bootstrap);
             so.FindProperty("lidarPrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(LidarPrefab);
             so.FindProperty("cameraPrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(CameraPrefab);
+            var raw = ConfigExporter.RawSensorPrefabs();
+            var rawList = so.FindProperty("rawSensorPrefabs");
+            rawList.arraySize = raw.Count;
+            for (int i = 0; i < raw.Count; i++) rawList.GetArrayElementAtIndex(i).objectReferenceValue = raw[i];
             var list = so.FindProperty("sceneObjectsReplacedByConfig");
             var targets = new List<GameObject>();
             foreach (var name in Replaced)

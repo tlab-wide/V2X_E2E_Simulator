@@ -23,6 +23,9 @@ namespace V2X.Config
         [SerializeField] GameObject lidarPrefab;
         [SerializeField] GameObject cameraPrefab;
 
+        [Header("Raw sensor prefabs (referred to by name from raw_sensor_types)")]
+        [SerializeField] List<GameObject> rawSensorPrefabs = new List<GameObject>();
+
         public static LoadedConfig Current { get; private set; }
 
         void Awake()
@@ -48,6 +51,102 @@ namespace V2X.Config
                 SetupPedestrians(config);
             if (config.Teleports != null)
                 SetupTeleports(config);
+            if (config.RawSensors != null)
+                SetupRawSensors(config);
+        }
+
+        static bool IsOnVehicle(Component c) => c.GetComponentInParent<AWSIM.Vehicle>(true) != null;
+
+        static void ApplyLidar(RGLUnityPlugin.LidarSensor lidar, RawSensorConfig s)
+        {
+            if (s.Hz.HasValue) lidar.AutomaticCaptureHz = s.Hz.Value;
+            var pub = lidar.GetComponent<AWSIM.RglLidarPublisher>();
+            if (pub == null) return;
+            if (s.FrameId != null) pub.frameId = s.FrameId;
+            if (s.PointCloudTopics != null)
+            {
+                pub.pointCloud2Publishers = new List<AWSIM.PointCloud2Publisher>();
+                foreach (var t in s.PointCloudTopics)
+                {
+                    if (!System.Enum.TryParse<AWSIM.PointCloudFormat>(t.Format, true, out var format))
+                    {
+                        Debug.LogError($"[Config] raw sensor {s.Name}: unknown point format '{t.Format}'");
+                        continue;
+                    }
+                    pub.pointCloud2Publishers.Add(new AWSIM.PointCloud2Publisher { topic = t.Topic, publish = t.Publish, fieldsPreset = format });
+                }
+            }
+        }
+
+        static void ApplyCamera(AWSIM.CameraSensor camera, RawSensorConfig s)
+        {
+            if (s.Width.HasValue && s.Height.HasValue) camera.SetImageSize(s.Width.Value, s.Height.Value);
+            if (s.Hz.HasValue)
+            {
+                var holder = camera.GetComponentInParent<AWSIM.CameraSensorHolder>(true);
+                if (holder != null) holder.PublishHz = (uint)s.Hz.Value;
+            }
+            var pub = camera.GetComponent<AWSIM.CameraRos2Publisher>();
+            if (pub == null) return;
+            if (s.FrameId != null) pub.frameId = s.FrameId;
+            if (s.ImageTopic != null) pub.imageTopic = s.ImageTopic;
+            if (s.CameraInfoTopic != null) pub.cameraInfoTopic = s.CameraInfoTopic;
+        }
+
+        /// <summary>
+        /// ego: sensors on the ego vehicles (matched by vehicle and object name) and scene: other sensors of the scene
+        /// (matched by scene path) are overridden or switched off; world: new sensors created from their prefabs.
+        /// Raw sensors that are not listed stay as they are in the scene.
+        /// </summary>
+        void SetupRawSensors(LoadedConfig c)
+        {
+            var lidars = FindObjectsByType<RGLUnityPlugin.LidarSensor>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var cameras = FindObjectsByType<AWSIM.CameraSensor>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var root = new GameObject("Raw sensors (config)");
+            root.SetActive(false);
+            int ego = 0, scene = 0, world = 0;
+            foreach (var s in c.RawSensors.RawSensors)
+            {
+                if (s.Mount == "ego" || s.Mount == "scene")
+                {
+                    bool Match(Component x)
+                    {
+                        if (s.Mount == "scene") return ScenePath(x.transform) == s.Object;
+                        var vehicle = x.GetComponentInParent<AWSIM.Vehicle>(true);
+                        return vehicle != null && (string.IsNullOrEmpty(s.Vehicle) || vehicle.name == s.Vehicle) &&
+                               ConfigGeometry.RelativeKey(vehicle.transform, x.transform) == s.Object;
+                    }
+                    var hits = s.Kind == "camera" ? cameras.Where(Match).Cast<Component>().ToList() : lidars.Where(Match).Cast<Component>().ToList();
+                    if (hits.Count == 0) Debug.LogError($"[Config] raw sensor {s.Name}: no {s.Kind} '{s.Object}'{(s.Mount == "ego" ? $" on ego vehicle '{s.Vehicle}'" : "")}");
+                    foreach (var h in hits)
+                    {
+                        if (!s.Enabled) { h.gameObject.SetActive(false); continue; }
+                        if (!h.gameObject.activeSelf) h.gameObject.SetActive(true);
+                        if (h is RGLUnityPlugin.LidarSensor l) ApplyLidar(l, s);
+                        else if (h is AWSIM.CameraSensor cam) ApplyCamera(cam, s);
+                        if (s.Mount == "ego") ego++; else scene++;
+                    }
+                    continue;
+                }
+                if (!s.Enabled) continue;
+                var type = c.FindRawSensorType(s.Type);
+                var prefab = type == null ? null : rawSensorPrefabs.FirstOrDefault(p => p != null && p.name == type.Prefab);
+                if (prefab == null)
+                {
+                    Debug.LogError($"[Config] raw sensor {s.Name}: no prefab for type '{s.Type}' (set it on ConfigBootstrap > Raw Sensor Prefabs)");
+                    continue;
+                }
+                var go = Instantiate(prefab, root.transform);
+                go.name = s.Name;
+                if (s.Pose != null) ConfigGeometry.ApplyPose(go.transform, s.Pose);
+                var lidar = go.GetComponentInChildren<RGLUnityPlugin.LidarSensor>(true);
+                var camera = go.GetComponentInChildren<AWSIM.CameraSensor>(true);
+                if (lidar != null) ApplyLidar(lidar, s);
+                if (camera != null) ApplyCamera(camera, s);
+                world++;
+            }
+            root.SetActive(true);
+            Debug.Log($"[Config] raw sensors: {ego} ego-vehicle and {scene} scene sensors set up, {world} new sensors created");
         }
 
         /// <summary>The lanes (by name) under the object at <paramref name="path"/>; with several such objects, the one holding most of <paramref name="wanted"/>.</summary>

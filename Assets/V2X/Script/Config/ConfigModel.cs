@@ -19,6 +19,52 @@ namespace V2X.Config
         public string Vehicles { get; set; } = "";
         public string Pedestrians { get; set; } = "";
         public string Teleports { get; set; } = "";
+        public string RawSensors { get; set; } = "";
+    }
+
+    // ------------------------------------------------------------------------------------------------- raw sensors
+    public class RawSensorType
+    {
+        public string Name { get; set; } = "";
+        public string Kind { get; set; } = "lidar";              // lidar | camera
+        public string Prefab { get; set; } = "";                 // prefab name (Assets/AWSIM/Prefabs/Sensors/...)
+        public string Description { get; set; } = "";
+    }
+
+    public class RawSensorsConfig
+    {
+        public List<RawSensorConfig> RawSensors { get; set; } = new List<RawSensorConfig>();
+    }
+
+    public class RawSensorConfig
+    {
+        public string Name { get; set; } = "";
+        public string Kind { get; set; } = "lidar";              // lidar | camera
+        // ego:   a sensor of an ego vehicle prefab, matched by vehicle + object name (settings overridden)
+        // scene: a sensor placed in the scene, matched by its scene path (settings overridden)
+        // world: a new sensor created at pose from a raw_sensor_types entry
+        public string Mount { get; set; } = "world";
+        public string Vehicle { get; set; } = "";                // ego: ego vehicle object name (e.g. Bus), empty = any
+        public string Object { get; set; } = "";                 // ego: sensor object name; scene: scene path
+        public string Type { get; set; } = "";                   // world: raw_sensor_types name
+        public bool Enabled { get; set; } = true;
+        public Pose Pose { get; set; }                           // world only
+        public int? Hz { get; set; }
+        public string FrameId { get; set; }
+        // lidar: PointCloud2 topics with their point format (Pcl24, PointXYZIRCAEDT, ...)
+        public List<PointCloudTopic> PointCloudTopics { get; set; }
+        // camera
+        public string ImageTopic { get; set; }
+        public string CameraInfoTopic { get; set; }
+        public int? Width { get; set; }
+        public int? Height { get; set; }
+    }
+
+    public class PointCloudTopic
+    {
+        public string Topic { get; set; } = "";
+        public string Format { get; set; } = "Pcl24";
+        public bool Publish { get; set; } = true;
     }
 
     // ------------------------------------------------------------------------------------------------- pedestrians / cyclists
@@ -143,6 +189,7 @@ namespace V2X.Config
     public class SensorTypesConfig
     {
         public List<PseudoSensorType> PseudoSensorTypes { get; set; } = new List<PseudoSensorType>();
+        public List<RawSensorType> RawSensorTypes { get; set; } = new List<RawSensorType>();
     }
 
     public class PseudoSensorType

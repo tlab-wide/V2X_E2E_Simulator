@@ -21,6 +21,8 @@ namespace AWSIM
         /// </summary>
         [Range(0, 30)][SerializeField] private uint publishHz = 10;
 
+        public uint PublishHz { get => publishHz; set => publishHz = value; }
+
         /// <summary>
         /// Rendering sequence type.
         /// Set True for sensors render at different frames one after another.
