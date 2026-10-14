@@ -315,6 +315,136 @@ namespace V2X.Config
                    $"lanes {v.LanesRoot}" + (skipped.Count > 0 ? $"; skipped (not lanelet-named): {string.Join(", ", skipped)}" : "");
         }
 
+        [MenuItem("V2X/Config/Export Pedestrians And Teleports To Config")]
+        public static void ExportHumansMenu()
+        {
+            var scenario = ConfigLoader.ResolveScenarioName(ConfigLoader.ConfigRoot(), null) ?? DefaultScenario;
+            EditorUtility.DisplayDialog("Export pedestrians and teleports", ExportPedestrians(scenario) + "\n" + ExportTeleports(scenario), "OK");
+        }
+
+        public static void ExportHumansBatch()
+        {
+            var scene = ConfigLoader.GetArg("-exportScene");
+            if (!string.IsNullOrEmpty(scene))
+                EditorSceneManager.OpenScene(scene, OpenSceneMode.Single);
+            var scenario = ConfigLoader.GetArg("-exportScenario") ?? DefaultScenario;
+            Debug.Log("[ConfigExporter] " + ExportPedestrians(scenario));
+            Debug.Log("[ConfigExporter] " + ExportTeleports(scenario));
+            EditorApplication.Exit(0);
+        }
+
+        static void LinkFromScenario(string dir, string key, string file)
+        {
+            var scenarioFile = Path.Combine(dir, "scenario.yaml");
+            var text = File.Exists(scenarioFile) ? File.ReadAllText(scenarioFile) : "";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(text, "^" + key + ":", System.Text.RegularExpressions.RegexOptions.Multiline))
+                File.WriteAllText(scenarioFile, text.TrimEnd() + $"\n{key}: {file}\n");
+        }
+
+        /// <summary>The active PedestrianCyclistSpawner (its JSON paths) to pedestrians.yaml.</summary>
+        public static string ExportPedestrians(string scenario)
+        {
+            var spawners = All<V2X.Paths.PedestrianCyclistSpawner>().ToList();
+            var sp = spawners.FirstOrDefault(s => s.gameObject.activeInHierarchy && s.enabled) ?? spawners.FirstOrDefault();
+            if (sp == null) return "pedestrians: no PedestrianCyclistSpawner";
+            var so = new SerializedObject(sp);
+            int peds = Refs<Transform>(so.FindProperty("pedestrianPrefabs")).Count, cyc = Refs<Transform>(so.FindProperty("cyclistPrefabs")).Count;
+            float bothRatio = peds + cyc > 0 ? (float)System.Math.Round((float)cyc / (peds + cyc), 2) : 0f;
+            var jsonPath = so.FindProperty("pathsJsonPath").stringValue;
+            var full = Path.IsPathRooted(jsonPath) ? jsonPath : Path.Combine(Application.dataPath, "..", jsonPath);
+            if (!File.Exists(full)) return $"pedestrians: {jsonPath} not found";
+            var file = JsonUtility.FromJson<V2X.Paths.PathConfigLoader.PathConfigFileString>(File.ReadAllText(full));
+            var cfg = new PedestriansConfig
+            {
+                MaxActive = so.FindProperty("maxActive").intValue, SnapToGround = so.FindProperty("snapWaypointsToGround").boolValue,
+            };
+            foreach (var p in file.paths ?? new List<V2X.Paths.PathConfigLoader.PathDefinitionString>())
+            {
+                var type = (p.type ?? "both").ToLowerInvariant();
+                cfg.Paths.Add(new HumanPathConfig
+                {
+                    Id = p.id, SpawnsPerMinute = p.spawnPerMinute,
+                    CyclistRatio = type == "pedestrian" ? 0f : type == "cyclist" ? 1f : bothRatio,
+                    Waypoints = (p.waypoints ?? new List<V2X.Paths.PathConfigLoader.PathPoint>()).Select(w => new HumanWaypoint
+                    {
+                        X = System.Math.Round(w.x, 3), Y = System.Math.Round(w.y, 3), Z = System.Math.Round(w.z, 3),
+                        TrafficLight = w.checkLight && !string.IsNullOrEmpty(w.trafficLightId) ? w.trafficLightId : null,
+                    }).ToList(),
+                });
+            }
+            var dir = Path.Combine(ConfigLoader.ConfigRoot(), ConfigLoader.ScenariosDir, scenario);
+            ConfigLoader.Write(Path.Combine(dir, "pedestrians.yaml"), cfg,
+                "# Pedestrians and cyclists walking / riding predefined paths.\n" +
+                "# spawns_per_minute per path (±10 % jitter); cyclist_ratio: share of the spawns that are cyclists (0 = pedestrians only, 1 = cyclists only).\n" +
+                "# waypoints: map frame (MGRS-local x/y/z, m). traffic_light: pedestrian light to wait for (green) before going on.\n" +
+                "# max_active: agents on the paths at the same time (0 = unlimited).");
+            LinkFromScenario(dir, "pedestrians", "pedestrians.yaml");
+            return $"pedestrians: {cfg.Paths.Count} paths from {jsonPath} (both = cyclist ratio {bothRatio}), max {cfg.MaxActive} active";
+        }
+
+        /// <summary>The scene's Teleporters to teleports.yaml.</summary>
+        public static string ExportTeleports(string scenario)
+        {
+            var cfg = new TeleportsConfig();
+            var skippedGates = new List<string>();
+            foreach (var tp in All<Teleporter>().OrderBy(t => Path_(t.transform)))
+            {
+                var so = new SerializedObject(tp);
+                var box = tp.GetComponent<BoxCollider>();
+                var size = box != null ? Vector3.Scale(box.size, tp.transform.lossyScale) : new Vector3(10, 3, 4);
+                var trigger = ConfigGeometry.ToPose(tp.transform);
+                if (box != null)
+                {
+                    var m = ConfigGeometry.UnityToMap(tp.transform.TransformPoint(box.center));
+                    trigger.X = System.Math.Round(m.x, 3); trigger.Y = System.Math.Round(m.y, 3); trigger.Z = System.Math.Round(m.z, 3);
+                }
+                var strategy = so.FindProperty("spawnStrategy").enumValueIndex == 1 ? "random_point" : "lane_midpoint";
+                var lanes = new List<long>();
+                var src = so.FindProperty("laneSpawnSources");
+                for (int i = 0; i < src.arraySize; i++)
+                    if (src.GetArrayElementAtIndex(i).FindPropertyRelative("lane").objectReferenceValue is AWSIM.TrafficSimulation.TrafficLane l && LaneletId(l.name) >= 0)
+                        lanes.Add(LaneletId(l.name));
+                var mid = so.FindProperty("midpointSegment").objectReferenceValue as AWSIM.TrafficSimulation.TrafficLane;
+                var window = so.FindProperty("targetArrivalWindow").vector2Value;
+                var rnd = so.FindProperty("spawnDelayRange").vector2Value;
+                var t = new TeleportConfig
+                {
+                    Name = tp.name, Enabled = tp.gameObject.activeInHierarchy && tp.enabled, Trigger = trigger,
+                    TriggerSize = new MapPoint { X = System.Math.Round(size.x, 2), Y = System.Math.Round(size.y, 2), Z = System.Math.Round(size.z, 2) },
+                    Strategy = strategy, ClearanceRadiusM = so.FindProperty("clearanceRadius").floatValue,
+                    DelayS = so.FindProperty("teleportDelay").floatValue, RandomDelayS = new List<float> { rnd.x, rnd.y },
+                    LaneMidpoint = lanes.Count == 0 && mid == null ? null : new LaneMidpointConfig
+                    {
+                        Lanelets = lanes, SpacingM = so.FindProperty("spawnSubdivisionSpacing").floatValue,
+                        IncludeEndpoints = so.FindProperty("includeSegmentEndpoints").boolValue,
+                        MidpointLanelet = mid != null ? LaneletId(mid.name) : 0, MidpointFraction = so.FindProperty("midpointSegmentFraction").floatValue,
+                        CruiseSpeedKmh = so.FindProperty("cruiseSpeedKmh").floatValue, AccelerationMps2 = so.FindProperty("assumedAcceleration").floatValue,
+                        ArrivalWindowS = new List<float> { window.x, window.y },
+                    },
+                };
+                var pts = so.FindProperty("randomSpawnPoints");
+                for (int i = 0; i < pts.arraySize; i++)
+                    if (pts.GetArrayElementAtIndex(i).FindPropertyRelative("point").objectReferenceValue is Transform pt)
+                        t.RandomPoints.Add(ConfigGeometry.ToPose(pt));
+                if ((t.LaneMidpoint == null || t.LaneMidpoint.Lanelets.Count == 0) && t.RandomPoints.Count == 0)
+                {
+                    skippedGates.Add(Path_(tp.transform));
+                    continue;   // no target configured
+                }
+                cfg.Teleports.Add(t);
+            }
+            var dir = Path.Combine(ConfigLoader.ConfigRoot(), ConfigLoader.ScenariosDir, scenario);
+            ConfigLoader.Write(Path.Combine(dir, "teleports.yaml"), cfg,
+                "# Teleport gates: when the ego vehicle enters the trigger box it is moved to a target, after the NPC vehicles\n" +
+                "# within clearance_radius_m of the target are removed.\n" +
+                "# trigger: centre and heading of the box (map frame); trigger_size: x = width across, y = height, z = length along the heading (m).\n" +
+                "# lane_midpoint: target on the listed lanelets, chosen so the ego reaches midpoint_lanelet within arrival_window_s.\n" +
+                "# random_point: one of random_points. lanes_root: empty = the one of vehicles.yaml.");
+            LinkFromScenario(dir, "teleports", "teleports.yaml");
+            return $"teleports: {cfg.Teleports.Count} gates ({cfg.Teleports.Count(t => t.Enabled)} enabled)" +
+                   (skippedGates.Count > 0 ? $"; skipped (no target): {string.Join(", ", skippedGates)}" : "");
+        }
+
         static NoiseSelection Noise(SerializedObject so, System.Func<string, string> map) => new NoiseSelection
         {
             Position = map(so.FindProperty("positionNoiseName").stringValue),

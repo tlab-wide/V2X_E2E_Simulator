@@ -52,8 +52,36 @@ namespace V2X.Paths
         private readonly Dictionary<string, WaypointSystem> _waypointsById = new Dictionary<string, WaypointSystem>();
         private Transform _runtimeParent;
 
+        private bool externalConfig;
+
+        /// <summary>
+        /// Uses these paths instead of the JSON file (call before Start).
+        /// </summary>
+        public void ApplyExternalConfig(List<PathConfigLoader.PathDefinition> paths, int maxActiveAgents, bool snapToGround)
+        {
+            externalConfig = true;
+            npcPaths = paths;
+            maxActive = maxActiveAgents;
+            snapWaypointsToGround = snapToGround;
+            useMgrsOffset = true;
+            worldOrigin = null;
+        }
+
+        /// <summary>Agents spawned per path and type since the start.</summary>
+        public readonly Dictionary<string, int> SpawnedPedestrians = new Dictionary<string, int>();
+        public readonly Dictionary<string, int> SpawnedCyclists = new Dictionary<string, int>();
+
         private void Start()
         {
+            if (externalConfig)
+            {
+                StopAllSpawns();
+                BuildWaypointSystems();
+                _spawnCount = 0;
+                StartSpawns();
+                Debug.Log($"[PedestrianCyclistSpawner] {npcPaths.Count} paths from config, max {maxActive} active.");
+                return;
+            }
             LoadNpcPaths();
             Debug.Log($"[PedestrianCyclistSpawner] Loaded {npcPaths.Count} paths from '{pathsJsonPath}'.");
         }
@@ -107,7 +135,6 @@ namespace V2X.Paths
                     Debug.LogWarning($"[PedestrianCyclistSpawner] Skipping path '{path.id}' due to spawnPerMinute <= 0.");
                     continue;
                 }
-                Debug.Log($"[PedestrianCyclistSpawner] Starting path '{path.id}' type {type} with {path.spawnPerMinute} spm.");
                 StartPathRoutine(path, type);
             }
         }
@@ -196,41 +223,45 @@ namespace V2X.Paths
             }
 
             float interval = Mathf.Max(0.1f, 60f / path.spawnPerMinute);
-            var routine = StartCoroutine(SpawnLoop(ws, interval, type));
+            var routine = StartCoroutine(SpawnLoop(ws, interval, type, path.cyclistRatio, path.id));
             _activeCoroutines.Add(routine);
-            Debug.Log($"[PedestrianCyclistSpawner] Spawn loop started for path '{path.id}' interval {interval:F2}s");
         }
 
-        private IEnumerator SpawnLoop(WaypointSystem path, float baseInterval, PathConfigLoader.PathUserType type)
+        /// <summary>The type of one spawn: a 'both' path with a cyclist ratio decides per spawn.</summary>
+        private static PathConfigLoader.PathUserType PickType(PathConfigLoader.PathUserType pathType, float cyclistRatio)
+        {
+            if (pathType != PathConfigLoader.PathUserType.both || cyclistRatio < 0f)
+                return pathType;
+            return Random.value < cyclistRatio ? PathConfigLoader.PathUserType.cyclist : PathConfigLoader.PathUserType.pedestrian;
+        }
+
+        private IEnumerator SpawnLoop(WaypointSystem path, float baseInterval, PathConfigLoader.PathUserType type, float cyclistRatio, string pathId)
         {
             float initDelay = Mathf.Clamp(Random.Range(initialSpawnDelayRange.x, initialSpawnDelayRange.y), 0f, 999f);
             if (initDelay <= 0f)
             {
                 initDelay = Random.Range(0f, baseInterval);
             }
-            Debug.Log($"[PedestrianCyclistSpawner] Path '{path.name}' type {type} initial delay {initDelay:F2}s (timeScale {Time.timeScale}).");
             if (initDelay > 0f)
-                yield return new WaitForSecondsRealtime(initDelay);
-            Debug.Log($"[PedestrianCyclistSpawner] Path '{path.name}' type {type} entering loop after init delay.");
+                yield return new WaitForSeconds(initDelay);
 
             while (true)
             {
                 int activeCount = CountActive();
-                Debug.Log($"[PedestrianCyclistSpawner] Loop path '{path.name}' type {type} active={activeCount} max={maxActive}.");
-
                 if (maxActive > 0 && activeCount >= maxActive)
                 {
-                    Debug.Log($"[PedestrianCyclistSpawner] MaxActive reached ({maxActive}); waiting.");
                     yield return new WaitForSeconds(baseInterval);
                     continue;
                 }
 
-                SpawnAgent(path, type);
-                _spawnCount++;
-
-                float next = SampleNearMeanInterval(baseInterval);
-                Debug.Log($"[PedestrianCyclistSpawner] Spawn #{_spawnCount} on path '{path.name}' type {type} at t={Time.time:F2}s (next wait {next:F2}s)");
-                yield return new WaitForSeconds(next);
+                var spawnType = PickType(type, cyclistRatio);
+                if (SpawnAgent(path, spawnType))
+                {
+                    _spawnCount++;
+                    var counter = spawnType == PathConfigLoader.PathUserType.cyclist ? SpawnedCyclists : SpawnedPedestrians;
+                    counter[pathId] = (counter.TryGetValue(pathId, out var n) ? n : 0) + 1;
+                }
+                yield return new WaitForSeconds(SampleNearMeanInterval(baseInterval));
             }
         }
 
@@ -245,20 +276,20 @@ namespace V2X.Paths
             return count;
         }
 
-        private void SpawnAgent(WaypointSystem path, PathConfigLoader.PathUserType type)
+        private bool SpawnAgent(WaypointSystem path, PathConfigLoader.PathUserType type)
         {
             var agent = GetOrCreateAgent(type);
             if (agent == null)
             {
                 Debug.LogWarning("[PedestrianCyclistSpawner] Could not obtain an agent to spawn (pool empty or no prefabs).");
-                return;
+                return false;
             }
 
             var follower = agent.GetComponent<WaypointFollower>();
             if (follower == null)
             {
                 Debug.LogWarning($"[PedestrianCyclistSpawner] Missing WaypointFollower on {agent.name}");
-                return;
+                return false;
             }
 
             follower.SetWaypointSystem(path);
@@ -269,7 +300,7 @@ namespace V2X.Paths
 
             AssignSpawnId(agent);
             agent.gameObject.SetActive(true);
-            Debug.Log($"[PedestrianCyclistSpawner] Activated agent '{agent.name}' for type {type} on path '{path.name}'.");
+            return true;
         }
 
         private Transform GetOrCreateAgent(PathConfigLoader.PathUserType type)

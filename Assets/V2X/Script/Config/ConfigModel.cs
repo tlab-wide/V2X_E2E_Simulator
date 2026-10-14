@@ -17,6 +17,66 @@ namespace V2X.Config
         // Files of this scenario folder, relative to it. Empty or missing = not configured (the scene objects stay).
         public string Rsus { get; set; } = "rsus.yaml";
         public string Vehicles { get; set; } = "";
+        public string Pedestrians { get; set; } = "";
+        public string Teleports { get; set; } = "";
+    }
+
+    // ------------------------------------------------------------------------------------------------- pedestrians / cyclists
+    public class PedestriansConfig
+    {
+        public int MaxActive { get; set; } = 30;                // agents walking/riding at the same time (0 = unlimited)
+        public bool SnapToGround { get; set; } = true;
+        public List<HumanPathConfig> Paths { get; set; } = new List<HumanPathConfig>();
+    }
+
+    public class HumanPathConfig
+    {
+        public string Id { get; set; } = "";
+        public float SpawnsPerMinute { get; set; }
+        public float CyclistRatio { get; set; }                 // share of spawns that are cyclists: 0 = pedestrians only, 1 = cyclists only
+        public bool Enabled { get; set; } = true;
+        public List<HumanWaypoint> Waypoints { get; set; } = new List<HumanWaypoint>();
+    }
+
+    public class HumanWaypoint
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Z { get; set; }
+        public string TrafficLight { get; set; }                // pedestrian light to wait for (green) before going on, e.g. Kakeiken_P_0x30_1
+    }
+
+    // ------------------------------------------------------------------------------------------------- teleports
+    public class TeleportsConfig
+    {
+        public string LanesRoot { get; set; } = "";             // empty = lanes_root of vehicles.yaml
+        public List<TeleportConfig> Teleports { get; set; } = new List<TeleportConfig>();
+    }
+
+    public class TeleportConfig
+    {
+        public string Name { get; set; } = "";
+        public bool Enabled { get; set; } = true;
+        public Pose Trigger { get; set; } = new Pose();          // centre and heading of the trigger box
+        public MapPoint TriggerSize { get; set; } = new MapPoint { X = 10, Y = 3, Z = 4 };   // width (across), height, length (along heading), m
+        public string Strategy { get; set; } = "lane_midpoint";  // lane_midpoint | random_point
+        public float ClearanceRadiusM { get; set; } = 10f;       // NPC vehicles within this radius of the target are removed
+        public float DelayS { get; set; } = 0.5f;
+        public List<float> RandomDelayS { get; set; } = new List<float> { 0f, 0f };
+        public LaneMidpointConfig LaneMidpoint { get; set; }
+        public List<Pose> RandomPoints { get; set; } = new List<Pose>();
+    }
+
+    public class LaneMidpointConfig
+    {
+        public List<long> Lanelets { get; set; } = new List<long>();    // candidate lanes for the target
+        public float SpacingM { get; set; } = 10f;
+        public bool IncludeEndpoints { get; set; } = true;
+        public long MidpointLanelet { get; set; }
+        public float MidpointFraction { get; set; } = 0.5f;
+        public float CruiseSpeedKmh { get; set; } = 30f;
+        public float AccelerationMps2 { get; set; } = 2f;
+        public List<float> ArrivalWindowS { get; set; } = new List<float> { 0f, 90f };
     }
 
     // ------------------------------------------------------------------------------------------------- vehicles

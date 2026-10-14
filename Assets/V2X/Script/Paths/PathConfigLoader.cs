@@ -37,6 +37,8 @@ namespace V2X.Paths
             public PathUserType type;
             public float spawnPerMinute = 0f;
             public List<PathPoint> waypoints = new List<PathPoint>();
+            [Tooltip("Share of the spawns of a 'both' path that are cyclists (0-1). Negative = pick from all prefabs evenly.")]
+            public float cyclistRatio = -1f;
         }
 
         [Serializable]

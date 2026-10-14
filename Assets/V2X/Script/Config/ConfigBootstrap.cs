@@ -44,6 +44,117 @@ namespace V2X.Config
                 BuildRsus(config);
             if (config.Vehicles != null)
                 SetupVehicles(config);
+            if (config.Pedestrians != null)
+                SetupPedestrians(config);
+            if (config.Teleports != null)
+                SetupTeleports(config);
+        }
+
+        /// <summary>The lanes (by name) under the object at <paramref name="path"/>; with several such objects, the one holding most of <paramref name="wanted"/>.</summary>
+        static Dictionary<string, AWSIM.TrafficSimulation.TrafficLane> FindLanes(string path, HashSet<string> wanted)
+        {
+            var root = FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .Where(t => ScenePath(t) == path)
+                .OrderByDescending(t => t.GetComponentsInChildren<AWSIM.TrafficSimulation.TrafficLane>(true).Count(l => wanted.Contains(l.name)))
+                .FirstOrDefault();
+            if (root == null) return null;
+            var lanes = new Dictionary<string, AWSIM.TrafficSimulation.TrafficLane>();
+            foreach (var lane in root.GetComponentsInChildren<AWSIM.TrafficSimulation.TrafficLane>(true))
+                lanes[lane.name] = lane;
+            return lanes;
+        }
+
+        /// <summary>One PedestrianCyclistSpawner walks the paths of pedestrians.yaml; the scene's other spawners are switched off.</summary>
+        static void SetupPedestrians(LoadedConfig c)
+        {
+            var spawners = FindObjectsByType<V2X.Paths.PedestrianCyclistSpawner>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .OrderBy(s => ScenePath(s.transform)).ToList();
+            var template = spawners.FirstOrDefault(s => s.isActiveAndEnabled) ?? spawners.FirstOrDefault(s => s.enabled) ?? spawners.FirstOrDefault();
+            if (template == null)
+            {
+                Debug.LogError("[Config] pedestrians: no PedestrianCyclistSpawner in the scene (it holds the pedestrian / cyclist prefabs)");
+                return;
+            }
+            foreach (var s in spawners)
+                if (s != template) s.enabled = false;
+            foreach (var legacy in FindObjectsByType<V2X.Paths.PathConfigLoader>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                legacy.enabled = false;
+            template.transform.SetParent(null, true);
+            template.gameObject.SetActive(true);
+            template.enabled = true;
+
+            var paths = new List<V2X.Paths.PathConfigLoader.PathDefinition>();
+            foreach (var p in c.Pedestrians.Paths.Where(p => p.Enabled))
+            {
+                paths.Add(new V2X.Paths.PathConfigLoader.PathDefinition
+                {
+                    id = p.Id, spawnPerMinute = p.SpawnsPerMinute,
+                    type = p.CyclistRatio <= 0f ? V2X.Paths.PathConfigLoader.PathUserType.pedestrian
+                         : p.CyclistRatio >= 1f ? V2X.Paths.PathConfigLoader.PathUserType.cyclist
+                         : V2X.Paths.PathConfigLoader.PathUserType.both,
+                    cyclistRatio = p.CyclistRatio,
+                    waypoints = p.Waypoints.Select(w => new V2X.Paths.PathConfigLoader.PathPoint
+                    {
+                        x = (float)w.X, y = (float)w.Y, z = (float)w.Z,
+                        checkLight = !string.IsNullOrEmpty(w.TrafficLight), trafficLightId = w.TrafficLight ?? "",
+                    }).ToList(),
+                });
+            }
+            template.ApplyExternalConfig(paths, c.Pedestrians.MaxActive, c.Pedestrians.SnapToGround);
+            Debug.Log($"[Config] pedestrians: {paths.Count} paths, max {c.Pedestrians.MaxActive} active ({template.name})");
+        }
+
+        /// <summary>Teleport gates of teleports.yaml; the scene's own Teleporters are switched off.</summary>
+        static void SetupTeleports(LoadedConfig c)
+        {
+            foreach (var t in FindObjectsByType<Teleporter>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                t.enabled = false;
+            var lanesRoot = !string.IsNullOrEmpty(c.Teleports.LanesRoot) ? c.Teleports.LanesRoot : c.Vehicles?.LanesRoot;
+            var wanted = new HashSet<string>(c.Teleports.Teleports.Where(t => t.LaneMidpoint != null)
+                .SelectMany(t => t.LaneMidpoint.Lanelets.Append(t.LaneMidpoint.MidpointLanelet)).Select(id => "lanelet" + id));
+            var lanes = string.IsNullOrEmpty(lanesRoot) ? null : FindLanes(lanesRoot, wanted);
+
+            var root = new GameObject("Teleports (config)");
+            int n = 0;
+            foreach (var t in c.Teleports.Teleports.Where(t => t.Enabled))
+            {
+                var go = new GameObject(t.Name);
+                go.SetActive(false);
+                go.transform.SetParent(root.transform, false);
+                ConfigGeometry.ApplyPose(go.transform, t.Trigger);
+                var box = go.AddComponent<BoxCollider>();
+                box.isTrigger = true;
+                box.size = new Vector3((float)t.TriggerSize.X, (float)t.TriggerSize.Y, (float)t.TriggerSize.Z);
+
+                var laneList = new List<AWSIM.TrafficSimulation.TrafficLane>();
+                AWSIM.TrafficSimulation.TrafficLane midpoint = null;
+                if (t.LaneMidpoint != null && lanes != null)
+                {
+                    foreach (var id in t.LaneMidpoint.Lanelets)
+                        if (lanes.TryGetValue("lanelet" + id, out var lane)) laneList.Add(lane);
+                        else Debug.LogError($"[Config] teleport {t.Name}: lanelet {id} not found under {lanesRoot}");
+                    lanes.TryGetValue("lanelet" + t.LaneMidpoint.MidpointLanelet, out midpoint);
+                    if (midpoint == null && t.Strategy == "lane_midpoint")
+                        Debug.LogError($"[Config] teleport {t.Name}: midpoint_lanelet {t.LaneMidpoint.MidpointLanelet} not found");
+                }
+                var points = new List<Transform>();
+                foreach (var p in t.RandomPoints)
+                {
+                    var pt = new GameObject("point");
+                    pt.transform.SetParent(go.transform, false);
+                    ConfigGeometry.ApplyPose(pt.transform, p);
+                    points.Add(pt.transform);
+                }
+                var lm = t.LaneMidpoint ?? new LaneMidpointConfig();
+                Vector2 Range2(List<float> v, Vector2 dflt) => v != null && v.Count >= 2 ? new Vector2(v[0], v[1]) : dflt;
+                go.AddComponent<Teleporter>().Configure(
+                    t.Strategy == "random_point" ? Teleporter.SpawnStrategy.RandomPoint : Teleporter.SpawnStrategy.LaneMidpoint,
+                    t.ClearanceRadiusM, t.DelayS, Range2(t.RandomDelayS, Vector2.zero), laneList, lm.SpacingM, lm.IncludeEndpoints,
+                    midpoint, lm.MidpointFraction, lm.CruiseSpeedKmh, lm.AccelerationMps2, Range2(lm.ArrivalWindowS, new Vector2(0f, 90f)), points);
+                go.SetActive(true);
+                n++;
+            }
+            Debug.Log($"[Config] teleports: {n} gates");
         }
 
         static string ScenePath(Transform t) => t.parent ? ScenePath(t.parent) + "/" + t.name : t.name;

@@ -24,6 +24,8 @@ namespace V2X.Config
         public NetworkConfig Network;
         public RsusConfig Rsus;                        // null when the scenario does not configure RSUs
         public VehiclesConfig Vehicles;                // null when the scenario does not configure vehicle traffic
+        public PedestriansConfig Pedestrians;
+        public TeleportsConfig Teleports;
         public readonly List<string> Errors = new List<string>();
         public readonly List<string> Warnings = new List<string>();
 
@@ -137,6 +139,10 @@ namespace V2X.Config
                 c.Rsus = Read<RsusConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Rsus), c);
             if (!string.IsNullOrEmpty(c.Scenario.Vehicles))
                 c.Vehicles = Read<VehiclesConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Vehicles), c);
+            if (!string.IsNullOrEmpty(c.Scenario.Pedestrians))
+                c.Pedestrians = Read<PedestriansConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Pedestrians), c);
+            if (!string.IsNullOrEmpty(c.Scenario.Teleports))
+                c.Teleports = Read<TeleportsConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Teleports), c);
 
             Validate(c);
             return c;
@@ -144,6 +150,29 @@ namespace V2X.Config
 
         static void Validate(LoadedConfig c)
         {
+            if (c.Pedestrians != null)
+            {
+                var ids = new HashSet<string>();
+                foreach (var p in c.Pedestrians.Paths)
+                {
+                    if (string.IsNullOrEmpty(p.Id) || !ids.Add(p.Id)) c.Errors.Add($"pedestrians: path id '{p.Id}' is empty or used twice");
+                    if (!p.Enabled) continue;
+                    if (p.CyclistRatio < 0f || p.CyclistRatio > 1f) c.Errors.Add($"pedestrians: path {p.Id}: cyclist_ratio must be 0-1");
+                    if (p.SpawnsPerMinute < 0f) c.Errors.Add($"pedestrians: path {p.Id}: spawns_per_minute < 0");
+                    if (p.Waypoints.Count < 2) c.Errors.Add($"pedestrians: path {p.Id}: needs at least 2 waypoints");
+                }
+            }
+            if (c.Teleports != null)
+            {
+                foreach (var t in c.Teleports.Teleports.Where(t => t.Enabled))
+                {
+                    if (t.Strategy != "lane_midpoint" && t.Strategy != "random_point") c.Errors.Add($"teleport {t.Name}: strategy must be lane_midpoint or random_point");
+                    if (t.Strategy == "lane_midpoint" && (t.LaneMidpoint == null || t.LaneMidpoint.Lanelets.Count == 0)) c.Errors.Add($"teleport {t.Name}: lane_midpoint needs lanelets");
+                    if (t.Strategy == "random_point" && t.RandomPoints.Count == 0) c.Errors.Add($"teleport {t.Name}: random_point needs random_points");
+                }
+                if (string.IsNullOrEmpty(c.Teleports.LanesRoot) && c.Vehicles == null && c.Teleports.Teleports.Any(t => t.Strategy == "lane_midpoint"))
+                    c.Errors.Add("teleports: lanes_root is empty and there is no vehicles.yaml to take it from");
+            }
             if (c.Vehicles != null)
             {
                 var v = c.Vehicles;

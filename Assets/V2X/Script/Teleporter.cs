@@ -100,6 +100,31 @@ public class Teleporter : MonoBehaviour
     private HashSet<Vehicle> teleportingVehicles = new HashSet<Vehicle>();
     private Dictionary<TrafficLane, LaneCache> laneCache = new Dictionary<TrafficLane, LaneCache>();
 
+    /// <summary>Sets up a teleporter created from config (call before Awake / the first trigger).</summary>
+    public void Configure(SpawnStrategy strategy, float clearance, float delay, Vector2 randomDelay,
+        List<TrafficLane> lanes, float spacing, bool includeEndpoints, TrafficLane midpointLane, float midpointFraction,
+        float cruiseKmh, float acceleration, Vector2 arrivalWindow, List<Transform> points)
+    {
+        spawnStrategy = strategy;
+        clearanceRadius = clearance;
+        teleportDelay = delay;
+        spawnDelayRange = randomDelay;
+        laneSpawnSources = new List<LaneSpawnSource>();
+        foreach (var lane in lanes ?? new List<TrafficLane>())
+            laneSpawnSources.Add(new LaneSpawnSource { lane = lane });
+        spawnSubdivisionSpacing = spacing;
+        includeSegmentEndpoints = includeEndpoints;
+        midpointSegment = midpointLane;
+        midpointSegmentFraction = midpointFraction;
+        cruiseSpeedKmh = cruiseKmh;
+        assumedAcceleration = acceleration;
+        targetArrivalWindow = arrivalWindow;
+        randomSpawnPoints = new List<RandomSpawnPoint>();
+        foreach (var point in points ?? new List<Transform>())
+            randomSpawnPoints.Add(new RandomSpawnPoint { point = point });
+        laneCache.Clear();
+    }
+
     private void Awake()
     {
         // Find all active TrafficManagers
