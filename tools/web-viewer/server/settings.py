@@ -396,6 +396,46 @@ class Settings:
                 pts.append([round(e - ox, 3), round(n - oy, 3)])
         return web.json_response({'points': pts})
 
+    def viewer_sensors(self, scenario=None):
+        """RSU pseudo sensors of a scenario (default: the default scenario) in the shape of the Live view's sensor list:
+        position in WGS84, half-angle fields of view as MockSensor uses them, and the object-info topics they feed."""
+        name = scenario or self.default_scenario()
+        if not name or name not in self.scenarios():
+            return None
+        files = self.load(name)['files']
+        rsus = files.get('rsus') or {}
+        types = {t['name']: t for t in (files.get('sensor_types') or {}).get('pseudo_sensor_types') or []}
+        suffixes = {n['name']: n.get('topic_suffix', '') for n in (files.get('network') or {}).get('network_profiles') or []}
+        ox, oy = self.offset
+        out = []
+        for r in rsus.get('rsus') or []:
+            topics = []
+            for p in rsus.get('object_info_publishers') or []:
+                if 'all' in (p.get('rsus') or []) or r['name'] in (p.get('rsus') or []):
+                    for t in [p.get('topic'), p.get('ground_truth_topic')]:
+                        if t:
+                            topics.append(t)
+                    topics += [p['topic'] + suffixes.get(n, '') for n in p.get('network') or [] if p.get('topic')]
+            for s in r.get('sensors') or []:
+                pose = s.get('pose') or {}
+                t = types.get(s.get('type'), {})
+                lon, lat = self._to_ll.transform(pose.get('x', 0) + ox, pose.get('y', 0) + oy)
+                own = s.get('object_info') or {}
+                out.append({
+                    'name': s['name'], 'type': 'RSU_CAMERA' if t.get('kind') == 'camera' else 'RSU_LIDAR',
+                    'enabled': r.get('enabled', True) is not False and s.get('enabled', True) is not False,
+                    'group': r['name'], 'near': r.get('location', ''), 'sensor_id': s.get('sensor_id'),
+                    'rsu_ids': [str(r.get('rsu_id'))],
+                    'position': {'lat': round(lat, 7), 'lon': round(lon, 7), 'z_m': pose.get('z', 0)},
+                    'heading_deg': pose.get('heading_deg', 0), 'pitch_deg': pose.get('pitch_deg', 0),
+                    'h_fov_deg': (s.get('h_fov_deg') or t.get('h_fov_deg') or 0) / 2,
+                    'v_fov_deg': (s.get('v_fov_deg') or t.get('v_fov_deg') or 0) / 2,
+                    'range_m': s.get('range_m') or t.get('range_m') or 0,
+                    'topics': [x for x in [own.get('topic'), own.get('ground_truth_topic')] if x] + topics,
+                    'scenario': name,
+                })
+        return out
+
     async def lanes(self, request):
         """Traffic lanes of the simulator (config/maps/traffic_lanes.json, written by V2X > Config > Export Traffic Lanes)
         as GeoJSON line strings; their ids are the lanelet numbers used in vehicles.yaml and teleports.yaml."""

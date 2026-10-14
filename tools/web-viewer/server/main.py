@@ -40,6 +40,7 @@ class Viewer:
         for sensor in self.sensors:     # YAML hex IDs arrive as ints; the page shows them as hex
             sensor['rsu_ids'] = [f'0x{i:x}' if isinstance(i, int) else str(i) for i in sensor.get('rsu_ids') or []]
         self.map_dir = map_dir
+        self.settings = None
         self.decoders = Decoders(MapFrame(self.meta['utm_epsg'], self.meta['map_to_utm_offset']),
                                  self.meta, self.traffic_lights)
         self.monitor = TopicMonitor(renderable=lambda t: Decoders.layer_of(t) is not None)
@@ -56,7 +57,8 @@ class Viewer:
             'bounds': self.meta['bounds'],
             'map_source': self.meta['source'],
             'intersections': self.traffic_lights['intersections'],
-            'sensors': self.sensors,
+            # RSU sensors of the default scenario of config/ (what the simulator builds); config/sensors.yaml without one
+            'sensors': (self.settings.viewer_sensors() if self.settings else None) or self.sensors,
             'ego_topic': self.decoders.ego_topic,
             'utm_epsg': self.meta['utm_epsg'],
             'map_to_utm_offset': self.meta['map_to_utm_offset'],
@@ -158,7 +160,8 @@ def main():
     app.router.add_get('/ws', viewer.websocket)
     app.router.add_static('/map/', args.map_dir)
     app.router.add_static('/static/', os.path.join(ROOT, 'web'))
-    Settings(viewer.meta['utm_epsg'], viewer.meta['map_to_utm_offset']).add_routes(app)
+    viewer.settings = Settings(viewer.meta['utm_epsg'], viewer.meta['map_to_utm_offset'])
+    viewer.settings.add_routes(app)
 
     async def start_loops(app):
         app['tasks'] = [asyncio.create_task(viewer.health_loop()), asyncio.create_task(viewer.layer_loop())]
