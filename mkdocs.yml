@@ -90,7 +90,18 @@ nav:
       - Topic List: DMProtocols/CooL4/Topics/index.md
       - Reading the Messages: DMProtocols/CooL4/Reading/index.md
 
-  - Configuration: Configuration/index.md
+  - Configuration:
+    - Overview: Configuration/index.md
+    - Simulation: Configuration/Simulation/index.md
+    - Signal Timing: Configuration/Signals/index.md
+    - RSUs and Pseudo Sensors: Configuration/Rsus/index.md
+    - Vehicle Traffic: Configuration/Vehicles/index.md
+    - Pedestrians and Cyclists: Configuration/Pedestrians/index.md
+    - Teleports: Configuration/Teleports/index.md
+    - Raw Sensors: Configuration/RawSensors/index.md
+    - Sensor Types: Configuration/SensorTypes/index.md
+    - Noise Profiles: Configuration/Noise/index.md
+    - Network Profiles: Configuration/Network/index.md
 
   - Tools:
     - Web Viewer: Tools/WebViewer/index.md

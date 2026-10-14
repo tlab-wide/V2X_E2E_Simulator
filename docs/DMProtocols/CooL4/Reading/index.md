@@ -89,7 +89,7 @@ split_object_id(9224403018286497794)
 
 ### RSU and sensor IDs (Kashiwa)
 
-The IDs come from `config/scenarios/kashiwa_cool4/rsus.yaml` (see [Scenario Configuration](../../../Configuration/index.md#rsus-and-pseudo-sensors-rsusyaml)). Every sensor publishes to the combined topics `/v2x/object_info` and `/v2x/object_info_groundtruth`, and to their `/DSRC` and `/Cellular` copies. The ten Kakeiken sensors also have their own pair of topics: `…/object_info` (with noise) and `…/object_info_groundtruth` (without). These have no network copies.
+The IDs come from `config/scenarios/kashiwa_cool4/rsus.yaml` (see [Scenario Configuration](../../../Configuration/Rsus/index.md)). Every sensor publishes to the combined topics `/v2x/object_info` and `/v2x/object_info_groundtruth`, and to their `/DSRC` and `/Cellular` copies. The ten Kakeiken sensors also have their own pair of topics: `…/object_info` (with noise) and `…/object_info_groundtruth` (without). These have no network copies.
 
 | RSU | `rsu_id` (hex) | decimal | `sensor_id` | Sensor | Kind | Own topic |
 |:--|:--|--:|--:|:--|:--|:--|

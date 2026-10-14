@@ -40,7 +40,7 @@ Each light carries the CooL4 signal IDs it shows (spec §3.6.3: vehicle ID = inb
 
 ## RSUs
 
-The RSUs follow the route: `Ganken` (RSU ID `0x12020001`), `Kakeiken_A` and `Kakeiken_B` (`0x12020002`, `0x12020003`), `Midblock` (`0x12020004`, between 科警研 and 若柴) and `Wakashiba` (`0x12020005`). Sensor IDs are unique within each RSU. From v3.2 they are defined in `config/scenarios/<name>/rsus.yaml` (see [Scenario Configuration](../../Configuration/index.md)); in the v3.1 scenes they are the groups under `RSUs/Pseudo Sensors setup` (`RSU1_Ganken_CooL4`, `RSU2_Kakeiken_CooL4`, `RSU3_Midblock`, `RSU4_Wakashiba`). All IDs are listed in [Reading the Messages](../../DMProtocols/CooL4/Reading/index.md#rsu-and-sensor-ids-kashiwa).
+The RSUs follow the route: `Ganken` (RSU ID `0x12020001`), `Kakeiken_A` and `Kakeiken_B` (`0x12020002`, `0x12020003`), `Midblock` (`0x12020004`, between 科警研 and 若柴) and `Wakashiba` (`0x12020005`). Sensor IDs are unique within each RSU. From v3.2 they are defined in `config/scenarios/<name>/rsus.yaml` (see [RSUs and Pseudo Sensors](../../Configuration/Rsus/index.md)); in the v3.1 scenes they are the groups under `RSUs/Pseudo Sensors setup` (`RSU1_Ganken_CooL4`, `RSU2_Kakeiken_CooL4`, `RSU3_Midblock`, `RSU4_Wakashiba`). All IDs are listed in [Reading the Messages](../../DMProtocols/CooL4/Reading/index.md#rsu-and-sensor-ids-kashiwa).
 
 ## Where the names are used
 

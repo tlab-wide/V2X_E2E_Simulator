@@ -150,7 +150,7 @@ intersections:
 
 ## Sensors
 
-The Live view draws the RSU pseudo sensors of the **default scenario** of the simulator configuration (`config/scenarios/<default>/rsus.yaml`, see [Scenario Configuration](../../Configuration/index.md)). It draws exactly what the simulator builds at Play. Each sensor is drawn as an icon (C = camera, L = lidar) with its coverage sector. The icon gets a green halo when one of its object-info topics is live. Labels appear from zoom 18. Click a sensor for all its settings and the live status of its topics.
+The Live view draws the RSU pseudo sensors of the **default scenario** of the simulator configuration (`config/scenarios/<default>/rsus.yaml`, see [RSUs and Pseudo Sensors](../../Configuration/Rsus/index.md)). It draws exactly what the simulator builds at Play. Each sensor is drawn as an icon (C = camera, L = lidar) with its coverage sector. The icon gets a green halo when one of its object-info topics is live. Labels appear from zoom 18. Click a sensor for all its settings and the live status of its topics.
 
 | Field in the inspector | Meaning |
 |:--|:--|
