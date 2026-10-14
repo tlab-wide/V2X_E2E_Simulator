@@ -1,0 +1,3314 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../WaypointPed/">
+      
+      
+        <link rel="next" href="../MultiSensorStepScanning/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Path Spawn Config (JSON) - V2X E2E simulator</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../main.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#path-spawn-config-json" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You are not reading the latest release of these docs (the "dev" version follows the develop branch).
+  <a href="../../..">
+    <strong>Go to the latest release.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="V2X E2E simulator" class="md-header__button md-logo" aria-label="V2X E2E simulator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            V2X E2E simulator
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Path Spawn Config (JSON)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="V2X E2E simulator" class="md-nav__button md-logo" aria-label="V2X E2E simulator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    V2X E2E simulator
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GettingStarted/Download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GettingStarted/QuickStartDemo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start Demo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GettingStarted/SetupUnityProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup Unity Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LoadPCD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Load PCD in Unity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Introduction
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Introduction/AutowareAwsimAndV2X/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autoware, Awsim and Our project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Introduction/CombinationWithAutoware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CombinationWithAutoware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DM Protocols
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DM Protocols
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DMProtocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CooL4 DM Protocols
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CooL4 DM Protocols
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DMProtocols/CooL4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DMProtocols/CooL4/ObjectInfo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object Info
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DMProtocols/CooL4/SignalInfo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal Info
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DMProtocols/CooL4/Topics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topic List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tools
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Tools/WebViewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ProjectGuide/KashiwaScenes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kashiwa Scenes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ProjectGuide/GitBranch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Branch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ProjectGuide/ExternalLibraries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External Libraries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pseudo Sensor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Pseudo Sensor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PseudoSensors/PseudoSensorsSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PseudoSensors/PseudoSensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pseudo Sensor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PseudoSensors/NoiseSetting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Noise Setting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RSU/RSU/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RSU
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vehicle
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Vehicle
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Vehicle/AddNewVehicle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add New Vehicle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traffic System
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Traffic System
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TrafficManager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traffic Manager
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Traffic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Random Traffic Simulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TrafficSpawnConfig/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traffic Spawn Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ZebraCrossing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zebra Crossing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NpcCars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vehicle Despawn System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_4" id="__nav_7_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCD Scanner
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    PCD Scanner
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PCDScanner/Component/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCD Scanner Component
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PCDScanner/Package/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCD Scanner Package (old)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Logger/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loggers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pedestrian & Cyclist
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Pedestrian & Cyclist
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Pedestrian/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    General
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WaypointPed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Waypoint & Spawning System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Path Spawn Config (JSON)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Path Spawn Config (JSON)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-json-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The JSON File
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The JSON File">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-excerpt-of-assetsconfigspedestrian_spawnjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (excerpt of Assets/Configs/pedestrian_spawn.json)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Field Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#waypoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Waypoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Location
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coordinate-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coordinate Conversion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pedestriancyclistspawner-supported" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PedestrianCyclistSpawner (supported)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PedestrianCyclistSpawner (supported)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inspector-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspector Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spawn-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spawn Timing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pooling-and-recycling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pooling and Recycling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-paths-in-the-scene-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editing Paths in the Scene View
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternative-pathconfigloader-pedestriancyclistpathspawner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternative: PathConfigLoader + Pedestrian/CyclistPathSpawner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alternative: PathConfigLoader + Pedestrian/CyclistPathSpawner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pathconfigloader-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PathConfigLoader Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pathmetadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PathMetadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clearwaypointfollower" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ClearWaypointFollower
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-the-json-at-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing the JSON at Runtime
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MultiSensorStepScanning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MultiSensorStepScanning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RandomSpawnCharacters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RandomSpawnCharacters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Teleport/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teleport
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CameraView/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera View Tab
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TroubleShooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TroubleShooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../inProgressSections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    In progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../License/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Contact/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contact
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-json-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The JSON File
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The JSON File">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-excerpt-of-assetsconfigspedestrian_spawnjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (excerpt of Assets/Configs/pedestrian_spawn.json)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Field Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#waypoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Waypoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Location
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coordinate-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coordinate Conversion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pedestriancyclistspawner-supported" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PedestrianCyclistSpawner (supported)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PedestrianCyclistSpawner (supported)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inspector-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspector Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spawn-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spawn Timing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pooling-and-recycling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pooling and Recycling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-paths-in-the-scene-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editing Paths in the Scene View
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternative-pathconfigloader-pedestriancyclistpathspawner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternative: PathConfigLoader + Pedestrian/CyclistPathSpawner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alternative: PathConfigLoader + Pedestrian/CyclistPathSpawner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pathconfigloader-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PathConfigLoader Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pathmetadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PathMetadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clearwaypointfollower" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ClearWaypointFollower
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-the-json-at-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing the JSON at Runtime
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../PseudoSensors/PseudoSensorsSetup/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Components
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../Pedestrian/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Pedestrian & Cyclist
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="path-spawn-config-json">Path Spawn Config (JSON)</h1>
+<h2 id="overview">Overview</h2>
+<p>Pedestrian and cyclist paths can be defined in a JSON file instead of being placed by hand in the scene. At start-up the file is read, one runtime <a href="../WaypointPed/#waypointsystem"><code>WaypointSystem</code></a> is built per path, and pooled agents with a <a href="../WaypointPed/#waypointfollower"><code>WaypointFollower</code></a> are spawned onto each path at the configured rate.</p>
+<div class="highlight"><pre><span></span><code>pedestrian_spawn.json ──► WaypointSystem per path ──► pooled WaypointFollower agents
+ (ROS/MGRS coordinates)    (Unity coordinates,          (spawned at spawnPerMinute,
+                            optional light constraints)  recycled at path end)
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Status</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PedestrianCyclistSpawner</code></td>
+<td><strong>Supported</strong> — active in the <code>NormalTraffics</code> scenario of the Kashiwa scene (GameObject <code>ScenarioSelector/Cool4 Kakeiken Overal Evaluation/PedestrianCyclistSpawner</code>)</td>
+<td>Loads the JSON, builds the paths and spawns both pedestrians and cyclists</td>
+</tr>
+<tr>
+<td><code>PathConfigLoader</code> + <code>PedestrianPathSpawner</code> / <code>CyclistPathSpawner</code></td>
+<td>Alternative — present in the scene but inactive</td>
+<td>Loader builds the paths; two separate spawners use them</td>
+</tr>
+<tr>
+<td><code>ClearWaypointFollower</code></td>
+<td>Alternative follower</td>
+<td>Rigidbody follower that can read a path from <code>PathConfigLoader</code></td>
+</tr>
+<tr>
+<td><code>PathMetadata</code></td>
+<td>Helper</td>
+<td>Stores <code>type</code> and <code>spawnPerMinute</code> on each generated path GameObject</td>
+</tr>
+</tbody>
+</table>
+<p>All scripts are in <code>Assets/V2X/Script/Paths/</code> (namespace <code>V2X.Paths</code>).</p>
+<hr />
+<h2 id="the-json-file">The JSON File</h2>
+<p>Default path: <code>Assets/Configs/pedestrian_spawn.json</code></p>
+<h3 id="schema">Schema</h3>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"paths"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;unique string&gt;"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pedestrian | cyclist | both"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"spawnPerMinute"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"waypoints"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">"x"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">"y"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">"z"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">"checkLight"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="nt">"trafficLightId"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w"> </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="example-excerpt-of-assetsconfigspedestrian_spawnjson">Example (excerpt of <code>Assets/Configs/pedestrian_spawn.json</code>)</h3>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">"paths"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Path2"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"both"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"spawnPerMinute"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.066</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"waypoints"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="err">...</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">"x"</span><span class="p">:</span><span class="w"> </span><span class="mf">4487.9013671875</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"y"</span><span class="p">:</span><span class="w"> </span><span class="mf">72948.5546875</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"z"</span><span class="p">:</span><span class="w"> </span><span class="mf">23.0</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"checkLight"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"trafficLightId"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">"x"</span><span class="p">:</span><span class="w"> </span><span class="mf">4490.7509765625</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"y"</span><span class="p">:</span><span class="w"> </span><span class="mf">72946.921875</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"z"</span><span class="p">:</span><span class="w"> </span><span class="mf">23.0</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"checkLight"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"trafficLightId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TrafficLights_A_pedestrain (1)-cross2"</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="err">...</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="field-reference">Field Reference</h3>
+<h4 id="path">Path</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td><strong>Required and unique.</strong> Paths with an empty <code>id</code> are skipped. If two paths share an <code>id</code>, both entries spawn on the waypoints of the last one.</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>string</td>
+<td><code>pedestrian</code>, <code>cyclist</code> or <code>both</code> (case-insensitive). Empty or unknown values are treated as <code>both</code>. Selects which prefabs may be spawned on the path.</td>
+</tr>
+<tr>
+<td><code>spawnPerMinute</code></td>
+<td>float</td>
+<td>Mean spawn rate for this path. <code>0</code> (or negative) disables the path.</td>
+</tr>
+<tr>
+<td><code>waypoints</code></td>
+<td>array</td>
+<td>Ordered points. Paths with no waypoints are skipped.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="waypoint">Waypoint</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code>, <code>y</code>, <code>z</code></td>
+<td>float</td>
+<td>Position in metres in the ROS / MGRS map frame (the same frame as the Lanelet2 / point-cloud map).</td>
+</tr>
+<tr>
+<td><code>checkLight</code></td>
+<td>bool</td>
+<td>If true (and <code>trafficLightId</code> is set), a <code>ConstraintPedestrianTrafficLight</code> is added at this waypoint.</td>
+</tr>
+<tr>
+<td><code>trafficLightId</code></td>
+<td>string</td>
+<td>GameObject name of the pedestrian <code>TrafficLight</code> to check (matched case-insensitively). The agent waits <strong>at this waypoint</strong> until the light is solid green.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Traffic light names must be unique</p>
+<p>The light is looked up by name among all <code>TrafficLight</code> components in the scene (including inactive ones) and the <strong>first</strong> match is used. If several lights share the name, the agent may watch the wrong one. For example, the current Kashiwa scene contains three <code>TrafficLight</code> objects named <code>TrafficLights_B_pedestrain (2)</code>, which is referenced by the bundled configs. Rename lights so that every referenced name is unique. If the light is not found, a warning is logged and the agent does not stop there.</p>
+</div>
+<h3 id="file-location">File Location</h3>
+<p>A relative path is resolved against the project root (<code>Application.dataPath/..</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Context</th>
+<th><code>Assets/Configs/pedestrian_spawn.json</code> resolves to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unity Editor</td>
+<td><code>&lt;project&gt;/Assets/Configs/pedestrian_spawn.json</code></td>
+</tr>
+<tr>
+<td>Player build</td>
+<td><code>&lt;build folder&gt;/Assets/Configs/pedestrian_spawn.json</code> (the folder that contains the executable and its <code>_Data</code> folder)</td>
+</tr>
+</tbody>
+</table>
+<p>An absolute path is used as-is.</p>
+<div class="admonition warning">
+<p class="admonition-title">Player builds</p>
+<p>The JSON is read from disk and is not packed into the build. Copy <code>Assets/Configs/</code> into the build folder, next to the executable, so that <code>&lt;build folder&gt;/Assets/Configs/pedestrian_spawn.json</code> exists.</p>
+</div>
+<h3 id="presets">Presets</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Total rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pedestrian_spawn.json</code> (default; same content as the Low preset)</td>
+<td>≈ 47 agents per hour</td>
+</tr>
+<tr>
+<td><code>pedestrian_spawn-KashiwaRealPedestrains_Low_total47.json</code></td>
+<td>≈ 47 agents per hour (sum of <code>spawnPerMinute</code> = 0.779)</td>
+</tr>
+<tr>
+<td><code>pedestrian_spawn-KashiwaRealPedestrains_High_total76.json</code></td>
+<td>≈ 76 agents per hour (sum of <code>spawnPerMinute</code> = 1.273)</td>
+</tr>
+</tbody>
+</table>
+<p>All presets define the same 14 Kashiwa paths (<code>Path1</code>–<code>Path14</code>, type <code>both</code>) and differ only in <code>spawnPerMinute</code>. To use a preset, set <code>pathsJsonPath</code> on <code>PedestrianCyclistSpawner</code> to its path (or copy it over <code>pedestrian_spawn.json</code>).</p>
+<hr />
+<h2 id="coordinate-conversion">Coordinate Conversion</h2>
+<p>Each JSON point is converted to a Unity world position as follows:</p>
+<ol>
+<li><strong>Subtract the MGRS offset</strong> (only if <code>useMgrsOffset</code> is on): the offset is <code>Environment.Instance.MgrsOffsetPosition</code>. If there is no <code>Environment</code> in the scene, <code>manualOffset</code> is used instead (a ROS/MGRS-frame offset; ignored when it is zero).</li>
+<li><strong>ROS → Unity axes</strong>: <code>(x, y, z)</code> → <code>(-y, z, x)</code>.</li>
+<li><strong>Add <code>worldOrigin</code></strong>: if a <code>worldOrigin</code> Transform is assigned, its position is added (a Unity-frame translation).</li>
+<li><strong>Ground snapping</strong> (if <code>snapWaypointsToGround</code> is on): a ray is cast downward from <code>groundRayHeight</code> metres above the point, over a distance of <code>2 × groundRayHeight</code>, against <code>groundMask</code>. On a hit, the height is replaced by the hit point. On a miss, the converted height is kept.</li>
+</ol>
+<p>Saving applies the inverse conversion (Unity → ROS: <code>(x, y, z)</code> → <code>(z, -x, y)</code>, then add the offset).</p>
+<hr />
+<h2 id="pedestriancyclistspawner-supported">PedestrianCyclistSpawner (supported)</h2>
+<h3 id="inspector-fields">Inspector Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pedestrianPrefabs</code></td>
+<td>—</td>
+<td>Pedestrian prefabs (must have a <code>WaypointFollower</code>)</td>
+</tr>
+<tr>
+<td><code>cyclistPrefabs</code></td>
+<td>—</td>
+<td>Cyclist prefabs (must have a <code>WaypointFollower</code>)</td>
+</tr>
+<tr>
+<td><code>activeParent</code></td>
+<td>—</td>
+<td>Optional parent for spawned agents</td>
+</tr>
+<tr>
+<td><code>maxExtraInstancesPerSpawn</code></td>
+<td>5</td>
+<td>When no compatible inactive clone exists, a new clone is created. <code>0</code> forbids creating clones (and since the pool starts empty, nothing spawns)</td>
+</tr>
+<tr>
+<td><code>maxActive</code></td>
+<td>0</td>
+<td>Max concurrently active agents across all paths of this spawner. <code>0</code> = unlimited. The Kashiwa scene uses <strong>5</strong></td>
+</tr>
+<tr>
+<td><code>initialSpawnDelayRange</code></td>
+<td>(0, 2)</td>
+<td>Random delay before a path's first spawn (seconds). The Kashiwa scene uses (0, 0)</td>
+</tr>
+<tr>
+<td><code>worldOrigin</code></td>
+<td>—</td>
+<td>Optional Unity-frame anchor added after conversion</td>
+</tr>
+<tr>
+<td><code>useMgrsOffset</code></td>
+<td>true</td>
+<td>Subtract the MGRS offset of <code>Environment</code></td>
+</tr>
+<tr>
+<td><code>manualOffset</code></td>
+<td>(0, 0, 0)</td>
+<td>ROS/MGRS-frame offset used when <code>useMgrsOffset</code> is on but no <code>Environment</code> exists</td>
+</tr>
+<tr>
+<td><code>snapWaypointsToGround</code></td>
+<td>true</td>
+<td>Snap waypoints to the ground with a downward raycast</td>
+</tr>
+<tr>
+<td><code>groundMask</code></td>
+<td>Everything</td>
+<td>Layers hit by the ground ray</td>
+</tr>
+<tr>
+<td><code>groundRayHeight</code></td>
+<td>3</td>
+<td>Ray start height above the waypoint (m)</td>
+</tr>
+<tr>
+<td><code>npcPaths</code></td>
+<td>—</td>
+<td>Paths loaded from the JSON (filled at runtime; editable in the Scene view)</td>
+</tr>
+<tr>
+<td><code>pathsJsonPath</code></td>
+<td><code>Assets/Configs/pedestrian_spawn.json</code></td>
+<td>JSON file to load / save</td>
+</tr>
+</tbody>
+</table>
+<p>The JSON is loaded in <code>Start</code>. The context menu provides <strong>Load NPC Paths From JSON</strong> (reload and restart all spawn loops) and <strong>Save NPC Paths To JSON</strong> (overwrite <code>pathsJsonPath</code> with <code>npcPaths</code>).</p>
+<h3 id="spawn-timing">Spawn Timing</h3>
+<p>For each enabled path, a separate spawn loop runs:</p>
+<ul>
+<li><strong>Mean interval</strong> = <code>60 / spawnPerMinute</code> seconds (minimum 0.1 s).</li>
+<li><strong>First spawn</strong>: after a random delay from <code>initialSpawnDelayRange</code>. If that delay is 0, a random phase in <code>[0, interval)</code> is used instead, so paths do not spawn in sync.</li>
+<li><strong>Following spawns</strong>: each wait is drawn from a Gaussian around the mean interval (standard deviation 10 %), clamped to 0.5×–1.5× the mean.</li>
+<li>If <code>maxActive</code> is reached, the loop waits one mean interval and checks again.</li>
+</ul>
+<h3 id="pooling-and-recycling">Pooling and Recycling</h3>
+<ul>
+<li>Agents are created as clones of a random prefab from the lists allowed by the path <code>type</code> (<code>pedestrian</code> → <code>pedestrianPrefabs</code>, <code>cyclist</code> → <code>cyclistPrefabs</code>, <code>both</code> → both lists), and kept in a pool.</li>
+<li>An inactive clone is reused only on a <strong>compatible</strong> path: a cyclist clone is never reused on a <code>pedestrian</code> path, and a pedestrian clone is never reused on a <code>cyclist</code> path. Any clone can be reused on a <code>both</code> path.</li>
+<li>On spawn, the agent is placed at the first waypoint (<code>ForceStartAtFirstWaypoint</code>), receives a new <a href="../WaypointPed/#scenariohumanid"><code>ScenarioHumanId</code></a>, and is activated.</li>
+<li>Generated paths do not loop. At the last waypoint, <code>WaypointFollower</code> deactivates the agent, which returns it to the pool.</li>
+</ul>
+<p>The generated path objects (<code>Path_&lt;id&gt;</code> with <code>wp</code> children, under <code>RuntimePaths_PedCyclist</code>) are hidden from the Hierarchy.</p>
+<h3 id="editing-paths-in-the-scene-view">Editing Paths in the Scene View</h3>
+<p><code>PedestrianCyclistSpawnerEditor</code> (<code>Assets/V2X/Editor/</code>) adds a <strong>Path Editing</strong> section to the Inspector once <code>npcPaths</code> contains paths:</p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Selected Path</code></td>
+<td>Path to show in the Scene view</td>
+</tr>
+<tr>
+<td><code>Handle Size</code></td>
+<td>Size of the waypoint handles</td>
+</tr>
+<tr>
+<td><code>Show Labels</code></td>
+<td>Show <code>&lt;id&gt;:&lt;index&gt;</code> labels</td>
+</tr>
+</tbody>
+</table>
+<p>The selected path is drawn as lines between its waypoints (green = <code>pedestrian</code>, cyan = <code>cyclist</code>, yellow = <code>both</code>) with a sphere handle at each waypoint. Dragging a handle converts its position back to ROS/MGRS and updates <code>npcPaths</code> (with Undo). Use <strong>Save NPC Paths To JSON</strong> to write the change to the file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>npcPaths</code> is serialized with the scene, so handles are available in Edit mode too, but <code>Start</code> always replaces <code>npcPaths</code> with the JSON content. Save to JSON for an edit to take effect. During Play, moving handles does not move the running waypoint systems; they are rebuilt only when the paths are loaded again.</p>
+</div>
+<hr />
+<h2 id="alternative-pathconfigloader-pedestriancyclistpathspawner">Alternative: PathConfigLoader + Pedestrian/CyclistPathSpawner</h2>
+<p>In this setup, <code>PathConfigLoader</code> loads the JSON in <code>Awake</code> and builds the waypoint systems. <code>PedestrianPathSpawner</code> and <code>CyclistPathSpawner</code> read them in <code>Start</code> (finding a loader in the scene if none is assigned). In the Kashiwa scene these objects exist under the <code>NormalTraffics</code> scenario but are <strong>inactive</strong>, and the loader's <code>jsonConfigPath</code> is set to <code>Assets/Configs/paths.json</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Spawner</th>
+<th>Paths used</th>
+<th>Prefabs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PedestrianPathSpawner</code></td>
+<td><code>pedestrian</code> and <code>both</code></td>
+<td><code>pedestrianPrefabs</code>; on <code>both</code> paths also <code>cyclistPrefabsForBoth</code> (cyclist clones are reused only on <code>both</code> paths)</td>
+</tr>
+<tr>
+<td><code>CyclistPathSpawner</code></td>
+<td><code>cyclist</code> only</td>
+<td><code>cyclistPrefabs</code></td>
+</tr>
+</tbody>
+</table>
+<p>Both spawners have <code>activeParent</code>, <code>maxExtraInstancesPerSpawn</code> (5 / 3), <code>maxActive</code> (0) and <code>initialSpawnDelayRange</code> (0, 2), with the same timing rules as above (<code>maxActive</code> is counted per spawner).</p>
+<h3 id="pathconfigloader-fields">PathConfigLoader Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>jsonConfigPath</code></td>
+<td><code>Assets/Configs/pedestrian_spawn.json</code></td>
+<td>JSON file (relative to project root, or absolute)</td>
+</tr>
+<tr>
+<td><code>runtimeParent</code></td>
+<td>—</td>
+<td>Parent for generated paths. If empty, a <code>RuntimePaths</code> GameObject is created</td>
+</tr>
+<tr>
+<td><code>instantiateEditableInScene</code></td>
+<td>false</td>
+<td>If true, generated <code>Path_&lt;id&gt;</code> objects are normal scene objects that can be moved; otherwise they are hidden (<code>HideAndDontSave</code>)</td>
+</tr>
+<tr>
+<td><code>worldOrigin</code></td>
+<td>—</td>
+<td>Optional Unity-frame anchor added after conversion</td>
+</tr>
+<tr>
+<td><code>useMgrsOffset</code></td>
+<td>true</td>
+<td>Subtract the MGRS offset of <code>Environment</code></td>
+</tr>
+<tr>
+<td><code>manualOffset</code></td>
+<td>(0, 0, 0)</td>
+<td>ROS/MGRS-frame offset used when no <code>Environment</code> exists</td>
+</tr>
+<tr>
+<td><code>snapWaypointsToGround</code></td>
+<td>true</td>
+<td>Snap waypoints to the ground</td>
+</tr>
+<tr>
+<td><code>groundMask</code></td>
+<td>Everything</td>
+<td>Layers hit by the ground ray</td>
+</tr>
+<tr>
+<td><code>groundRayHeight</code></td>
+<td>3</td>
+<td>Ray start height above the waypoint (m)</td>
+</tr>
+</tbody>
+</table>
+<p>The Inspector has <strong>Load Paths Now</strong> and <strong>Save Paths Now</strong> buttons (also available as the context menu items <strong>Load Paths JSON</strong> / <strong>Save Paths JSON</strong>).</p>
+<p><strong>Save</strong> writes the current positions of the <code>wp</code> children of each <code>Path_&lt;id&gt;</code> object back to the JSON. It also picks up <code>WaypointSystem</code> objects that were duplicated in the scene: the id is the object name without the <code>Path_</code> prefix. <code>type</code> and <code>spawnPerMinute</code> are read from the object's <code>PathMetadata</code> component. <code>checkLight</code> / <code>trafficLightId</code> are kept only where a <code>ConstraintPedestrianTrafficLight</code> with a resolved light exists on the waypoint.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If <code>runtimeParent</code> is not set, <strong>Save</strong> collects every <code>WaypointSystem</code> in the scene, including hand-made ones. Set <code>runtimeParent</code> before saving.</p>
+</div>
+<h3 id="pathmetadata">PathMetadata</h3>
+<p><code>PathMetadata</code> (<code>type</code>, <code>spawnPerMinute</code>) is added to every generated <code>Path_&lt;id&gt;</code> object by both <code>PathConfigLoader</code> and <code>PedestrianCyclistSpawner</code>. With <code>instantiateEditableInScene</code> enabled, edit it in the Inspector to change a path's type or rate before saving.</p>
+<h3 id="clearwaypointfollower">ClearWaypointFollower</h3>
+<p><code>ClearWaypointFollower</code> is an alternative rigidbody follower (acceleration/deceleration, look-ahead steering, optional per-waypoint waits and <code>NoLoop</code> / <code>Loop</code> / <code>PingPong</code> modes). With <code>pathSource = PathLoader</code> and a <code>pathId</code>, it reads the path from <code>PathConfigLoader</code> (found in the scene if not assigned). It uses the loader's <strong>converted</strong> waypoint positions (the children of the generated <code>WaypointSystem</code>), so the offset and ground snapping match the loader, and takes only <code>checkLight</code> / <code>trafficLightId</code> from the JSON definition. It is not used by the spawners above.</p>
+<hr />
+<h2 id="changing-the-json-at-runtime">Changing the JSON at Runtime</h2>
+<p>The <strong>Traffic settings</strong> panel of the UI (<code>TrafficSettingsUI</code>) has a pedestrian path input field. Its <strong>Apply</strong> button calls <code>SetJsonConfigPath(...)</code> and <code>LoadPaths()</code> on the first <code>PathConfigLoader</code> it finds, including inactive ones.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This field targets <code>PathConfigLoader</code> only. It does <strong>not</strong> affect <code>PedestrianCyclistSpawner</code>, which is the spawner used in the Kashiwa scene. Already running <code>PedestrianPathSpawner</code> / <code>CyclistPathSpawner</code> instances also keep the paths they read in <code>Start</code>. To change the pedestrian config of the supported spawner, set <code>pathsJsonPath</code> in the Inspector (or replace the file) before Play.</p>
+</div>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause / Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No pedestrians or cyclists spawn</td>
+<td>The JSON was not found (<code>Paths JSON not found at ...</code> warning). In a player build, copy <code>Assets/Configs/</code> next to the executable. Also check that the <code>NormalTraffics</code> scenario is selected</td>
+</tr>
+<tr>
+<td>A specific path never spawns</td>
+<td><code>spawnPerMinute</code> is <code>0</code> or negative, <code>id</code> is empty, or the path has no waypoints</td>
+</tr>
+<tr>
+<td>Fewer agents than expected</td>
+<td><code>maxActive</code> is reached (the Kashiwa scene uses 5), or the prefab list for the path <code>type</code> is empty, or <code>maxExtraInstancesPerSpawn</code> is <code>0</code></td>
+</tr>
+<tr>
+<td>Agents appear in the wrong place or far away</td>
+<td>Offset settings: keep <code>useMgrsOffset</code> on when the JSON uses MGRS map coordinates and the scene has an <code>Environment</code>. Without an <code>Environment</code>, set <code>manualOffset</code>. Make sure <code>worldOrigin</code> is not set unintentionally</td>
+</tr>
+<tr>
+<td>Agents float or sink</td>
+<td>Ground snapping missed: check <code>groundMask</code> and increase <code>groundRayHeight</code> if the ground is more than <code>groundRayHeight</code> away from the converted height</td>
+</tr>
+<tr>
+<td><code>Traffic light '&lt;id&gt;' not found</code> warning</td>
+<td><code>trafficLightId</code> does not match any <code>TrafficLight</code> GameObject name. The agent will not stop at that waypoint</td>
+</tr>
+<tr>
+<td>Agent waits at the wrong light or never crosses</td>
+<td>The light name is not unique and another light with the same name was matched. Rename the lights so the referenced name is unique</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../WaypointPed/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Waypoint &amp; Spawning System">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Waypoint & Spawning System
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../MultiSensorStepScanning/" class="md-footer__link md-footer__link--next" aria-label="Next: MultiSensorStepScanning">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                MultiSensorStepScanning
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.path", "navigation.footer", "content.tabs.link", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
