@@ -54,6 +54,18 @@ public class MockDetectionSensor : DetectionSensor
         return this.SenorName;
     }
 
+    /// <summary>Sets up a sensor created from config. Fields of view are full angles (this component stores half angles).</summary>
+    public void Configure(string sensorName, MockSensorType type, float hFovFullDeg, float vFovFullDeg, float rangeM, byte id)
+    {
+        SenorName = sensorName;
+        mockSensorType = type;
+        category = type == MockSensorType.RSU_CAMERA || type == MockSensorType.OBU_CAMERA ? "camera" : "lidar";
+        Hfov = hFovFullDeg * 0.5f;
+        Vfov = vFovFullDeg * 0.5f;
+        maxDistance = rangeM;
+        SetSensorId(id);
+    }
+
     private void Start()
     {
         Vector3 pos = ROS2Utility.UnityToRosPosition(this.transform.position);
@@ -302,5 +314,10 @@ public abstract class DetectionSensor : MonoBehaviour
     public byte GetSensorId()
     {
         return sensorId;
+    }
+
+    public void SetSensorId(byte id)
+    {
+        sensorId = id;
     }
 }

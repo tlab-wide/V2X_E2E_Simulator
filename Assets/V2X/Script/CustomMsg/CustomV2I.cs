@@ -31,6 +31,14 @@ namespace AWSIM
         public OnOutputDataDelegate OnOutputData;
 
         OutputData outputData = new OutputData();
+
+        /// <summary>Sets up a component created from config (call before Start).</summary>
+        public void Configure(int station, int hz, TrafficLight[] lights)
+        {
+            stationId = station;
+            outputHz = hz;
+            allTrafficLights = lights;
+        }
         float timer = 0;
 
         void Start()

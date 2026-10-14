@@ -31,5 +31,13 @@ public class NetworkSimulator : Singleton<NetworkSimulator>
     {
         return generalDelayMessagesConfigs;
     }
+
+    /// <summary>Replaces the general delay profiles (used by publishers with Enable Delayed Messages on).</summary>
+    public void SetGeneralDelayMessagesConfigs(IEnumerable<MessageDelayConfig> configs)
+    {
+        generalDelayMessagesConfigs.Clear();
+        foreach (var c in configs)
+            generalDelayMessagesConfigs.Add(new MessageDelay<Message>(c));
+    }
     
 }

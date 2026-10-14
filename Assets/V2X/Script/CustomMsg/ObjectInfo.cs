@@ -57,6 +57,7 @@ public class ObjectInfo : MonoBehaviour
     [Header("Delayed message")] [SerializeField]
     private bool enableDelayedMessages = true;
     [SerializeField]private List<MessageDelayConfig> messageDelaysConfigs = new List<MessageDelayConfig>();
+    private bool useGeneralDelays = true;     // false for publishers created from config: they list their own profiles
     private List<MessageDelay<ObjectInfoArray>> messageDelays = new List<MessageDelay<ObjectInfoArray>>();
 
 
@@ -116,6 +117,30 @@ public class ObjectInfo : MonoBehaviour
 
     private ObjectInfoArray msg;
     private ObjectInfoArray msgGroundTruth;
+
+    /// <summary>
+    /// Sets up a publisher created from config (call while the GameObject is inactive, before Awake).
+    /// Network copies come from <paramref name="delays"/> only; the general NetworkSimulator profiles are not used.
+    /// </summary>
+    public void Configure(string rsuIdHex, List<DetectionSensor> ownSensors, List<RsuSensors> otherRsus, float hz,
+        string topicName, string groundTruthTopic, string positionNoise, string rotationNoise, string dimensionNoise,
+        string probabilityNoise, List<MessageDelayConfig> delays)
+    {
+        rsuId = rsuIdHex;
+        sensors = ownSensors ?? new List<DetectionSensor>();
+        sources = new List<ObjectInfo>();
+        rsuSensors = otherRsus ?? new List<RsuSensors>();
+        Hz = hz;
+        topic = topicName;
+        topicGroundTruth = string.IsNullOrEmpty(groundTruthTopic) ? "None" : groundTruthTopic;
+        positionNoiseName = positionNoise;
+        rotationNoiseName = rotationNoise;
+        dimensionNoiseName = dimensionNoise;
+        probabilityNoiseName = probabilityNoise;
+        messageDelaysConfigs = delays ?? new List<MessageDelayConfig>();
+        enableDelayedMessages = messageDelaysConfigs.Count > 0;
+        useGeneralDelays = false;
+    }
 
     // Start is called before the first frame update
     void Awake()
@@ -599,7 +624,7 @@ public class ObjectInfo : MonoBehaviour
     {
         var qos = QosSettings.GetQoSProfile();
         //handle general delays
-        var generalDelays = NetworkSimulator.Instance.GetGeneralDelayMessagesConfigs();
+        var generalDelays = useGeneralDelays ? NetworkSimulator.Instance.GetGeneralDelayMessagesConfigs() : new List<MessageDelay<ROS2.Message>>();
         for (int i = 0; i < generalDelays.Count; i++)
         {
             var md = generalDelays[i]; // COPY

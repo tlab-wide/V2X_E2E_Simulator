@@ -48,6 +48,25 @@ public class PredictedObjectsAutoware : MonoBehaviour
 
     private PredictedObjects msg;
 
+    /// <summary>Sets up a publisher created from config (call before Awake). Network copies come from <paramref name="delays"/> only.</summary>
+    public void Configure(List<DetectionSensor> configSensors, float hz, ulong station, string topic, string positionNoise,
+        string rotationNoise, string dimensionNoise, string probabilityNoise, List<MessageDelayConfig> delays)
+    {
+        sensors = configSensors;
+        Hz = hz;
+        stationID = station;
+        Topic = topic;
+        positionNoiseName = positionNoise;
+        rotationNoiseName = rotationNoise;
+        dimensionNoiseName = dimensionNoise;
+        probabilityNoiseName = probabilityNoise;
+        messageDelaysConfigs = delays ?? new List<MessageDelayConfig>();
+        enableDelayedMessages = messageDelaysConfigs.Count > 0;
+        useGeneralDelays = false;
+    }
+
+    private bool useGeneralDelays = true;     // false for publishers created from config
+
     void Awake()
     {
         positionNoise = NoiseSetting.Instance.GetNoise(positionNoiseName);
@@ -75,7 +94,7 @@ public class PredictedObjectsAutoware : MonoBehaviour
         var qos = QosSettings.GetQoSProfile();
 
         // 1) Add global (“general”) delays (copied from NetworkSimulator configs)
-        var generalDelays = NetworkSimulator.Instance.GetGeneralDelayMessagesConfigs();
+        var generalDelays = useGeneralDelays ? NetworkSimulator.Instance.GetGeneralDelayMessagesConfigs() : new List<MessageDelay<ROS2.Message>>();
         for (int i = 0; i < generalDelays.Count; i++)
         {
             var md = generalDelays[i]; // copy
@@ -235,11 +254,11 @@ public class PredictedObjectsAutoware : MonoBehaviour
     {
         timer += Time.deltaTime;
 
-        var interval = 1.0f / (Hz * 2);
+        var interval = 1.0f / Hz;
         if (timer + 0.00001f < interval)
             return;
 
-        timer = 0;
+        timer = Mathf.Min(timer - interval, interval);   // keep the remainder so the average rate is Hz
 
         CheckMockSensors();
     }

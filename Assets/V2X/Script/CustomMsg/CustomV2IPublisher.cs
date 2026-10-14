@@ -39,6 +39,14 @@ namespace AWSIM
 
         CustomV2I v2iComponent;
 
+        /// <summary>Sets up a publisher created from config (call before Start).</summary>
+        public void Configure(string topic, TrafficSignalID idType)
+        {
+            trafficSignalsTopic = topic;
+            trafficSignalID = idType;
+            enableDelayedMessages = false;
+        }
+
         void Start()
         {
             v2iComponent = GetComponent<CustomV2I>();

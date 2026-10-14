@@ -47,6 +47,13 @@ public class NoiseSetting : Singleton<NoiseSetting>
         CheckNoisesArrayExistance();
     }
 
+    /// <summary>Replaces the noise profiles (from config).</summary>
+    public void SetProfiles(IEnumerable<Noise> profiles)
+    {
+        noises = new List<Noise>(profiles);
+        CheckNoisesArrayExistance();
+    }
+
     private void CheckNoisesArrayExistance()
     {
         if (noises == null)
@@ -85,6 +92,19 @@ public class NoiseSetting : Singleton<NoiseSetting>
         [SerializeField] private float gaussianMean= 0 ;
         [SerializeField] private float gaussianStdDev = 0.25f;
         [SerializeField] private bool IsUniform = true;
+
+        public Noise() { }
+
+        public Noise(string name, bool uniform, float x, float y, float z, float gaussianMean, float gaussianStdDev)
+        {
+            this.name = name;
+            IsUniform = uniform;
+            xNoise = x;
+            yNoise = y;
+            zNoise = z;
+            this.gaussianMean = gaussianMean;
+            this.gaussianStdDev = gaussianStdDev;
+        }
 
 
         public string GetName()
