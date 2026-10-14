@@ -1,0 +1,58 @@
+# Pseudo-sensor (MockSensor) types: field of view (full angles, degrees) and range (m).
+# kind: lidar | camera. RSU sensors in config/scenarios/*/rsus.yaml refer to a type by name and may override any value.
+
+pseudo_sensor_types:
+- name: lidar_60x22deg_60m
+  description: exported from RSU1_Ganken_CooL4/RSU_Lidar 1
+  kind: lidar
+  h_fov_deg: 60
+  v_fov_deg: 22
+  range_m: 60
+- name: camera_84.8x45.3deg_75m
+  description: exported from RSU2_Kakeiken_CooL4/RSU_camera 6
+  kind: camera
+  h_fov_deg: 84.8
+  v_fov_deg: 45.3
+  range_m: 75
+- name: camera_84.8x45.3deg_50m
+  description: exported from RSU2_Kakeiken_CooL4/RSU_camera 7
+  kind: camera
+  h_fov_deg: 84.8
+  v_fov_deg: 45.3
+  range_m: 50
+- name: lidar_70.4x77.2deg_150m
+  description: exported from RSU2_Kakeiken_CooL4/RSU_Lidar 7
+  kind: lidar
+  h_fov_deg: 70.4
+  v_fov_deg: 77.2
+  range_m: 150
+- name: lidar_90x100deg_120m
+  description: exported from RSU3_Midblock/RSU_Lidar
+  kind: lidar
+  h_fov_deg: 90
+  v_fov_deg: 100
+  range_m: 120
+- name: camera_360x140deg_15m
+  description: exported from RSU4_Wakashiba/RSU_camera (4) _ 1 _ 360
+  kind: camera
+  h_fov_deg: 360
+  v_fov_deg: 140
+  range_m: 15
+- name: camera_80x140deg_50m
+  description: exported from RSU4_Wakashiba/RSU_camera (4) _ 4_camera
+  kind: camera
+  h_fov_deg: 80
+  v_fov_deg: 140
+  range_m: 50
+- name: camera_360x140deg_50m
+  description: exported from RSU4_Wakashiba/RSU_camera (4)
+  kind: camera
+  h_fov_deg: 360
+  v_fov_deg: 140
+  range_m: 50
+- name: lidar_80x40deg_121m
+  description: exported from RSU4_Wakashiba/RSU_sensor (4) _ 3 Lidar
+  kind: lidar
+  h_fov_deg: 80
+  v_fov_deg: 40
+  range_m: 121
