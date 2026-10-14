@@ -89,6 +89,8 @@ nav:
       - Signal Info: DMProtocols/CooL4/SignalInfo/index.md
       - Topic List: DMProtocols/CooL4/Topics/index.md
 
+  - Configuration: Configuration/index.md
+
   - Tools:
     - Web Viewer: Tools/WebViewer/index.md
 

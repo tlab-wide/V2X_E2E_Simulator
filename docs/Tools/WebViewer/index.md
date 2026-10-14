@@ -83,7 +83,7 @@ Tick a topic to draw it on the map. Click its name to see its type, publishers, 
 | DM object info | `dm_object_info_msgs/ObjectInfoArray` | Latitude/longitude and heading from the message, drawn as boxes of the reported size |
 | Signal heads | `dm_signal_info_msgs/SignalInfoArray`, `v2x_msgs/V2XSignals`, Autoware `TrafficSignalArray` / `TrafficLightGroupArray` | At the real signal positions of `config/traffic_lights.yaml` (see [Signal heads](#signal-heads)) |
 | Other traffic lights | V2X / Autoware traffic signals whose ID is not in the config | A dot at the Lanelet2 traffic light with that regulatory-element or way ID |
-| RSU sensors | `config/sensors.yaml` + health of their object-info topics | Sensor icon and field-of-view sector (see [Sensors](#sensors)) |
+| RSU sensors | `rsus.yaml` of the default scenario + health of their object-info topics | Sensor icon and field-of-view sector (see [Sensors](#sensors)) |
 | Autoware objects | `PredictedObjects`, `DetectedObjects`, `TrackedObjects` | Map frame (`map`, `obj`) converted to lat/lon. Ego-relative frames such as `bus` are placed with the ego pose. |
 | Ego vehicle | `/awsim/ground_truth/vehicle/pose` and other `PoseStamped` / `Odometry` topics in the map frame | Cyan box |
 
@@ -150,40 +150,40 @@ intersections:
 
 ## Sensors
 
-The RSU pseudo sensors (`MockSensor`) are listed in `config/sensors.yaml`, extracted from the Kashiwa scene (`V2X_E2E_Simulator_v3.1.1.unity`). Each sensor is drawn as an icon (C = camera, L = lidar) with its coverage sector. The icon gets a green halo when one of its object-info topics is live. Labels appear from zoom 18. Click a sensor for all its settings and the live status of its topics.
+The Live view draws the RSU pseudo sensors of the **default scenario** of the simulator configuration (`config/scenarios/<default>/rsus.yaml`, see [Scenario Configuration](../../Configuration/index.md)). It draws exactly what the simulator builds at Play. Each sensor is drawn as an icon (C = camera, L = lidar) with its coverage sector. The icon gets a green halo when one of its object-info topics is live. Labels appear from zoom 18. Click a sensor for all its settings and the live status of its topics.
 
-```yaml
-sensors:
-  - name: 'RSU_camera 5'
-    type: RSU_CAMERA
-    enabled: true
-    near: '科警研 (Kakeiken)'        # 19 m from the centre
-    sensor_id: 1
-    rsu_ids: [0x12020002]
-    position: {lat: 35.8961753, lon: 139.9419667, z_m: 23.71}
-    heading_deg: 234.4
-    pitch_deg: -35.0
-    h_fov_deg: 42.4
-    v_fov_deg: 22.65
-    range_m: 75.0
-    topics:
-      - /v2x/rsu12020002/sensor1/object_info
-      - /v2x/rsu12020002/sensor1/object_info_groundtruth
-      - /v2x/object_info
-      - /v2x/object_info_groundtruth
-```
-
-| Field | Meaning |
+| Field in the inspector | Meaning |
 |:--|:--|
-| `type` | `RSU_CAMERA` or `RSU_LIDAR` (`MockSensorType`) |
-| `enabled` | Active in the scene. The sensors of the four RSU groups (Ganken, Kakeiken, Midblock, Wakashiba) are enabled; disabled ones are shown only with **Disabled sensors** ticked. |
-| `group` | The RSU sensor group under `RSUs/Pseudo Sensors setup` |
-| `position`, `heading_deg`, `pitch_deg` | World pose of the sensor (heading clockwise from north) |
-| `h_fov_deg`, `v_fov_deg` | **Half-angles**, as `MockSensor` uses them (it detects \|yaw\| ≤ `Hfov`), so the drawn sector is 2 × `h_fov_deg` wide |
+| `type` | `RSU_CAMERA` or `RSU_LIDAR` (from the `kind` of its sensor type) |
+| `enabled` | The RSU and the sensor are enabled. Disabled sensors are shown only with **Disabled sensors** ticked. |
+| `group`, `near` | RSU name and location |
+| `position`, `heading_deg`, `pitch_deg` | Pose of the sensor (heading clockwise from north) |
+| `h_fov_deg`, `v_fov_deg` | **Half-angles**, as `MockSensor` uses them (it detects \|yaw\| ≤ `Hfov`). The config gives full angles, so the drawn sector is 2 × `h_fov_deg` wide. |
 | `range_m` | `MockSensor.maxDistance` |
-| `rsu_ids`, `topics` | The active CooL4 DM object-info publishers (`ObjectInfo`) that use the sensor |
+| `rsu_ids`, `topics` | The RSU ID and the object-info topics that carry the sensor's objects (its own topics, the merged publishers of its RSU and their network copies) |
 
-The file is not regenerated automatically. If you move or add sensors in the scene, update it by hand.
+The page reloads the list when it is opened, so sensors saved in the Settings tab appear after a page reload. `tools/web-viewer/config/sensors.yaml` (hand-written, v3.1) is used only when the repository has no `config/` folder.
+
+## Settings
+
+The **Settings** switch in the top bar opens an editor for the simulator configuration (`config/` of the repository). Its tabs match the configuration files:
+
+| Tab | Edits | On the map |
+|:--|:--|:--|
+| RSUs & sensors | RSUs, pseudo sensors, object-info, Autoware-object and traffic-signal publishers | Drag sensors; coverage sectors; **Place on map** adds a sensor to the selected RSU |
+| Vehicles | Traffic settings, vehicle types, spawn points, branch ratios | Simulator lanes. Click a lane for its number and next lanes, then **Spawn vehicles here** or **Set branch ratios**. The selected lane is blue and branch targets are orange. |
+| Pedestrians | Paths, spawn rate, cyclist share, lights to wait for | Path lines; drag the points of the selected path; **Add waypoints on map** |
+| Teleports | Gates and their targets | Trigger boxes (drag); **Pick target lanes on map**; random target points |
+| Raw sensors | LiDARs and cameras: topics, rate, resolution, on/off | World-mounted sensors (drag); **Place new sensor on map** |
+| Defaults | Pseudo-sensor types, noise and network profiles (shared by all scenarios) | — |
+
+- **Save** checks all files with the same rules as the simulator. If something is wrong, it writes nothing and lists the problems. Saved files keep their comments.
+- **Discard** reloads the saved files. **Reset to default** restores the files of the current tab from `config/factory/`.
+- **New…** copies the current scenario under a new name. **Make default** writes `config/default_scenario.txt`.
+- Changes apply the next time the simulation starts.
+- Press `Esc` to stop a map tool.
+
+The lanes come from `config/maps/traffic_lanes.json`. In Unity, *V2X → Config → Export Traffic Lanes For The Web Viewer* writes it. The simulator's lane numbers are not the Lanelet2 IDs of the map file, so pick lanes on these lines, not on the grey Lanelet2 lanes.
 
 ## Coordinates
 
@@ -197,7 +197,7 @@ The file is not regenerated automatically. If you move or add sensors in the sce
 
 - **Map:** `python3 tools/web-viewer/scripts/build_map.py /path/to/lanelet2_map.osm` (the Kashiwa map is in `simulator_maps_v3.1.1.zip`, see [Download](../../GettingStarted/Download/index.md)) regenerates `maps/lanelet2.geojson` and `maps/lanelet2_meta.json`.
 - **Signal heads:** edit `config/traffic_lights.yaml` (see [Signal heads](#signal-heads)). The CRP and signal IDs match the [Signal Info](../../DMProtocols/CooL4/SignalInfo/index.md) mapping.
-- **Sensors:** edit `config/sensors.yaml` (see [Sensors](#sensors)).
+- **Sensors:** edit them in the [Settings](#settings) tab or in `config/scenarios/<name>/rsus.yaml`.
 
 ## Troubleshooting
 
