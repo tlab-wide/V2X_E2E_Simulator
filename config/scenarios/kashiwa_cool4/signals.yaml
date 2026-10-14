@@ -1,0 +1,355 @@
+# Traffic-signal timing: the duration of every lighting step of each intersection, in order, repeating.
+# The number of steps and what they show (lights: V = vehicle group, P = pedestrian group) come from the scene;
+# only duration_s is read. enabled: false keeps the scene timing. Signal info (remaining time) follows these values.
+
+intersections:
+- name: Ekimae
+  enabled: true
+  steps:
+  - duration_s: 18.1
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 4
+    lights: P1 green flashing
+  - duration_s: 5
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red, P1 red
+  - duration_s: 15
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 4
+    lights: V2 yellow
+  - duration_s: 2
+    lights: V2 red, P2 red
+- name: Ganken
+  enabled: true
+  steps:
+  - duration_s: 50
+    lights: V1 green, V2 red, V3 green, P1 green, P2 red
+  - duration_s: 6
+    lights: P1 green flashing
+  - duration_s: 3
+    lights: P1 red
+  - duration_s: 3
+    lights: V1 yellow
+  - duration_s: 6
+    lights: V1 red
+  - duration_s: 3
+    lights: V3 yellow
+  - duration_s: 3
+    lights: V3 red
+  - duration_s: 30
+    lights: V2 green, P2 green
+  - duration_s: 3
+    lights: P2 green flashing
+  - duration_s: 2
+    lights: P2 red
+  - duration_s: 3
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red
+- name: GankenHigashiByoin
+  enabled: true
+  steps:
+  - duration_s: 5
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 3
+    lights: P1 green flashing
+  - duration_s: 1
+    lights: P1 red
+  - duration_s: 5
+    lights: V1 yellow
+  - duration_s: 1
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red
+  - duration_s: 5
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 1
+    lights: P2 red
+  - duration_s: 5
+    lights: V2 yellow
+  - duration_s: 1
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red
+- name: Kakeiken
+  enabled: true
+  steps:
+  - duration_s: 35
+    lights: V1 green, V2 red, V3 green, P1 red, P2 green
+  - duration_s: 3
+    lights: P2 green flashing
+  - duration_s: 2
+    lights: P2 red
+  - duration_s: 3
+    lights: V3 yellow
+  - duration_s: 4
+    lights: V3 red
+  - duration_s: 3
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red
+  - duration_s: 26
+    lights: V2 green, P1 green
+  - duration_s: 4
+    lights: P1 green flashing
+  - duration_s: 4
+    lights: P1 red
+  - duration_s: 4
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red
+- name: KashiwanohaKoen
+  enabled: true
+  steps:
+  - duration_s: 6
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 5
+    lights: P1 green flashing
+  - duration_s: 1
+    lights: P1 red
+  - duration_s: 5
+    lights: V1 yellow
+  - duration_s: 1
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red
+  - duration_s: 15
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 1
+    lights: P2 red
+  - duration_s: 5
+    lights: V2 yellow
+  - duration_s: 1
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red
+- name: KashiwanohaKoko
+  enabled: true
+  steps:
+  - duration_s: 7
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 3
+    lights: P1 green flashing
+  - duration_s: 1
+    lights: P1 red
+  - duration_s: 5
+    lights: V1 yellow
+  - duration_s: 1
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red
+  - duration_s: 15
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 1
+    lights: P2 red
+  - duration_s: 5
+    lights: V2 yellow
+  - duration_s: 1
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red
+- name: KobanMae
+  enabled: true
+  steps:
+  - duration_s: 5
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 2
+    lights: P1 green flashing
+  - duration_s: 1
+    lights: P1 red
+  - duration_s: 4
+    lights: V1 yellow
+  - duration_s: 1
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red
+  - duration_s: 5
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 1
+    lights: P2 red
+  - duration_s: 5
+    lights: V2 yellow
+  - duration_s: 1
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red
+- name: LalaportKashiwanoha
+  enabled: true
+  steps:
+  - duration_s: 5
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 3
+    lights: P1 green flashing
+  - duration_s: 1
+    lights: P1 red
+  - duration_s: 5
+    lights: V1 yellow
+  - duration_s: 1
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red
+  - duration_s: 5
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 1
+    lights: P2 red
+  - duration_s: 5
+    lights: V2 yellow
+  - duration_s: 1
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red
+- name: ParkCityIchibangai
+  enabled: true
+  steps:
+  - duration_s: 5
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 2
+    lights: P1 green flashing
+  - duration_s: 1
+    lights: P1 red
+  - duration_s: 4
+    lights: V1 yellow
+  - duration_s: 1
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red
+  - duration_s: 5
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 1
+    lights: P2 red
+  - duration_s: 5
+    lights: V2 yellow
+  - duration_s: 1
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red
+- name: TodaiKashiwaWest
+  enabled: true
+  steps:
+  - duration_s: 5
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 3
+    lights: P1 green flashing
+  - duration_s: 1
+    lights: P1 red
+  - duration_s: 5
+    lights: V1 yellow
+  - duration_s: 1
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red
+  - duration_s: 5
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 1
+    lights: P2 red
+  - duration_s: 5
+    lights: V2 yellow
+  - duration_s: 1
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red
+- name: Todaimae
+  enabled: true
+  steps:
+  - duration_s: 35
+    lights: V1 green, V2 red, V3 green, P1 green, P2 red
+  - duration_s: 5
+    lights: P1 yellow, V2 red, V3 green
+  - duration_s: 35
+    lights: P1 red, V2 red, V3 green
+  - duration_s: 5
+    lights: V1 red, V2 red, V3 yellow
+  - duration_s: 20
+    lights: V1 red, V1 green, V3 red
+  - duration_s: 5
+    lights: V1 red, V2 yellow green, V1 red
+- name: ToyofutaShogakko
+  enabled: true
+  steps:
+  - duration_s: 5
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 3
+    lights: P1 green flashing
+  - duration_s: 1
+    lights: P1 red
+  - duration_s: 5
+    lights: V1 yellow
+  - duration_s: 1
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red
+  - duration_s: 5
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 1
+    lights: P2 red
+  - duration_s: 5
+    lights: V2 yellow
+  - duration_s: 1
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red
+- name: Wakashiba
+  enabled: true
+  steps:
+  - duration_s: 18
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 4
+    lights: P1 green flashing
+  - duration_s: 5
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red, P1 red
+  - duration_s: 15
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 4
+    lights: V2 yellow
+  - duration_s: 2
+    lights: V2 red, P2 red
+- name: WakashibaRyokuchi
+  enabled: true
+  steps:
+  - duration_s: 7
+    lights: V1 green, V2 red, P1 green, P2 red
+  - duration_s: 3
+    lights: P1 green flashing
+  - duration_s: 1
+    lights: P1 red
+  - duration_s: 5
+    lights: V1 yellow
+  - duration_s: 1
+    lights: V1 yellow
+  - duration_s: 3
+    lights: V1 red
+  - duration_s: 15
+    lights: V2 green, P2 green
+  - duration_s: 5
+    lights: P2 green flashing
+  - duration_s: 1
+    lights: P2 red
+  - duration_s: 5
+    lights: V2 yellow
+  - duration_s: 1
+    lights: V2 yellow
+  - duration_s: 3
+    lights: V2 red

@@ -170,8 +170,10 @@ The **Settings** switch in the top bar opens an editor for the simulator configu
 
 | Tab | Edits | On the map |
 |:--|:--|:--|
+| Simulation | Time scale, seed, ego vehicle and start pose, sun (time of day), fog, loggers | Ego marker (drag; **Place on map**) with its heading |
 | RSUs & sensors | RSUs, pseudo sensors, object-info, Autoware-object and traffic-signal publishers | Drag sensors; coverage sectors; **Place on map** adds a sensor to the selected RSU |
 | Vehicles | Traffic settings, vehicle types, spawn points, branch ratios | Simulator lanes. Click a lane for its number and next lanes, then **Spawn vehicles here** or **Set branch ratios**. The selected lane is blue and branch targets are orange. |
+| Signals | Step durations of every signalised intersection, with what each step shows and the cycle length | — |
 | Pedestrians | Paths, spawn rate, cyclist share, lights to wait for | Path lines; drag the points of the selected path; **Add waypoints on map** |
 | Teleports | Gates and their targets | Trigger boxes (drag); **Pick target lanes on map**; random target points |
 | Raw sensors | LiDARs and cameras: topics, rate, resolution, on/off | World-mounted sensors (drag); **Place new sensor on map** |

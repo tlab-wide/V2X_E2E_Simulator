@@ -62,9 +62,9 @@ const Geo = (() => {
 })();
 
 const Settings = (() => {
-  const TABS = [['rsus', 'RSUs & sensors'], ['vehicles', 'Vehicles'], ['pedestrians', 'Pedestrians'],
-                ['teleports', 'Teleports'], ['raw_sensors', 'Raw sensors'], ['defaults', 'Defaults']];
-  const S = { scenario: null, scenarios: [], files: {}, saved: {}, factory: {}, tab: 'rsus', sel: null, tool: null, markers: [] };
+  const TABS = [['simulation', 'Simulation'], ['rsus', 'RSUs & sensors'], ['vehicles', 'Vehicles'], ['signals', 'Signals'],
+                ['pedestrians', 'Pedestrians'], ['teleports', 'Teleports'], ['raw_sensors', 'Raw sensors'], ['defaults', 'Defaults']];
+  const S = { scenario: null, scenarios: [], files: {}, saved: {}, factory: {}, tab: 'simulation', sel: null, tool: null, markers: [] };
   const panel = document.getElementById('settings');
   let active = false;
 
@@ -421,6 +421,110 @@ const Settings = (() => {
     });
   }
 
+  function renderSimulation(root) {
+    const f = S.files.simulation;
+    if (!f) { root.innerHTML = '<p class="muted">This scenario has no simulation.yaml.</p>'; return; }
+    fields(section('Run', root), f, [
+      ['time_scale', 'time scale (1 = real time)', { type: 'number', step: 0.1 }],
+      ['seed', 'random seed', { type: 'int', opt: true, placeholder: 'different every run',
+        hint: 'traffic, pedestrians, noise, object numbers' }],
+    ], 'simulation');
+    f.ego = f.ego || { vehicle: '' };
+    const egos = new Set([f.ego.vehicle, ...((S.files.raw_sensors || {}).raw_sensors || []).filter(r => r.mount === 'ego').map(r => r.vehicle)]);
+    const eg = section('Ego vehicle', root);
+    fields(eg, f, [['ego.vehicle', 'vehicle (scene object, tag Ego)', { type: 'select', options: [...egos].filter(Boolean), wide: true }]], 'simulation');
+    if (f.ego.pose) {
+      fields(eg, f, [['ego.pose.x', 'x (m)', { type: 'number' }], ['ego.pose.y', 'y (m)', { type: 'number' }],
+        ['ego.pose.z', 'z (m)', { type: 'number' }], ['ego.pose.heading_deg', 'heading (° from north)', { type: 'number' }]], 'simulation');
+      eg.appendChild(button('Use the scene pose', () => { delete f.ego.pose; changed('simulation'); renderPanel(); }, 'small'));
+    } else {
+      const p = document.createElement('p'); p.className = 'muted'; p.textContent = 'Starts at its pose in the scene.'; eg.appendChild(p);
+    }
+    eg.appendChild(button('Place on map', () => setTool('place-ego', 'Click the map to place the ego vehicle')));
+    const hint = document.createElement('p'); hint.className = 'muted';
+    hint.textContent = 'On the map: drag the ego marker; the line shows its heading.';
+    eg.appendChild(hint);
+
+    f.lighting = f.lighting || {};
+    const li = section('Sun', root);
+    fields(li, f, [
+      ['lighting.time_of_day', 'time of day (HH:MM)', { opt: true, placeholder: 'scene sun' }],
+      ['lighting.date', 'date (YYYY-MM-DD)', { opt: true }],
+      ['lighting.sun_elevation_deg', 'or sun elevation (°)', { type: 'number', opt: true }],
+      ['lighting.sun_azimuth_deg', 'and azimuth (° from north)', { type: 'number', opt: true }],
+      ['lighting.sun_intensity_lux', 'sun intensity (lux)', { type: 'number', opt: true, placeholder: 'scene' }],
+      ['lighting.color_temperature_k', 'colour temperature (K)', { type: 'number', opt: true, placeholder: 'scene' }],
+      ['lighting.night_intensity_lux', 'moonlight at night (lux)', { type: 'number', opt: true }],
+      ['lighting.utc_offset_h', 'UTC offset (h)', { type: 'number', opt: true }],
+    ], 'simulation');
+    const sun = sunPosition(f.lighting);
+    if (sun) {
+      const p = document.createElement('p'); p.className = 'muted';
+      p.textContent = `Sun at ${sun.el.toFixed(1)}° elevation, ${sun.az.toFixed(0)}° azimuth${sun.el < 0 ? ' — below the horizon: moonlight' : ''}.`;
+      li.appendChild(p);
+    }
+    f.weather = f.weather || {};
+    fields(section('Weather', root), f, [
+      ['weather.fog_visibility_m', 'fog visibility (m)', { type: 'number', hint: '0 = no fog' }],
+      ['weather.fog_height_m', 'fog height (m)', { type: 'number' }],
+    ], 'simulation');
+    f.loggers = f.loggers || {};
+    const lg = section('Loggers (CSV)', root);
+    fields(lg, f, [
+      ['loggers.output_dir', 'output folder', { wide: true, hint: 'relative to the project / build folder; files get a date and time' }],
+      ['loggers.npc_area.enabled', 'NPCs in the log area', { type: 'bool' }],
+      ['loggers.npc_area.every_n_frames', 'every n frames', { type: 'int', hint: '0 = every interval' }],
+      ['loggers.npc_area.cars_csv', 'cars file'], ['loggers.npc_area.humans_csv', 'humans file'],
+      ['loggers.npc_area.interval_s', 'interval (s)', { type: 'number' }],
+      ['loggers.ego.enabled', 'ego vehicle state', { type: 'bool' }],
+      ['loggers.ego.csv', 'ego file'], ['loggers.ego.spawn_validation_csv', 'teleport spawn file'],
+      ['loggers.ego.prefix', 'file prefix'], ['loggers.ego.interval_s', 'interval (s)', { type: 'number' }],
+    ], 'simulation');
+  }
+
+  /** Same NOAA formulas as ConfigSimulation.SunPosition (for the preview line). */
+  function sunPosition(l) {
+    let el = l.sun_elevation_deg, az = l.sun_azimuth_deg;
+    if (el != null && az != null) return { el, az };
+    const m = /^(\d{1,2}):(\d{2})/.exec(l.time_of_day || ''), d = new Date((l.date || '2025-06-21') + 'T00:00:00Z');
+    if (!m || isNaN(d)) return null;
+    const hours = +m[1] + m[2] / 60, doy = Math.floor((d - Date.UTC(d.getUTCFullYear(), 0, 0)) / 864e5);
+    const g = 2 * Math.PI / 365 * (doy - 1 + (hours - 12) / 24), r = Math.PI / 180;
+    const eq = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+    const dec = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g)
+              - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+    const ha = ((hours * 60 + eq + 4 * (l.longitude_deg ?? 139.94) - 60 * (l.utc_offset_h ?? 9)) / 4 - 180) * r, lat = (l.latitude_deg ?? 35.9) * r;
+    const cz = Math.sin(lat) * Math.sin(dec) + Math.cos(lat) * Math.cos(dec) * Math.cos(ha);
+    el = 90 - Math.acos(Math.max(-1, Math.min(1, cz))) / r;
+    az = (Math.atan2(Math.sin(ha), Math.cos(ha) * Math.sin(lat) - Math.tan(dec) * Math.cos(lat)) / r + 540) % 360;
+    return { el, az };
+  }
+
+  function renderSignals(root) {
+    const f = S.files.signals;
+    if (!f) { root.innerHTML = '<p class="muted">This scenario has no signals.yaml.</p>'; return; }
+    f.intersections = f.intersections || [];
+    const cycle = i => (i.steps || []).reduce((a, st) => a + (st.duration_s || 0), 0);
+    itemList(root, f.intersections, {
+      title: 'Signal timing', kind: 'signal', file: 'signals',
+      label: i => `${i.name} · ${(i.steps || []).length} steps · cycle ${cycle(i).toFixed(1)} s`,
+      renderItem: (form, i) => {
+        fields(form, i, [['enabled', 'use this timing (off = scene timing)', { type: 'bool', wide: true }]], 'signals');
+        (i.steps || []).forEach((st, k) => {
+          const g = fields(form, st, [['duration_s', `step ${k + 1} (s)`, { type: 'number', step: 0.5,
+            onChange: () => renderPanel() }]], 'signals');
+          g.style.gridTemplateColumns = '110px minmax(0, 1fr)';
+          const d = document.createElement('div'); d.className = 'muted'; d.style.alignSelf = 'end'; d.textContent = st.lights || '';
+          g.appendChild(d);
+        });
+        const p = document.createElement('p'); p.className = 'muted';
+        p.textContent = 'The steps repeat in this order. V = vehicle signal group, P = pedestrian group (see Kashiwa Scene Names in the docs). ' +
+                        'Steps cannot be added or removed here; their number comes from the scene.';
+        form.appendChild(p);
+      },
+    });
+  }
+
   function renderDefaults(root) {
     const st = S.files.sensor_types = S.files.sensor_types || {};
     st.pseudo_sensor_types = st.pseudo_sensor_types || [];
@@ -462,7 +566,7 @@ const Settings = (() => {
     const scroll = body.scrollTop;
     body.innerHTML = '';
     document.querySelectorAll('#set-tabs .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === S.tab));
-    ({ rsus: renderRsus, vehicles: renderVehicles, pedestrians: renderPedestrians, teleports: renderTeleports,
+    ({ simulation: renderSimulation, signals: renderSignals, rsus: renderRsus, vehicles: renderVehicles, pedestrians: renderPedestrians, teleports: renderTeleports,
        raw_sensors: renderRaw, defaults: renderDefaults })[S.tab](body);
     body.scrollTop = scroll;
     setStatus();
@@ -530,7 +634,7 @@ const Settings = (() => {
   // -------------------------------------------------------------------------------------------- map
   const SRC = 'settings';
   const LAYER_IDS = ['set-simlanes', 'set-simlanes-hit', 'set-lanes-hl', 'set-lanes-target', 'set-sector', 'set-sector-line', 'set-path', 'set-gate'];
-  const LANE_TABS = ['vehicles', 'teleports'];
+  const LANE_TABS = ['vehicles', 'teleports', 'simulation'];
   let popup = null;
   const ll = p => Geo.toLonLat(p.x, p.y);
   function clearMarkers() { for (const m of S.markers) m.remove(); S.markers = []; }
@@ -612,6 +716,12 @@ const Settings = (() => {
           if (t.lane_midpoint) { highlightTargets.push(...(t.lane_midpoint.lanelets || [])); highlightLanes.push(t.lane_midpoint.midpoint_lanelet); }
         }
       }
+    }
+    if (S.tab === 'simulation' && S.files.simulation && S.files.simulation.ego && S.files.simulation.ego.pose) {
+      const p = S.files.simulation.ego.pose, [lon, lat] = ll(p);
+      feats.push({ type: 'Feature', properties: { kind: 'path', sel: true, on: true },
+        geometry: { type: 'LineString', coordinates: [[lon, lat], Geo.sector(lon, lat, p.heading_deg || 0, 0.1, 15)[1]] } });
+      marker([lon, lat], 'ego', `ego ${S.files.simulation.ego.vehicle}`, xy => { p.x = xy[0]; p.y = xy[1]; changed('simulation'); renderPanel(); });
     }
     if (S.tab === 'raw_sensors' && S.files.raw_sensors) {
       for (const s of S.files.raw_sensors.raw_sensors || []) {
@@ -733,6 +843,13 @@ const Settings = (() => {
       const s = { name: `${r.name}_sensor${id}`, type: (types()[0] || {}).name || '', sensor_id: id, enabled: true,
                   pose: { x, y, z: 25, heading_deg: 0, pitch_deg: -10, roll_deg: 0 } };
       (r.sensors = r.sensors || []).push(s); setTool(null); select('sensor', s, r); changed('rsus'); return;
+    }
+    if (S.tool === 'place-ego') {
+      const eg = S.files.simulation.ego = S.files.simulation.ego || { vehicle: '' };
+      const lane = laneAt(e.point);
+      eg.pose = Object.assign(eg.pose || { z: lane ? lane.z : 18, heading_deg: 0, pitch_deg: 0, roll_deg: 0 }, { x, y });
+      if (lane) eg.pose.z = lane.z;
+      setTool(null); changed('simulation'); renderPanel(); return;
     }
     if (S.tool === 'add-spawn') {
       const lane = laneAt(e.point);

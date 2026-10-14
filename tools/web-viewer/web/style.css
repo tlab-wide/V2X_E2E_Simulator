@@ -226,3 +226,4 @@ body.settings-mode #sidebar, body.settings-mode #inspector { display: none; }
 .set-popup { color: #111; font-size: 12px; }
 .set-popup .bar { margin-top: 6px; }
 .set-popup .btn { color: var(--text); }
+.set-marker.ego { background: #3ddc84; width: 18px; height: 18px; border-radius: 4px; }

@@ -71,7 +71,10 @@ public class ObjectInfo : MonoBehaviour
     // same object has the same number on every topic. A number is never given to two objects.
     private static readonly Dictionary<string, ushort> objectNumbers = new Dictionary<string, ushort>();
     private static readonly HashSet<ushort> usedObjectNumbers = new HashSet<ushort>();
-    private static readonly System.Random objectNumberRandom = new System.Random();
+    private static System.Random objectNumberRandom = new System.Random();
+
+    /// <summary>Makes the random object numbers repeat between runs (simulation.yaml seed).</summary>
+    public static void SeedObjectNumbers(int seed) => objectNumberRandom = new System.Random(seed);
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetObjectNumbers()

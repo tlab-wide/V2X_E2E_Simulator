@@ -399,6 +399,94 @@ namespace V2X.Config
                 File.WriteAllText(scenarioFile, text.TrimEnd() + $"\n{key}: {file}\n");
         }
 
+        [MenuItem("V2X/Config/Export Simulation And Signal Timing To Config")]
+        public static void ExportSimulationMenu()
+        {
+            var scenario = ConfigLoader.ResolveScenarioName(ConfigLoader.ConfigRoot(), null) ?? DefaultScenario;
+            EditorUtility.DisplayDialog("Export simulation and signals", ExportSimulation(scenario) + "\n" + ExportSignals(scenario), "OK");
+        }
+
+        public static void ExportSimulationBatch()
+        {
+            var scene = ConfigLoader.GetArg("-exportScene");
+            if (!string.IsNullOrEmpty(scene))
+                EditorSceneManager.OpenScene(scene, OpenSceneMode.Single);
+            var scenario = ConfigLoader.GetArg("-exportScenario") ?? DefaultScenario;
+            Debug.Log("[ConfigExporter] " + ExportSimulation(scenario));
+            Debug.Log("[ConfigExporter] " + ExportSignals(scenario));
+            EditorApplication.Exit(0);
+        }
+
+        /// <summary>Active ego vehicle and its pose, traffic seed, sun and loggers of the scene to simulation.yaml.</summary>
+        public static string ExportSimulation(string scenario)
+        {
+            var ego = ConfigSimulation.EgoVehicles().FirstOrDefault(g => g.activeInHierarchy);
+            var tm = All<AWSIM.TrafficSimulation.TrafficManager>().FirstOrDefault(m => m.isActiveAndEnabled);
+            var sun = All<Light>().Where(l => l.type == LightType.Directional && l.gameObject.activeInHierarchy).OrderByDescending(l => l.intensity).FirstOrDefault();
+            var area = All<LogArea>().FirstOrDefault(a => a.isActiveAndEnabled);
+            var sim = new SimulationConfig
+            {
+                TimeScale = 1f,
+                Seed = tm != null ? tm.seed : 0,
+                Ego = ego != null ? new EgoConfig { Vehicle = ego.name, Pose = ConfigGeometry.ToPose(ego.transform) } : null,
+                Lighting = new LightingConfig
+                {
+                    SunIntensityLux = sun != null ? (float?)sun.intensity : null,
+                    ColorTemperatureK = sun != null && sun.useColorTemperature ? (float?)sun.colorTemperature : null,
+                },
+                Weather = new WeatherConfig(),
+                Loggers = new LoggersConfig
+                {
+                    NpcArea = new NpcAreaLoggerConfig { Enabled = area != null },
+                    Ego = new EgoLoggerConfig { Enabled = false },
+                },
+            };
+            if (area != null)
+            {
+                var so = new SerializedObject(area);
+                sim.Loggers.NpcArea.HumansCsv = Path.GetFileName(so.FindProperty("logPathHumans").stringValue);
+                sim.Loggers.NpcArea.CarsCsv = Path.GetFileName(so.FindProperty("logPathCars").stringValue);
+                sim.Loggers.OutputDir = Path.GetDirectoryName(so.FindProperty("logPathCars").stringValue)?.Replace('\\', '/') ?? "";
+                sim.Loggers.NpcArea.EveryNFrames = so.FindProperty("ultraMode").boolValue ? so.FindProperty("waitForFrame").intValue : 0;
+                sim.Loggers.NpcArea.IntervalS = so.FindProperty("waitTime").floatValue;
+            }
+            var dir = Path.Combine(ConfigLoader.ConfigRoot(), ConfigLoader.ScenariosDir, scenario);
+            ConfigLoader.Write(Path.Combine(dir, "simulation.yaml"), sim,
+                "# Simulation settings applied when Play starts.\n" +
+                "# time_scale: simulation speed (1 = real time). seed: one seed for traffic, pedestrians, noise and object numbers\n" +
+                "#   (empty = different every run; the traffic seed of vehicles.yaml is used only without it).\n" +
+                "# ego.vehicle: ego vehicle of the scene (tag Ego), e.g. BusAutowareFinal or Lexus RX450h 2015 Sample Sensor;\n" +
+                "#   ego.pose: start pose in the map frame (omit to keep the scene pose).\n" +
+                "# lighting: time_of_day HH:MM (+ date, latitude, longitude, utc_offset_h) places the sun; or sun_elevation_deg and\n" +
+                "#   sun_azimuth_deg; empty = the scene sun. weather.fog_visibility_m: 0 = no fog.\n" +
+                "# loggers: CSV files in output_dir (relative to the project or build folder), named <file>_<date>_<time>.csv.");
+            LinkFromScenario(dir, "simulation", "simulation.yaml");
+            return $"simulation: ego {(ego != null ? ego.name : "none")}, seed {sim.Seed}, logger {(area != null ? area.name : "none")}";
+        }
+
+        /// <summary>Step durations of the active TrafficIntersections to signals.yaml.</summary>
+        public static string ExportSignals(string scenario)
+        {
+            var cfg = new SignalsConfig();
+            foreach (var ti in All<AWSIM.TrafficSimulation.TrafficIntersection>()
+                         .Where(t => t.enabled && t.gameObject.activeInHierarchy).OrderBy(t => t.name))
+            {
+                if (cfg.Intersections.Any(i => i.Name == ti.name)) continue;
+                cfg.Intersections.Add(new IntersectionTimingConfig
+                {
+                    Name = ti.name,
+                    Steps = ConfigSimulation.DescribeSteps(ti).Select(st => new SignalStepConfig { DurationS = st.duration, Lights = st.lights }).ToList(),
+                });
+            }
+            var dir = Path.Combine(ConfigLoader.ConfigRoot(), ConfigLoader.ScenariosDir, scenario);
+            ConfigLoader.Write(Path.Combine(dir, "signals.yaml"), cfg,
+                "# Traffic-signal timing: the duration of every lighting step of each intersection, in order, repeating.\n" +
+                "# The number of steps and what they show (lights: V = vehicle group, P = pedestrian group) come from the scene;\n" +
+                "# only duration_s is read. enabled: false keeps the scene timing. Signal info (remaining time) follows these values.");
+            LinkFromScenario(dir, "signals", "signals.yaml");
+            return $"signals: {cfg.Intersections.Count} intersections";
+        }
+
         /// <summary>The active PedestrianCyclistSpawner (its JSON paths) to pedestrians.yaml.</summary>
         public static string ExportPedestrians(string scenario)
         {

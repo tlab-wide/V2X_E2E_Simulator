@@ -20,6 +20,89 @@ namespace V2X.Config
         public string Pedestrians { get; set; } = "";
         public string Teleports { get; set; } = "";
         public string RawSensors { get; set; } = "";
+        public string Simulation { get; set; } = "";
+        public string Signals { get; set; } = "";
+    }
+
+    // ------------------------------------------------------------------------------------------------- simulation
+    public class SimulationConfig
+    {
+        public float TimeScale { get; set; } = 1f;
+        public int? Seed { get; set; }                      // null: a different run every time
+        public EgoConfig Ego { get; set; }
+        public LightingConfig Lighting { get; set; }
+        public WeatherConfig Weather { get; set; }
+        public LoggersConfig Loggers { get; set; }
+    }
+
+    public class EgoConfig
+    {
+        public string Vehicle { get; set; } = "";           // name of an ego vehicle (tag Ego) in the scene
+        public Pose Pose { get; set; }                      // null: the scene pose
+    }
+
+    public class LightingConfig
+    {
+        public string TimeOfDay { get; set; } = "";         // "HH:MM" local time; empty: the scene's sun
+        public string Date { get; set; } = "2025-06-21";
+        public double LatitudeDeg { get; set; } = 35.9;
+        public double LongitudeDeg { get; set; } = 139.94;
+        public double UtcOffsetH { get; set; } = 9;
+        public float? SunElevationDeg { get; set; }         // set both to place the sun directly (wins over time_of_day)
+        public float? SunAzimuthDeg { get; set; }
+        public float? SunIntensityLux { get; set; }         // null: the scene value
+        public float? ColorTemperatureK { get; set; }
+        public float NightIntensityLux { get; set; } = 0.5f; // moonlight when the sun is below the horizon
+    }
+
+    public class WeatherConfig
+    {
+        public float FogVisibilityM { get; set; }           // 0: no fog
+        public float FogHeightM { get; set; } = 60f;        // fog fades out above this height over the ground
+    }
+
+    public class LoggersConfig
+    {
+        public string OutputDir { get; set; } = "SimulationOutput";
+        public NpcAreaLoggerConfig NpcArea { get; set; }
+        public EgoLoggerConfig Ego { get; set; }
+    }
+
+    public class NpcAreaLoggerConfig
+    {
+        public bool Enabled { get; set; } = true;
+        public string HumansCsv { get; set; } = "Scenario_human.csv";
+        public string CarsCsv { get; set; } = "Scenario_car.csv";
+        public int EveryNFrames { get; set; } = 2;          // 0: every interval_s instead
+        public float IntervalS { get; set; } = 0.05f;
+    }
+
+    public class EgoLoggerConfig
+    {
+        public bool Enabled { get; set; }
+        public string Csv { get; set; } = "Autonomous.csv";
+        public string SpawnValidationCsv { get; set; } = "AutonomousSpawnValidation.csv";
+        public string Prefix { get; set; } = "Auto";
+        public float IntervalS { get; set; } = 0.005f;
+    }
+
+    // ------------------------------------------------------------------------------------------------- signals
+    public class SignalsConfig
+    {
+        public List<IntersectionTimingConfig> Intersections { get; set; } = new List<IntersectionTimingConfig>();
+    }
+
+    public class IntersectionTimingConfig
+    {
+        public string Name { get; set; } = "";              // TrafficIntersection object name, e.g. Kakeiken
+        public bool Enabled { get; set; } = true;           // false: keep the scene timing
+        public List<SignalStepConfig> Steps { get; set; } = new List<SignalStepConfig>();
+    }
+
+    public class SignalStepConfig
+    {
+        public float DurationS { get; set; }
+        public string Lights { get; set; } = "";            // what the step shows (written by the exporter, not read)
     }
 
     // ------------------------------------------------------------------------------------------------- raw sensors

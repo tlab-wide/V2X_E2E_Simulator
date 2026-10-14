@@ -6,6 +6,7 @@ config/factory/...                the shipped version of every file ("reset to d
 
 The simulator reads the files when Play starts, so saved changes apply on the next run.
 """
+import datetime
 import json
 import os
 import re
@@ -19,7 +20,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')
 CONFIG = os.path.join(ROOT, 'config')
 FACTORY = os.path.join(CONFIG, 'factory')
 DEFAULT_FILES = {'sensor_types': 'sensor_types.yaml', 'noise': 'noise.yaml', 'network': 'network.yaml'}
-SCENARIO_KEYS = ['rsus', 'vehicles', 'pedestrians', 'teleports', 'raw_sensors']
+SCENARIO_KEYS = ['rsus', 'vehicles', 'pedestrians', 'teleports', 'raw_sensors', 'simulation', 'signals']
 NAME_RE = re.compile(r'^[A-Za-z0-9_\-]+$')
 HEX_KEYS = {'rsu_id'}
 
@@ -38,10 +39,21 @@ def _hex_strings(node):
     return node
 
 
+def _dates_as_text(node):
+    """YAML reads 2025-06-21 as a date; the page and the simulator use the text."""
+    if isinstance(node, dict):
+        return {k: _dates_as_text(v) for k, v in node.items()}
+    if isinstance(node, list):
+        return [_dates_as_text(v) for v in node]
+    if isinstance(node, (datetime.date, datetime.datetime)):
+        return node.isoformat()
+    return node
+
+
 def _read(path):
     with open(path, encoding='utf-8') as f:
         text = f.read()
-    return _hex_strings(yaml.safe_load(text) or {}), _header(text)
+    return _hex_strings(_dates_as_text(yaml.safe_load(text) or {})), _header(text)
 
 
 def _header(text):
@@ -314,6 +326,34 @@ class Settings:
                 w, h = s.get('width'), s.get('height')
                 if (w is None) != (h is None) or (w and (w * h) % 4):
                     errors.append(f'raw sensor {n}: set width and height together (width × height a multiple of 4)')
+        sim = files.get('simulation')
+        if sim:
+            ts = sim.get('time_scale', 1)
+            if not isinstance(ts, (int, float)) or ts <= 0 or ts > 100:
+                errors.append(f'simulation: time_scale {ts} must be > 0 and <= 100')
+            light = sim.get('lighting') or {}
+            tod = light.get('time_of_day') or ''
+            if tod and not re.match(r'^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$', str(tod)):
+                errors.append(f"simulation: lighting.time_of_day '{tod}' is not HH:MM")
+            if tod:
+                try:
+                    datetime.date.fromisoformat(str(light.get('date', '2025-06-21')))
+                except ValueError:
+                    errors.append(f"simulation: lighting.date '{light.get('date')}' is not YYYY-MM-DD")
+            if (light.get('sun_elevation_deg') is None) != (light.get('sun_azimuth_deg') is None):
+                errors.append('simulation: set sun_elevation_deg and sun_azimuth_deg together')
+            if ((sim.get('weather') or {}).get('fog_visibility_m') or 0) < 0:
+                errors.append('simulation: weather.fog_visibility_m < 0')
+        sig = files.get('signals')
+        if sig:
+            seen = set()
+            for i in sig.get('intersections') or []:
+                if not i.get('name') or i['name'] in seen:
+                    errors.append(f"signals: intersection '{i.get('name')}' is empty or listed twice")
+                seen.add(i.get('name'))
+                steps = i.get('steps') or []
+                if not steps or any(not isinstance(st.get('duration_s'), (int, float)) or st['duration_s'] <= 0 for st in steps):
+                    errors.append(f"signals: {i.get('name')}: needs steps, each with duration_s > 0")
         return errors
 
     # ------------------------------------------------------------------ HTTP handlers

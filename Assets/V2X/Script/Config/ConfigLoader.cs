@@ -27,6 +27,8 @@ namespace V2X.Config
         public PedestriansConfig Pedestrians;
         public TeleportsConfig Teleports;
         public RawSensorsConfig RawSensors;
+        public SimulationConfig Simulation;
+        public SignalsConfig Signals;
         public RawSensorType FindRawSensorType(string name) => SensorTypes?.RawSensorTypes.FirstOrDefault(t => t.Name == name);
         public readonly List<string> Errors = new List<string>();
         public readonly List<string> Warnings = new List<string>();
@@ -78,6 +80,19 @@ namespace V2X.Config
             if (!string.IsNullOrEmpty(requested)) return requested;
             var file = Path.Combine(root, "default_scenario.txt");
             return File.Exists(file) ? File.ReadAllText(file).Trim() : null;
+        }
+
+        /// <summary>"HH:MM" or "HH:MM:SS" -> hours since midnight.</summary>
+        public static bool TryParseTimeOfDay(string text, out double hours)
+        {
+            hours = 0;
+            var parts = (text ?? "").Split(':');
+            if (parts.Length < 2 || parts.Length > 3) return false;
+            if (!int.TryParse(parts[0], out var h) || !int.TryParse(parts[1], out var m) || h < 0 || h > 23 || m < 0 || m > 59) return false;
+            int sec = 0;
+            if (parts.Length == 3 && (!int.TryParse(parts[2], out sec) || sec < 0 || sec > 59)) return false;
+            hours = h + m / 60.0 + sec / 3600.0;
+            return true;
         }
 
         public static List<string> ListScenarios(string root)
@@ -147,6 +162,10 @@ namespace V2X.Config
                 c.Teleports = Read<TeleportsConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Teleports), c);
             if (!string.IsNullOrEmpty(c.Scenario.RawSensors))
                 c.RawSensors = Read<RawSensorsConfig>(Path.Combine(c.ScenarioDir, c.Scenario.RawSensors), c);
+            if (!string.IsNullOrEmpty(c.Scenario.Simulation))
+                c.Simulation = Read<SimulationConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Simulation), c);
+            if (!string.IsNullOrEmpty(c.Scenario.Signals))
+                c.Signals = Read<SignalsConfig>(Path.Combine(c.ScenarioDir, c.Scenario.Signals), c);
 
             Validate(c);
             return c;
@@ -154,6 +173,33 @@ namespace V2X.Config
 
         static void Validate(LoadedConfig c)
         {
+            if (c.Simulation != null)
+            {
+                var sim = c.Simulation;
+                if (sim.TimeScale <= 0f || sim.TimeScale > 100f) c.Errors.Add($"simulation: time_scale {sim.TimeScale} must be > 0 and <= 100");
+                var l = sim.Lighting;
+                if (l != null)
+                {
+                    if (!string.IsNullOrEmpty(l.TimeOfDay) && !TryParseTimeOfDay(l.TimeOfDay, out _))
+                        c.Errors.Add($"simulation: lighting.time_of_day '{l.TimeOfDay}' is not HH:MM");
+                    if (!string.IsNullOrEmpty(l.TimeOfDay) && !System.DateTime.TryParse(l.Date, System.Globalization.CultureInfo.InvariantCulture,
+                            System.Globalization.DateTimeStyles.None, out _))
+                        c.Errors.Add($"simulation: lighting.date '{l.Date}' is not YYYY-MM-DD");
+                    if (l.SunElevationDeg.HasValue != l.SunAzimuthDeg.HasValue)
+                        c.Errors.Add("simulation: set sun_elevation_deg and sun_azimuth_deg together");
+                }
+                if (sim.Weather != null && sim.Weather.FogVisibilityM < 0f) c.Errors.Add("simulation: weather.fog_visibility_m < 0");
+            }
+            if (c.Signals != null)
+            {
+                var names = new HashSet<string>();
+                foreach (var i in c.Signals.Intersections)
+                {
+                    if (string.IsNullOrEmpty(i.Name) || !names.Add(i.Name)) c.Errors.Add($"signals: intersection '{i.Name}' is empty or listed twice");
+                    if (i.Steps.Count == 0 || i.Steps.Any(st => st.DurationS <= 0f))
+                        c.Errors.Add($"signals: {i.Name}: needs steps, each with duration_s > 0");
+                }
+            }
             if (c.Pedestrians != null)
             {
                 var ids = new HashSet<string>();

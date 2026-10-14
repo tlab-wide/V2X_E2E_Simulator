@@ -1,0 +1,46 @@
+# Simulation settings applied when Play starts.
+# time_scale: simulation speed (1 = real time). seed: one seed for traffic, pedestrians, noise and object numbers
+#   (empty = different every run; the traffic seed of vehicles.yaml is used only without it).
+# ego.vehicle: ego vehicle of the scene (tag Ego), e.g. BusAutowareFinal or Lexus RX450h 2015 Sample Sensor;
+#   ego.pose: start pose in the map frame (omit to keep the scene pose).
+# lighting: time_of_day HH:MM (+ date, latitude, longitude, utc_offset_h) places the sun; or sun_elevation_deg and
+#   sun_azimuth_deg; empty = the scene sun. weather.fog_visibility_m: 0 = no fog.
+# loggers: CSV files in output_dir (relative to the project or build folder), named <file>_<date>_<time>.csv.
+
+time_scale: 1
+seed: 0
+ego:
+  vehicle: BusAutowareFinal
+  pose:
+    x: 4769.09
+    y: 73083.82
+    z: 18.38
+    heading_deg: 241
+    pitch_deg: 0
+    roll_deg: 0
+lighting:
+  time_of_day: ''
+  date: 2025-06-21
+  latitude_deg: 35.9
+  longitude_deg: 139.94
+  utc_offset_h: 9
+  sun_intensity_lux: 100000
+  color_temperature_k: 6570
+  night_intensity_lux: 0.5
+weather:
+  fog_visibility_m: 0
+  fog_height_m: 60
+loggers:
+  output_dir: SimulationOutput
+  npc_area:
+    enabled: true
+    humans_csv: Scenario_human.csv
+    cars_csv: Scenario_car.csv
+    every_n_frames: 2
+    interval_s: 0.05
+  ego:
+    enabled: false
+    csv: Autonomous.csv
+    spawn_validation_csv: AutonomousSpawnValidation.csv
+    prefix: Auto
+    interval_s: 0.005

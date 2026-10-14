@@ -41,6 +41,10 @@ namespace V2X.Config
             }
             Debug.Log($"[Config] scenario '{config.ScenarioName}' from {config.ScenarioDir}");
 
+            if (config.Simulation != null)
+                ConfigSimulation.Apply(config.Simulation);
+            if (config.Signals != null)
+                ConfigSimulation.ApplySignals(config.Signals);
             ApplyNoise(config);
             ApplyNetwork(config);
             if (config.Rsus != null)
@@ -53,6 +57,7 @@ namespace V2X.Config
                 SetupTeleports(config);
             if (config.RawSensors != null)
                 SetupRawSensors(config);
+            ConfigSimulation.Finish();
         }
 
         static bool IsOnVehicle(Component c) => c.GetComponentInParent<AWSIM.Vehicle>(true) != null;
@@ -316,7 +321,7 @@ namespace V2X.Config
 
             var ext = new AWSIM.TrafficSimulation.TrafficManager.ExternalConfig
             {
-                seed = v.Seed, maxVehicleCount = v.MaxVehicles, spawnDistanceToEgo = v.SpawnDistanceToEgoM,
+                seed = c.Simulation?.Seed ?? v.Seed, maxVehicleCount = v.MaxVehicles, spawnDistanceToEgo = v.SpawnDistanceToEgoM,
                 spawnClearance = v.SpawnClearanceM, maximumSpawns = v.MaximumSpawns,
                 behaviour = new AWSIM.TrafficSimulation.NPCTrafficBehaviour
                 {

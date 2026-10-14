@@ -7,3 +7,5 @@ vehicles: vehicles.yaml
 pedestrians: pedestrians.yaml
 teleports: teleports.yaml
 raw_sensors: raw_sensors.yaml
+simulation: simulation.yaml
+signals: signals.yaml
