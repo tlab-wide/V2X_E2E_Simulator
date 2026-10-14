@@ -23,7 +23,7 @@
     
     
       
-        <title>Kashiwa Scenes - V2X E2E simulator</title>
+        <title>Kashiwa Scene Names - V2X E2E simulator</title>
       
     
     
@@ -75,6 +75,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#kashiwa-scene-names" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -123,7 +128,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Kashiwa Scenes
+              Kashiwa Scene Names
             
           </span>
         </div>
@@ -1018,6 +1023,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kashiwa Scene Names
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -1026,7 +1051,7 @@
   <span class="md-ellipsis">
     
   
-    Kashiwa Scenes
+    Kashiwa Scene Names
   
 
     
@@ -1035,6 +1060,80 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#intersections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intersections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approach-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approach IDs (方路)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traffic-lights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traffic lights
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rsus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSUs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-the-names-are-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where the names are used
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2133,6 +2232,71 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#intersections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intersections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approach-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approach IDs (方路)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traffic-lights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traffic lights
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rsus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSUs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-the-names-are-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where the names are used
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2197,9 +2361,124 @@
 
 
 
-  <h1>Kashiwa Scenes</h1>
-
-
+<h1 id="kashiwa-scene-names">Kashiwa Scene Names</h1>
+<p>The signalised intersections of the Kashiwa scene (<code>Enviroment copy/intersectionsFixed/</code> in the environment prefab) and their traffic lights are named after the CooL4 DM signal sheet and the Lanelet2 map. The names are plain ASCII (romaji), so they are safe in logs, configs and code.</p>
+<h2 id="intersections">Intersections</h2>
+<p>The five bus-route intersections use their DM names. The others are named after the nearest OpenStreetMap landmark (OSM names only 東大前 itself).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">GameObject</th>
+<th style="text-align: left;">Place</th>
+<th style="text-align: left;">DM CRP ID</th>
+<th style="text-align: left;">Approaches (方路, bearing from the centre)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>Todaimae</code></td>
+<td style="text-align: left;">東大前</td>
+<td style="text-align: left;"><code>0x00000001</code></td>
+<td style="text-align: left;">1 = 66° (E), 2 = 246° (W), 3 = 311° (N)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Ganken</code></td>
+<td style="text-align: left;">がん研</td>
+<td style="text-align: left;"><code>0x000c1001</code></td>
+<td style="text-align: left;">1 = 64° (E), 2 = 150° (S), 3 = 236° (W)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Kakeiken</code></td>
+<td style="text-align: left;">科警研</td>
+<td style="text-align: left;"><code>0x000c3001</code></td>
+<td style="text-align: left;">1 = 65° (E), 2 = 160° (S), 3 = 347° (N)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Wakashiba</code></td>
+<td style="text-align: left;">若柴</td>
+<td style="text-align: left;"><code>0x00000002</code></td>
+<td style="text-align: left;">1 = 15° (N), 2 = 100° (E), 3 = 190° (S), 4 = 280° (W)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Ekimae</code></td>
+<td style="text-align: left;">駅前</td>
+<td style="text-align: left;"><code>0x000c2001</code></td>
+<td style="text-align: left;">1 = 83° (E), 2 = 180° (S), 3 = 0° (N)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>LalaportKashiwanoha</code></td>
+<td style="text-align: left;">ららぽーと柏の葉</td>
+<td style="text-align: left;">–</td>
+<td style="text-align: left;">1 = 354°, 2 = 91°, 3 = 173°, 4 = 272°</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ParkCityIchibangai</code></td>
+<td style="text-align: left;">パークシティ柏の葉キャンパス一番街</td>
+<td style="text-align: left;">–</td>
+<td style="text-align: left;">1 = 6°, 2 = 187°, 3 = 277°</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>KobanMae</code></td>
+<td style="text-align: left;">柏の葉キャンパス交番前</td>
+<td style="text-align: left;">–</td>
+<td style="text-align: left;">1 = 6°, 2 = 187°, 3 = 280°</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>WakashibaRyokuchi</code></td>
+<td style="text-align: left;">若柴緑地</td>
+<td style="text-align: left;">–</td>
+<td style="text-align: left;">1 = 6°, 2 = 97°, 3 = 187°, 4 = 278°</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>KashiwanohaKoko</code></td>
+<td style="text-align: left;">柏の葉高校前</td>
+<td style="text-align: left;">–</td>
+<td style="text-align: left;">1 = 338°, 2 = 67°, 3 = 159°, 4 = 248°</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>KashiwanohaKoen</code></td>
+<td style="text-align: left;">柏の葉公園</td>
+<td style="text-align: left;">–</td>
+<td style="text-align: left;">1 = 333°, 2 = 156°, 3 = 248°</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ToyofutaShogakko</code></td>
+<td style="text-align: left;">十余二小学校</td>
+<td style="text-align: left;">–</td>
+<td style="text-align: left;">1 = 357°, 2 = 90°, 3 = 175°, 4 = 272°</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TodaiKashiwaWest</code></td>
+<td style="text-align: left;">東京大学柏キャンパス西側</td>
+<td style="text-align: left;">–</td>
+<td style="text-align: left;">1 = 342°, 2 = 72°, 3 = 161°, 4 = 253°</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GankenHigashiByoin</code></td>
+<td style="text-align: left;">国立がん研究センター東病院前</td>
+<td style="text-align: left;">–</td>
+<td style="text-align: left;">1 = 316°, 2 = 49°, 3 = 129°, 4 = 231°</td>
+</tr>
+</tbody>
+</table>
+<h2 id="approach-ids">Approach IDs (方路)</h2>
+<p>For the five DM intersections they are the IDs of the DM signal sheet. For the others they are numbered clockwise, starting with the leg closest to north (1 = that leg, 2 = the next leg clockwise, …).</p>
+<h2 id="traffic-lights">Traffic lights</h2>
+<p>Each light carries the CooL4 signal IDs it shows (spec §3.6.3: vehicle ID = inbound 方路 × 0x10 + outbound 方路, pedestrian ID = crossed 方路 × 0x10):</p>
+<div class="highlight"><pre><span></span><code>&lt;Intersection&gt;_V_0x&lt;k&gt;1-0x&lt;k&gt;&lt;N&gt;_&lt;i&gt;    vehicle head for traffic entering from 方路 k (N = number of approaches)
+&lt;Intersection&gt;_P_0x&lt;k&gt;0_&lt;i&gt;             pedestrian head of the crosswalk across 方路 k
+</code></pre></div>
+<p><code>&lt;i&gt;</code> numbers the heads of the same approach (1, 2, …, clockwise around the centre). Examples: <code>Kakeiken_V_0x21-0x23_1</code> is the first vehicle head for traffic entering 科警研 from 方路2 (signal IDs 0x21–0x23). <code>Wakashiba_P_0x40_2</code> is the second pedestrian head of the crosswalk across 若柴 方路4.</p>
+<h2 id="rsus">RSUs</h2>
+<p>The RSUs follow the route: <code>Ganken</code> (RSU ID <code>0x12020001</code>), <code>Kakeiken_A</code> and <code>Kakeiken_B</code> (<code>0x12020002</code>, <code>0x12020003</code>), <code>Midblock</code> (<code>0x12020004</code>, between 科警研 and 若柴) and <code>Wakashiba</code> (<code>0x12020005</code>). Sensor IDs are unique within each RSU. From v3.2 they are defined in <code>config/scenarios/&lt;name&gt;/rsus.yaml</code> (see <a href="../../Configuration/">Scenario Configuration</a>); in the v3.1 scenes they are the groups under <code>RSUs/Pseudo Sensors setup</code> (<code>RSU1_Ganken_CooL4</code>, <code>RSU2_Kakeiken_CooL4</code>, <code>RSU3_Midblock</code>, <code>RSU4_Wakashiba</code>). All IDs are listed in <a href="../../DMProtocols/CooL4/Reading/#rsu-and-sensor-ids-kashiwa">Reading the Messages</a>.</p>
+<h2 id="where-the-names-are-used">Where the names are used</h2>
+<p>Keep these in sync when you rename an intersection or a light:</p>
+<ul>
+<li><code>DMSignalInfoPublisher</code> → <strong>Traffic Intersection Name</strong> of each intersection</li>
+<li><code>config/scenarios/&lt;name&gt;/rsus.yaml</code> → <code>traffic_signal_publishers[].intersections</code></li>
+<li><code>config/scenarios/&lt;name&gt;/pedestrians.yaml</code> → <code>waypoints[].traffic_light</code>; in the v3.1 scenes the pedestrian path configs (<code>Assets/Configs/pedestrian_spawn*.json</code>) and <code>WaypointSystem</code> waypoints → <code>trafficLightId</code></li>
+<li>web viewer <code>tools/web-viewer/config/traffic_lights.yaml</code> → <code>unity_intersection</code></li>
+</ul>
 
 
 

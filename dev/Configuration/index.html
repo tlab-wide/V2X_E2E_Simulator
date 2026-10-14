@@ -942,6 +942,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#simulation-simulationyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation (simulation.yaml)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signal-timing-signalsyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal timing (signals.yaml)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#defaults" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1246,7 +1268,7 @@
   <span class="md-ellipsis">
     
   
-    Kashiwa Scenes
+    Kashiwa Scene Names
   
 
     
@@ -2395,6 +2417,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#simulation-simulationyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation (simulation.yaml)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signal-timing-signalsyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal timing (signals.yaml)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#defaults" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2564,7 +2608,7 @@
 
 
 <h1 id="scenario-configuration">Scenario Configuration</h1>
-<p>From v3.2 the simulator builds its RSUs, pseudo sensors, publishers, traffic, pedestrians, teleports and raw sensors from YAML files in <code>config/</code> when Play starts. The Unity scene keeps the map, the roads, the traffic lights and the vehicle and sensor prefabs. To change a scenario you edit the files instead of the scene. You can edit them by hand or in the <a href="../Tools/WebViewer/#settings">web viewer</a> <strong>Settings</strong> tab.</p>
+<p>From v3.2 the simulator builds its RSUs, pseudo sensors, publishers, traffic, pedestrians, teleports and raw sensors from YAML files, and sets the ego vehicle, time scale, seed, sun, fog, loggers and signal timing from them, in <code>config/</code> when Play starts. The Unity scene keeps the map, the roads, the traffic lights and the vehicle and sensor prefabs. To change a scenario you edit the files instead of the scene. You can edit them by hand or in the <a href="../Tools/WebViewer/#settings">web viewer</a> <strong>Settings</strong> tab.</p>
 <div class="admonition note">
 <p class="admonition-title">When changes apply</p>
 <p>The files are read once, when Play starts (or when a built simulator starts). Saved changes apply on the next run.</p>
@@ -2579,6 +2623,8 @@
 ├── scenarios/
 │   └── kashiwa_cool4/
 │       ├── scenario.yaml         lists the files of this scenario
+│       ├── simulation.yaml       ego vehicle, time scale, seed, sun, fog, loggers
+│       ├── signals.yaml          traffic-signal step durations
 │       ├── rsus.yaml             RSUs, pseudo sensors, object-info / Autoware / signal publishers
 │       ├── vehicles.yaml         NPC vehicle traffic
 │       ├── pedestrians.yaml      pedestrian and cyclist paths
@@ -2595,6 +2641,8 @@
 <span class="nt">pedestrians</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pedestrians.yaml</span>
 <span class="nt">teleports</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">teleports.yaml</span>
 <span class="nt">raw_sensors</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw_sensors.yaml</span>
+<span class="nt">simulation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simulation.yaml</span>
+<span class="nt">signals</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">signals.yaml</span>
 </code></pre></div>
 <h2 id="choosing-the-scenario">Choosing the scenario</h2>
 <p>The first of these that is set is used:</p>
@@ -2637,6 +2685,61 @@
 </tbody>
 </table>
 <p>Fields of view (<code>h_fov_deg</code>, <code>v_fov_deg</code>) are <strong>full</strong> angles. A 60° sensor sees 30° to each side.</p>
+<h2 id="simulation-simulationyaml">Simulation (<code>simulation.yaml</code>)</h2>
+<div class="highlight"><pre><span></span><code><span class="nt">time_scale</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">                 </span><span class="c1"># simulation speed, 1 = real time (&gt; 0, at most 100)</span>
+<span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">                       </span><span class="c1"># one seed for everything random; leave empty for a different run every time</span>
+<span class="nt">ego</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">vehicle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BusAutowareFinal</span><span class="w">   </span><span class="c1"># an ego vehicle of the scene (tag Ego): BusAutowareFinal, Lexus RX450h 2015 Sample Sensor</span>
+<span class="w">  </span><span class="nt">pose</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="nv">4769.09</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">73083.82</span><span class="p p-Indicator">,</span><span class="nt"> z</span><span class="p">:</span><span class="w"> </span><span class="nv">18.38</span><span class="p p-Indicator">,</span><span class="nt"> heading_deg</span><span class="p">:</span><span class="w"> </span><span class="nv">241</span><span class="p p-Indicator">}</span><span class="w">   </span><span class="c1"># start pose; omit to keep the scene pose</span>
+<span class="nt">lighting</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">time_of_day</span><span class="p">:</span><span class="w"> </span><span class="s">'17:30'</span><span class="w">        </span><span class="c1"># local time; empty = the sun of the scene</span>
+<span class="w">  </span><span class="nt">date</span><span class="p">:</span><span class="w"> </span><span class="s">'2025-06-21'</span>
+<span class="w">  </span><span class="nt">latitude_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">35.9</span>
+<span class="w">  </span><span class="nt">longitude_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">139.94</span>
+<span class="w">  </span><span class="nt">utc_offset_h</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9</span>
+<span class="w">  </span><span class="c1"># sun_elevation_deg: 40     # or place the sun directly (both values)</span>
+<span class="w">  </span><span class="c1"># sun_azimuth_deg: 180</span>
+<span class="w">  </span><span class="nt">sun_intensity_lux</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100000</span>
+<span class="w">  </span><span class="nt">color_temperature_k</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6570</span>
+<span class="w">  </span><span class="nt">night_intensity_lux</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span><span class="w">    </span><span class="c1"># moonlight when the sun is below the horizon</span>
+<span class="nt">weather</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">fog_visibility_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">         </span><span class="c1"># e.g. 150 for thick fog; 0 = no fog</span>
+<span class="w">  </span><span class="nt">fog_height_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="nt">loggers</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SimulationOutput</span>
+<span class="w">  </span><span class="nt">npc_area</span><span class="p">:</span><span class="w">                   </span><span class="c1"># NPC vehicles and pedestrians inside the log area (LogArea)</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">cars_csv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scenario_car.csv</span>
+<span class="w">    </span><span class="nt">humans_csv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scenario_human.csv</span>
+<span class="w">    </span><span class="nt">every_n_frames</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w">         </span><span class="c1"># 0 = every interval_s instead</span>
+<span class="w">    </span><span class="nt">interval_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<span class="w">  </span><span class="nt">ego</span><span class="p">:</span><span class="w">                        </span><span class="c1"># state of the ego vehicle (LogAutonomous)</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">csv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Autonomous.csv</span>
+<span class="w">    </span><span class="nt">spawn_validation_csv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AutonomousSpawnValidation.csv</span>
+<span class="w">    </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Auto</span>
+<span class="w">    </span><span class="nt">interval_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.005</span>
+</code></pre></div>
+<ul>
+<li><strong>Ego vehicle.</strong> The chosen vehicle is switched on and the other ego vehicles are switched off. The traffic manager, the ScenarioSelector teleport keys and the <em>Selected Car</em> dropdown follow it. Its raw sensors are set up from <code>raw_sensors.yaml</code> before it starts.</li>
+<li><strong>Seed.</strong> It seeds Unity's random numbers, the traffic manager (it replaces the <code>seed</code> of <code>vehicles.yaml</code>), line-of-sight UUIDs and the object numbers of object info. Physics and frame timing still differ a little between runs, so runs are similar but not bit-identical.</li>
+<li><strong>Sun.</strong> <code>time_of_day</code> places the sun from the date and the position (NOAA formulas). When the sun is below the horizon, a dim light opposite it (<code>night_intensity_lux</code>) keeps the scene readable. The camera exposure of the scene is automatic.</li>
+<li><strong>Fog.</strong> It adds an HDRP fog to the scene's global volume. Visibility is the distance where objects fade out (mean free path × 3). It affects cameras, not the pseudo sensors or the RGL LiDARs.</li>
+<li><strong>Loggers.</strong> Files are written to <code>output_dir</code> (relative to the project folder, or the build folder) as <code>&lt;name&gt;_&lt;yyyyMMdd_HHmmss&gt;.csv</code>. See <a href="../Components/Logger/">Loggers</a>.</li>
+<li><strong>Time scale.</strong> It is also passed to the ROS clock, so <code>/clock</code> and the timestamps follow it.</li>
+</ul>
+<h2 id="signal-timing-signalsyaml">Signal timing (<code>signals.yaml</code>)</h2>
+<div class="highlight"><pre><span></span><code><span class="nt">intersections</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Kakeiken</span><span class="w">              </span><span class="c1"># TrafficIntersection object (see Kashiwa Scene Names)</span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">               </span><span class="c1"># false = keep the scene timing</span>
+<span class="w">  </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">duration_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">35</span>
+<span class="w">    </span><span class="nt">lights</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">V1 green, V2 red, V3 green, P1 red, P2 green</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">duration_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">    </span><span class="nt">lights</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P2 green flashing</span>
+<span class="w">  </span><span class="c1"># … one entry per step, in order; the cycle repeats</span>
+</code></pre></div>
+<p>Each intersection runs its lighting steps in order and repeats them. <code>duration_s</code> sets how long each step lasts. <code>lights</code> describes what the step shows (<code>V1</code> = vehicle group 1, <code>P1</code> = pedestrian group 1); it is written by the exporter and not read. The number of steps and what they show come from the scene, so steps cannot be added or removed here. Signal info (remaining time) and the V2X signal topics follow the new timing.</p>
 <h2 id="defaults">Defaults</h2>
 <h3 id="pseudo-sensor-types-defaultssensor_typesyaml">Pseudo-sensor types (<code>defaults/sensor_types.yaml</code>)</h3>
 <div class="highlight"><pre><span></span><code><span class="nt">pseudo_sensor_types</span><span class="p">:</span>
@@ -2869,6 +2972,7 @@
 <li><strong>Add Config Bootstrap To Scene</strong>: adds the object that loads the configuration. It is already in the v3.2 scene.</li>
 <li><strong>Export Scene To Config</strong>: writes the scene's RSUs, sensors and publishers to <code>rsus.yaml</code> and the defaults.</li>
 <li><strong>Export Vehicle Traffic / Pedestrians And Teleports / Raw Sensors To Config</strong>: writes the other files from the scene.</li>
+<li><strong>Export Simulation And Signal Timing To Config</strong>: writes <code>simulation.yaml</code> (the active ego, its pose, sun and loggers of the scene) and <code>signals.yaml</code>.</li>
 <li><strong>Export Traffic Lanes For The Web Viewer</strong>: writes <code>config/maps/traffic_lanes.json</code>. Run it again after you change the lanes in the scene.</li>
 </ul>
 <div class="admonition warning">
