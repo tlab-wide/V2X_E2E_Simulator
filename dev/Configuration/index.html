@@ -909,6 +909,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#how-to-change-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to change the configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to change the configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#folder-layout" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2384,6 +2412,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#how-to-change-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to change the configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to change the configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#folder-layout" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2613,6 +2669,128 @@
 <p class="admonition-title">When changes apply</p>
 <p>The files are read once, when Play starts (or when a built simulator starts). Saved changes apply on the next run.</p>
 </div>
+<h2 id="how-to-change-the-configuration">How to change the configuration</h2>
+<p>There are three ways. All of them change the same files, so you can mix them.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Way</th>
+<th style="text-align: left;">Use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Web viewer → Settings</strong> (<code>tools/web-viewer/run.sh</code>, open <a href="http://localhost:8080">http://localhost:8080</a>, top bar <strong>Settings</strong>)</td>
+<td style="text-align: left;">Everyday changes. Lists and forms for every file, with editing on the map. <strong>Save</strong> checks everything first. See <a href="../Tools/WebViewer/#settings">Web Viewer → Settings</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Edit the YAML files</strong> in <code>config/</code> with any text editor</td>
+<td style="text-align: left;">Many similar changes at once, or with version control. Errors show in the Unity Console as <code>[Config] …</code> when Play starts.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Unity menu <em>V2X → Config → Export …</em></strong></td>
+<td style="text-align: left;">Copy what you built in the scene into the files (see <a href="#editing-in-unity">Editing in Unity</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>After a change, press Play again (or restart the built simulator). To undo, use <strong>Reset to default</strong> in the web viewer (or copy the file back from <code>config/factory/</code>).</p>
+<h3 id="common-tasks">Common tasks</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Task</th>
+<th style="text-align: left;">In the web viewer (Settings)</th>
+<th style="text-align: left;">In the files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Make a new scenario</td>
+<td style="text-align: left;"><strong>New…</strong> copies the current one; <strong>Make default</strong> loads it at Play</td>
+<td style="text-align: left;">Copy a folder in <code>config/scenarios/</code>, write its name in <code>config/default_scenario.txt</code> (or pick it on the <em>Config Bootstrap</em> object, or start with <code>--scenario &lt;name&gt;</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Use the Lexus instead of the bus</td>
+<td style="text-align: left;">Simulation → <em>vehicle</em></td>
+<td style="text-align: left;"><code>simulation.yaml</code> → <code>ego.vehicle</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Start the ego somewhere else</td>
+<td style="text-align: left;">Simulation → <strong>Place on map</strong>, then drag; set <em>heading</em></td>
+<td style="text-align: left;"><code>simulation.yaml</code> → <code>ego.pose</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Run faster than real time</td>
+<td style="text-align: left;">Simulation → <em>time scale</em></td>
+<td style="text-align: left;"><code>simulation.yaml</code> → <code>time_scale</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Repeat the same traffic</td>
+<td style="text-align: left;">Simulation → <em>random seed</em></td>
+<td style="text-align: left;"><code>simulation.yaml</code> → <code>seed</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Evening, night, fog</td>
+<td style="text-align: left;">Simulation → <em>time of day</em>, <em>fog visibility</em></td>
+<td style="text-align: left;"><code>simulation.yaml</code> → <code>lighting.time_of_day</code>, <code>weather.fog_visibility_m</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Turn CSV logging on or off</td>
+<td style="text-align: left;">Simulation → Loggers</td>
+<td style="text-align: left;"><code>simulation.yaml</code> → <code>loggers</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Change a signal cycle</td>
+<td style="text-align: left;">Signals → intersection → step durations</td>
+<td style="text-align: left;"><code>signals.yaml</code> → <code>steps[].duration_s</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Add, move or remove an RSU sensor</td>
+<td style="text-align: left;">RSUs &amp; sensors → RSU → <strong>Place on map</strong> / drag / ×</td>
+<td style="text-align: left;"><code>rsus.yaml</code> → <code>rsus[].sensors</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Change a sensor's range or field of view</td>
+<td style="text-align: left;">RSUs &amp; sensors → sensor → <em>range</em>, <em>h FOV</em>, <em>v FOV</em> (or Defaults → sensor type)</td>
+<td style="text-align: left;"><code>rsus.yaml</code> (per sensor) or <code>defaults/sensor_types.yaml</code> (per type)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Change sensor noise or network delay</td>
+<td style="text-align: left;">Defaults → Noise / Network profiles; RSUs → publisher → noise, network copies</td>
+<td style="text-align: left;"><code>defaults/noise.yaml</code>, <code>defaults/network.yaml</code>, <code>rsus.yaml</code> publishers</td>
+</tr>
+<tr>
+<td style="text-align: left;">Publish a new object-info topic</td>
+<td style="text-align: left;">RSUs &amp; sensors → Object-info publishers → <strong>+ Add</strong></td>
+<td style="text-align: left;"><code>rsus.yaml</code> → <code>object_info_publishers</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">More or less traffic</td>
+<td style="text-align: left;">Vehicles → spawn point → <em>vehicles / minute</em>; <em>max vehicles</em></td>
+<td style="text-align: left;"><code>vehicles.yaml</code> → <code>spawn_points</code>, <code>max_vehicles</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Add a spawn point or a turn ratio</td>
+<td style="text-align: left;">Vehicles → click a lane → <strong>Spawn vehicles here</strong> / <strong>Set branch ratios</strong></td>
+<td style="text-align: left;"><code>vehicles.yaml</code> → <code>spawn_points</code>, <code>branches</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Add a pedestrian or cyclist route</td>
+<td style="text-align: left;">Pedestrians → <strong>+ Add</strong>, click the points on the map</td>
+<td style="text-align: left;"><code>pedestrians.yaml</code> → <code>paths</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Move or add a teleport gate</td>
+<td style="text-align: left;">Teleports → drag the gate / <strong>Place gate on map</strong></td>
+<td style="text-align: left;"><code>teleports.yaml</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Switch a LiDAR or camera on or off, change its topic</td>
+<td style="text-align: left;">Raw sensors → sensor → <em>enabled</em>, topics</td>
+<td style="text-align: left;"><code>raw_sensors.yaml</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="folder-layout">Folder layout</h2>
 <div class="highlight"><pre><span></span><code>config/
 ├── default_scenario.txt          name of the scenario that is loaded (one line)
@@ -2751,6 +2929,16 @@
 </code></pre></div>
 <p>An RSU sensor refers to a type by <code>name</code> and may override <code>h_fov_deg</code>, <code>v_fov_deg</code> and <code>range_m</code>. <code>raw_sensor_types</code> lists the LiDAR and camera prefabs that <code>raw_sensors.yaml</code> can create.</p>
 <h3 id="noise-profiles-defaultsnoiseyaml">Noise profiles (<code>defaults/noise.yaml</code>)</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">noise_profiles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Default</span>
+<span class="w">  </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniform</span><span class="w">        </span><span class="c1"># uniform | gaussian</span>
+<span class="w">  </span><span class="nt">x_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="w">  </span><span class="nt">y_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="w">  </span><span class="nt">z_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="w">  </span><span class="nt">gaussian_mean</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">  </span><span class="nt">gaussian_std_dev</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span>
+</code></pre></div>
+<p>Publishers refer to a profile by <code>name</code> for each kind of noise: <code>position</code>, <code>rotation</code>, <code>dimension</code> (size) and <code>probability</code> (existence).</p>
 <table>
 <thead>
 <tr>
@@ -2771,7 +2959,16 @@
 </table>
 <p><code>NoNoise</code> (all zero) is used for ground truth.</p>
 <h3 id="network-profiles-defaultsnetworkyaml">Network profiles (<code>defaults/network.yaml</code>)</h3>
-<p>A network profile publishes a delayed, lossy copy of a topic as <code>&lt;topic&gt;&lt;topic_suffix&gt;</code>, for example <code>/v2x/object_info/DSRC</code>.</p>
+<p>A network profile publishes a delayed, lossy copy of a topic as <code>&lt;topic&gt;&lt;topic_suffix&gt;</code>, for example <code>/v2x/object_info/DSRC</code>. Publishers list the profiles they use under <code>network</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">network_profiles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DSRC</span>
+<span class="w">  </span><span class="nt">topic_suffix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/DSRC</span>
+<span class="w">  </span><span class="nt">delay_ms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">  </span><span class="nt">delay_variance_ms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">  </span><span class="nt">packet_loss</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<span class="w">  </span><span class="nt">packet_loss_variance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">  </span><span class="nt">ground_truth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</code></pre></div>
 <table>
 <thead>
 <tr>
@@ -2878,6 +3075,7 @@
 <li><strong>Lanelet numbers</strong> are the names of the simulator's traffic lanes (<code>lanelet&lt;number&gt;</code> under <code>lanes_root</code>). In the web viewer, click a lane in <strong>Settings → Vehicles</strong> to see its number and next lanes and to add a spawn point or branch ratios.</li>
 <li>One traffic manager runs the traffic. The <code>template_traffic_manager</code> of the scene supplies the ego vehicle, layers and vehicle dynamics, and the scene's other traffic managers are switched off. <code>vehicle_types</code> may use any NPC prefab that a traffic manager of the scene knows.</li>
 <li>A vehicle is created only when the spawn point is clear. The next one is scheduled from <code>vehicles_per_minute</code>.</li>
+<li><code>behaviour.forced_pass_radius_m</code>: at most one vehicle within this distance gets the right of way at a time (the one that has waited longest), so two blocked vehicles at the same intersection do not both go. <code>behaviour.standstill_speed_mps</code>: below this speed a vehicle counts as standing.</li>
 <li>Right of way: vehicles follow the lane rules of the scene. If a vehicle has waited to yield for <code>deadlock_timeout_s</code> while the others also wait, it gets the right of way. Vehicles that have not moved for <code>stuck_despawn_s</code> are removed. Vehicles also leave at the end of their route.</li>
 </ul>
 <h2 id="pedestrians-and-cyclists-pedestriansyaml">Pedestrians and cyclists (<code>pedestrians.yaml</code>)</h2>
@@ -2917,6 +3115,49 @@
 <span class="w">    </span><span class="nt">include_endpoints</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="c1"># random_point: random_points: [{x: …, y: …, z: …, heading_deg: …}]</span>
 </code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>trigger</code>, <code>trigger_size</code></td>
+<td style="text-align: left;">Box the ego drives into: centre and heading in the map frame; size <code>x</code> = width, <code>y</code> = height, <code>z</code> = length (m)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>strategy</code></td>
+<td style="text-align: left;"><code>lane_midpoint</code>: pick a start point on the listed lanes (below). <code>random_point</code>: one of <code>random_points</code>, chosen at random.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clearance_radius_m</code></td>
+<td style="text-align: left;">NPC vehicles closer than this to the target are removed before the ego arrives</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>delay_s</code>, <code>random_delay_s</code></td>
+<td style="text-align: left;">Wait before the jump: <code>delay_s</code> plus a random value in [min, max]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>lane_midpoint.lanelets</code></td>
+<td style="text-align: left;">Lanes the ego may be placed on; candidate points every <code>spacing_m</code> along them (<code>include_endpoints</code>: also the lane ends)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>lane_midpoint.midpoint_lanelet</code>, <code>midpoint_fraction</code></td>
+<td style="text-align: left;">Reference point the ego should reach: this far along that lane (0 = start, 1 = end)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>lane_midpoint.arrival_window_s</code></td>
+<td style="text-align: left;">A target time is drawn at random in [min, max]. The candidate whose estimated driving time to the reference point is closest wins.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>lane_midpoint.cruise_speed_kmh</code>, <code>acceleration_mps2</code></td>
+<td style="text-align: left;">Used for that estimate: accelerate from 0 to cruise speed, then drive on</td>
+</tr>
+</tbody>
+</table>
+<p>In the web viewer, <strong>Pick target lanes on map</strong> toggles lanes in <code>lanelets</code>.</p>
 <h2 id="raw-sensors-raw_sensorsyaml">Raw sensors (<code>raw_sensors.yaml</code>)</h2>
 <p>These are LiDARs (RGL) and cameras that publish point clouds and images.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">raw_sensors</span><span class="p">:</span>
