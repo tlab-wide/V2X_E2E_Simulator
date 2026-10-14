@@ -12,7 +12,7 @@
         <link rel="prev" href="../DMProtocols/CooL4/Reading/">
       
       
-        <link rel="next" href="../Tools/WebViewer/">
+        <link rel="next" href="Simulation/">
       
       
         
@@ -23,7 +23,7 @@
     
     
       
-        <title>Configuration - V2X E2E simulator</title>
+        <title>Overview - V2X E2E simulator</title>
       
     
     
@@ -128,7 +128,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Configuration
+              Overview
             
           </span>
         </div>
@@ -850,6 +850,60 @@
   
   
   
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Configuration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
     <li class="md-nav__item md-nav__item--active">
       
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
@@ -865,7 +919,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Overview
   
 
     
@@ -883,7 +937,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Overview
   
 
     
@@ -907,6 +961,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration files
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#how-to-change-the-configuration" class="md-nav__link">
@@ -970,161 +1035,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#simulation-simulationyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Simulation (simulation.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#signal-timing-signalsyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Signal timing (signals.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#defaults" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Defaults
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Defaults">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pseudo-sensor-types-defaultssensor_typesyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pseudo-sensor types (defaults/sensor_types.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#noise-profiles-defaultsnoiseyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Noise profiles (defaults/noise.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#network-profiles-defaultsnetworkyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Network profiles (defaults/network.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rsus-and-pseudo-sensors-rsusyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        RSUs and pseudo sensors (rsus.yaml)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="RSUs and pseudo sensors (rsus.yaml)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#object-info-publishers-cool4-dm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Object-info publishers (CooL4 DM)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#autoware-object-and-traffic-signal-publishers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Autoware object and traffic-signal publishers
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#vehicle-traffic-vehiclesyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Vehicle traffic (vehicles.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pedestrians-and-cyclists-pedestriansyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pedestrians and cyclists (pedestrians.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#teleports-teleportsyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Teleports (teleports.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#raw-sensors-raw_sensorsyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Raw sensors (raw_sensors.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#editing-in-unity" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1138,6 +1048,294 @@
     </ul>
   
 </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="Simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simulation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="Signals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal Timing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="Rsus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RSUs and Pseudo Sensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="Vehicles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vehicle Traffic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="Pedestrians/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pedestrians and Cyclists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="Teleports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teleports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="RawSensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Raw Sensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SensorTypes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sensor Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="Noise/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Noise Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="Network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
       
     </li>
   
@@ -2412,6 +2610,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-to-change-the-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2473,161 +2682,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#simulation-simulationyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Simulation (simulation.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#signal-timing-signalsyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Signal timing (signals.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#defaults" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Defaults
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Defaults">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pseudo-sensor-types-defaultssensor_typesyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pseudo-sensor types (defaults/sensor_types.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#noise-profiles-defaultsnoiseyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Noise profiles (defaults/noise.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#network-profiles-defaultsnetworkyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Network profiles (defaults/network.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rsus-and-pseudo-sensors-rsusyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        RSUs and pseudo sensors (rsus.yaml)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="RSUs and pseudo sensors (rsus.yaml)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#object-info-publishers-cool4-dm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Object-info publishers (CooL4 DM)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#autoware-object-and-traffic-signal-publishers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Autoware object and traffic-signal publishers
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#vehicle-traffic-vehiclesyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Vehicle traffic (vehicles.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pedestrians-and-cyclists-pedestriansyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pedestrians and cyclists (pedestrians.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#teleports-teleportsyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Teleports (teleports.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#raw-sensors-raw_sensorsyaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Raw sensors (raw_sensors.yaml)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#editing-in-unity" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2656,6 +2710,46 @@
   
 
 
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href=".." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
               
               <article class="md-content__inner md-typeset">
                 
@@ -2669,6 +2763,68 @@
 <p class="admonition-title">When changes apply</p>
 <p>The files are read once, when Play starts (or when a built simulator starts). Saved changes apply on the next run.</p>
 </div>
+<h2 id="configuration-files">Configuration files</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Page</th>
+<th style="text-align: left;">File</th>
+<th style="text-align: left;">Sets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="Simulation/">Simulation</a></td>
+<td style="text-align: left;"><code>simulation.yaml</code></td>
+<td style="text-align: left;">ego vehicle and start pose, time scale, seed, sun, fog, loggers</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="Signals/">Signal Timing</a></td>
+<td style="text-align: left;"><code>signals.yaml</code></td>
+<td style="text-align: left;">step durations of the traffic signals</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="Rsus/">RSUs and Pseudo Sensors</a></td>
+<td style="text-align: left;"><code>rsus.yaml</code></td>
+<td style="text-align: left;">RSUs, sensors, object-info / Autoware-object / traffic-signal publishers</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="Vehicles/">Vehicle Traffic</a></td>
+<td style="text-align: left;"><code>vehicles.yaml</code></td>
+<td style="text-align: left;">spawn points, branch ratios, vehicle types, right of way, removal of stuck vehicles</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="Pedestrians/">Pedestrians and Cyclists</a></td>
+<td style="text-align: left;"><code>pedestrians.yaml</code></td>
+<td style="text-align: left;">walking and cycling paths, spawn rates, cyclist share</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="Teleports/">Teleports</a></td>
+<td style="text-align: left;"><code>teleports.yaml</code></td>
+<td style="text-align: left;">teleport gates for the ego vehicle</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="RawSensors/">Raw Sensors</a></td>
+<td style="text-align: left;"><code>raw_sensors.yaml</code></td>
+<td style="text-align: left;">LiDARs and cameras that publish raw data</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="SensorTypes/">Sensor Types</a></td>
+<td style="text-align: left;"><code>defaults/sensor_types.yaml</code></td>
+<td style="text-align: left;">pseudo-sensor types (FOV, range) and raw-sensor prefabs</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="Noise/">Noise Profiles</a></td>
+<td style="text-align: left;"><code>defaults/noise.yaml</code></td>
+<td style="text-align: left;">detection noise</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="Network/">Network Profiles</a></td>
+<td style="text-align: left;"><code>defaults/network.yaml</code></td>
+<td style="text-align: left;">delayed / lossy copies (DSRC, Cellular)</td>
+</tr>
+</tbody>
+</table>
 <h2 id="how-to-change-the-configuration">How to change the configuration</h2>
 <p>There are three ways. All of them change the same files, so you can mix them.</p>
 <table>
@@ -2712,82 +2868,82 @@
 <tr>
 <td style="text-align: left;">Use the Lexus instead of the bus</td>
 <td style="text-align: left;">Simulation → <em>vehicle</em></td>
-<td style="text-align: left;"><code>simulation.yaml</code> → <code>ego.vehicle</code></td>
+<td style="text-align: left;"><a href="Simulation/"><code>simulation.yaml</code></a> → <code>ego.vehicle</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Start the ego somewhere else</td>
 <td style="text-align: left;">Simulation → <strong>Place on map</strong>, then drag; set <em>heading</em></td>
-<td style="text-align: left;"><code>simulation.yaml</code> → <code>ego.pose</code></td>
+<td style="text-align: left;"><a href="Simulation/"><code>simulation.yaml</code></a> → <code>ego.pose</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Run faster than real time</td>
 <td style="text-align: left;">Simulation → <em>time scale</em></td>
-<td style="text-align: left;"><code>simulation.yaml</code> → <code>time_scale</code></td>
+<td style="text-align: left;"><a href="Simulation/"><code>simulation.yaml</code></a> → <code>time_scale</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Repeat the same traffic</td>
 <td style="text-align: left;">Simulation → <em>random seed</em></td>
-<td style="text-align: left;"><code>simulation.yaml</code> → <code>seed</code></td>
+<td style="text-align: left;"><a href="Simulation/"><code>simulation.yaml</code></a> → <code>seed</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Evening, night, fog</td>
 <td style="text-align: left;">Simulation → <em>time of day</em>, <em>fog visibility</em></td>
-<td style="text-align: left;"><code>simulation.yaml</code> → <code>lighting.time_of_day</code>, <code>weather.fog_visibility_m</code></td>
+<td style="text-align: left;"><a href="Simulation/"><code>simulation.yaml</code></a> → <code>lighting.time_of_day</code>, <code>weather.fog_visibility_m</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Turn CSV logging on or off</td>
 <td style="text-align: left;">Simulation → Loggers</td>
-<td style="text-align: left;"><code>simulation.yaml</code> → <code>loggers</code></td>
+<td style="text-align: left;"><a href="Simulation/"><code>simulation.yaml</code></a> → <code>loggers</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Change a signal cycle</td>
 <td style="text-align: left;">Signals → intersection → step durations</td>
-<td style="text-align: left;"><code>signals.yaml</code> → <code>steps[].duration_s</code></td>
+<td style="text-align: left;"><a href="Signals/"><code>signals.yaml</code></a> → <code>steps[].duration_s</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Add, move or remove an RSU sensor</td>
 <td style="text-align: left;">RSUs &amp; sensors → RSU → <strong>Place on map</strong> / drag / ×</td>
-<td style="text-align: left;"><code>rsus.yaml</code> → <code>rsus[].sensors</code></td>
+<td style="text-align: left;"><a href="Rsus/"><code>rsus.yaml</code></a> → <code>rsus[].sensors</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Change a sensor's range or field of view</td>
 <td style="text-align: left;">RSUs &amp; sensors → sensor → <em>range</em>, <em>h FOV</em>, <em>v FOV</em> (or Defaults → sensor type)</td>
-<td style="text-align: left;"><code>rsus.yaml</code> (per sensor) or <code>defaults/sensor_types.yaml</code> (per type)</td>
+<td style="text-align: left;"><a href="Rsus/"><code>rsus.yaml</code></a> (per sensor) or <a href="SensorTypes/"><code>defaults/sensor_types.yaml</code></a> (per type)</td>
 </tr>
 <tr>
 <td style="text-align: left;">Change sensor noise or network delay</td>
 <td style="text-align: left;">Defaults → Noise / Network profiles; RSUs → publisher → noise, network copies</td>
-<td style="text-align: left;"><code>defaults/noise.yaml</code>, <code>defaults/network.yaml</code>, <code>rsus.yaml</code> publishers</td>
+<td style="text-align: left;"><a href="Noise/"><code>defaults/noise.yaml</code></a>, <a href="Network/"><code>defaults/network.yaml</code></a>, <a href="Rsus/"><code>rsus.yaml</code></a> publishers</td>
 </tr>
 <tr>
 <td style="text-align: left;">Publish a new object-info topic</td>
 <td style="text-align: left;">RSUs &amp; sensors → Object-info publishers → <strong>+ Add</strong></td>
-<td style="text-align: left;"><code>rsus.yaml</code> → <code>object_info_publishers</code></td>
+<td style="text-align: left;"><a href="Rsus/"><code>rsus.yaml</code></a> → <code>object_info_publishers</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">More or less traffic</td>
 <td style="text-align: left;">Vehicles → spawn point → <em>vehicles / minute</em>; <em>max vehicles</em></td>
-<td style="text-align: left;"><code>vehicles.yaml</code> → <code>spawn_points</code>, <code>max_vehicles</code></td>
+<td style="text-align: left;"><a href="Vehicles/"><code>vehicles.yaml</code></a> → <code>spawn_points</code>, <code>max_vehicles</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Add a spawn point or a turn ratio</td>
 <td style="text-align: left;">Vehicles → click a lane → <strong>Spawn vehicles here</strong> / <strong>Set branch ratios</strong></td>
-<td style="text-align: left;"><code>vehicles.yaml</code> → <code>spawn_points</code>, <code>branches</code></td>
+<td style="text-align: left;"><a href="Vehicles/"><code>vehicles.yaml</code></a> → <code>spawn_points</code>, <code>branches</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Add a pedestrian or cyclist route</td>
 <td style="text-align: left;">Pedestrians → <strong>+ Add</strong>, click the points on the map</td>
-<td style="text-align: left;"><code>pedestrians.yaml</code> → <code>paths</code></td>
+<td style="text-align: left;"><a href="Pedestrians/"><code>pedestrians.yaml</code></a> → <code>paths</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">Move or add a teleport gate</td>
 <td style="text-align: left;">Teleports → drag the gate / <strong>Place gate on map</strong></td>
-<td style="text-align: left;"><code>teleports.yaml</code></td>
+<td style="text-align: left;"><a href="Teleports/"><code>teleports.yaml</code></a></td>
 </tr>
 <tr>
 <td style="text-align: left;">Switch a LiDAR or camera on or off, change its topic</td>
 <td style="text-align: left;">Raw sensors → sensor → <em>enabled</em>, topics</td>
-<td style="text-align: left;"><code>raw_sensors.yaml</code></td>
+<td style="text-align: left;"><a href="RawSensors/"><code>raw_sensors.yaml</code></a></td>
 </tr>
 </tbody>
 </table>
@@ -2863,350 +3019,6 @@
 </tbody>
 </table>
 <p>Fields of view (<code>h_fov_deg</code>, <code>v_fov_deg</code>) are <strong>full</strong> angles. A 60° sensor sees 30° to each side.</p>
-<h2 id="simulation-simulationyaml">Simulation (<code>simulation.yaml</code>)</h2>
-<div class="highlight"><pre><span></span><code><span class="nt">time_scale</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">                 </span><span class="c1"># simulation speed, 1 = real time (&gt; 0, at most 100)</span>
-<span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">                       </span><span class="c1"># one seed for everything random; leave empty for a different run every time</span>
-<span class="nt">ego</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">vehicle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BusAutowareFinal</span><span class="w">   </span><span class="c1"># an ego vehicle of the scene (tag Ego): BusAutowareFinal, Lexus RX450h 2015 Sample Sensor</span>
-<span class="w">  </span><span class="nt">pose</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="nv">4769.09</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">73083.82</span><span class="p p-Indicator">,</span><span class="nt"> z</span><span class="p">:</span><span class="w"> </span><span class="nv">18.38</span><span class="p p-Indicator">,</span><span class="nt"> heading_deg</span><span class="p">:</span><span class="w"> </span><span class="nv">241</span><span class="p p-Indicator">}</span><span class="w">   </span><span class="c1"># start pose; omit to keep the scene pose</span>
-<span class="nt">lighting</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">time_of_day</span><span class="p">:</span><span class="w"> </span><span class="s">'17:30'</span><span class="w">        </span><span class="c1"># local time; empty = the sun of the scene</span>
-<span class="w">  </span><span class="nt">date</span><span class="p">:</span><span class="w"> </span><span class="s">'2025-06-21'</span>
-<span class="w">  </span><span class="nt">latitude_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">35.9</span>
-<span class="w">  </span><span class="nt">longitude_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">139.94</span>
-<span class="w">  </span><span class="nt">utc_offset_h</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9</span>
-<span class="w">  </span><span class="c1"># sun_elevation_deg: 40     # or place the sun directly (both values)</span>
-<span class="w">  </span><span class="c1"># sun_azimuth_deg: 180</span>
-<span class="w">  </span><span class="nt">sun_intensity_lux</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100000</span>
-<span class="w">  </span><span class="nt">color_temperature_k</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6570</span>
-<span class="w">  </span><span class="nt">night_intensity_lux</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span><span class="w">    </span><span class="c1"># moonlight when the sun is below the horizon</span>
-<span class="nt">weather</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">fog_visibility_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">         </span><span class="c1"># e.g. 150 for thick fog; 0 = no fog</span>
-<span class="w">  </span><span class="nt">fog_height_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
-<span class="nt">loggers</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SimulationOutput</span>
-<span class="w">  </span><span class="nt">npc_area</span><span class="p">:</span><span class="w">                   </span><span class="c1"># NPC vehicles and pedestrians inside the log area (LogArea)</span>
-<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">cars_csv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scenario_car.csv</span>
-<span class="w">    </span><span class="nt">humans_csv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scenario_human.csv</span>
-<span class="w">    </span><span class="nt">every_n_frames</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w">         </span><span class="c1"># 0 = every interval_s instead</span>
-<span class="w">    </span><span class="nt">interval_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
-<span class="w">  </span><span class="nt">ego</span><span class="p">:</span><span class="w">                        </span><span class="c1"># state of the ego vehicle (LogAutonomous)</span>
-<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="w">    </span><span class="nt">csv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Autonomous.csv</span>
-<span class="w">    </span><span class="nt">spawn_validation_csv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AutonomousSpawnValidation.csv</span>
-<span class="w">    </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Auto</span>
-<span class="w">    </span><span class="nt">interval_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.005</span>
-</code></pre></div>
-<ul>
-<li><strong>Ego vehicle.</strong> The chosen vehicle is switched on and the other ego vehicles are switched off. The traffic manager, the ScenarioSelector teleport keys and the <em>Selected Car</em> dropdown follow it. Its raw sensors are set up from <code>raw_sensors.yaml</code> before it starts.</li>
-<li><strong>Seed.</strong> It seeds Unity's random numbers, the traffic manager (it replaces the <code>seed</code> of <code>vehicles.yaml</code>), line-of-sight UUIDs and the object numbers of object info. Physics and frame timing still differ a little between runs, so runs are similar but not bit-identical.</li>
-<li><strong>Sun.</strong> <code>time_of_day</code> places the sun from the date and the position (NOAA formulas). When the sun is below the horizon, a dim light opposite it (<code>night_intensity_lux</code>) keeps the scene readable. The camera exposure of the scene is automatic.</li>
-<li><strong>Fog.</strong> It adds an HDRP fog to the scene's global volume. Visibility is the distance where objects fade out (mean free path × 3). It affects cameras, not the pseudo sensors or the RGL LiDARs.</li>
-<li><strong>Loggers.</strong> Files are written to <code>output_dir</code> (relative to the project folder, or the build folder) as <code>&lt;name&gt;_&lt;yyyyMMdd_HHmmss&gt;.csv</code>. See <a href="../Components/Logger/">Loggers</a>.</li>
-<li><strong>Time scale.</strong> It is also passed to the ROS clock, so <code>/clock</code> and the timestamps follow it.</li>
-</ul>
-<h2 id="signal-timing-signalsyaml">Signal timing (<code>signals.yaml</code>)</h2>
-<div class="highlight"><pre><span></span><code><span class="nt">intersections</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Kakeiken</span><span class="w">              </span><span class="c1"># TrafficIntersection object (see Kashiwa Scene Names)</span>
-<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">               </span><span class="c1"># false = keep the scene timing</span>
-<span class="w">  </span><span class="nt">steps</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">duration_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">35</span>
-<span class="w">    </span><span class="nt">lights</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">V1 green, V2 red, V3 green, P1 red, P2 green</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">duration_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
-<span class="w">    </span><span class="nt">lights</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P2 green flashing</span>
-<span class="w">  </span><span class="c1"># … one entry per step, in order; the cycle repeats</span>
-</code></pre></div>
-<p>Each intersection runs its lighting steps in order and repeats them. <code>duration_s</code> sets how long each step lasts. <code>lights</code> describes what the step shows (<code>V1</code> = vehicle group 1, <code>P1</code> = pedestrian group 1); it is written by the exporter and not read. The number of steps and what they show come from the scene, so steps cannot be added or removed here. Signal info (remaining time) and the V2X signal topics follow the new timing.</p>
-<h2 id="defaults">Defaults</h2>
-<h3 id="pseudo-sensor-types-defaultssensor_typesyaml">Pseudo-sensor types (<code>defaults/sensor_types.yaml</code>)</h3>
-<div class="highlight"><pre><span></span><code><span class="nt">pseudo_sensor_types</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lidar_60x22deg_60m</span>
-<span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lidar</span><span class="w">            </span><span class="c1"># lidar | camera</span>
-<span class="w">  </span><span class="nt">h_fov_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
-<span class="w">  </span><span class="nt">v_fov_deg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">22</span>
-<span class="w">  </span><span class="nt">range_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
-</code></pre></div>
-<p>An RSU sensor refers to a type by <code>name</code> and may override <code>h_fov_deg</code>, <code>v_fov_deg</code> and <code>range_m</code>. <code>raw_sensor_types</code> lists the LiDAR and camera prefabs that <code>raw_sensors.yaml</code> can create.</p>
-<h3 id="noise-profiles-defaultsnoiseyaml">Noise profiles (<code>defaults/noise.yaml</code>)</h3>
-<div class="highlight"><pre><span></span><code><span class="nt">noise_profiles</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Default</span>
-<span class="w">  </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniform</span><span class="w">        </span><span class="c1"># uniform | gaussian</span>
-<span class="w">  </span><span class="nt">x_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="w">  </span><span class="nt">y_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="w">  </span><span class="nt">z_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="w">  </span><span class="nt">gaussian_mean</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
-<span class="w">  </span><span class="nt">gaussian_std_dev</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span>
-</code></pre></div>
-<p>Publishers refer to a profile by <code>name</code> for each kind of noise: <code>position</code>, <code>rotation</code>, <code>dimension</code> (size) and <code>probability</code> (existence).</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Field</th>
-<th style="text-align: left;">Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>distribution</code></td>
-<td style="text-align: left;"><code>uniform</code>: a random value in [−amplitude, +amplitude] per axis. <code>gaussian</code>: <code>gaussian_mean + gaussian_std_dev × amplitude × N(0,1)</code></td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>x_m</code>, <code>y_m</code>, <code>z_m</code></td>
-<td style="text-align: left;">amplitude per axis (m)</td>
-</tr>
-</tbody>
-</table>
-<p><code>NoNoise</code> (all zero) is used for ground truth.</p>
-<h3 id="network-profiles-defaultsnetworkyaml">Network profiles (<code>defaults/network.yaml</code>)</h3>
-<p>A network profile publishes a delayed, lossy copy of a topic as <code>&lt;topic&gt;&lt;topic_suffix&gt;</code>, for example <code>/v2x/object_info/DSRC</code>. Publishers list the profiles they use under <code>network</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">network_profiles</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DSRC</span>
-<span class="w">  </span><span class="nt">topic_suffix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/DSRC</span>
-<span class="w">  </span><span class="nt">delay_ms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
-<span class="w">  </span><span class="nt">delay_variance_ms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
-<span class="w">  </span><span class="nt">packet_loss</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
-<span class="w">  </span><span class="nt">packet_loss_variance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
-<span class="w">  </span><span class="nt">ground_truth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-</code></pre></div>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Field</th>
-<th style="text-align: left;">Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>delay_ms</code>, <code>delay_variance_ms</code></td>
-<td style="text-align: left;">latency and its random ± part</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>packet_loss</code>, <code>packet_loss_variance</code></td>
-<td style="text-align: left;">probability (0–1) that a message is dropped</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>ground_truth</code></td>
-<td style="text-align: left;">also make a copy of the ground-truth topic</td>
-</tr>
-</tbody>
-</table>
-<h2 id="rsus-and-pseudo-sensors-rsusyaml">RSUs and pseudo sensors (<code>rsus.yaml</code>)</h2>
-<div class="highlight"><pre><span></span><code><span class="nt">rsus</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ganken</span>
-<span class="w">  </span><span class="nt">rsu_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0x12020001</span><span class="w">      </span><span class="c1"># 32-bit hex, unique; used in object IDs and information_source_list</span>
-<span class="w">  </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ganken</span>
-<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">sensors</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RSU_Lidar 1</span>
-<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lidar_60x22deg_60m</span>
-<span class="w">    </span><span class="nt">sensor_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">          </span><span class="c1"># 0-255, unique within the RSU</span>
-<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">pose</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="nv">4240.481</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">73444.969</span><span class="p p-Indicator">,</span><span class="nt"> z</span><span class="p">:</span><span class="w"> </span><span class="nv">25.433</span><span class="p p-Indicator">,</span><span class="nt"> heading_deg</span><span class="p">:</span><span class="w"> </span><span class="nv">35.5</span><span class="p p-Indicator">,</span><span class="nt"> pitch_deg</span><span class="p">:</span><span class="w"> </span><span class="nv">-13.8</span><span class="p p-Indicator">,</span><span class="nt"> roll_deg</span><span class="p">:</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">}</span>
-<span class="w">    </span><span class="c1"># optional: range_m: 80, h_fov_deg: 90, v_fov_deg: 30</span>
-<span class="w">    </span><span class="c1"># optional own topics (no network copies):</span>
-<span class="w">    </span><span class="c1"># object_info: {topic: /v2x/rsu1/lidar1/object_info, ground_truth_topic: /v2x/rsu1/lidar1/object_info_groundtruth}</span>
-</code></pre></div>
-<p>To add a sensor, add an entry. To remove one, delete it or set <code>enabled: false</code>. Line-of-sight checks use exactly the sensors of this file.</p>
-<h3 id="object-info-publishers-cool4-dm">Object-info publishers (CooL4 DM)</h3>
-<div class="highlight"><pre><span></span><code><span class="nt">object_info_publishers</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">all_rsus</span>
-<span class="w">  </span><span class="nt">rsus</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">all</span><span class="p p-Indicator">]</span><span class="w">                        </span><span class="c1"># RSU names, or all</span>
-<span class="w">  </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/object_info</span>
-<span class="w">  </span><span class="nt">ground_truth_topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/object_info_groundtruth</span>
-<span class="w">  </span><span class="nt">hz</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">  </span><span class="nt">noise</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">,</span><span class="nt"> rotation</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">,</span><span class="nt"> dimension</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">,</span><span class="nt"> probability</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">}</span>
-<span class="w">  </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">DSRC</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Cellular</span><span class="p p-Indicator">]</span><span class="w">          </span><span class="c1"># adds /v2x/object_info/DSRC and /v2x/object_info/Cellular</span>
-
-<span class="nt">per_sensor_object_info</span><span class="p">:</span><span class="w">              </span><span class="c1"># rate and noise of the per-sensor topics</span>
-<span class="w">  </span><span class="nt">hz</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">  </span><span class="nt">noise</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">,</span><span class="nt"> rotation</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">,</span><span class="nt"> dimension</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">,</span><span class="nt"> probability</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">}</span>
-</code></pre></div>
-<p>A publisher merges what the sensors of its RSUs see. An object seen by several sensors is sent once and lists every sensor in <code>information_source_list</code>. For the message content and the ID layout, see <a href="../DMProtocols/CooL4/ObjectInfo/">Object Info</a>.</p>
-<h3 id="autoware-object-and-traffic-signal-publishers">Autoware object and traffic-signal publishers</h3>
-<div class="highlight"><pre><span></span><code><span class="nt">autoware_object_publishers</span><span class="p">:</span><span class="w">          </span><span class="c1"># autoware_auto_perception_msgs/PredictedObjects</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rsu1</span>
-<span class="w">  </span><span class="nt">rsus</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Ganken</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/v2x/rsu1/predicted_object</span>
-<span class="w">  </span><span class="nt">station_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="w">  </span><span class="nt">hz</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">  </span><span class="nt">noise</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">,</span><span class="nt"> rotation</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">,</span><span class="nt"> dimension</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">,</span><span class="nt"> probability</span><span class="p">:</span><span class="w"> </span><span class="nv">Default</span><span class="p p-Indicator">}</span>
-<span class="w">  </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">DSRC</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Cellular</span><span class="p p-Indicator">]</span>
-
-<span class="nt">traffic_signal_publishers</span><span class="p">:</span><span class="w">           </span><span class="c1"># v2x_msgs/V2XSignals</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rsu1</span>
-<span class="w">  </span><span class="nt">station_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="w">  </span><span class="nt">intersections</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Ganken</span><span class="p p-Indicator">]</span><span class="w">            </span><span class="c1"># TrafficIntersection names in the scene</span>
-<span class="w">  </span><span class="nt">topics</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">/v2x/rsu1/traffic_signals</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">/v2x/traffic_signals</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">hz</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">  </span><span class="nt">signal_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">relation</span><span class="w">                </span><span class="c1"># relation = Lanelet2 regulatory-element IDs, way = traffic-light way IDs</span>
-</code></pre></div>
-<h2 id="vehicle-traffic-vehiclesyaml">Vehicle traffic (<code>vehicles.yaml</code>)</h2>
-<div class="highlight"><pre><span></span><code><span class="nt">lanes_root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AutowareSimulator/Enviroment /TrafficLanes</span>
-<span class="nt">template_traffic_manager</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ScenarioSelector/Cool4 Kakeiken Overal Evaluation /New NPC - Kashiwa High</span>
-<span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
-<span class="nt">max_vehicles</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
-<span class="nt">spawn_distance_to_ego_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w">          </span><span class="c1"># no spawning closer than this to the ego vehicle</span>
-<span class="nt">spawn_clearance_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span><span class="w">                 </span><span class="c1"># free space needed around the spawn point</span>
-<span class="nt">maximum_spawns</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4000</span><span class="w">                 </span><span class="c1"># 0 = unlimited</span>
-<span class="nt">behaviour</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">deadlock_timeout_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span><span class="w">              </span><span class="c1"># standing while yielding this long -&gt; takes the right of way</span>
-<span class="w">  </span><span class="nt">forced_pass_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span><span class="w">                   </span><span class="c1"># ... for this long</span>
-<span class="w">  </span><span class="nt">forced_pass_radius_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70</span>
-<span class="w">  </span><span class="nt">stuck_despawn_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">180</span><span class="w">               </span><span class="c1"># standing still this long for any reason -&gt; removed (0 = never)</span>
-<span class="w">  </span><span class="nt">standstill_speed_mps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.3</span>
-<span class="nt">vehicle_types</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">prefab</span><span class="p">:</span><span class="w"> </span><span class="nv">Hatchback Variant</span><span class="p p-Indicator">,</span><span class="nt"> weight</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">}</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">prefab</span><span class="p">:</span><span class="w"> </span><span class="nv">SmallCar Variant</span><span class="p p-Indicator">,</span><span class="nt"> weight</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">}</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">prefab</span><span class="p">:</span><span class="w"> </span><span class="nv">Taxi Variant</span><span class="p p-Indicator">,</span><span class="nt"> weight</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">}</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">prefab</span><span class="p">:</span><span class="w"> </span><span class="nv">Van Variant</span><span class="p p-Indicator">,</span><span class="nt"> weight</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">}</span>
-<span class="nt">spawn_points</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lanelet779</span>
-<span class="w">  </span><span class="nt">lanelet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">779</span>
-<span class="w">  </span><span class="nt">vehicles_per_minute</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.15</span><span class="w">          </span><span class="c1"># ± 25 % random spacing</span>
-<span class="w">  </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="nv">4352.18</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">73301.3</span><span class="p p-Indicator">,</span><span class="nt"> z</span><span class="p">:</span><span class="w"> </span><span class="nv">18.62</span><span class="p p-Indicator">}</span>
-<span class="nt">branches</span><span class="p">:</span><span class="w">                            </span><span class="c1"># where a lane splits</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from_lanelet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1034</span>
-<span class="w">  </span><span class="nt">to</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">lanelet</span><span class="p">:</span><span class="w"> </span><span class="nv">1088</span><span class="p p-Indicator">,</span><span class="nt"> ratio</span><span class="p">:</span><span class="w"> </span><span class="nv">0.33</span><span class="p p-Indicator">}</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">lanelet</span><span class="p">:</span><span class="w"> </span><span class="nv">1089</span><span class="p p-Indicator">,</span><span class="nt"> ratio</span><span class="p">:</span><span class="w"> </span><span class="nv">0.67</span><span class="p p-Indicator">}</span><span class="w">     </span><span class="c1"># normalised; next lanes that are not listed get 0</span>
-</code></pre></div>
-<ul>
-<li><strong>Lanelet numbers</strong> are the names of the simulator's traffic lanes (<code>lanelet&lt;number&gt;</code> under <code>lanes_root</code>). In the web viewer, click a lane in <strong>Settings → Vehicles</strong> to see its number and next lanes and to add a spawn point or branch ratios.</li>
-<li>One traffic manager runs the traffic. The <code>template_traffic_manager</code> of the scene supplies the ego vehicle, layers and vehicle dynamics, and the scene's other traffic managers are switched off. <code>vehicle_types</code> may use any NPC prefab that a traffic manager of the scene knows.</li>
-<li>A vehicle is created only when the spawn point is clear. The next one is scheduled from <code>vehicles_per_minute</code>.</li>
-<li><code>behaviour.forced_pass_radius_m</code>: at most one vehicle within this distance gets the right of way at a time (the one that has waited longest), so two blocked vehicles at the same intersection do not both go. <code>behaviour.standstill_speed_mps</code>: below this speed a vehicle counts as standing.</li>
-<li>Right of way: vehicles follow the lane rules of the scene. If a vehicle has waited to yield for <code>deadlock_timeout_s</code> while the others also wait, it gets the right of way. Vehicles that have not moved for <code>stuck_despawn_s</code> are removed. Vehicles also leave at the end of their route.</li>
-</ul>
-<h2 id="pedestrians-and-cyclists-pedestriansyaml">Pedestrians and cyclists (<code>pedestrians.yaml</code>)</h2>
-<div class="highlight"><pre><span></span><code><span class="nt">max_active</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w">                        </span><span class="c1"># agents walking at the same time (0 = unlimited)</span>
-<span class="nt">snap_to_ground</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="nt">paths</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path2</span>
-<span class="w">  </span><span class="nt">spawns_per_minute</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.133</span>
-<span class="w">  </span><span class="nt">cyclist_ratio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.29</span><span class="w">                </span><span class="c1"># share of cyclists: 0 = only pedestrians, 1 = only cyclists</span>
-<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">waypoints</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="nv">4480.579</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">72960.906</span><span class="p p-Indicator">,</span><span class="nt"> z</span><span class="p">:</span><span class="w"> </span><span class="nv">23</span><span class="p p-Indicator">}</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="nv">4487.901</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">72948.555</span><span class="p p-Indicator">,</span><span class="nt"> z</span><span class="p">:</span><span class="w"> </span><span class="nv">23</span><span class="p p-Indicator">}</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="nv">4490.751</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">72946.922</span><span class="p p-Indicator">,</span><span class="nt"> z</span><span class="p">:</span><span class="w"> </span><span class="nv">23</span><span class="p p-Indicator">,</span><span class="nt"> traffic_light</span><span class="p">:</span><span class="w"> </span><span class="nv">Kakeiken_P_0x30_1</span><span class="p p-Indicator">}</span><span class="w">   </span><span class="c1"># waits here for green</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="nv">4508.019</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">72955.133</span><span class="p p-Indicator">,</span><span class="nt"> z</span><span class="p">:</span><span class="w"> </span><span class="nv">23</span><span class="p p-Indicator">}</span>
-</code></pre></div>
-<p>Agents start at the first waypoint, walk the path and are removed at the last one. Traffic-light names follow the scene naming (see <a href="../ProjectGuide/KashiwaScenes/">Kashiwa Scenes</a>).</p>
-<h2 id="teleports-teleportsyaml">Teleports (<code>teleports.yaml</code>)</h2>
-<p>A teleport gate moves the ego vehicle when it drives into the trigger box.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">teleports</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">First gate</span>
-<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">trigger</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="nv">4431.903</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">73109.227</span><span class="p p-Indicator">,</span><span class="nt"> z</span><span class="p">:</span><span class="w"> </span><span class="nv">19.707</span><span class="p p-Indicator">,</span><span class="nt"> heading_deg</span><span class="p">:</span><span class="w"> </span><span class="nv">70.4</span><span class="p p-Indicator">}</span>
-<span class="w">  </span><span class="nt">trigger_size</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="nv">5.11</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">,</span><span class="nt"> z</span><span class="p">:</span><span class="w"> </span><span class="nv">6.92</span><span class="p p-Indicator">}</span><span class="w">      </span><span class="c1"># width, height, length (m)</span>
-<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lane_midpoint</span><span class="w">                     </span><span class="c1"># lane_midpoint | random_point</span>
-<span class="w">  </span><span class="nt">clearance_radius_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15</span><span class="w">                      </span><span class="c1"># NPCs this close to the target are removed</span>
-<span class="w">  </span><span class="nt">delay_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
-<span class="w">  </span><span class="nt">random_delay_s</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">lane_midpoint</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">lanelets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1034</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1118</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1113</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1104</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1086</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1093</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1082</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1071</span><span class="p p-Indicator">]</span><span class="w">   </span><span class="c1"># candidate lanes</span>
-<span class="w">    </span><span class="nt">midpoint_lanelet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">328</span>
-<span class="w">    </span><span class="nt">midpoint_fraction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="w">    </span><span class="nt">cruise_speed_kmh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
-<span class="w">    </span><span class="nt">acceleration_mps2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="w">    </span><span class="nt">arrival_window_s</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">90</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="nt">spacing_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">    </span><span class="nt">include_endpoints</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="c1"># random_point: random_points: [{x: …, y: …, z: …, heading_deg: …}]</span>
-</code></pre></div>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Field</th>
-<th style="text-align: left;">Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>trigger</code>, <code>trigger_size</code></td>
-<td style="text-align: left;">Box the ego drives into: centre and heading in the map frame; size <code>x</code> = width, <code>y</code> = height, <code>z</code> = length (m)</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>strategy</code></td>
-<td style="text-align: left;"><code>lane_midpoint</code>: pick a start point on the listed lanes (below). <code>random_point</code>: one of <code>random_points</code>, chosen at random.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>clearance_radius_m</code></td>
-<td style="text-align: left;">NPC vehicles closer than this to the target are removed before the ego arrives</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>delay_s</code>, <code>random_delay_s</code></td>
-<td style="text-align: left;">Wait before the jump: <code>delay_s</code> plus a random value in [min, max]</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>lane_midpoint.lanelets</code></td>
-<td style="text-align: left;">Lanes the ego may be placed on; candidate points every <code>spacing_m</code> along them (<code>include_endpoints</code>: also the lane ends)</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>lane_midpoint.midpoint_lanelet</code>, <code>midpoint_fraction</code></td>
-<td style="text-align: left;">Reference point the ego should reach: this far along that lane (0 = start, 1 = end)</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>lane_midpoint.arrival_window_s</code></td>
-<td style="text-align: left;">A target time is drawn at random in [min, max]. The candidate whose estimated driving time to the reference point is closest wins.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>lane_midpoint.cruise_speed_kmh</code>, <code>acceleration_mps2</code></td>
-<td style="text-align: left;">Used for that estimate: accelerate from 0 to cruise speed, then drive on</td>
-</tr>
-</tbody>
-</table>
-<p>In the web viewer, <strong>Pick target lanes on map</strong> toggles lanes in <code>lanelets</code>.</p>
-<h2 id="raw-sensors-raw_sensorsyaml">Raw sensors (<code>raw_sensors.yaml</code>)</h2>
-<p>These are LiDARs (RGL) and cameras that publish point clouds and images.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">raw_sensors</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BusAutowareFinal/URDF/base_link/sensor_kit_base_link/velodyne_left_base_link/VelodyneVLP16</span>
-<span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lidar</span><span class="w">                    </span><span class="c1"># lidar | camera</span>
-<span class="w">  </span><span class="nt">mount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ego</span><span class="w">                     </span><span class="c1"># ego | scene | world</span>
-<span class="w">  </span><span class="nt">vehicle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BusAutowareFinal</span>
-<span class="w">  </span><span class="nt">object</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">URDF/base_link/sensor_kit_base_link/velodyne_left_base_link/VelodyneVLP16</span>
-<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">hz</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">  </span><span class="nt">frame_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">world</span>
-<span class="w">  </span><span class="nt">point_cloud_topics</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="nv">lidar_left/pointcloud</span><span class="p p-Indicator">,</span><span class="nt"> format</span><span class="p">:</span><span class="w"> </span><span class="nv">Pcl24</span><span class="p p-Indicator">,</span><span class="nt"> publish</span><span class="p">:</span><span class="w"> </span><span class="nv">true</span><span class="p p-Indicator">}</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="nv">lidar_left/pointcloud_ex</span><span class="p p-Indicator">,</span><span class="nt"> format</span><span class="p">:</span><span class="w"> </span><span class="nv">PointXYZIRCAEDT</span><span class="p p-Indicator">,</span><span class="nt"> publish</span><span class="p">:</span><span class="w"> </span><span class="nv">true</span><span class="p p-Indicator">}</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CameraSensor2</span>
-<span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">camera</span>
-<span class="w">  </span><span class="nt">mount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scene</span>
-<span class="w">  </span><span class="nt">object</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AutowareSimulator/Cooperative Autonomous Driving/RSUs/Publishers/Int#2 Raw Sensors/Cameras/CameraSensor2</span>
-<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">hz</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">  </span><span class="nt">frame_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">traffic_light_left_camera/camera_optical_link</span>
-<span class="w">  </span><span class="nt">image_topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/rsu/intersection2/camera_2/camera_raw</span>
-<span class="w">  </span><span class="nt">camera_info_topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/rsu/intersection2/camera_2/camera_info</span>
-<span class="w">  </span><span class="nt">width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">480</span>
-<span class="w">  </span><span class="nt">height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">270</span>
-</code></pre></div>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>mount</code></th>
-<th style="text-align: left;">Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>ego</code></td>
-<td style="text-align: left;">a sensor on an ego vehicle (<code>object</code> = path below the vehicle; <code>[i]</code> tells same-named sensors apart)</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>scene</code></td>
-<td style="text-align: left;">a sensor already in the scene (<code>object</code> = scene path)</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>world</code></td>
-<td style="text-align: left;">a new sensor created from a <code>type</code> of <code>raw_sensor_types</code> at <code>pose</code></td>
-</tr>
-</tbody>
-</table>
-<p>Sensors of the scene that are not listed keep their scene setup. Set <code>enabled: false</code> to switch one off.</p>
 <h2 id="editing-in-unity">Editing in Unity</h2>
 <p>The <em>V2X → Config</em> menu has:</p>
 <ul>
@@ -3268,13 +3080,13 @@
         
         
           
-          <a href="../Tools/WebViewer/" class="md-footer__link md-footer__link--next" aria-label="Next: Web Viewer">
+          <a href="Simulation/" class="md-footer__link md-footer__link--next" aria-label="Next: Simulation">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Web Viewer
+                Simulation
               </div>
             </div>
             <div class="md-footer__button md-icon">
